@@ -1,6 +1,8 @@
-package net.muse.misc;
+package net.muse.gui;
 
 import javax.swing.*;
+
+import net.muse.misc.MuseObject;
 
 /*
  * @author Mitsuyo Hashida @ CrestMuse Project, JST

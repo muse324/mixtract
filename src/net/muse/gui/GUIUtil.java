@@ -1,4 +1,4 @@
-package net.muse.misc;
+package net.muse.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -6,9 +6,11 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.text.Document;
 
+import net.muse.misc.Command;
+
 /**
- * よく使う各種コンポーネントの記述テンプレートを集めたユーティリティクラスです．<br>
- * 
+ * GUI上でよく使う各種コンポーネントの記述テンプレートを集めたユーティリティクラスです．<br>
+ *
  * @author Mitsuyo Hashida @ CrestMuse Project
  * @since ver2.0 - 2007.12.24
  *        <ul>
@@ -32,7 +34,7 @@ public class GUIUtil {
 
 	/**
 	 * 新しいボタンを作成します．
-	 * 
+	 *
 	 * @param toolBar
 	 * @param label ボタンに表示させるラベル
 	 * @param actionCommand アクションコマンド名
@@ -52,25 +54,28 @@ public class GUIUtil {
 	}
 
 	@Deprecated static public JMenuItem createMenuItem(final ActionListener l,
-			final JMenu menu, final String name, final Enum action, final int key) {
+			final JMenu menu, final String name, final Enum action,
+			final int key) {
 		return createMenuItem(l, menu, name, action.toString(), key,
-													ActionEvent.CTRL_MASK);
+				ActionEvent.CTRL_MASK);
 	}
 
 	@Deprecated static public JMenuItem createMenuItem(final ActionListener l,
-			final JMenu menu, final String name, final Enum action, final int key,
-			final int opt) {
+			final JMenu menu, final String name, final Enum action,
+			final int key, final int opt) {
 		return createMenuItem(l, menu, name, action.toString(), key, opt);
 	}
 
 	@Deprecated static public JMenuItem createMenuItem(final ActionListener l,
-			final JMenu menu, final String name, final String action, final int key) {
-		return createMenuItem(l, menu, name, action, key, ActionEvent.CTRL_MASK);
+			final JMenu menu, final String name, final String action,
+			final int key) {
+		return createMenuItem(l, menu, name, action, key,
+				ActionEvent.CTRL_MASK);
 	}
 
 	@Deprecated static public JMenuItem createMenuItem(final ActionListener l,
-			final JMenu menu, final String name, final String action, final int key,
-			final int opt) {
+			final JMenu menu, final String name, final String action,
+			final int key, final int opt) {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem(name);
 		menuItem.setMnemonic(key);
@@ -83,7 +88,7 @@ public class GUIUtil {
 
 	/**
 	 * コンソール(JTextAreaオブジェクト）にテキストを表示します．
-	 * 
+	 *
 	 * @param e
 	 */
 	static public void printConsole(final String str) {
@@ -98,7 +103,8 @@ public class GUIUtil {
 	 * @param cmd
 	 * @param key
 	 */
-	public static final JMenuItem createMenuItem(ActionListener l, Command cmd, int key) {
+	public static final JMenuItem createMenuItem(ActionListener l, Command cmd,
+			int key) {
 		return createMenuItem(l, cmd, key, ActionEvent.CTRL_MASK);
 	}
 

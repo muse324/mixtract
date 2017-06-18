@@ -10,8 +10,8 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.*;
 
 import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
-import net.muse.misc.GUIUtil;
-import net.muse.misc.MuseGUIObject;
+import net.muse.gui.GUIUtil;
+import net.muse.gui.MuseGUIObject;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;

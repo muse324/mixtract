@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
+import net.muse.gui.GUIUtil;
 import net.muse.misc.Command;
-import net.muse.misc.GUIUtil;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.Group;
