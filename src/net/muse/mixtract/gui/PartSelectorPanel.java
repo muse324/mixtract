@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class PartSelectorPanel extends JPanel implements TuneDataListener {
 

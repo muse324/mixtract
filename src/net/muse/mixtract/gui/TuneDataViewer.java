@@ -8,6 +8,7 @@ import java.beans.PropertyVetoException;
 import javax.swing.*;
 
 import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class TuneDataViewer extends JInternalFrame implements TuneDataListener,
 		ActionListener {

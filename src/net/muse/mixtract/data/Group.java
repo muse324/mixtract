@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.muse.mixtract.data.curve.*;
+
 /**
  * <h1>Group</h1>
  * <p>

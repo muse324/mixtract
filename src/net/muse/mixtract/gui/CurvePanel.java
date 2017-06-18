@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
-import net.muse.mixtract.data.PhraseCurveType;
 import net.muse.mixtract.data.TuneData;
+import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class CurvePanel extends JPanel implements MouseInputListener {
 

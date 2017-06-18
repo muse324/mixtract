@@ -1,4 +1,4 @@
-package net.muse.mixtract.data;
+package net.muse.mixtract.data.curve;
 
 
 public enum PhraseCurveType {

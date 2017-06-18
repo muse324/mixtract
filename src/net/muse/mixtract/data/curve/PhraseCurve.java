@@ -1,4 +1,4 @@
-package net.muse.mixtract.data;
+package net.muse.mixtract.data.curve;
 
 
 import java.awt.Point;
@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import net.muse.misc.MuseObject;
 import net.muse.misc.Util;
 import net.muse.mixtract.Mixtract;
+import net.muse.mixtract.data.Group;
+import net.muse.mixtract.data.TuneData;
 
 public abstract class PhraseCurve extends MuseObject {
 

@@ -7,6 +7,7 @@ import javax.swing.SwingUtilities;
 
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.curve.*;
 
 public class CurveViewPanel extends PhraseCanvas {
 

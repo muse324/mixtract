@@ -8,6 +8,7 @@ import javax.swing.JScrollPane;
 
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class CurveView extends JScrollPane implements TuneDataListener {
 	private static final long serialVersionUID = 1L;

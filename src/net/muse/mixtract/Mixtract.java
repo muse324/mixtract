@@ -14,6 +14,7 @@ import net.muse.misc.GUIUtil;
 import net.muse.misc.MuseGUIObject;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.*;
 
 /**

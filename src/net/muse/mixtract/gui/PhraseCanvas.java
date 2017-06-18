@@ -11,7 +11,7 @@ import net.muse.gui.RoundedCornerButton;
 import net.muse.gui.RoundedCornerButton.RoundButton;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.Group;
-import net.muse.mixtract.data.PhraseCurve;
+import net.muse.mixtract.data.curve.PhraseCurve;
 import net.muse.mixtract.gui.command.ApplyHierarchicalParamsCommand;
 
 /**

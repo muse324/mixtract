@@ -1,7 +1,7 @@
 package net.muse.mixtract.gui.command;
 
 import net.muse.mixtract.data.Group;
-import net.muse.mixtract.data.PhraseCurve;
+import net.muse.mixtract.data.curve.PhraseCurve;
 import net.muse.mixtract.gui.MixtractCommand;
 
 public final class ApplyHierarchicalParamsCommand extends MixtractCommand {

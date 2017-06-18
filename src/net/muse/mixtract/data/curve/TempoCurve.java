@@ -1,9 +1,9 @@
-package net.muse.mixtract.data;
+package net.muse.mixtract.data.curve;
 
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
+import net.muse.mixtract.data.*;
 
 public class TempoCurve extends PhraseCurve {
 

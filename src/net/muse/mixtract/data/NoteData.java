@@ -14,7 +14,7 @@ import net.muse.misc.Util;
 
 /**
  * <h1>Note</h1>
- * 
+ *
  * @author Mitsuyo Hashida & Haruhiro Katayose
  *         <address>@ CrestMuse Project, JST</address>
  *         <address> <a
@@ -27,35 +27,28 @@ public class NoteData extends MuseObject {
 
 	private static final int minimumDuration = 50;
 
-	/**
-	 * @return
-	 */
-	private static int getDefaultGraseNoteDuration() {
-		return Math.round(getTicksPerBeat() / (float) 16.);
-	}
-
 	/** MusicXML.Note */
 	private Note note;
+
 	/** 後続音 */
 	private NoteData next = null;
 	/** 先行音 */
 	private NoteData prev = null;
 	/** 和音(上) **/
 	private NoteData parent = null;
-
 	/** 和音(下) **/
 	private NoteData child = null;
 
 	/**
 	 * MIDI ノートオンイベント
-	 * 
+	 *
 	 * @see {@link NoteScheduleEvent}
 	 */
 	private NoteScheduleEvent noteOn;
 
 	/**
 	 * MIDI ノートオフイベント
-	 * 
+	 *
 	 * @see {@link NoteScheduleEvent}
 	 */
 	private NoteScheduleEvent noteOff;
@@ -68,6 +61,7 @@ public class NoteData extends MuseObject {
 
 	/** 音価（楽譜上） */
 	private int timeValue = 0;
+
 	/**
 	 * Part number begins from 1 by integer.<br>
 	 * 声部番号(1～)
@@ -94,9 +88,15 @@ public class NoteData extends MuseObject {
 	private double apexScore;
 	private Harmony chord = Harmony.I;
 	private KeyMode keyMode = KeyMode.major;
-
 	private int fifths = 0;
+
 	private boolean nonChord = false;
+	/**
+	 * @return
+	 */
+	private static int getDefaultGraseNoteDuration() {
+		return Math.round(getTicksPerBeat() / (float) 16.);
+	}
 
 	NoteData(int i, int partNumber, int onset, int offset, String noteName,
 			boolean rest, boolean grace, boolean tie, int tval, double beat) {
@@ -265,20 +265,28 @@ public class NoteData extends MuseObject {
 
 	/**
 	 * 消音時刻をTicksで返します．
-	 * 
+	 *
 	 * @return offset
 	 */
 	public final int offset() {
 		return offset;
 	}
 
+	public double offsetInMsec(int bpm) {
+		return offset() * Util.bpmToBeatTime(bpm) / getTicksPerBeat();
+	}
+
 	/**
 	 * 発音時刻をTicksで返します．
-	 * 
+	 *
 	 * @return onset
 	 */
 	public final int onset() {
 		return onset;
+	}
+
+	public double onsetInMsec(int bpm) {
+		return onset() * Util.bpmToBeatTime(bpm) / (double) getTicksPerBeat();
 	}
 
 	/**
@@ -345,15 +353,39 @@ public class NoteData extends MuseObject {
 		this.partNumber = partNumber;
 	}
 
+	public void setRealOffset(double offset) {
+		realOffset = (offset < realOnset + minimumDuration)	? realOnset + minimumDuration
+															: offset;
+		noteOff.setOnset((long) realOffset);
+	}
+
+	public void setRealOnset(double onset) {
+		realOnset = onset;
+		noteOn.setOnset((long) onset);
+	}
+
+	public void setVelocity(int vel) {
+		try {
+			noteOn.setVelocity(vel);
+		} catch (InvalidMidiDataException e) {
+			JOptionPane.showMessageDialog(null,
+					String.format("invalid velocity %d for %s", vel, this));
+		}
+	}
+
 	/**
 	 * 楽譜上の音価をdivisionで表します。
 	 * MusicXML形式の＜note＞-＜duration＞タグに相当します。作曲モードの場合にのみ値の更新が可能です。
 	 * 表情付けモードにおいては，<code>duration()</code>の初期値として参照されるよう，値を固定しておく必要があります。
-	 * 
+	 *
 	 * @return 楽譜上の音価
 	 */
 	public int timeValue() {
 		return timeValue;
+	}
+
+	public double timeValueInMsec(int bpm) {
+		return timeValue() * Util.bpmToBeatTime(bpm) / getTicksPerBeat();
 	}
 
 	/*
@@ -372,6 +404,39 @@ public class NoteData extends MuseObject {
 
 	public int velocity() {
 		return noteOn.velocity();
+	}
+
+	/**
+	 * @return grace
+	 */
+	private boolean isGrace() {
+		return grace;
+	}
+
+	/**
+	 * @return tied
+	 */
+	private boolean isTied() {
+		return tied;
+	}
+
+	private void setNonChordNote(Harmony c) {
+		nonChord = true;
+		int[] notes = keyMode.noteIntervals(c);
+		int scale = (noteNumber - fifths) % 12;
+		for (int i = 0; i < notes.length; i++) {
+			if (notes[i] == scale) {
+				nonChord = false;
+				return;
+			}
+		}
+	}
+
+	/**
+	 * @return voice
+	 */
+	private int voice() {
+		return voice;
 	}
 
 	/**
@@ -422,14 +487,6 @@ public class NoteData extends MuseObject {
 	 */
 	final boolean isNonChord() {
 		return nonChord;
-	}
-
-	double offsetInMsec(int bpm) {
-		return offset() * Util.bpmToBeatTime(bpm) / getTicksPerBeat();
-	}
-
-	double onsetInMsec(int bpm) {
-		return onset() * Util.bpmToBeatTime(bpm) / (double) getTicksPerBeat();
 	}
 
 	/**
@@ -504,26 +561,6 @@ public class NoteData extends MuseObject {
 		}
 	}
 
-	void setRealOffset(double offset) {
-		realOffset = (offset < realOnset + minimumDuration)	? realOnset + minimumDuration
-															: offset;
-		noteOff.setOnset((long) realOffset);
-	}
-
-	void setRealOnset(double onset) {
-		realOnset = onset;
-		noteOn.setOnset((long) onset);
-	}
-
-	void setVelocity(int vel) {
-		try {
-			noteOn.setVelocity(vel);
-		} catch (InvalidMidiDataException e) {
-			JOptionPane.showMessageDialog(null,
-					String.format("invalid velocity %d for %s", vel, this));
-		}
-	}
-
 	/**
 	 * @param voice セットする voice
 	 */
@@ -545,43 +582,6 @@ public class NoteData extends MuseObject {
 		for (ApexInfo a : apexlist)
 			score += a.getScore();
 		return score;
-	}
-
-	double timeValueInMsec(int bpm) {
-		return timeValue() * Util.bpmToBeatTime(bpm) / getTicksPerBeat();
-	}
-
-	/**
-	 * @return grace
-	 */
-	private boolean isGrace() {
-		return grace;
-	}
-
-	/**
-	 * @return tied
-	 */
-	private boolean isTied() {
-		return tied;
-	}
-
-	private void setNonChordNote(Harmony c) {
-		nonChord = true;
-		int[] notes = keyMode.noteIntervals(c);
-		int scale = (noteNumber - fifths) % 12;
-		for (int i = 0; i < notes.length; i++) {
-			if (notes[i] == scale) {
-				nonChord = false;
-				return;
-			}
-		}
-	}
-
-	/**
-	 * @return voice
-	 */
-	private int voice() {
-		return voice;
 	}
 
 }

@@ -21,6 +21,7 @@ import net.muse.misc.MuseObject;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.Group.GroupType;
+import net.muse.mixtract.data.curve.*;
 
 /**
  * <h1>TuneData</h1>
@@ -431,11 +432,11 @@ public class TuneData extends MuseObject {
 	/**
 	 * @return the articulationList
 	 */
-	final LinkedList<Double> getArticulationList() {
+	public final LinkedList<Double> getArticulationList() {
 		return articulationList;
 	}
 
-	NoteData getLastNote(int partIndex) {
+	public NoteData getLastNote(int partIndex) {
 		return getRootGroup(partIndex).getEndGroupNote().getNote();
 	}
 

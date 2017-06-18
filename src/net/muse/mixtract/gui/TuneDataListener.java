@@ -1,7 +1,7 @@
 package net.muse.mixtract.gui;
 
-import net.muse.mixtract.data.PhraseCurveType;
 import net.muse.mixtract.data.TuneData;
+import net.muse.mixtract.data.curve.PhraseCurveType;
 
 /**
  * <h1>TuneDataListener</h1>

@@ -1,7 +1,9 @@
-package net.muse.mixtract.data;
+package net.muse.mixtract.data.curve;
 
 
 import java.util.LinkedList;
+
+import net.muse.mixtract.data.*;
 
 public class ArticulationCurve extends PhraseCurve {
 
