@@ -82,12 +82,10 @@ public abstract class PhraseCurve extends MuseObject {
 	private int ys;
 	/** 頂点のy座標 */
 	private int ya;
-
 	/** 終点のy座標 */
 	private int ye;
 
 	private int xoffset;
-
 	private int yoffset;
 
 	private final ArrayList<Double> paramlist;
