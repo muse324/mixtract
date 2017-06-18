@@ -1,7 +1,5 @@
 package net.muse.mixtract.data;
 
-
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +15,7 @@ import net.muse.mixtract.data.curve.*;
  * <li>A group has <i>childFormerGroup</i> & <i>childLatterGroup</i>, or
  * <li>A group has a note sequence
  * </ol>
- * 
+ *
  * @author Mitsuyo Hashida & Haruhiro Katayose
  *         <address>@ CrestMuse Project, JST</address>
  *         <address><a href="http://mixtract.m-use.net/"
@@ -36,16 +34,16 @@ public class Group {
 		AVOID_LAST_RESTNOTE = aVOID_LAST_RESTNOTE;
 	}
 
-	/** グループタイプ */
+	/** グループの種類 */
 	private GroupType _type;
 	/** グループの通し番号． */
 	private int index;
 
-	/** 階層レベル．最上階層を0として，下位構造に向かって正の整数で表されます． */
+	/** 階層レベル．最上階層(楽曲全体)を0として，下位構造に向かって正の整数で表されます． */
 	private int level;
 	private int partNumber;
-	private Group childFormerGroup = null;
 
+	private Group childFormerGroup = null;
 	private Group childLatterGroup = null;
 	private Group parent = null;
 
@@ -53,13 +51,11 @@ public class Group {
 	private List<NoteData> scoreNotelist;
 	private GroupNote beginGroupNote = null;
 	private GroupNote topGroupNote = null;
-
 	private GroupNote endGroupNote = null;
 	private GroupNote centerNote;
+
 	private DynamicsCurve dynamicsCurve;
-
 	private TempoCurve tempoCurve;
-
 	private ArticulationCurve articulationCurve;
 
 	private PhraseFeature flag;
@@ -77,7 +73,7 @@ public class Group {
 
 	/**
 	 * プロジェクトファイルから読み込んだグループを生成します．
-	 * 
+	 *
 	 * @param g1
 	 * @param g2
 	 * @param name
@@ -94,7 +90,7 @@ public class Group {
 
 	/**
 	 * プロジェクトファイルから読み込んだグループを生成します．
-	 * 
+	 *
 	 * @param id
 	 * @param partNumber
 	 * @param list
@@ -114,7 +110,7 @@ public class Group {
 
 	/**
 	 * MusicXMLを読み込んで，声部ごとのグループを生成します．
-	 * 
+	 *
 	 * @param notelist
 	 * @param partIndex
 	 * @param type
@@ -131,16 +127,18 @@ public class Group {
 
 	private Group(GroupType type) {
 		_type = type;
-		dynamicsCurve = (DynamicsCurve) PhraseCurve
-				.createPhraseProfile(PhraseCurveType.DYNAMICS);
-		tempoCurve = (TempoCurve) PhraseCurve
-				.createPhraseProfile(PhraseCurveType.TEMPO);
-		articulationCurve = (ArticulationCurve) PhraseCurve
-				.createPhraseProfile(PhraseCurveType.ARTICULATION);
+		dynamicsCurve = (DynamicsCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.DYNAMICS);
+		tempoCurve = (TempoCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.TEMPO);
+		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.ARTICULATION);
 		scoreNotelist = new ArrayList<NoteData>();
-
 	}
 
+	/**
+	 * 対象グループの実時間所要時間を返します。
+	 */
 	public double duration() {
 		return realOffset() - realOnset();
 	}
@@ -149,14 +147,13 @@ public class Group {
 	 * (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override
-	public boolean equals(Object obj) {
+	@Override public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
 		Group g = (Group) obj;
 		if (!g.getBeginGroupNote().equals(getBeginGroupNote()) || !g
-					.getEndGroupNote().equals(getEndGroupNote())
-			|| !g.getType().equals(getType()))
+				.getEndGroupNote().equals(getEndGroupNote()) || !g.getType()
+						.equals(getType()))
 			// || !g.getType().equals(getType()) || !g.getLayer().equals(layer))
 			return false;
 		return true;
@@ -333,8 +330,7 @@ public class Group {
 		return childLatterGroup != null;
 	}
 
-	@Override
-	public int hashCode() {
+	@Override public int hashCode() {
 		return super.hashCode();
 	}
 
@@ -368,7 +364,7 @@ public class Group {
 	 */
 	public boolean nearlyEquals(Group g) {
 		if (!g.getBeginGroupNote().equals(beginGroupNote) || !g
-					.getEndGroupNote().equals(getEndGroupNote()))
+				.getEndGroupNote().equals(getEndGroupNote()))
 			return false;
 		return true;
 	}
@@ -396,8 +392,7 @@ public class Group {
 	/**
 	 * @param b
 	 */
-	public void setHierarchy(boolean b) {
-	}
+	public void setHierarchy(boolean b) {}
 
 	/**
 	 * @param i
@@ -440,8 +435,7 @@ public class Group {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
-	public String toString() {
+	@Override public String toString() {
 		String str = name() + ";" + partNumber + ";";
 		if (!hasChild())
 			return str + notelistToString();
@@ -575,111 +569,4 @@ public class Group {
 		}
 		return len;
 	}
-
-	/**
-	 * グループのタイプ
-	 * 
-	 * @author Mitsuyo Hashida @ CrestMuse Project, JST
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
-	 * @since 2008/10/15
-	 */
-	public enum GroupType {
-		/** 連桁 */
-		BEAM {
-			@Override
-			public Color getColor() {
-				return Color.gray;
-			}
-		},
-		/** あるグループの子階層として新規作成されたもの */
-		CHILD {
-			@Override
-			public Color getColor() {
-				return Color.yellow.darker();
-			}
-		},
-		CHILD_BOUND {
-			@Override
-			public Color getColor() {
-				return Color.magenta;
-			}
-		},
-		DIVIDE {
-			@Override
-			public Color getColor() {
-				return Color.black;
-			}
-		},
-		/** 推測された音符列 */
-		NOTE {
-			@Override
-			public Color getColor() {
-				return Color.darkGray;
-			}
-		},
-		/** あるグループの親階層として新規作成されたもの */
-		PARENT {
-			@Override
-			public Color getColor() {
-				return Color.magenta.brighter();
-			}
-		},
-		/** MusicXML に記述されたスラー */
-		SLUR {
-			@Override
-			public Color getColor() {
-				return Color.blue.darker();
-			}
-		},
-		/** ユーザによる指定 */
-		USER {
-			@Override
-			public Color getColor() {
-				return Color.green.darker();
-			}
-		},
-		AUTO {
-			@Override
-			public Color getColor() {
-				return Color.magenta.brighter();
-			}
-		},
-		/** クレシェンド */
-		CRESC {
-			@Override
-			public Color getColor() {
-				return Color.black;
-			}
-		},
-		/** ディミヌエンド */
-		DIM {
-			@Override
-			public Color getColor() {
-				return Color.black;
-			}
-		};
-
-		static GroupType is(char c) {
-			switch (c) {
-			case 'U':
-				return USER;
-			case 'N':
-				return NOTE;
-			case 'P':
-				return PARENT;
-			case 'A':
-				return AUTO;
-			case 'S':
-				return SLUR;
-			case 'B':
-				return BEAM;
-			default:
-				return NOTE;
-			}
-		}
-
-		public abstract Color getColor();
-	}
-
 }

@@ -20,7 +20,6 @@ import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
-import net.muse.mixtract.data.Group.GroupType;
 import net.muse.mixtract.data.curve.*;
 
 /**

@@ -13,7 +13,6 @@ import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.misc.Util;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
-import net.muse.mixtract.data.Group.GroupType;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.command.SetChordCommand;
 
