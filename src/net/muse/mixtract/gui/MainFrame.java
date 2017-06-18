@@ -92,8 +92,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		super();
 		this.main = mixtract;
 		pianorollViewerGroup = new ButtonGroup();
-		synthe = new MixtractMIDIController(main.getMidiDeviceName(),
-				Mixtract.getTicksPerBeat());
+		synthe = new MixtractMIDIController(main.getMidiDeviceName(), Mixtract
+				.getTicksPerBeat());
 		synthe.addMidiEventListener(this);
 		this.main.addTuneDataListener(this);
 		this.main.addTuneDataListener(synthe);
@@ -115,21 +115,16 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		getScoreViewButton().setSelected(true);
 	}
 
-	/**
-	 * This method initializes this
-	 */
+	/** ウィンドウ表示の初期設定を行います。 */
 	private void initialize() {
-		this.setContentPane(getDesktop()); // Generated
-		this.setTitle("Mixtract"); // Generated
-		this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
-		this.setJMenuBar(getMenubar());
-
+		this.setContentPane(getDesktop()); // メインの描画領域
+		this.setTitle("Mixtract"); // ウィンドウのタイトル
+		this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize()); // ウィンドウサイズ
+		this.setJMenuBar(getMenubar()); // メニューバー
 	}
 
 	/**
-	 * This method initializes menubar
-	 *
-	 * @return javax.swing.JMenuBar
+	 * メニューバーを生成します。
 	 */
 	private JMenuBar getMenubar() {
 		if (menubar == null) {
@@ -140,15 +135,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	/**
-	 * This method initializes fileMenu
-	 *
-	 * @return javax.swing.JMenu
+	 * 「ファイル」メニューを構築します。
 	 */
 	private JMenu getFileMenu() {
 		if (fileMenu == null) {
 			fileMenu = new JMenu();
 			fileMenu.setText("File");
-			fileMenu.setMnemonic('F');
+			fileMenu.setMnemonic('F'); // ショートカットキー
 			fileMenu.add(getOpenProjectMenu());
 			fileMenu.add(getImportXMLMenu());
 			fileMenu.add(getSaveMenu());
@@ -157,15 +150,12 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			fileMenu.add(getQuitMenu());
 
 			// バージョン情報と終了コマンド
-			// "apple.laf.useScreenMenuBar"が定義されている場合はシステムで用意するので不要.
-			// if (System.getProperty("apple.laf.useScreenMenuBar") == null)
-			// {
 			if (!main.isMac()) {
 				fileMenu.addSeparator();
 				JMenuItem quitMenu = new JMenuItem("終了(Q)");
 				quitMenu.setMnemonic(KeyEvent.VK_Q);
-				quitMenu.setAccelerator(KeyStroke.getKeyStroke(	KeyEvent.VK_Q,
-																shortcutKey));
+				quitMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
+						shortcutKey));
 				quitMenu.addActionListener(new AbstractAction() {
 					private static final long serialVersionUID = 1L;
 
@@ -181,8 +171,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 				JMenuItem menuPreference = new JMenuItem("環境設定(E)");
 				menuPreference.setMnemonic(KeyEvent.VK_E);
-				menuPreference.setAccelerator(KeyStroke
-						.getKeyStroke(KeyEvent.VK_COMMA, shortcutKey));
+				menuPreference.setAccelerator(KeyStroke.getKeyStroke(
+						KeyEvent.VK_COMMA, shortcutKey));
 				menuPreference.addActionListener(new AbstractAction() {
 					private static final long serialVersionUID = 1L;
 
@@ -214,9 +204,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			saveAsMenu.setText("Save As");
 			saveAsMenu.setEnabled(false);
 			saveAsMenu.setMnemonic(KeyEvent.VK_S);
-			saveAsMenu.setAccelerator(KeyStroke
-					.getKeyStroke(KeyEvent.VK_S, shortcutKey
-							+ ActionEvent.SHIFT_MASK));
+			saveAsMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+					shortcutKey + ActionEvent.SHIFT_MASK));
 			saveAsMenu.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					JFileChooser fc = new JFileChooser(main
@@ -271,21 +260,23 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			openProjectMenu = new JMenuItem();
 			openProjectMenu.setText("Open Project File...");
 			openProjectMenu.setMnemonic('O');
-			openProjectMenu.setAccelerator(KeyStroke
-					.getKeyStroke('O', shortcutKey));
-			openProjectMenu
-					.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(java.awt.event.ActionEvent e) {
+			openProjectMenu.setAccelerator(KeyStroke.getKeyStroke('O',
+					shortcutKey));
+			openProjectMenu.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
 							try {
 								JFileChooser fc = (main != null)
 										? new JFileChooser(main
 												.getProjectDirectory())
 										: new JFileChooser();
-								fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+								fc.setFileSelectionMode(
+										JFileChooser.DIRECTORIES_ONLY);
 								int res = fc.showOpenDialog(null);
 								if (res == JFileChooser.APPROVE_OPTION) {
-									main.readfile(	fc.getSelectedFile(),
-													main.getProjectDirectory());
+									main.readfile(fc.getSelectedFile(), main
+											.getProjectDirectory());
 								}
 							} catch (IOException e1) {
 								e1.printStackTrace();
@@ -309,10 +300,11 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			importXMLMenu.setText("Import MusicXML File...");
 			importXMLMenu.setMnemonic('M');
 			importXMLMenu.setAccelerator(KeyStroke.getKeyStroke('M',
-																shortcutKey));
-			importXMLMenu
-					.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(java.awt.event.ActionEvent e) {
+					shortcutKey));
+			importXMLMenu.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
 							try {
 								JFileChooser fc = (main != null)
 										? new JFileChooser(main
@@ -320,13 +312,12 @@ public class MainFrame extends JFrame implements TuneDataListener,
 										: new JFileChooser();
 								int res = fc.showOpenDialog(null);
 								if (res == JFileChooser.APPROVE_OPTION) {
-									main.readfile(	fc.getSelectedFile(),
-													new File(
-															main.getProjectDirectory(),
-															fc.getSelectedFile()
-																	.getName()
-																	+ Mixtract
-																			.getProjectFileExtension()));
+									main.readfile(fc.getSelectedFile(),
+											new File(main.getProjectDirectory(),
+													fc.getSelectedFile()
+															.getName()
+															+ Mixtract
+																	.getProjectFileExtension()));
 								}
 							} catch (IOException e1) {
 								e1.printStackTrace();
@@ -368,8 +359,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 	protected void onPreference() {
 		JTextArea textArea = new JTextArea();
-		textArea.setText(getSystemProperties(System
-				.getProperty("line.separator")));
+		textArea.setText(getSystemProperties(System.getProperty(
+				"line.separator")));
 
 		JScrollPane scr = new JScrollPane(textArea);
 		scr.setPreferredSize(new Dimension(400, 300));
@@ -456,7 +447,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			pianoroll = new PianoRoll();
 			pianoroll.setController(main);
 			pianoroll.setPreferredSize(new Dimension(DEFAULT_WIDTH, KeyBoard
-					.getKeyboardHeight() /3*2));
+					.getKeyboardHeight() / 3 * 2));
 		}
 		return pianoroll;
 	}
@@ -484,10 +475,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			pianorollPane = new JScrollPane();
 			pianorollPane.setRowHeaderView(getKeyboard());
 			pianorollPane.setViewportView(getPianoroll()); // Generated
-			pianorollPane
-					.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			pianorollPane
-					.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+			pianorollPane.setHorizontalScrollBarPolicy(
+					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			pianorollPane.setVerticalScrollBarPolicy(
+					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		}
 		return pianorollPane;
 	}
@@ -500,8 +491,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JButton getPlayButton() {
 		if (playButton == null) {
 			playButton = new JButton();
-			playButton.setIcon(new ImageIcon(getClass()
-					.getResource("images/Play16.gif"))); // Generated
+			playButton.setIcon(new ImageIcon(getClass().getResource(
+					"images/Play16.gif"))); // Generated
 			playButton.setActionCommand("Play");
 			playButton.setToolTipText("Play");
 			playButton.setEnabled(false); // Generated
@@ -528,8 +519,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JButton getStopButton() {
 		if (stopButton == null) {
 			stopButton = new JButton();
-			stopButton.setIcon(new ImageIcon(getClass()
-					.getResource("images/Stop16.gif"))); // Generated
+			stopButton.setIcon(new ImageIcon(getClass().getResource(
+					"images/Stop16.gif"))); // Generated
 			stopButton.setActionCommand("Stop");
 			stopButton.setEnabled(false); // Generated
 			stopButton.setToolTipText("Stop");
@@ -552,8 +543,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JButton getPauseButton() {
 		if (pauseButton == null) {
 			pauseButton = new JButton();
-			pauseButton.setIcon(new ImageIcon(getClass()
-					.getResource("images/Pause16.gif"))); // Generated
+			pauseButton.setIcon(new ImageIcon(getClass().getResource(
+					"images/Pause16.gif"))); // Generated
 			pauseButton.setActionCommand("Pause");
 			pauseButton.setEnabled(false); // Generated
 			pauseButton.setToolTipText("Pause");
@@ -572,9 +563,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			dataSetButton = new JButton();
 			dataSetButton.setText("Set"); // Generated
 			dataSetButton.setEnabled(false); // Generated
-			dataSetButton
-					.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(java.awt.event.ActionEvent e) {
+			dataSetButton.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
 							data.setNoteScheduleEvent();
 						}
 					});
@@ -754,18 +746,19 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			realtimeViewButton = new JRadioButton();
 			realtimeViewButton.setText("realtime view");
 			pianorollViewerGroup.add(realtimeViewButton);
-			realtimeViewButton
-					.addItemListener(new java.awt.event.ItemListener() {
-						public void itemStateChanged(java.awt.event.ItemEvent e) {
+			realtimeViewButton.addItemListener(
+					new java.awt.event.ItemListener() {
+						public void itemStateChanged(
+								java.awt.event.ItemEvent e) {
 							if (((JRadioButton) e.getItem()).isSelected()) {
-								getPianoroll()
-										.setViewMode(ViewerMode.REALTIME_VIEW);
-								getGroupingPanel()
-										.setViewMode(ViewerMode.REALTIME_VIEW);
-								getDynamicsView()
-										.setViewMode(ViewerMode.REALTIME_VIEW);
-								getTempoView()
-										.setViewMode(ViewerMode.REALTIME_VIEW);
+								getPianoroll().setViewMode(
+										ViewerMode.REALTIME_VIEW);
+								getGroupingPanel().setViewMode(
+										ViewerMode.REALTIME_VIEW);
+								getDynamicsView().setViewMode(
+										ViewerMode.REALTIME_VIEW);
+								getTempoView().setViewMode(
+										ViewerMode.REALTIME_VIEW);
 							}
 						}
 					});
@@ -774,10 +767,9 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	protected void onAbout() {
-		JOptionPane.showMessageDialog(	this,
-										"Mixtract version 1.0.1 -CEDEC2011-",
-										"Version Information",
-										JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(this,
+				"Mixtract version 1.0.1 -CEDEC2011-", "Version Information",
+				JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	/**
@@ -791,8 +783,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			saveMenu.setText("Save");
 			saveMenu.setEnabled(false);
 			saveMenu.setMnemonic(KeyEvent.VK_S);
-			saveMenu.setAccelerator(KeyStroke.getKeyStroke(	KeyEvent.VK_S,
-															shortcutKey));
+			saveMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+					shortcutKey));
 			saveMenu.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					savefile();
@@ -824,9 +816,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			analyzeButton = new JButton();
 			analyzeButton.setText("Analyze");
 			analyzeButton.setEnabled(false);
-			analyzeButton
-					.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(java.awt.event.ActionEvent e) {
+			analyzeButton.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
 							main.analyzeStructure(data, null);
 							main.notifySetTarget();
 						}
@@ -889,8 +882,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			bpmValue.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					getTempoSlider().setIgnoreRepaint(true);
-					getTempoSlider().setValue(	Integer.parseInt(bpmValue
-														.getText()));
+					getTempoSlider().setValue(Integer.parseInt(bpmValue
+							.getText()));
 					getTempoSlider().setIgnoreRepaint(false);
 					System.out.println("actionPerformed()"); // TODO
 					if (data != null) {
@@ -912,7 +905,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			structurePane = new JScrollPane();
 			structurePane.setRowHeaderView(getPartSelectorPanel());
 			structurePane.setViewportView(getGroupingPanel());
-			structurePane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			structurePane.setHorizontalScrollBarPolicy(
+					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		}
 		return structurePane;
 	}
@@ -932,11 +926,12 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			tempoSlider.setMajorTickSpacing(50);
 			tempoSlider.setMinorTickSpacing(10);
 			tempoSlider.setPaintTicks(true);
-			tempoSlider
-					.addChangeListener(new javax.swing.event.ChangeListener() {
-						public void stateChanged(javax.swing.event.ChangeEvent e) {
-							getBpmValue().setText(	String.valueOf(tempoSlider
-															.getValue()));
+			tempoSlider.addChangeListener(
+					new javax.swing.event.ChangeListener() {
+						public void stateChanged(
+								javax.swing.event.ChangeEvent e) {
+							getBpmValue().setText(String.valueOf(tempoSlider
+									.getValue()));
 							System.out.println("stateChanged()"); // TODO
 							if (data != null) {
 								data.setBPM(0, tempoSlider.getValue());
@@ -1112,7 +1107,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		}
 	}
 
-	/* (非 Javadoc)
+	/*
+	 * (非 Javadoc)
 	 * @see net.muse.sound.MIDIEventListener#pausePlaying()
 	 */
 	public void pausePlaying() {

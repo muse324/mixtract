@@ -21,11 +21,11 @@ import net.muse.mixtract.gui.*;
  * <h1>Mixtract</h1>
  *
  * @author Mitsuyo Hashida & Haruhiro Katayose
- *         <address>@ CrestMuse Project, JST</address>
  *         <address><a href="http://mixtract.m-use.net/"
  *         >http://mixtract.m-use.net</a></address>
- *         <address>hashida@kwansei.ac.jp</address>
- * @since 2009/09/20
+ *         <address>hashida@m-use.net</address>
+ * @since 2009/09/20 at CrestMuse Project
+ * @since 2017/06/17 at m-use studio / Soai University
  */
 public class Mixtract extends MuseGUIObject<JFrame> {
 	protected static String mixtractLogImageFile = "mixtract-logo.png";
@@ -195,11 +195,8 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 
 	/**
 	 * MacOSXで動作しているかを判定します。
-	 *
-	 * @return
 	 */
 	public boolean isMac() {
-		// MacOSXで動作しているか?
 		String lcOSName = System.getProperty("os.name").toLowerCase();
 		return lcOSName.startsWith("mac os x");
 	}
