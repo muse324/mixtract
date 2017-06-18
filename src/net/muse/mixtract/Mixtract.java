@@ -1,6 +1,5 @@
 package net.muse.mixtract;
 
-
 import java.awt.EventQueue;
 import java.io.*;
 import java.lang.reflect.Method;
@@ -46,6 +45,7 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 	private boolean doSimilaritySearch = false;
 	/** 階層的フレーズ構造の分析履歴 */
 	private final ArrayList<GroupAnalyzer> analyzer = new ArrayList<GroupAnalyzer>();
+
 	public Mixtract(String[] args) throws FileNotFoundException, IOException {
 		/* 初期化 */
 		super();
@@ -93,8 +93,8 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 				// create main frame
 				main.createNewFrame();
 				MixtractCommand.setJFrame(main.frame);
-				main.frame
-						.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+				main.frame.setDefaultCloseOperation(
+						WindowConstants.EXIT_ON_CLOSE);
 				JFrame.setDefaultLookAndFeelDecorated(false);
 				main.frame.pack(); // ウィンドウサイズを最適化
 				main.frame.setVisible(true); // ウィンドウを表示させる
@@ -336,8 +336,7 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 		this.isReadingStructureData = isReadingStructureData;
 	}
 
-	protected void setMaximumMIDIChannel(int ch) {
-	}
+	protected void setMaximumMIDIChannel(int ch) {}
 
 	protected void setMidiDeviceName(String midiDeviceName) {
 		this.midiDeviceName = midiDeviceName;
@@ -347,8 +346,8 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.MuseObject#setOption(java.lang.String)
 	 */
-	@Override
-	protected void setOption(String str) throws IllegalArgumentException {
+	@Override protected void setOption(String str)
+			throws IllegalArgumentException {
 		try {
 			super.setOption(str);
 		} catch (IllegalArgumentException e) {
@@ -403,10 +402,10 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 			// このクラスを直接使用するとMacOSX以外で起動できなくなってしまう.
 			// そのため、サポートクラスの中で処理させ、そのサポートクラスをリフレクションにより間接的に
 			// 必要になったときに呼び出す.(クラスのロードに失敗したら、そのときにコケる.)
-			Class clz = Class
-					.forName("jp.crestmuse.mixtract.gui.MainFramePartialForMacOSX");
-			Method mtd = clz.getMethod("setupScreenMenu",
-					new Class[] { MainFrame.class });
+			Class<?> clz = Class.forName(
+					"net.muse.mixtract.gui.MainFramePartialForMacOSX");
+			Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
+					MainFrame.class });
 			mtd.invoke(null, new Object[] { this.frame });
 		}
 	}
@@ -473,96 +472,84 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 
 	public enum OptionType {
 		KEYBOARD_WIDTH {
-			@Override
-			void exe(Mixtract mixtract, String property) {
+			@Override void exe(Mixtract mixtract, String property) {
 				KeyBoard.setKeyWidth(Integer.parseInt(property));
 			}
 		},
 		MAXIMUM_MIDICHANNEL {
-			@Override
-			void exe(Mixtract mixtract, String property) {
+			@Override void exe(Mixtract mixtract, String property) {
 				TuneData.setMaximumMIDIChannel(Integer.parseInt(property));
 			}
 		},
 		INPUT_FILENAME {
-			@Override
-			void exe(Mixtract mixtract, String property) {
+			@Override void exe(Mixtract mixtract, String property) {
 				mixtract.setInputFileName(property);
 			}
 		},
 		OUTPUT_FILENAME {
-			@Override
-			void exe(Mixtract mixtract, String property) {
+			@Override void exe(Mixtract mixtract, String property) {
 				mixtract.outputFileName = property;
 			}
 		},
 		MIXTRACT_LOGO {
-			@Override
-			public void exe(Mixtract mixtract, String property) {
+			@Override public void exe(Mixtract mixtract, String property) {
 				mixtractLogImageFile = property;
 			}
 		},
 		CMXCATALOG {
-			@Override
-			void exe(Mixtract mixtract, String property) {
+			@Override void exe(Mixtract mixtract, String property) {
 				CMXFileWrapper.catalogFileName = property;
 			}
 		},
 		MIDIDEVICE {
-			@Override
-			void exe(Mixtract mixtract, String property) {
+			@Override void exe(Mixtract mixtract, String property) {
 				mixtract.setMidiDeviceName(property);
 			}
 		},
 		MUSICXML_DIR {
-			@Override
-			void exe(Mixtract mixtract, String property) {
+			@Override void exe(Mixtract mixtract, String property) {
 				mixtract.setMusicXMLDirectory(createDirectory(new File(property)
 						.getAbsolutePath()));
 			}
 		},
 		PROJECT_DIR {
-			@Override
-			void exe(Mixtract mixtract, String property) {
+			@Override void exe(Mixtract mixtract, String property) {
 				mixtract.setProjectDirectory(createDirectory(new File(property)
 						.getAbsolutePath()));
 			}
 		},
 		OUTPUT_DIR {
-			@Override
-			void exe(Mixtract mixtract, String property) {
+			@Override void exe(Mixtract mixtract, String property) {
 				mixtract.outputDir = createDirectory(new File(property)
 						.getAbsolutePath());
 			}
 		},
 		segmentGroupnoteLine {
-			@Override
-			public void exe(Mixtract mixtract, String property) {
-				TuneData.setSegmentGroupnoteLine(Boolean.parseBoolean(property));
+			@Override public void exe(Mixtract mixtract, String property) {
+				TuneData.setSegmentGroupnoteLine(Boolean.parseBoolean(
+						property));
 			}
 		},
 		SHOW_GUI {
-			@Override
-			public void exe(Mixtract mixtract, String property) {
+			@Override public void exe(Mixtract mixtract, String property) {
 				setShowGUI(Boolean.parseBoolean(property));
 			}
 		},
 		READ_STRDATA_ON_READING {
-			@Override
-			public void exe(Mixtract mixtract, String property) {
-				mixtract.setReadingStructureData(Boolean.parseBoolean(property));
+			@Override public void exe(Mixtract mixtract, String property) {
+				mixtract.setReadingStructureData(Boolean.parseBoolean(
+						property));
 			}
 
 		},
 		avoidLastRestsAsGroup {
-			@Override
-			public void exe(Mixtract mixtract, String property) {
-				Group.setAvoidLastRestsFromGroup(Boolean.parseBoolean(property));
+			@Override public void exe(Mixtract mixtract, String property) {
+				Group.setAvoidLastRestsFromGroup(Boolean.parseBoolean(
+						property));
 			}
 		},
 		durationOffset {
-			@Override
-			public void exe(Mixtract mixtract, String property) {
+			@Override public void exe(Mixtract mixtract, String property) {
 				TuneData.setDurationOffset(Integer.parseInt(property));
 			}
 		};

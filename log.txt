@@ -1,0 +1,20 @@
+Java system found 4 MIDI devices.
+Midi device 0
+  Description:Software MIDI Synthesizer
+  Name:Gervill
+  Vendor:OpenJDK
+  *** This is Synthesizer.
+Midi device 1
+  Description:No details available
+  Name:Unknown name
+  Vendor:Apple Inc.
+Midi device 2
+  Description:No details available
+  Name:Unknown name
+  Vendor:Apple Inc.
+Midi device 3
+  Description:Software sequencer
+  Name:Real Time Sequencer
+  Vendor:Oracle Corporation
+  *** This is Sequencer.
+
