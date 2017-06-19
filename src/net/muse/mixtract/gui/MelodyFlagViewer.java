@@ -69,10 +69,10 @@ public class MelodyFlagViewer extends JPanel {
 
 			// 旋律外形の音域を求める．
 			// 開始音，頂点音（もしくは中央音），その次の音，終了音の音高を比較する．
-			NoteData bg = group.getBeginGroupNote().getNote();
+			AbstractNoteData bg = group.getBeginGroupNote().getNote();
 			Note n1 = flag.getFormerLastNote();
 			Note n2 = flag.getLatterFirstNote();
-			NoteData ed = group.getEndGroupNote().getNote();
+			AbstractNoteData ed = group.getEndGroupNote().getNote();
 
 			if (bg.noteNumber() < n1.notenum()) {
 				minNoteNumber = bg.noteNumber();

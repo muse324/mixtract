@@ -51,7 +51,7 @@ abstract class ApexInfo extends MuseObject {
 			if (idx + 1 >= size)
 				return;
 			NoteData n1 = notelist.get(idx);
-			NoteData n2 = notelist.get(idx + 1);
+			AbstractNoteData n2 = notelist.get(idx + 1);
 			if (n1.isNonChord() && !n2.isNonChord()) {
 				if (getAppoggiaturaScore(n1, n2))
 					n1.addApexScore(this);
@@ -64,7 +64,7 @@ abstract class ApexInfo extends MuseObject {
 		 * @param n2
 		 * @return
 		 */
-		protected abstract boolean getAppoggiaturaScore(NoteData n1, NoteData n2);
+		protected abstract boolean getAppoggiaturaScore(AbstractNoteData n1, AbstractNoteData n2);
 
 	}
 
@@ -183,7 +183,7 @@ abstract class ApexInfo extends MuseObject {
 			return n2;
 		}
 
-		@Override protected boolean isExceptedCondition(NoteData n1, NoteData n2) {
+		@Override protected boolean isExceptedCondition(AbstractNoteData n1, AbstractNoteData n2) {
 			return n1.chord() == n2.chord();
 		}
 	}
@@ -237,7 +237,7 @@ abstract class ApexInfo extends MuseObject {
 			return (n1.noteNumber() > n2.noteNumber()) ? n1 : n2;
 		}
 
-		@Override protected boolean isExceptedCondition(NoteData n1, NoteData n2) {
+		@Override protected boolean isExceptedCondition(AbstractNoteData n1, AbstractNoteData n2) {
 			return n1.noteNumber() == n2.noteNumber();
 		}
 
@@ -278,7 +278,7 @@ abstract class ApexInfo extends MuseObject {
 
 		protected abstract NoteData getPrimaryNote(NoteData n1, NoteData n2);
 
-		protected abstract boolean isExceptedCondition(NoteData n1, NoteData n2);
+		protected abstract boolean isExceptedCondition(AbstractNoteData n1, AbstractNoteData n2);
 	}
 
 	/**
@@ -307,7 +307,7 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected boolean getAppoggiaturaScore(NoteData n1, NoteData n2) {
+		@Override protected boolean getAppoggiaturaScore(AbstractNoteData n1, AbstractNoteData n2) {
 			return n1.duration() > n2.duration();
 		}
 
@@ -344,7 +344,7 @@ abstract class ApexInfo extends MuseObject {
 		 * @param n2
 		 * @return
 		 */
-		@Override protected boolean isExceptedCondition(NoteData n1, NoteData n2) {
+		@Override protected boolean isExceptedCondition(AbstractNoteData n1, AbstractNoteData n2) {
 			return n1.timeValue() == n2.timeValue();
 		}
 
@@ -375,7 +375,7 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected boolean matchCondition(NoteData n1, NoteData n2) {
+		@Override protected boolean matchCondition(AbstractNoteData n1, AbstractNoteData n2) {
 			int d = interval(n1, n2);
 			return d >= -4 && d < 0;
 		}
@@ -433,7 +433,7 @@ abstract class ApexInfo extends MuseObject {
 			}
 			if (idx + 1 >= size)
 				return;
-			NoteData n1 = notelist.get(idx - 2);
+			AbstractNoteData n1 = notelist.get(idx - 2);
 			NoteData n2 = notelist.get(idx - 1);
 			NoteData n3 = notelist.get(idx);
 			NoteData n4 = notelist.get(idx + 1);
@@ -498,7 +498,7 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override public boolean getAppoggiaturaScore(NoteData n1, NoteData n2) {
+		@Override public boolean getAppoggiaturaScore(AbstractNoteData n1, AbstractNoteData n2) {
 			return n1.duration() == n2.duration();
 		}
 
@@ -526,7 +526,7 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected boolean matchCondition(NoteData n1, NoteData n2) {
+		@Override protected boolean matchCondition(AbstractNoteData n1, AbstractNoteData n2) {
 			return n1.noteNumber() == n2.noteNumber();
 		}
 
@@ -569,7 +569,7 @@ abstract class ApexInfo extends MuseObject {
 			apply(notelist, idx + 1, size);
 
 			NoteData n1 = notelist.get(idx);
-			NoteData n2 = notelist.get(idx + 1);
+			AbstractNoteData n2 = notelist.get(idx + 1);
 			if (matchCondition(n1, n2))
 				n1.addApexScore(this);
 		}
@@ -579,7 +579,7 @@ abstract class ApexInfo extends MuseObject {
 		 * @param n2
 		 * @return
 		 */
-		protected boolean matchCondition(NoteData n1, NoteData n2) {
+		protected boolean matchCondition(AbstractNoteData n1, AbstractNoteData n2) {
 			return n1.timeValue() == n2.timeValue();
 		}
 
@@ -610,7 +610,7 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override public boolean getAppoggiaturaScore(NoteData n1, NoteData n2) {
+		@Override public boolean getAppoggiaturaScore(AbstractNoteData n1, AbstractNoteData n2) {
 			return n1.duration() < n2.duration();
 		}
 
@@ -665,7 +665,7 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected boolean matchCondition(NoteData n1, NoteData n2) {
+		@Override protected boolean matchCondition(AbstractNoteData n1, AbstractNoteData n2) {
 			int d = interval(n1, n2);
 			return d > 0 && d <= 4;
 		}
@@ -681,9 +681,9 @@ abstract class ApexInfo extends MuseObject {
 		@Override public void apply(List<NoteData> notelist, int idx, int size) {
 			if (idx + 2 >= size)
 				return;
-			NoteData n1 = notelist.get(idx);
+			AbstractNoteData n1 = notelist.get(idx);
 			NoteData n2 = notelist.get(idx + 1);
-			NoteData n3 = notelist.get(idx + 2);
+			AbstractNoteData n3 = notelist.get(idx + 2);
 			int d1 = interval(n1, n2);
 			int d2 = interval(n2, n3);
 			if (matchCondition(n1, n3) && matchCondition(d1, d2))
@@ -700,7 +700,7 @@ abstract class ApexInfo extends MuseObject {
 		 * @param n2
 		 * @return
 		 */
-		protected boolean matchCondition(NoteData n1, NoteData n2) {
+		protected boolean matchCondition(AbstractNoteData n1, AbstractNoteData n2) {
 			return n1.noteNumber() == n2.noteNumber();
 		}
 
@@ -876,7 +876,7 @@ abstract class ApexInfo extends MuseObject {
 	 * @param n2
 	 * @return
 	 */
-	protected int interval(NoteData n1, NoteData n2) {
+	protected int interval(AbstractNoteData n1, AbstractNoteData n2) {
 		if (n2.rest() || n1.rest())
 			return REST;
 		return n2.noteNumber() - n1.noteNumber();

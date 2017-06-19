@@ -8,7 +8,7 @@ import net.muse.mixtract.data.*;
 public class DynamicsCurve extends PhraseCurve {
 
 	private LinkedList<Double> dynamicsList;
-	private NoteData lastNote;
+	private AbstractNoteData lastNote;
 	private double[] volume;
 
 	DynamicsCurve() {
@@ -55,7 +55,7 @@ public class DynamicsCurve extends PhraseCurve {
 		applyDynamicsEvent(note.getNote());
 	}
 
-	private void applyDynamicsEvent(NoteData note) {
+	private void applyDynamicsEvent(AbstractNoteData note) {
 		if (note == null)
 			return;
 		if (!note.rest()) {

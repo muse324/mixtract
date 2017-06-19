@@ -59,7 +59,7 @@ public class ArticulationCurve extends PhraseCurve {
 	private void applyArticulationEvent(GroupNote gnote, double bt, double et) {
 		if (gnote == null)
 			return;
-		NoteData nd = gnote.getNote();
+		AbstractNoteData nd = gnote.getNote();
 		double on = nd.onsetInMsec(getDefaultBPM());
 		double tv = nd.timeValueInMsec(getDefaultBPM());
 		double t = on + tv; // current note の楽譜上のオフセット

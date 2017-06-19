@@ -501,7 +501,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 *            同音打鍵時の描画領域確保（ピクセル）
 	 * @return
 	 */
-	protected Rectangle getLabelBounds(final NoteData nd, final int offset) {
+	protected Rectangle getLabelBounds(final AbstractNoteData nd, final int offset) {
 		if (nd == null)
 			return null;
 		final int h = KeyBoard.keyHeight;
@@ -705,7 +705,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	private void drawMouseOveredNoteInfo(Graphics2D g2) {
 		if (mouseOveredNoteLabel == null)
 			return;
-		final NoteData nd = mouseOveredNoteLabel.getScoreNote();
+		final AbstractNoteData nd = mouseOveredNoteLabel.getScoreNote();
 		String str = nd.noteName() + "("
 						+ nd.velocity()
 						+ ")"
