@@ -1,4 +1,4 @@
-package net.muse.mixtract.sound;
+package net.muse.sound;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,8 +7,7 @@ import java.util.LinkedList;
 import javax.sound.midi.*;
 
 import net.muse.mixtract.data.NoteScheduleEvent;
-import net.muse.sound.MIDIController;
-import net.muse.sound.MusicPlayer;
+import net.muse.mixtract.sound.MixtractMIDIController;
 
 /**
  * currentTime 以前のMIDIメッセージをひとつ取得し， MIDIデバイスに送信します．
@@ -18,21 +17,21 @@ import net.muse.sound.MusicPlayer;
  * @author Mitsuyo Hashida
  */
 public class ThreadPlayer extends Thread implements MusicPlayer {
-	private MIDIController controller;
-
 	/** ループを回す時間間隔（ミリ秒） */
 	private static final int RUNNING_TIME_INTERVAL = 3;
+
+	private MIDIController controller;
 
 	/** runメソッドのループを継続する判定値 */
 	private boolean isRunning = false;
 
 	private LinkedList<NoteScheduleEvent> midiEventList;
+	private int[] midiPrograms = null;
+
 	/**
 	 * 発音中であるかどうかを記憶するイベントバッファ
 	 */
 	private Boolean soundNotesStatus[];
-
-	private int[] midiPrograms = null;
 
 	private double[] volume = null;
 
@@ -62,37 +61,12 @@ public class ThreadPlayer extends Thread implements MusicPlayer {
 	 */
 	public void close() {}
 
-	/**
-	 * 現在時刻より前にあるMIDIイベントリストの最初のイベントを取得します．<br>
-	 * 取得したイベントはMIDIイベントリストから削除されます．
-	 *
-	 * @param currentTime
-	 * @return
-	 */
-	final MidiMessage getMidiMessage(double currentTime) {
-		if (midiEventList.size() > 0
-				&& midiEventList.peekFirst().onset() < currentTime)
-			return midiEventList.pollFirst().getMidiMessage();
-		return null;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see net.muse.sound.MusicPlayer#play()
 	 */
 	public void play() {
 		start();
-	}
-
-	private void setProgramChanges() {
-		for (int i = 0; i < midiPrograms.length; i++) {
-			ShortMessage msg = new ShortMessage();
-			try {
-				msg.setMessage(ShortMessage.PROGRAM_CHANGE, i, midiPrograms[i],
-						0);
-				controller.sendMessage(msg);
-			} catch (InvalidMidiDataException e) {}
-		}
 	}
 
 	/*
@@ -179,6 +153,15 @@ public class ThreadPlayer extends Thread implements MusicPlayer {
 		}
 	}
 
+	public void setMIDIProgram(int[] midiPrograms, double[] dynamics) {
+		this.midiPrograms = new int[midiPrograms.length];
+		this.volume = new double[midiPrograms.length];
+		for (int i = 0; i < midiPrograms.length; i++) {
+			this.midiPrograms[i] = midiPrograms[i];
+			this.volume[i] = dynamics[i] = (i == 0 ? 1.5 : 0.6);
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see net.muse.sound.MusicPlayer#stopPlay(net.muse.sound.MIDIController)
@@ -186,6 +169,20 @@ public class ThreadPlayer extends Thread implements MusicPlayer {
 	public void stopPlay(MIDIController synthe) {
 		isRunning = false;
 		sendAllSoundOff(synthe);
+	}
+
+	/**
+	 * 現在時刻より前にあるMIDIイベントリストの最初のイベントを取得します．<br>
+	 * 取得したイベントはMIDIイベントリストから削除されます．
+	 *
+	 * @param currentTime
+	 * @return
+	 */
+	final MidiMessage getMidiMessage(double currentTime) {
+		if (midiEventList.size() > 0
+				&& midiEventList.peekFirst().onset() < currentTime)
+			return midiEventList.pollFirst().getMidiMessage();
+		return null;
 	}
 
 	void resetReceiver() throws InterruptedException {
@@ -216,12 +213,14 @@ public class ThreadPlayer extends Thread implements MusicPlayer {
 		}
 	}
 
-	public void setMIDIProgram(int[] midiPrograms, double[] dynamics) {
-		this.midiPrograms = new int[midiPrograms.length];
-		this.volume = new double[midiPrograms.length];
+	private void setProgramChanges() {
 		for (int i = 0; i < midiPrograms.length; i++) {
-			this.midiPrograms[i] = midiPrograms[i];
-			this.volume[i] = dynamics[i] = (i == 0 ? 1.5 : 0.6);
+			ShortMessage msg = new ShortMessage();
+			try {
+				msg.setMessage(ShortMessage.PROGRAM_CHANGE, i, midiPrograms[i],
+						0);
+				controller.sendMessage(msg);
+			} catch (InvalidMidiDataException e) {}
 		}
 	}
 }
