@@ -619,7 +619,7 @@ class PhraseCanvas extends JPanel implements MouseListener,
 		}
 	}
 
-	public class CanvasListener extends MouseActionListener {
+	public class CanvasListener extends MXMouseActionListener {
 		CanvasListener(Mixtract main, Container owner) {
 			super(main, owner);
 		}

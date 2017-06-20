@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui;
+package net.muse.gui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -8,19 +8,20 @@ import javax.swing.*;
 import net.muse.gui.*;
 import net.muse.misc.Command;
 import net.muse.mixtract.Mixtract;
+import net.muse.mixtract.gui.MixtractCommand;
 
 public class MouseActionListener extends MouseAdapter implements
 		ActionListener {
-	protected final Container _owner;
-
-	private boolean mousePressed;
 	private static Point mousePoint;
-	private boolean shiftKeyPressed;
-	private JPopupMenu popup;
-	private Rectangle mouseBox;
 
 	/* 制御オブジェクト */
 	protected static Mixtract _main;
+	protected final Container _owner;
+	private boolean mousePressed;
+	private boolean shiftKeyPressed;
+	private JPopupMenu popup;
+
+	private Rectangle mouseBox;
 	protected MainFrame _frame;
 
 	private Point startPoint = new Point(0, 0);
@@ -35,11 +36,40 @@ public class MouseActionListener extends MouseAdapter implements
 		_frame = (MainFrame) _main.getFrame();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent
+	 * )
+	 */
+	public void actionPerformed(ActionEvent e) {
+		final Command c = MixtractCommand.create(e.getActionCommand());
+		c.execute();
+	}
+
+	public Rectangle getMouseBox() {
+		return mouseBox;
+	}
+
 	/**
 	 * @return the mousePoint
 	 */
 	public Point getMousePoint() {
 		return mousePoint;
+	}
+
+	/**
+	 * @return _owner
+	 */
+	public Container getOwner() {
+		return _owner;
+	}
+
+	/**
+	 * @return popup
+	 */
+	public final JPopupMenu getPopup() {
+		return popup;
 	}
 
 	public boolean isMousePressed() {
@@ -87,17 +117,6 @@ public class MouseActionListener extends MouseAdapter implements
 		_owner.repaint();
 	}
 
-	protected void setDragging(boolean b) {
-		isDragging = b;
-	}
-
-	/**
-	 * @return isDragging
-	 */
-	protected final boolean isDragging() {
-		return isDragging;
-	}
-
 	/*
 	 * (非 Javadoc)
 	 * @see
@@ -141,17 +160,6 @@ public class MouseActionListener extends MouseAdapter implements
 		_owner.repaint();
 	}
 
-	private void setStartPoint(Point point) {
-		startPoint = point;
-	}
-
-	/**
-	 * @return startPoint
-	 */
-	final Point getStartPoint() {
-		return startPoint;
-	}
-
 	/*
 	 * (非 Javadoc)
 	 * @see
@@ -170,6 +178,13 @@ public class MouseActionListener extends MouseAdapter implements
 		// _owner.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		// }
 		_owner.repaint();
+	}
+
+	/**
+	 * @param mouseBox the mouseBox to set
+	 */
+	public void setMouseBox(Rectangle selectedMouseBox) {
+		this.mouseBox = selectedMouseBox;
 	}
 
 	/**
@@ -193,15 +208,29 @@ public class MouseActionListener extends MouseAdapter implements
 		this.mousePressed = mousePressed;
 	}
 
-	/**
-	 * @param mouseBox the mouseBox to set
-	 */
-	public void setMouseBox(Rectangle selectedMouseBox) {
-		this.mouseBox = selectedMouseBox;
-	}
-
 	public void setShiftKeyPressed(boolean shiftKeyPressed) {
 		this.shiftKeyPressed = shiftKeyPressed;
+	}
+
+	/**
+	 * @return endPoint
+	 */
+	Point getEndPoint() {
+		return endPoint;
+	}
+
+	/**
+	 * @return startPoint
+	 */
+	final Point getStartPoint() {
+		return startPoint;
+	}
+
+	/**
+	 * @param endPoint セットする endPoint
+	 */
+	void setEndPoint(Point endPoint) {
+		this.endPoint = endPoint;
 	}
 
 	protected JMenuItem addMenuItem(Command command, boolean enabled) {
@@ -243,27 +272,6 @@ public class MouseActionListener extends MouseAdapter implements
 		// popup.add(addMenuItem(MixtractCommand.PRINT_SUBGROUPS,
 		// _main.hasTarget()));
 		popup.add(addMenuItem(MixtractCommand.MOUSE_DISPLAY, true));
-	}
-
-	protected void createPopupMenu(MouseEvent e) {
-		popup = new JPopupMenu();
-		// if (src instanceof GroupLabel) {
-		// _owner.notifySelectGroup(_owner, (GroupLabel) src, true);
-		// }
-	}
-
-	/**
-	 * @return popup
-	 */
-	public final JPopupMenu getPopup() {
-		return popup;
-	}
-
-	/**
-	 * @return _owner
-	 */
-	public Container getOwner() {
-		return _owner;
 	}
 
 	// private enum OwnerContainer {
@@ -365,33 +373,26 @@ public class MouseActionListener extends MouseAdapter implements
 	// shiftDown);
 	// }
 
-	public Rectangle getMouseBox() {
-		return mouseBox;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent
-	 * )
-	 */
-	public void actionPerformed(ActionEvent e) {
-		final Command c = MixtractCommand.create(e.getActionCommand());
-		c.execute();
+	protected void createPopupMenu(MouseEvent e) {
+		popup = new JPopupMenu();
+		// if (src instanceof GroupLabel) {
+		// _owner.notifySelectGroup(_owner, (GroupLabel) src, true);
+		// }
 	}
 
 	/**
-	 * @param endPoint セットする endPoint
+	 * @return isDragging
 	 */
-	void setEndPoint(Point endPoint) {
-		this.endPoint = endPoint;
+	protected final boolean isDragging() {
+		return isDragging;
 	}
 
-	/**
-	 * @return endPoint
-	 */
-	Point getEndPoint() {
-		return endPoint;
+	protected void setDragging(boolean b) {
+		isDragging = b;
+	}
+
+	private void setStartPoint(Point point) {
+		startPoint = point;
 	}
 
 }
