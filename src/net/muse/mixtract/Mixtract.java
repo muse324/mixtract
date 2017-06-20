@@ -3,11 +3,14 @@ package net.muse.mixtract;
 import java.awt.EventQueue;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import javax.swing.*;
 
 import net.muse.MuseApp;
 import net.muse.gui.GUIUtil;
+import net.muse.gui.MainFrame;
+import net.muse.mixtract.gui.MXMainFrame;
 import net.muse.mixtract.gui.MixtractCommand;
 
 /**
@@ -21,11 +24,32 @@ import net.muse.mixtract.gui.MixtractCommand;
  * @since 2017/06/17 at m-use studio / Soai University
  */
 public class Mixtract extends MuseApp {
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.MuseApp#createNewFrame()
+	 */
+	@Override protected void createNewFrame() throws Exception {
+		this.frame = new MXMainFrame(this);
+		if (!isMac())
+			return;
+
+		// Mac用にスクリーンメニューとアプリケーション終了(cmd-Q)のハンドリングを設定する.
+		// com.apple.eawt.Applicationクラスで処理するが、MacOSX以外の実行環境では存在しないので、
+		// このクラスを直接使用するとMacOSX以外で起動できなくなってしまう.
+		// そのため、サポートクラスの中で処理させ、そのサポートクラスをリフレクションにより間接的に
+		// 必要になったときに呼び出す.(クラスのロードに失敗したら、そのときにコケる.)
+		Class<?> clz = Class.forName("net.muse.gui.MainFramePartialForMacOSX");
+		Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
+				MainFrame.class });
+		mtd.invoke(null, new Object[] { this.frame });
+	}
+
 	protected static String mixtractLogImageFile = "mixtract-logo.png";
 
 	public Mixtract(String[] args) throws FileNotFoundException, IOException {
 		super(args);
 	}
+
 	public static void main(String[] args) {
 		try {
 			final Mixtract main = new Mixtract(args);

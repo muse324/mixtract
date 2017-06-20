@@ -12,9 +12,6 @@ public class MXPhraseViewer extends PhraseViewer {
 
 	private static final long serialVersionUID = 1L;
 
-	private MXMainFrame owner;
-	private final Group group;
-
 	/* グラフィック */
 	private JPanel commandPanel = null;
 	private CurveViewPanel curveViewerPanel = null;
@@ -48,7 +45,7 @@ public class MXPhraseViewer extends PhraseViewer {
 	 * @see net.muse.gui.PhraseViewer#owner()
 	 */
 	@Override public MXMainFrame owner() {
-		return owner;
+		return (MXMainFrame) owner;
 	}
 
 	public void preset() {
@@ -143,7 +140,7 @@ public class MXPhraseViewer extends PhraseViewer {
 					repaint();
 				}
 			});
-			viewSelectionGroup.add(selArtButton);
+			getViewSelectionGroup().add(selArtButton);
 		}
 		return selArtButton;
 	}
@@ -200,7 +197,7 @@ public class MXPhraseViewer extends PhraseViewer {
 					repaint();
 				}
 			});
-			viewSelectionGroup.add(selDynButton);
+			getViewSelectionGroup().add(selDynButton);
 		}
 		return selDynButton;
 	}
@@ -327,7 +324,7 @@ public class MXPhraseViewer extends PhraseViewer {
 					repaint();
 				}
 			});
-			viewSelectionGroup.add(selTmpButton);
+			getViewSelectionGroup().add(selTmpButton);
 		}
 		return selTmpButton;
 	}
@@ -405,5 +402,21 @@ public class MXPhraseViewer extends PhraseViewer {
 					gridBagConstraints6); // Generated
 		}
 		return viewerTogglePanel;
+	}
+
+	/**
+	 * @return viewSelectionGroup
+	 */
+	public ButtonGroup getViewSelectionGroup() {
+		if (viewSelectionGroup == null)
+			viewSelectionGroup = new ButtonGroup();
+		return viewSelectionGroup;
+	}
+
+	/**
+	 * @param viewSelectionGroup セットする viewSelectionGroup
+	 */
+	public void setViewSelectionGroup(ButtonGroup viewSelectionGroup) {
+		this.viewSelectionGroup = viewSelectionGroup;
 	}
 }

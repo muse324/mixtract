@@ -21,7 +21,7 @@ public class PhraseViewer extends JDialog implements CanvasMouseListener {
 
 	/* 制御データ */
 	protected MuseApp main;
-	private MainFrame owner;
+	protected MainFrame owner;
 	@Deprecated private int pixelperbeat = 20;
 
 	/* 描画モード */
@@ -30,7 +30,7 @@ public class PhraseViewer extends JDialog implements CanvasMouseListener {
 	/* グラフィック */
 	private JPanel jContentPane = null;
 
-	private Group group;
+	protected Group group;
 
 	/**
 	 * @param main.getFrame()
