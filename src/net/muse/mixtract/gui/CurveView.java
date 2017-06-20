@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import net.muse.gui.GroupLabel;
+import net.muse.gui.TuneDataListener;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;

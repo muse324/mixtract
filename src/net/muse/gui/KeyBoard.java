@@ -10,7 +10,6 @@ import javax.swing.*;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
-import net.muse.mixtract.gui.TuneDataListener;
 import net.muse.mixtract.sound.MixtractMIDIController;
 import net.muse.sound.MIDIController;
 
