@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui;
+package net.muse.gui;
 
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -9,6 +9,7 @@ import javax.swing.BorderFactory;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.GroupNote;
 import net.muse.mixtract.data.NoteData;
+import net.muse.mixtract.gui.*;
 
 public class NoteLabel extends GroupLabel {
 
@@ -30,7 +31,7 @@ public class NoteLabel extends GroupLabel {
 	/**
 	 * @return next
 	 */
-	final NoteLabel next() {
+	public final NoteLabel next() {
 		return next;
 	}
 
@@ -38,10 +39,11 @@ public class NoteLabel extends GroupLabel {
 	 * (non-Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.GroupLabel#setSelected(boolean)
 	 */
-	@Override void setSelected(boolean isSelected) {
+	@Override
+	public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
 		if (isSelected) {
-			if ((( PianoRoll)getParent()).displayApex) {
+			if (((PianoRoll) getParent()).displayApex) {
 				double w = 1. - note.getNote().getApexScore();
 				int r = PartColor.SELECTED_COLOR.getRed();
 				int c = (int) (255 * w);
@@ -115,7 +117,7 @@ public class NoteLabel extends GroupLabel {
 		return note.getNote();
 	}
 
-	boolean isMeasureBeginning() {
+	public boolean isMeasureBeginning() {
 		return measureBeginning;
 	}
 
@@ -141,7 +143,7 @@ public class NoteLabel extends GroupLabel {
 				super.mouseEntered(e);
 				NoteLabel src = (NoteLabel) e.getSource();
 				src.setMouseOver(true);
-				((PianoRoll)getParent()).setMouseOveredNoteLabel(src);
+				((PianoRoll) getParent()).setMouseOveredNoteLabel(src);
 				repaint();
 			}
 
@@ -155,7 +157,7 @@ public class NoteLabel extends GroupLabel {
 				super.mouseExited(e);
 				((NoteLabel) e.getSource()).setMouseOver(false);
 				((NoteLabel) e.getSource()).setEditMode(getMousePoint());
-				((PianoRoll)getParent()).setMouseOveredNoteLabel(null);
+				((PianoRoll) getParent()).setMouseOveredNoteLabel(null);
 				repaint();
 			}
 
@@ -166,7 +168,8 @@ public class NoteLabel extends GroupLabel {
 			 * .event.MouseEvent)
 			 */
 			@Override public void mouseMoved(MouseEvent e) {
-				((PianoRoll)getParent()).setMouseOveredNoteLabel((NoteLabel) e.getSource());
+				((PianoRoll) getParent()).setMouseOveredNoteLabel((NoteLabel) e
+						.getSource());
 			}
 		};
 		addMouseListener(mouseActions);
@@ -189,7 +192,7 @@ public class NoteLabel extends GroupLabel {
 	/**
 	 * @return offset
 	 */
-	final int getOffset() {
+	public final int getOffset() {
 		return offset;
 	}
 
@@ -203,7 +206,7 @@ public class NoteLabel extends GroupLabel {
 	/**
 	 * @return parent
 	 */
-	NoteLabel parent() {
+	public NoteLabel parent() {
 		return parent;
 	}
 
@@ -214,8 +217,8 @@ public class NoteLabel extends GroupLabel {
 	@Override public String toString() {
 		return String.format("(%s) %s (%s) -> %s", (parent != null) ? parent
 				.getGroupNote().getNote().noteName() : "null", note.getNote()
-				.noteName(), (child != null) ? child.getGroupNote().getNote()
-				.noteName() : "null", next());
+						.noteName(), (child != null) ? child.getGroupNote()
+								.getNote().noteName() : "null", next());
 	}
 
 	boolean hasNext() {
@@ -225,14 +228,14 @@ public class NoteLabel extends GroupLabel {
 	/**
 	 * @param child セットする child
 	 */
-	void setChild(NoteLabel child) {
+	public void setChild(NoteLabel child) {
 		this.child = child;
 	}
 
 	/**
 	 * @return child
 	 */
-	NoteLabel child() {
+	public NoteLabel child() {
 		return child;
 	}
 

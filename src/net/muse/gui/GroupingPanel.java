@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui;
+package net.muse.gui;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -10,6 +10,7 @@ import javax.swing.*;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
+import net.muse.mixtract.gui.*;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -28,7 +29,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 *         <address>hashida@kwansei.ac.jp</address>
 	 * @since 2010/02/15
 	 */
-	static class PrintGroupInfoCommand extends MixtractCommand {
+	public static class PrintGroupInfoCommand extends MixtractCommand {
 
 		private Group group = null;
 
@@ -100,7 +101,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @param main
 	 */
-	void setController(Mixtract main) {
+	public void setController(Mixtract main) {
 		this.main = main;
 		mouseActions = new MouseActionListener(main, this) {
 
@@ -522,7 +523,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @return
 	 */
-	boolean hasSelectedGroup() {
+	public boolean hasSelectedGroup() {
 		return selectedGroup != null;
 	}
 
@@ -530,7 +531,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * @return
 	 * @return
 	 */
-	GroupLabel getSelectedGroup() {
+	public GroupLabel getSelectedGroup() {
 		return selectedGroup;
 	}
 

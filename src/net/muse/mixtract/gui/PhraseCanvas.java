@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 import javax.swing.*;
 
-import net.muse.gui.RoundedCornerButton;
+import net.muse.gui.*;
 import net.muse.gui.RoundedCornerButton.RoundButton;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.Group;

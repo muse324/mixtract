@@ -10,17 +10,17 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.*;
 
 import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
-import net.muse.gui.GUIUtil;
-import net.muse.gui.MuseGUIObject;
+import net.muse.gui.*;
 import net.muse.mixtract.command.GroupAnalyzer;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.Group;
+import net.muse.mixtract.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.*;
 
 /**
  * <h1>Mixtract</h1>
  *
- * @author Mitsuyo Hashida & Haruhiro Katayose
+ * @author Mitsuyo Hashida
  *         <address><a href="http://mixtract.m-use.net/"
  *         >http://mixtract.m-use.net</a></address>
  *         <address>hashida@m-use.net</address>
@@ -30,20 +30,26 @@ import net.muse.mixtract.gui.*;
 public class Mixtract extends MuseGUIObject<JFrame> {
 	protected static String mixtractLogImageFile = "mixtract-logo.png";
 	private static final String PROPERTY_FILENAME = "Mixtract.properties";
+	private static final String projectFileExtension = ".mxt";
+
+	/** 各種設定 */
 	private boolean isReadingStructureData;
 	private String midiDeviceName;
+	private boolean doSimilaritySearch = false;
 
+	/** 入出力ファイル */
 	private String inputFileName;
+	protected String outputFileName;
 
-	private TuneData data;
+	/** ファイル格納場所 */
 	private File musicXMLDir;
 	protected File outputDir;
 	private File projectDir;
-	protected String outputFileName;
-	private static final String projectFileExtension = ".mxt";
+
+	/** 楽曲情報 */
+	private TuneData data;
 	private List<TuneDataListener> tdListenerList = new ArrayList<TuneDataListener>();
-	private ArrayList<PhraseViewer> phraseViewList;
-	private boolean doSimilaritySearch = false;
+	private ArrayList<? extends PhraseViewer> phraseViewList;
 	/** 階層的フレーズ構造の分析履歴 */
 	private final ArrayList<GroupAnalyzer> analyzer = new ArrayList<GroupAnalyzer>();
 
@@ -51,10 +57,8 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 		/* 初期化 */
 		super();
 		setPropertyFilename(PROPERTY_FILENAME);
-
 		loadConfig();
 		setOption(args);
-
 	}
 
 	/**
@@ -70,7 +74,9 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 	public static void main(String[] args) {
 		try {
 			final Mixtract main = new Mixtract(args);
-			if (isShowGUI()) {
+			if (!isShowGUI())
+				main.readfile(main.inputFileName, main.outputFileName);
+			else {
 				// MacOSXでのJava実行環境用のシステムプロパティの設定.
 				main.setupSystemPropertiesForMacOSX();
 
@@ -113,8 +119,8 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 					}
 				});
 
-			} else
-				main.readfile(main.inputFileName, main.outputFileName);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -172,11 +178,11 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 		return musicXMLDir;
 	}
 
-	public ArrayList<PhraseViewer> getPhraseViewList() {
+	@SuppressWarnings("unchecked") public ArrayList<MXPhraseViewer> getPhraseViewList() {
 		if (phraseViewList == null) {
-			phraseViewList = new ArrayList<PhraseViewer>();
+			phraseViewList = new ArrayList<MXPhraseViewer>();
 		}
-		return phraseViewList;
+		return (ArrayList<MXPhraseViewer>) phraseViewList;
 	}
 
 	/**
@@ -393,19 +399,20 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 	}
 
 	private void createNewFrame() throws Exception {
-		this.frame = new MainFrame(this);
-		if (isMac()) {
-			// Mac用にスクリーンメニューとアプリケーション終了(cmd-Q)のハンドリングを設定する.
-			// com.apple.eawt.Applicationクラスで処理するが、MacOSX以外の実行環境では存在しないので、
-			// このクラスを直接使用するとMacOSX以外で起動できなくなってしまう.
-			// そのため、サポートクラスの中で処理させ、そのサポートクラスをリフレクションにより間接的に
-			// 必要になったときに呼び出す.(クラスのロードに失敗したら、そのときにコケる.)
-			Class<?> clz = Class.forName(
-					"net.muse.mixtract.gui.MainFramePartialForMacOSX");
-			Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
-					MainFrame.class });
-			mtd.invoke(null, new Object[] { this.frame });
-		}
+		this.frame = new MXMainFrame(this);
+		if (!isMac())
+			return;
+
+		// Mac用にスクリーンメニューとアプリケーション終了(cmd-Q)のハンドリングを設定する.
+		// com.apple.eawt.Applicationクラスで処理するが、MacOSX以外の実行環境では存在しないので、
+		// このクラスを直接使用するとMacOSX以外で起動できなくなってしまう.
+		// そのため、サポートクラスの中で処理させ、そのサポートクラスをリフレクションにより間接的に
+		// 必要になったときに呼び出す.(クラスのロードに失敗したら、そのときにコケる.)
+		Class<?> clz = Class.forName(
+				"net.muse.mixtract.gui.MainFramePartialForMacOSX");
+		Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
+				MainFrame.class });
+		mtd.invoke(null, new Object[] { this.frame });
 	}
 
 	/**
@@ -563,6 +570,10 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 		 * @param property
 		 */
 		abstract void exe(Mixtract mixtract, String property);
+	}
+
+	public void addPhraseViewerList(PhraseViewer pv) {
+		getPhraseViewList().add((MXPhraseViewer) pv);
 	}
 
 }

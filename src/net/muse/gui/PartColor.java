@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui;
+package net.muse.gui;
 
 import java.awt.Color;
 

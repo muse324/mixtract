@@ -1,8 +1,8 @@
 package net.muse.mixtract.sound;
 
+import net.muse.gui.GroupLabel;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
-import net.muse.mixtract.gui.GroupLabel;
 import net.muse.mixtract.gui.TuneDataListener;
 import net.muse.sound.MIDIController;
 

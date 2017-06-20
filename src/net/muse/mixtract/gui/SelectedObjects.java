@@ -1,5 +1,6 @@
 package net.muse.mixtract.gui;
 
+import net.muse.gui.GroupLabel;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.curve.PhraseCurve;
@@ -14,7 +15,8 @@ import net.muse.mixtract.data.curve.PhraseCurve;
 	/**
 	 * @return the group
 	 */
-	@Deprecated Group getGroup() {
+	@Deprecated
+	public Group getGroup() {
 		return group;
 	}
 

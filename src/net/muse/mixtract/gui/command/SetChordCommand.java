@@ -2,9 +2,9 @@ package net.muse.mixtract.gui.command;
 
 import java.awt.Component;
 
+import net.muse.gui.NoteLabel;
 import net.muse.mixtract.data.Harmony;
 import net.muse.mixtract.gui.MixtractCommand;
-import net.muse.mixtract.gui.NoteLabel;
 
 public class SetChordCommand extends MixtractCommand {
 	private static final int defaultSize = 4;

@@ -1,5 +1,7 @@
 package net.muse.mixtract.gui;
 
+import net.muse.gui.GroupEditListener;
+import net.muse.gui.GroupLabel;
 import net.muse.mixtract.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 

@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
-import net.muse.gui.GUIUtil;
+import net.muse.gui.*;
+import net.muse.gui.GroupingPanel.PrintGroupInfoCommand;
 import net.muse.misc.Command;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.TuneData;
-import net.muse.mixtract.gui.GroupingPanel.PrintGroupInfoCommand;
 import net.muse.mixtract.gui.command.*;
 
 /**
@@ -115,9 +115,9 @@ public class MixtractCommand extends Command implements GroupCommandInterface {
 
 	public static final MixtractCommand OPEN_STRUCTURE_DATA = new OpenStructureDataCommand(
 			"Read structure data", "構造データ読込");
-	protected static final MixtractCommand SET_KEY = new PianoRoll.SetKeyCommand(
+	public static final MixtractCommand SET_KEY = new PianoRoll.SetKeyCommand(
 			"Change key", "調を変更");
-	protected static final MixtractCommand SET_KEYMODE = new PianoRoll.SetKeyModeCommand(
+	public static final MixtractCommand SET_KEYMODE = new PianoRoll.SetKeyModeCommand(
 			"Change key mode", "長調/短調");
 	public static final SetCrescendoCommand SET_TYPE_CRESC = new SetCrescendoCommand(
 			"< (cresc.)");

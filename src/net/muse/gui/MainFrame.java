@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui;
+package net.muse.gui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -11,8 +11,10 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.*;
 
 import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.Group;
+import net.muse.mixtract.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
+import net.muse.mixtract.gui.*;
 import net.muse.mixtract.sound.MixtractMIDIController;
 import net.muse.sound.MIDIController;
 import net.muse.sound.MIDIEventListener;
@@ -30,19 +32,19 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 	/**  */
 	private static final long serialVersionUID = 1L;
-	private static final int DEFAULT_WIDTH = 1260;
+	protected static final int DEFAULT_WIDTH = 1260;
 	private final MixtractMIDIController synthe;
 	private JMenuBar menubar = null;
 	private JMenu fileMenu = null;
 	private JMenuItem openProjectMenu = null;
 	private JMenuItem importXMLMenu = null;
 	private JMenuItem quitMenu = null;
-	private Mixtract main;
-	private TuneData data; // @jve:decl-index=0:
+	protected Mixtract main;
+	public TuneData data; // @jve:decl-index=0:
 	private JDesktopPane desktop = null;
 	private JInternalFrame viewer = null;
-	private JPanel jContentPane = null;
-	private PianoRoll pianoroll = null;
+	private JPanel tuneViewPanel = null;
+	protected PianoRoll pianoroll = null;
 	private KeyBoard keyboard = null; // @jve:decl-index=0:visual-constraint="15,847"
 	private JScrollPane pianorollPane = null;
 	private JButton playButton = null;
@@ -62,20 +64,16 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JLabel jLabel1 = null;
 	private JPanel jPanel6 = null;
 	private JPanel jPanel7 = null;
-	private JRadioButton scoreViewButton = null;
-	private JRadioButton realtimeViewButton = null;
-	private ButtonGroup pianorollViewerGroup;
 	private JMenuItem saveMenu = null;
-	private JButton analyzeButton = null;
 	private JPanel phraseView = null; // @jve:decl-index=0:visual-constraint="303,697"
 	private JPanel jPanel = null;
-	private JToolBar jJToolBarBar = null;
+	protected JToolBar jToolBar = null;
 	private JTextField bpmValue = null;
 	private JLabel jLabel2 = null;
 	static int pixelperbeat = 30;
 	private JScrollPane structurePane = null;
 	private JSlider tempoSlider = null;
-	private JLabel tempoValueLabel = null;
+	protected JLabel tempoValueLabel = null;
 	private JPanel tempoSettingPanel = null;
 	// JFrameおよびDockのアイコン
 	protected Image icon;
@@ -91,7 +89,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public MainFrame(Mixtract mixtract) throws IOException {
 		super();
 		this.main = mixtract;
-		pianorollViewerGroup = new ButtonGroup();
 		synthe = new MixtractMIDIController(main.getMidiDeviceName(), Mixtract
 				.getTicksPerBeat());
 		synthe.addMidiEventListener(this);
@@ -112,12 +109,11 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		shortcutKey = tk.getMenuShortcutKeyMask();
 
 		initialize();
-		getScoreViewButton().setSelected(true);
 	}
 
 	/** ウィンドウ表示の初期設定を行います。 */
-	private void initialize() {
-		this.setContentPane(getDesktop()); // メインの描画領域
+	protected void initialize() {
+		this.setContentPane(getDesktop()); // メインの描画領域(詳細)
 		this.setTitle("Mixtract"); // ウィンドウのタイトル
 		this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize()); // ウィンドウサイズ
 		this.setJMenuBar(getMenubar()); // メニューバー
@@ -397,7 +393,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			desktop.setLayout(new BorderLayout()); // Generated
 			desktop.setPreferredSize(new Dimension(1024, 600)); // Generated
 			desktop.add(getMainPanel(), BorderLayout.CENTER); // Generated
-			desktop.add(getJPanel(), BorderLayout.NORTH); // Generated
+			desktop.add(getToolBarPanel(), BorderLayout.NORTH); // Generated
 		}
 		return desktop;
 	}
@@ -415,26 +411,26 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			viewer.setMaximizable(true);
 			viewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 			viewer.setBounds(new Rectangle(0, 0, 540, 390));
-			viewer.setContentPane(getJContentPane()); // Generated
+			viewer.setContentPane(getTuneViewPane()); // Generated
 			// viewer.setBounds(new Rectangle(8, 8, 238, 155)); // Generated
 		}
 		return viewer;
 	}
 
 	/**
-	 * This method initializes jContentPane
+	 * This method initializes tuneViewPanel
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	private JPanel getJContentPane() {
-		if (jContentPane == null) {
-			jContentPane = new JPanel();
-			jContentPane.setLayout(new BorderLayout()); // Generated
-			jContentPane.add(getStructurePane(), java.awt.BorderLayout.NORTH);
-			jContentPane.add(getPianorollPane(), BorderLayout.CENTER); // Generated
-			jContentPane.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
+	private JPanel getTuneViewPane() {
+		if (tuneViewPanel == null) {
+			tuneViewPanel = new JPanel();
+			tuneViewPanel.setLayout(new BorderLayout()); // Generated
+			tuneViewPanel.add(getStructurePane(), java.awt.BorderLayout.NORTH);
+			tuneViewPanel.add(getPianorollPane(), BorderLayout.CENTER); // Generated
+			tuneViewPanel.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
 		}
-		return jContentPane;
+		return tuneViewPanel;
 	}
 
 	/**
@@ -488,7 +484,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JButton
 	 */
-	private JButton getPlayButton() {
+	protected JButton getPlayButton() {
 		if (playButton == null) {
 			playButton = new JButton();
 			playButton.setIcon(new ImageIcon(getClass().getResource(
@@ -516,7 +512,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JButton
 	 */
-	private JButton getStopButton() {
+	protected JButton getStopButton() {
 		if (stopButton == null) {
 			stopButton = new JButton();
 			stopButton.setIcon(new ImageIcon(getClass().getResource(
@@ -540,7 +536,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JButton
 	 */
-	private JButton getPauseButton() {
+	protected JButton getPauseButton() {
 		if (pauseButton == null) {
 			pauseButton = new JButton();
 			pauseButton.setIcon(new ImageIcon(getClass().getResource(
@@ -558,7 +554,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JButton
 	 */
-	private JButton getDataSetButton() {
+	protected JButton getDataSetButton() {
 		if (dataSetButton == null) {
 			dataSetButton = new JButton();
 			dataSetButton.setText("Set"); // Generated
@@ -593,7 +589,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	GroupingPanel getGroupingPanel() {
+	public GroupingPanel getGroupingPanel() {
 		if (groupingPanel == null) {
 			groupingPanel = new GroupingPanel();
 			groupingPanel.setController(main);
@@ -712,60 +708,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		return jPanel7;
 	}
 
-	/**
-	 * This method initializes scoreViewButton
-	 *
-	 * @return javax.swing.JRadioButton
-	 */
-	private JRadioButton getScoreViewButton() {
-		if (scoreViewButton == null) {
-			scoreViewButton = new JRadioButton();
-			scoreViewButton.setText("score view");
-			pianorollViewerGroup.add(scoreViewButton);
-			scoreViewButton.addItemListener(new java.awt.event.ItemListener() {
-				public void itemStateChanged(java.awt.event.ItemEvent e) {
-					if (((JRadioButton) e.getItem()).isSelected()) {
-						getPianoroll().setViewMode(ViewerMode.SCORE_VIEW);
-						getGroupingPanel().setViewMode(ViewerMode.SCORE_VIEW);
-						getDynamicsView().setViewMode(ViewerMode.SCORE_VIEW);
-						getTempoView().setViewMode(ViewerMode.SCORE_VIEW);
-					}
-				}
-			});
-		}
-		return scoreViewButton;
-	}
-
-	/**
-	 * This method initializes realtimeViewButton
-	 *
-	 * @return javax.swing.JRadioButton
-	 */
-	private JRadioButton getRealtimeViewButton() {
-		if (realtimeViewButton == null) {
-			realtimeViewButton = new JRadioButton();
-			realtimeViewButton.setText("realtime view");
-			pianorollViewerGroup.add(realtimeViewButton);
-			realtimeViewButton.addItemListener(
-					new java.awt.event.ItemListener() {
-						public void itemStateChanged(
-								java.awt.event.ItemEvent e) {
-							if (((JRadioButton) e.getItem()).isSelected()) {
-								getPianoroll().setViewMode(
-										ViewerMode.REALTIME_VIEW);
-								getGroupingPanel().setViewMode(
-										ViewerMode.REALTIME_VIEW);
-								getDynamicsView().setViewMode(
-										ViewerMode.REALTIME_VIEW);
-								getTempoView().setViewMode(
-										ViewerMode.REALTIME_VIEW);
-							}
-						}
-					});
-		}
-		return realtimeViewButton;
-	}
-
 	protected void onAbout() {
 		JOptionPane.showMessageDialog(this,
 				"Mixtract version 1.0.1 -CEDEC2011-", "Version Information",
@@ -807,33 +749,11 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	/**
-	 * This method initializes analyzeButton
-	 *
-	 * @return javax.swing.JButton
-	 */
-	private JButton getAnalyzeButton() {
-		if (analyzeButton == null) {
-			analyzeButton = new JButton();
-			analyzeButton.setText("Analyze");
-			analyzeButton.setEnabled(false);
-			analyzeButton.addActionListener(
-					new java.awt.event.ActionListener() {
-						public void actionPerformed(
-								java.awt.event.ActionEvent e) {
-							main.analyzeStructure(data, null);
-							main.notifySetTarget();
-						}
-					});
-		}
-		return analyzeButton;
-	}
-
-	/**
 	 * This method initializes jPanel
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	private JPanel getJPanel() {
+	private JPanel getToolBarPanel() {
 		if (jPanel == null) {
 			GridBagConstraints gridBagConstraints21 = new GridBagConstraints();
 			gridBagConstraints21.fill = GridBagConstraints.VERTICAL; // Generated
@@ -843,31 +763,23 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			gridBagConstraints21.gridx = 4; // Generated
 			jPanel = new JPanel();
 			jPanel.setLayout(new GridBagLayout()); // Generated
-			jPanel.add(getJJToolBarBar(), gridBagConstraints21); // Generated
+			jPanel.add(getJToolBar(), gridBagConstraints21); // Generated
 		}
 		return jPanel;
 	}
 
-	/**
-	 * This method initializes jJToolBarBar
-	 *
-	 * @return javax.swing.JToolBar
-	 */
-	private JToolBar getJJToolBarBar() {
-		if (jJToolBarBar == null) {
+	protected JToolBar getJToolBar() {
+		if (jToolBar == null) {
 			tempoValueLabel = new JLabel();
 			tempoValueLabel.setText("   BPM:");
-			jJToolBarBar = new JToolBar();
-			jJToolBarBar.add(getDataSetButton()); // Generated
-			jJToolBarBar.add(getPlayButton()); // Generated
-			jJToolBarBar.add(getPauseButton()); // Generated
-			jJToolBarBar.add(getStopButton()); // Generated
-			jJToolBarBar.add(getScoreViewButton()); // Generated
-			jJToolBarBar.add(getRealtimeViewButton()); // Generated
-			jJToolBarBar.add(getAnalyzeButton()); // Generated
-			jJToolBarBar.add(getTempoSettingPanel());
+			jToolBar = new JToolBar();
+			jToolBar.add(getDataSetButton()); // Generated
+			jToolBar.add(getPlayButton()); // Generated
+			jToolBar.add(getPauseButton()); // Generated
+			jToolBar.add(getStopButton()); // Generated
+			jToolBar.add(getTempoSettingPanel());
 		}
-		return jJToolBarBar;
+		return jToolBar;
 	}
 
 	/**
@@ -947,7 +859,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	private JPanel getTempoSettingPanel() {
+	protected JPanel getTempoSettingPanel() {
 		if (tempoSettingPanel == null) {
 			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
 			gridBagConstraints2.gridy = 0;
@@ -981,7 +893,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		getSaveMenu().setEnabled(true);
 		getDataSetButton().setEnabled(true);
 		getPlayButton().setEnabled(true);
-		getAnalyzeButton().setEnabled(true);
+
 		if (data != null) {
 			getBpmValue().setText(String.valueOf(data.getBPM().get(0)));
 			getTempoSlider().setValue(data.getBPM().get(0));
@@ -1078,7 +990,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	/**
 	 * @return
 	 */
-	final TuneData getTarget() {
+	public final TuneData getTarget() {
 		return data;
 	}
 

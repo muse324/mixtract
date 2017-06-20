@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui;
+package net.muse.gui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -10,6 +10,7 @@ import javax.swing.*;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
+import net.muse.mixtract.gui.TuneDataListener;
 import net.muse.mixtract.sound.MixtractMIDIController;
 import net.muse.sound.MIDIController;
 
@@ -23,7 +24,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 		MouseMotionListener, TuneDataListener {
 
 	/** キーボード一音の描画の縦幅[pixel] */
-	final static int keyHeight = 7;
+	public final static int keyHeight = 7;
 
 	/** 最大音域数 */
 	static final int maximumKeyRegister = 88;
@@ -85,7 +86,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/**
 	 * @return
 	 */
-	static int getKeyboardHeight() {
+	public static int getKeyboardHeight() {
 		return keyHeight * maximumKeyRegister;
 	}
 
@@ -93,7 +94,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	 * @param notenumber
 	 * @return
 	 */
-	static int getYPositionOfPitch(int notenumber) {
+	public static int getYPositionOfPitch(int notenumber) {
 		return topNoteNumber - notenumber + 5;
 	}
 
@@ -113,7 +114,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 
 	private MIDIController synthe; // @jve:decl-index=0:
 
-	KeyBoard() throws NullPointerException {
+	public KeyBoard() throws NullPointerException {
 		keyboardMap = new TreeMap<Integer, Integer>();
 		noteNumberOfPushedKey = new TreeSet<Integer>();
 		initialize();
@@ -456,7 +457,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/**
 	 *
 	 */
-	void resetKeyRegister() {
+	public void resetKeyRegister() {
 		topNoteNumber = 0;
 		bottomNoteNumber = 1000;
 	}
@@ -464,7 +465,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/**
 	 * @param beginGroupNote
 	 */
-	void setKeyRegister(GroupNote note) {
+	public void setKeyRegister(GroupNote note) {
 		if (note == null)
 			return;
 		setKeyRegister(note.child());

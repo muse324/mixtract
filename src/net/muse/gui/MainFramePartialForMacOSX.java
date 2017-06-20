@@ -1,9 +1,10 @@
-package net.muse.mixtract.gui;
+package net.muse.gui;
 
 import java.awt.Image;
 import java.lang.reflect.Method;
 
 import com.apple.eawt.*;
+import com.apple.eawt.AppEvent.*;
 
 public class MainFramePartialForMacOSX {
 	private MainFramePartialForMacOSX() {
@@ -16,23 +17,21 @@ public class MainFramePartialForMacOSX {
 		}
 
 		Application app = Application.getApplication();
-		app.setEnabledAboutMenu(true); // 「このアプリについて」のメニュー項目。デフォルトでtrue
-		app.setEnabledPreferencesMenu(true); // 「環境設定」のメニュー項目、デフォルトはfalse
-		// スクリーンメニューやアプリケーションのイベント通知を受け取るリスナーを設定する。
-		app.addApplicationListener(new ApplicationAdapter() {
-			public void handleAbout(ApplicationEvent arg0) {
+		app.setAboutHandler(new AboutHandler() {
+			@Override public void handleAbout(AboutEvent arg0) {
 				mainFrame.onAbout();
-				arg0.setHandled(true); // OSXデフォルトのダイアログを表示させない
 			}
-
-			public void handleQuit(ApplicationEvent arg0) {
+		});
+		app.setQuitHandler(new QuitHandler() {
+			@Override public void handleQuitRequestWith(QuitEvent arg0,
+					QuitResponse arg1) {
 				mainFrame.quit();
-				arg0.setHandled(true);
 			}
+		});
+		app.setPreferencesHandler(new PreferencesHandler() {
 
-			public void handlePreferences(ApplicationEvent arg0) {
+			@Override public void handlePreferences(PreferencesEvent arg0) {
 				mainFrame.onPreference();
-				arg0.setHandled(true);
 			}
 		});
 

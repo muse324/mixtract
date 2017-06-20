@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui;
+package net.muse.gui;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -10,6 +10,7 @@ import javax.swing.*;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.GroupType;
+import net.muse.mixtract.gui.*;
 
 public class GroupLabel extends JLabel {
 
@@ -44,18 +45,18 @@ public class GroupLabel extends JLabel {
 	 */
 	public void setTypeShape(GroupType type) {
 		switch (type) {
-			case CRESC:
-			case DIM:
-				setText(type.name());
-				setOpaque(false);
-				setForeground(Color.black);
-				setBorder(BorderFactory.createLineBorder(Color.black));
-				break;
-			default:
-				setText(group.name());
-				setCurrentColor(type.getColor());
-				initialize();
-				setBorder(null);
+		case CRESC:
+		case DIM:
+			setText(type.name());
+			setOpaque(false);
+			setForeground(Color.black);
+			setBorder(BorderFactory.createLineBorder(Color.black));
+			break;
+		default:
+			setText(group.name());
+			setCurrentColor(type.getColor());
+			initialize();
+			setBorder(null);
 		}
 	}
 
@@ -71,8 +72,8 @@ public class GroupLabel extends JLabel {
 	GroupLabel getChildFormer(ArrayList<GroupLabel> grouplist) {
 		if (childFormer == null) {
 			for (GroupLabel l : grouplist) {
-				if (group.hasChildFormer()
-						&& group.getChildFormerGroup().equals(l.getGroup())) {
+				if (group.hasChildFormer() && group.getChildFormerGroup()
+						.equals(l.getGroup())) {
 					childFormer = l;
 					break;
 				}
@@ -84,8 +85,8 @@ public class GroupLabel extends JLabel {
 	GroupLabel getChildLatter(ArrayList<GroupLabel> grouplist) {
 		if (childLatter == null) {
 			for (GroupLabel l : grouplist) {
-				if (group.hasChildLatter()
-						&& group.getChildLatterGroup().equals(l.getGroup())) {
+				if (group.hasChildLatter() && group.getChildLatterGroup()
+						.equals(l.getGroup())) {
 					childLatter = l;
 					break;
 				}
@@ -144,7 +145,8 @@ public class GroupLabel extends JLabel {
 			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				_frame.getGroupingPanel().setGroupEditable(false);
-				_frame.getGroupingPanel().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				_frame.getGroupingPanel().setCursor(new Cursor(
+						Cursor.DEFAULT_CURSOR));
 				_frame.getPianoroll().repaint();
 				repaint();
 			}
@@ -200,15 +202,8 @@ public class GroupLabel extends JLabel {
 							return;
 						}
 					}
-					PhraseViewer pv = new PhraseViewer(_main, gr);
-					pv.setTitle(gr.name());
-					_main.getPhraseViewList().add(pv);
-					pv.pack();
-					pv.setVisible(true);
-//					pv.repaint();
-					pv.preset();
+					createPhraseViewer(_main, gr);
 				}
-
 				repaint();
 			}
 
@@ -250,7 +245,7 @@ public class GroupLabel extends JLabel {
 	/**
 	 * @param hasSelectedNoteList
 	 */
-	void setSelected(boolean isSelected) {
+	public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
 		if (isSelected) {
 			setBackground(PartColor.SELECTED_COLOR);
@@ -435,7 +430,8 @@ public class GroupLabel extends JLabel {
 	 */
 	protected void setPartNumber(int partNumber) {
 		this.partNumber = partNumber;
-		// System.err.println("WARNING: GroupLabel#setPartNumber(int partNumber) is incompleted.");
+		// System.err.println("WARNING: GroupLabel#setPartNumber(int partNumber)
+		// is incompleted.");
 		// if(group.hasChild()){
 		// getChildFormer().setPartNumber(partNumber);
 		// getChildLatter().setPartNumber(partNumber);
@@ -444,6 +440,15 @@ public class GroupLabel extends JLabel {
 
 	private void setStartEdit(boolean startEdit) {
 		this.startEdit = startEdit;
+	}
+
+	protected void createPhraseViewer(Mixtract _main, Group gr) {
+		PhraseViewer pv = new PhraseViewer(_main, gr);
+		pv.setTitle(gr.name());
+		_main.addPhraseViewerList(pv);
+		pv.pack();
+		pv.setVisible(true);
+		pv.preset();
 	}
 
 }

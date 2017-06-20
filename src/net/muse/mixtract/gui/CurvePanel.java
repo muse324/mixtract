@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
+import net.muse.gui.MainFrame;
 import net.muse.mixtract.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 

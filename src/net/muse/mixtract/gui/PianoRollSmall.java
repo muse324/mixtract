@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import net.muse.gui.*;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.NoteData;
@@ -73,7 +74,7 @@ class PianoRollSmall extends PianoRoll {
 	 */
 	@Override public void makeNoteLabel() {
 		removeAll();
-		_notelist = null;
+		setNotelist(null);
 		makeNoteLabel(group);
 		validate();
 		repaint();

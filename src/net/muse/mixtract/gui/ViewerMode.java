@@ -9,6 +9,6 @@ package net.muse.mixtract.gui;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/10/29
  */
-enum ViewerMode {
+public enum ViewerMode {
 	SCORE_VIEW, REALTIME_VIEW;
 }

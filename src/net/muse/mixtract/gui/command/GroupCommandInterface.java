@@ -1,6 +1,6 @@
 package net.muse.mixtract.gui.command;
 
-import net.muse.mixtract.gui.GroupLabel;
+import net.muse.gui.GroupLabel;
 
 public interface GroupCommandInterface {
 
