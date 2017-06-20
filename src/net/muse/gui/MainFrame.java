@@ -113,9 +113,9 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 	/** ウィンドウ表示の初期設定を行います。 */
 	protected void initialize() {
-		this.setContentPane(getDesktop()); // メインの描画領域(詳細)
 		this.setTitle("Mixtract"); // ウィンドウのタイトル
 		this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize()); // ウィンドウサイズ
+		this.setContentPane(getDesktop()); // メインの描画領域(詳細)
 		this.setJMenuBar(getMenubar()); // メニューバー
 	}
 

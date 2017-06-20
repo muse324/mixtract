@@ -9,7 +9,7 @@ import javax.swing.BorderFactory;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.GroupNote;
 import net.muse.mixtract.data.NoteData;
-import net.muse.mixtract.gui.*;
+import net.muse.mixtract.gui.MouseActionListener;
 
 public class NoteLabel extends GroupLabel {
 

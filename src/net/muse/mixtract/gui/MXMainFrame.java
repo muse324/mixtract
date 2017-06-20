@@ -52,7 +52,7 @@ public class MXMainFrame extends MainFrame {
 	private JRadioButton scoreViewButton = null;
 	private JRadioButton realtimeViewButton = null;
 	private JButton analyzeButton = null;
-	private ButtonGroup pianorollViewerGroup = new ButtonGroup();;
+	private ButtonGroup pianorollViewerGroup;
 
 	@Override protected JToolBar getJToolBar() {
 		if (jToolBar == null) {
@@ -102,7 +102,7 @@ public class MXMainFrame extends MainFrame {
 		if (scoreViewButton == null) {
 			scoreViewButton = new JRadioButton();
 			scoreViewButton.setText("score view");
-			pianorollViewerGroup.add(scoreViewButton);
+			getPianorollViewerGroup().add(scoreViewButton);
 			scoreViewButton.addItemListener(new java.awt.event.ItemListener() {
 				public void itemStateChanged(java.awt.event.ItemEvent e) {
 					if (((JRadioButton) e.getItem()).isSelected()) {
@@ -126,7 +126,7 @@ public class MXMainFrame extends MainFrame {
 		if (realtimeViewButton == null) {
 			realtimeViewButton = new JRadioButton();
 			realtimeViewButton.setText("realtime view");
-			pianorollViewerGroup.add(realtimeViewButton);
+			getPianorollViewerGroup().add(realtimeViewButton);
 			realtimeViewButton.addItemListener(
 					new java.awt.event.ItemListener() {
 						public void itemStateChanged(
@@ -145,5 +145,21 @@ public class MXMainFrame extends MainFrame {
 					});
 		}
 		return realtimeViewButton;
+	}
+
+	/**
+	 * @return pianorollViewerGroup
+	 */
+	public ButtonGroup getPianorollViewerGroup() {
+		if (pianorollViewerGroup == null)
+			pianorollViewerGroup = new ButtonGroup();
+		return pianorollViewerGroup;
+	}
+
+	/**
+	 * @param pianorollViewerGroup セットする pianorollViewerGroup
+	 */
+	public void setPianorollViewerGroup(ButtonGroup pianorollViewerGroup) {
+		this.pianorollViewerGroup = pianorollViewerGroup;
 	}
 }

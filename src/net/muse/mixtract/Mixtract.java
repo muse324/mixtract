@@ -409,7 +409,7 @@ public class Mixtract extends MuseGUIObject<JFrame> {
 		// そのため、サポートクラスの中で処理させ、そのサポートクラスをリフレクションにより間接的に
 		// 必要になったときに呼び出す.(クラスのロードに失敗したら、そのときにコケる.)
 		Class<?> clz = Class.forName(
-				"net.muse.mixtract.gui.MainFramePartialForMacOSX");
+				"net.muse.gui.MainFramePartialForMacOSX");
 		Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
 				MainFrame.class });
 		mtd.invoke(null, new Object[] { this.frame });
