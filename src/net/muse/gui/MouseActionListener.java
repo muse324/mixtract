@@ -5,6 +5,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import net.muse.MuseApp;
 import net.muse.misc.Command;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.gui.MixtractCommand;
@@ -14,7 +15,7 @@ public class MouseActionListener extends MouseAdapter implements
 	private static Point mousePoint;
 
 	/* 制御オブジェクト */
-	protected static Mixtract _main;
+	protected static MuseApp _main;
 	protected final Container _owner;
 	private boolean mousePressed;
 	private boolean shiftKeyPressed;
@@ -28,7 +29,7 @@ public class MouseActionListener extends MouseAdapter implements
 
 	private boolean isDragging;
 
-	public MouseActionListener(Mixtract main, Container owner) {
+	public MouseActionListener(MuseApp main, Container owner) {
 		super();
 		_main = main;
 		_owner = owner;

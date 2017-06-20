@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+import net.muse.MuseApp;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.GroupType;
@@ -102,7 +103,7 @@ public class GroupLabel extends JLabel {
 		return group;
 	}
 
-	void setController(Mixtract main) {
+	void setController(MuseApp main) {
 		mouseActions = new MouseActionListener(main, this) {
 
 			/*
@@ -442,10 +443,10 @@ public class GroupLabel extends JLabel {
 		this.startEdit = startEdit;
 	}
 
-	protected void createPhraseViewer(Mixtract _main, Group gr) {
-		PhraseViewer pv = new PhraseViewer(_main, gr);
+	protected void createPhraseViewer(MuseApp app, Group gr) {
+		PhraseViewer pv = new PhraseViewer(app, gr);
 		pv.setTitle(gr.name());
-		_main.addPhraseViewerList(pv);
+		app.addPhraseViewerList(pv);
 		pv.pack();
 		pv.setVisible(true);
 		pv.preset();

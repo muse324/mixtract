@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.*;
 
+import net.muse.MuseApp;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
@@ -74,7 +75,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	private static final int LEVEL_PADDING = 3;
 	private static final int DEFAULT_WIDTH = 1024;
 
-	private Mixtract main;
+	private MuseApp main;
 
 	/* 格納データ */
 	private TuneData data;
@@ -101,7 +102,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @param main
 	 */
-	public void setController(Mixtract main) {
+	public void setController(MuseApp main) {
 		this.main = main;
 		mouseActions = new MouseActionListener(main, this) {
 

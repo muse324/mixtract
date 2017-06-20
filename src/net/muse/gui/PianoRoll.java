@@ -10,6 +10,7 @@ import javax.swing.*;
 import javax.xml.transform.TransformerException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
+import net.muse.MuseApp;
 import net.muse.misc.Util;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
@@ -38,7 +39,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	protected int axisX = 10;
 
-	private Mixtract main; // @jve:decl-index=0:
+	private MuseApp main; // @jve:decl-index=0:
 	/** 楽曲データ */
 	private TuneData data; // @jve:decl-index=0:
 	/* 各種描画モード */
@@ -244,12 +245,12 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	/**
-	 * @param main
+	 * @param app
 	 */
-	public void setController(Mixtract main) {
-		this.main = main;
-		main.addTuneDataListener(this);
-		mouseActions = new MouseActionListener(main, this) {
+	public void setController(MuseApp app) {
+		this.main = app;
+		app.addTuneDataListener(this);
+		mouseActions = new MouseActionListener(app, this) {
 			private final Point pp = new Point();
 
 			/*

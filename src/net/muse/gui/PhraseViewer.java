@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import net.muse.MuseApp;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.Group;
 
@@ -19,7 +20,7 @@ public class PhraseViewer extends JDialog implements CanvasMouseListener {
 	private static final long serialVersionUID = 1L;
 
 	/* 制御データ */
-	protected Mixtract main;
+	protected MuseApp main;
 	private MainFrame owner;
 	@Deprecated private int pixelperbeat = 20;
 
@@ -35,10 +36,10 @@ public class PhraseViewer extends JDialog implements CanvasMouseListener {
 	 * @param main.getFrame()
 	 * @param group
 	 */
-	protected PhraseViewer(Mixtract main, Group group) {
-		super(main.getFrame());
-		this.main = main;
-		setOwner((MainFrame) main.getFrame());
+	protected PhraseViewer(MuseApp app, Group group) {
+		super(app.getFrame());
+		this.main = app;
+		setOwner((MainFrame) app.getFrame());
 		this.group = group;
 		initialize();
 	}
@@ -117,7 +118,7 @@ public class PhraseViewer extends JDialog implements CanvasMouseListener {
 	/**
 	 * @return main
 	 */
-	public Mixtract main() {
+	public MuseApp main() {
 		return main;
 	}
 

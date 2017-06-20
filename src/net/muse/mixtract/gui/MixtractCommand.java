@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
+import net.muse.MuseApp;
 import net.muse.gui.*;
 import net.muse.gui.GroupingPanel.PrintGroupInfoCommand;
 import net.muse.misc.Command;
@@ -108,7 +109,7 @@ public class MixtractCommand extends Command implements GroupCommandInterface {
 			"GTTMAnalysis");
 	protected static TuneData _target;
 
-	protected static Mixtract _main;
+	protected static MuseApp _main;
 
 	protected static MainFrame _mainFrame;
 	protected static final SelectedObjects _selectedObjects = new SelectedObjects();
@@ -188,8 +189,8 @@ public class MixtractCommand extends Command implements GroupCommandInterface {
 	/**
 	 * @param main2
 	 */
-	public static void setMainObject(Mixtract obj) {
-		_main = obj;
+	public static void setMainObject(MuseApp main) {
+		_main = main;
 	}
 
 	public static void setTarget(TuneData target) {

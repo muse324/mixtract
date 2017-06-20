@@ -10,6 +10,7 @@ import java.util.*;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.*;
 
+import net.muse.MuseApp;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.TuneData;
@@ -34,6 +35,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private static final long serialVersionUID = 1L;
 	protected static final int DEFAULT_WIDTH = 1260;
 	static int pixelperbeat = 30;
+
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
 	 *
@@ -43,19 +45,21 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public static int getXOfNote(final double val) {
 		return (int) Math.round(val / pixelperbeat);
 	}
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		Mixtract.main(args);
 	}
+
 	private final MixtractMIDIController synthe;
 	private JMenuBar menubar = null;
 	private JMenu fileMenu = null;
 	private JMenuItem openProjectMenu = null;
 	private JMenuItem importXMLMenu = null;
 	private JMenuItem quitMenu = null;
-	protected Mixtract main;
+	protected MuseApp main;
 	public TuneData data; // @jve:decl-index=0:
 	private JDesktopPane desktop = null;
 	private JInternalFrame viewer = null;
@@ -100,12 +104,12 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	/**
 	 * This method initializes
 	 *
-	 * @param mixtract
+	 * @param app
 	 * @throws IOException
 	 */
-	public MainFrame(Mixtract mixtract) throws IOException {
+	public MainFrame(MuseApp app) throws IOException {
 		super();
-		this.main = mixtract;
+		this.main = app;
 		synthe = new MixtractMIDIController(main.getMidiDeviceName(), Mixtract
 				.getTicksPerBeat());
 		synthe.addMidiEventListener(this);
