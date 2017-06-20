@@ -21,6 +21,7 @@ import net.muse.mixtract.gui.MixtractCommand;
  * @since 2017/06/17 at m-use studio / Soai University
  */
 public class Mixtract extends MuseApp {
+	protected static String mixtractLogImageFile = "mixtract-logo.png";
 
 	public Mixtract(String[] args) throws FileNotFoundException, IOException {
 		super(args);

@@ -15,11 +15,10 @@ import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
-import net.muse.mixtract.gui.MXPhraseViewer;
 import net.muse.mixtract.gui.MixtractCommand;
 
 public class MuseApp extends MuseGUIObject<JFrame> {
-	protected static String mixtractLogImageFile = "mixtract/mixtract-logo.png";
+	protected static String mixtractLogImageFile = "mixtract-logo.png";
 	private static final String PROPERTY_FILENAME = "Mixtract.properties";
 	private static final String projectFileExtension = ".mxt";
 
@@ -40,7 +39,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	/** 楽曲情報 */
 	private TuneData data;
 	private List<TuneDataListener> tdListenerList = new ArrayList<TuneDataListener>();
-	private ArrayList<? extends PhraseViewer> phraseViewList;
+	private ArrayList<PhraseViewer> phraseViewList;
 	/** 階層的フレーズ構造の分析履歴 */
 	private final ArrayList<GroupAnalyzer> analyzer = new ArrayList<GroupAnalyzer>();
 
@@ -80,13 +79,13 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 				MixtractCommand.setMainObject(main);
 
 				/* sprash screen */
-//				main.createSplashScreen(mixtractLogImageFile);
-//				EventQueue.invokeLater(new Runnable() {
-//					public void run() {
-//						main.showSplashScreen();
-//						main.splashScreen.setLocationRelativeTo(null);
-//					}
-//				});
+				// main.createSplashScreen(mixtractLogImageFile);
+				// EventQueue.invokeLater(new Runnable() {
+				// public void run() {
+				// main.showSplashScreen();
+				// main.splashScreen.setLocationRelativeTo(null);
+				// }
+				// });
 
 				// create main frame
 				main.createNewFrame();
@@ -106,7 +105,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						// showPanel();
-						main.hideSplash();
+						// main.hideSplash();
 					}
 				});
 
@@ -169,11 +168,11 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 		return musicXMLDir;
 	}
 
-	@SuppressWarnings("unchecked") public ArrayList<MXPhraseViewer> getPhraseViewList() {
+	public ArrayList<PhraseViewer> getPhraseViewList() {
 		if (phraseViewList == null) {
-			phraseViewList = new ArrayList<MXPhraseViewer>();
+			phraseViewList = new ArrayList<PhraseViewer>();
 		}
-		return (ArrayList<MXPhraseViewer>) phraseViewList;
+		return phraseViewList;
 	}
 
 	/**
@@ -399,8 +398,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 		// このクラスを直接使用するとMacOSX以外で起動できなくなってしまう.
 		// そのため、サポートクラスの中で処理させ、そのサポートクラスをリフレクションにより間接的に
 		// 必要になったときに呼び出す.(クラスのロードに失敗したら、そのときにコケる.)
-		Class<?> clz = Class.forName(
-				"net.muse.gui.MainFramePartialForMacOSX");
+		Class<?> clz = Class.forName("net.muse.gui.MainFramePartialForMacOSX");
 		Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
 				MainFrame.class });
 		mtd.invoke(null, new Object[] { this.frame });
@@ -533,8 +531,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 		},
 		READ_STRDATA_ON_READING {
 			@Override public void exe(MuseApp app, String property) {
-				app.setReadingStructureData(Boolean.parseBoolean(
-						property));
+				app.setReadingStructureData(Boolean.parseBoolean(property));
 			}
 
 		},
@@ -564,7 +561,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	public void addPhraseViewerList(PhraseViewer pv) {
-		getPhraseViewList().add((MXPhraseViewer) pv);
+		getPhraseViewList().add(pv);
 	}
 
 }
