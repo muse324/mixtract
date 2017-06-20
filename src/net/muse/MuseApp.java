@@ -19,7 +19,7 @@ import net.muse.mixtract.gui.MXPhraseViewer;
 import net.muse.mixtract.gui.MixtractCommand;
 
 public class MuseApp extends MuseGUIObject<JFrame> {
-	protected static String mixtractLogImageFile = "mixtract-logo.png";
+	protected static String mixtractLogImageFile = "mixtract/mixtract-logo.png";
 	private static final String PROPERTY_FILENAME = "Mixtract.properties";
 	private static final String projectFileExtension = ".mxt";
 
@@ -80,13 +80,13 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 				MixtractCommand.setMainObject(main);
 
 				/* sprash screen */
-				main.createSplashScreen(mixtractLogImageFile);
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						main.showSplashScreen();
-						main.splashScreen.setLocationRelativeTo(null);
-					}
-				});
+//				main.createSplashScreen(mixtractLogImageFile);
+//				EventQueue.invokeLater(new Runnable() {
+//					public void run() {
+//						main.showSplashScreen();
+//						main.splashScreen.setLocationRelativeTo(null);
+//					}
+//				});
 
 				// create main frame
 				main.createNewFrame();
