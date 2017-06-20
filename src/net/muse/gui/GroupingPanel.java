@@ -91,7 +91,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/** マウス制御 */
 	private MouseActionListener mouseActions = null;
 
-	public GroupingPanel() {
+	protected GroupingPanel() {
 		super();
 		grouplist = new ArrayList<GroupLabel>();
 		viewerMode = ViewerMode.SCORE_VIEW;
@@ -360,7 +360,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 				: maximumGroupLevel;
 
 		final Rectangle r = getLabelBounds(group, level);
-		final GroupLabel label = new GroupLabel(group, r);
+		final GroupLabel label = createGroupLabel(group, r);
 		label.setController(main);
 		group.setLevel(level);
 
@@ -374,6 +374,11 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		// }
 		grouplist.add(label);
 		add(label); // 描画
+	}
+
+	protected GroupLabel createGroupLabel(Group group, final Rectangle r) {
+		final GroupLabel label = new GroupLabel(group, r);
+		return label;
 	}
 
 	/**

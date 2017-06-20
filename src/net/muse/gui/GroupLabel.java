@@ -31,7 +31,7 @@ public class GroupLabel extends JLabel {
 	/* イベント制御 */
 	private MouseAdapter mouseActions;
 
-	GroupLabel(Group group, Rectangle r) {
+	protected GroupLabel(Group group, Rectangle r) {
 		this();
 		this.group = group;
 		this.setPartNumber(group.getBeginGroupNote().getNote().partNumber());

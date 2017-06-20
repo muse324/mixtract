@@ -13,6 +13,14 @@ public class MXMainFrame extends MainFrame {
 
 	/*
 	 * (非 Javadoc)
+	 * @see net.muse.gui.MainFrame#createGroupingPanel()
+	 */
+	@Override protected GroupingPanel createGroupingPanel() {
+		return new MXGroupingPanel();
+	}
+
+	/*
+	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#setTarget(net.muse.mixtract.data.TuneData)
 	 */
 	@Override public void setTarget(TuneData target) {

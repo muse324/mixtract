@@ -33,6 +33,22 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	/**  */
 	private static final long serialVersionUID = 1L;
 	protected static final int DEFAULT_WIDTH = 1260;
+	static int pixelperbeat = 30;
+	/**
+	 * 発音時刻や音長に対する横軸の長さを求めます．
+	 *
+	 * @param val
+	 * @return
+	 */
+	public static int getXOfNote(final double val) {
+		return (int) Math.round(val / pixelperbeat);
+	}
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		Mixtract.main(args);
+	}
 	private final MixtractMIDIController synthe;
 	private JMenuBar menubar = null;
 	private JMenu fileMenu = null;
@@ -70,14 +86,15 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	protected JToolBar jToolBar = null;
 	private JTextField bpmValue = null;
 	private JLabel jLabel2 = null;
-	static int pixelperbeat = 30;
 	private JScrollPane structurePane = null;
 	private JSlider tempoSlider = null;
 	protected JLabel tempoValueLabel = null;
 	private JPanel tempoSettingPanel = null;
 	// JFrameおよびDockのアイコン
 	protected Image icon;
+
 	private int shortcutKey;
+
 	private JMenuItem saveAsMenu;
 
 	/**
@@ -111,6 +128,319 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		initialize();
 	}
 
+	public void actionPerformed(ActionEvent e) {}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * jp.crestmuse.mixtract.gui.GroupEditListener#addGroup(jp.crestmuse.
+	 * mixtract
+	 * .data.Group)
+	 */
+	public void addGroup(Group g) {
+		repaint();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * jp.crestmuse.mixtract.gui.TuneDataListener#changeExpression(jp.crestmuse
+	 * .mixtract.data.PhraseProfile.PhraseCurveType)
+	 */
+	public void changeExpression(PhraseCurveType type) {}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * jp.crestmuse.mixtract.gui.GroupEditListener#deleteGroup(javax.swing
+	 * .JLabel)
+	 */
+	public void deleteGroup(GroupLabel g) {
+		repaint();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * jp.crestmuse.mixtract.gui.GroupEditListener#deselect(javax.swing.JLabel
+	 * )
+	 */
+	public void deselect(GroupLabel g) {}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * jp.crestmuse.mixtract.gui.GroupEditListener#editGroup(javax.swing.JLabel
+	 * )
+	 */
+	public void editGroup(GroupLabel g) {
+		throw new UnsupportedOperationException(); // TODO 実装
+	}
+
+	/**
+	 * This method initializes tempoPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	public CurveView getDynamicsView() {
+		if (dynamicsView == null) {
+			dynamicsView = new CurveView(PhraseCurveType.DYNAMICS, 127, 0, 10);
+			main.addTuneDataListener(dynamicsView);
+		}
+		return dynamicsView;
+	}
+
+	/**
+	 * This method initializes jPanel1
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	public GroupingPanel getGroupingPanel() {
+		if (groupingPanel == null) {
+			groupingPanel = createGroupingPanel();
+			groupingPanel.setController(main);
+			main.addTuneDataListener(groupingPanel);
+		}
+		return groupingPanel;
+	}
+
+	/**
+	 * This method initializes pianoroll
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	public PianoRoll getPianoroll() {
+		if (pianoroll == null) {
+			pianoroll = new PianoRoll();
+			pianoroll.setController(main);
+			pianoroll.setPreferredSize(new Dimension(DEFAULT_WIDTH, KeyBoard
+					.getKeyboardHeight() / 3 * 2));
+		}
+		return pianoroll;
+	}
+
+	/**
+	 * @return
+	 */
+	public final TuneData getTarget() {
+		return data;
+	}
+
+	/**
+	 * This method initializes tempoPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	public CurveView getTempoView() {
+		if (tempoView == null) {
+			tempoView = new CurveView(PhraseCurveType.TEMPO, 280, 10, 10);
+			main.addTuneDataListener(tempoView);
+		}
+		return tempoView;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.sound.MIDIEventListener#pausePlaying()
+	 */
+	public void pausePlaying() {
+		// do nothing (unsupported in the CEDEC version)
+	}
+
+	/** 演奏事例データベースのリストを更新します． */
+	public void refreshDatabase() {
+		// dbListModel.clear();
+		// for (final String fn : Mixtract.db.getDatabaseListName()) {
+		// dbListModel.addElement(fn);
+		// }
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * jp.crestmuse.mixtract.gui.GroupEditListener#selectGroup(javax.swing
+	 * .JLabel, boolean)
+	 */
+	public void selectGroup(GroupLabel g, boolean flg) {}
+
+	public void setTarget(TuneData target) {
+		data = target;
+		getViewer().setTitle(data.getOutputFile().getName());
+		getSaveAsMenu().setEnabled(true);
+		getSaveMenu().setEnabled(true);
+		getDataSetButton().setEnabled(true);
+		getPlayButton().setEnabled(true);
+
+		if (data != null) {
+			getBpmValue().setText(String.valueOf(data.getBPM().get(0)));
+			getTempoSlider().setValue(data.getBPM().get(0));
+		}
+		if (!getViewer().isVisible()) {
+			try {
+				getViewer().setMaximum(true);
+				getViewer().validate();
+				getViewer().pack();
+				getViewer().setVisible(true);
+			} catch (PropertyVetoException e) {
+				JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
+			}
+		}
+	}
+
+	public void startPlaying(String smfFilename) {
+		Mixtract.log.println("playing...");
+		playButton.setEnabled(false);
+		stopButton.setEnabled(true);
+		bpmValue.setEnabled(false);
+		tempoSlider.setEnabled(false);
+	}
+
+	public void stopPlaying() {
+		Mixtract.log.println("Sound stopped.");
+		playButton.setEnabled(true);
+		stopButton.setEnabled(false);
+		bpmValue.setEnabled(true);
+		tempoSlider.setEnabled(true);
+	}
+
+	public void stopPlaying(MIDIController synthe) {
+		throw new UnsupportedOperationException();
+	}
+
+	protected GroupingPanel createGroupingPanel() {
+		return new GroupingPanel();
+	}
+
+	/**
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
+	 */
+	protected JButton getDataSetButton() {
+		if (dataSetButton == null) {
+			dataSetButton = new JButton();
+			dataSetButton.setText("Set"); // Generated
+			dataSetButton.setEnabled(false); // Generated
+			dataSetButton.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
+							data.setNoteScheduleEvent();
+						}
+					});
+		}
+		return dataSetButton;
+	}
+
+	protected JToolBar getJToolBar() {
+		if (jToolBar == null) {
+			tempoValueLabel = new JLabel();
+			tempoValueLabel.setText("   BPM:");
+			jToolBar = new JToolBar();
+			jToolBar.add(getDataSetButton()); // Generated
+			jToolBar.add(getPlayButton()); // Generated
+			jToolBar.add(getPauseButton()); // Generated
+			jToolBar.add(getStopButton()); // Generated
+			jToolBar.add(getTempoSettingPanel());
+		}
+		return jToolBar;
+	}
+
+	/**
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
+	 */
+	protected JButton getPauseButton() {
+		if (pauseButton == null) {
+			pauseButton = new JButton();
+			pauseButton.setIcon(new ImageIcon(getClass().getResource(
+					"images/Pause16.gif"))); // Generated
+			pauseButton.setActionCommand("Pause");
+			pauseButton.setEnabled(false); // Generated
+			pauseButton.setToolTipText("Pause");
+			pauseButton.setText("Pause");
+		}
+		return pauseButton;
+	}
+
+	/**
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
+	 */
+	protected JButton getPlayButton() {
+		if (playButton == null) {
+			playButton = new JButton();
+			playButton.setIcon(new ImageIcon(getClass().getResource(
+					"images/Play16.gif"))); // Generated
+			playButton.setActionCommand("Play");
+			playButton.setToolTipText("Play");
+			playButton.setEnabled(false); // Generated
+			playButton.setText("Play");
+			playButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					if (data == null)
+						return;
+					if (!data.getRootGroup(0).hasChild())
+						data.initializeNoteEvents();
+					data.setNoteScheduleEvent();
+					synthe.notifyStartPlaying(data.getInputFilename());
+				}
+			});
+		}
+		return playButton;
+	}
+
+	/**
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
+	 */
+	protected JButton getStopButton() {
+		if (stopButton == null) {
+			stopButton = new JButton();
+			stopButton.setIcon(new ImageIcon(getClass().getResource(
+					"images/Stop16.gif"))); // Generated
+			stopButton.setActionCommand("Stop");
+			stopButton.setEnabled(false); // Generated
+			stopButton.setToolTipText("Stop");
+			stopButton.setText("Stop");
+			stopButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					// data.setNoteScheduleEvent();
+					synthe.notifyStopPlaying();
+				}
+			});
+		}
+		return stopButton;
+	}
+
+	/**
+	 * This method initializes tempoSettingPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	protected JPanel getTempoSettingPanel() {
+		if (tempoSettingPanel == null) {
+			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+			gridBagConstraints2.gridy = 0;
+			gridBagConstraints2.gridx = 2;
+			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+			gridBagConstraints1.gridx = 1;
+			gridBagConstraints1.gridy = 0;
+			GridBagConstraints gridBagConstraints = new GridBagConstraints();
+			gridBagConstraints.gridy = 0;
+			gridBagConstraints.gridx = 0;
+			tempoSettingPanel = new JPanel();
+			tempoSettingPanel.setLayout(new GridBagLayout());
+			tempoSettingPanel.add(tempoValueLabel, gridBagConstraints);
+			tempoSettingPanel.add(getBpmValue(), gridBagConstraints1);
+			tempoSettingPanel.add(getTempoSlider(), gridBagConstraints2);
+		}
+		return tempoSettingPanel;
+	}
+
 	/** ウィンドウ表示の初期設定を行います。 */
 	protected void initialize() {
 		this.setTitle("Mixtract"); // ウィンドウのタイトル
@@ -119,15 +449,112 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		this.setJMenuBar(getMenubar()); // メニューバー
 	}
 
-	/**
-	 * メニューバーを生成します。
-	 */
-	private JMenuBar getMenubar() {
-		if (menubar == null) {
-			menubar = new JMenuBar();
-			menubar.add(getFileMenu());
+	protected void onAbout() {
+		JOptionPane.showMessageDialog(this,
+				"Mixtract version 1.0.1 -CEDEC2011-", "Version Information",
+				JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	protected void onPreference() {
+		JTextArea textArea = new JTextArea();
+		textArea.setText(getSystemProperties(System.getProperty(
+				"line.separator")));
+
+		JScrollPane scr = new JScrollPane(textArea);
+		scr.setPreferredSize(new Dimension(400, 300));
+
+		JOptionPane.showMessageDialog(this, scr);
+	}
+
+	protected void quit() {
+		JOptionPane.showMessageDialog(this, "終了します.");
+		System.exit(0);
+	}
+
+	protected void savefile() {
+		try {
+			data.setNoteScheduleEvent();
+			data.writefile();
+			// save screen shot
+			saveScreenShot();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (AWTException e1) {
+			e1.printStackTrace();
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
 		}
-		return menubar;
+	}
+
+	/**
+	 * @throws AWTException
+	 * @throws IOException
+	 */
+	protected void saveScreenShot() throws AWTException, IOException {
+		Point pos = getViewer().getLocationOnScreen();
+		Dimension size = getViewer().getPreferredSize();
+		size.height -= 15;
+		data.writeScreenShot(pos, size);
+	}
+
+	/**
+	 * This method initializes bpmValue
+	 *
+	 * @return javax.swing.JTextField
+	 */
+	private JTextField getBpmValue() {
+		if (bpmValue == null) {
+			bpmValue = new JTextField();
+			bpmValue.setText(" 100"); // Generated
+			bpmValue.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					getTempoSlider().setIgnoreRepaint(true);
+					getTempoSlider().setValue(Integer.parseInt(bpmValue
+							.getText()));
+					getTempoSlider().setIgnoreRepaint(false);
+					System.out.println("actionPerformed()"); // TODO
+					if (data != null) {
+						data.setBPM(0, Integer.parseInt(bpmValue.getText()));
+					}
+				}
+			});
+		}
+		return bpmValue;
+	}
+
+	/**
+	 * This method initializes curveSplitPane
+	 *
+	 * @return javax.swing.JSplitPane
+	 */
+	private JSplitPane getCurveSplitPane() {
+		if (curveSplitPane == null) {
+			curveSplitPane = new JSplitPane();
+			curveSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT); // Generated
+			curveSplitPane.setPreferredSize(new Dimension(20, 200)); // Generated
+			curveSplitPane.setResizeWeight(0.5D); // Generated
+			curveSplitPane.setOneTouchExpandable(true); // Generated
+			curveSplitPane.setTopComponent(getJPanel4()); // Generated
+			curveSplitPane.setBottomComponent(getJPanel5()); // Generated
+			curveSplitPane.setDividerSize(10); // Generated
+		}
+		return curveSplitPane;
+	}
+
+	/**
+	 * This method initializes desktop
+	 *
+	 * @return javax.swing.JDesktopPane
+	 */
+	private JDesktopPane getDesktop() {
+		if (desktop == null) {
+			desktop = new JDesktopPane();
+			desktop.setLayout(new BorderLayout()); // Generated
+			desktop.setPreferredSize(new Dimension(1024, 600)); // Generated
+			desktop.add(getMainPanel(), BorderLayout.CENTER); // Generated
+			desktop.add(getToolBarPanel(), BorderLayout.NORTH); // Generated
+		}
+		return desktop;
 	}
 
 	/**
@@ -194,97 +621,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		return fileMenu;
 	}
 
-	private JMenuItem getSaveAsMenu() {
-		if (saveAsMenu == null) {
-			saveAsMenu = new JMenuItem();
-			saveAsMenu.setText("Save As");
-			saveAsMenu.setEnabled(false);
-			saveAsMenu.setMnemonic(KeyEvent.VK_S);
-			saveAsMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
-					shortcutKey + ActionEvent.SHIFT_MASK));
-			saveAsMenu.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					JFileChooser fc = new JFileChooser(main
-							.getProjectDirectory());
-					int res = fc.showSaveDialog(null);
-					if (res == JOptionPane.NO_OPTION) {
-						System.out.println("cancelled.");
-						return;
-					}
-					data.createNewOutputFile(fc);
-					savefile();
-					getViewer().setTitle(data.getOutputFile().getName());
-				}
-			});
-		}
-		return saveAsMenu;
-	}
-
-	/**
-	 * This method initializes tempoPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	public CurveView getTempoView() {
-		if (tempoView == null) {
-			tempoView = new CurveView(PhraseCurveType.TEMPO, 280, 10, 10);
-			main.addTuneDataListener(tempoView);
-		}
-		return tempoView;
-	}
-
-	/**
-	 * This method initializes tempoPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	public CurveView getDynamicsView() {
-		if (dynamicsView == null) {
-			dynamicsView = new CurveView(PhraseCurveType.DYNAMICS, 127, 0, 10);
-			main.addTuneDataListener(dynamicsView);
-		}
-		return dynamicsView;
-	}
-
-	/**
-	 * This method initializes openProjectMenu
-	 *
-	 * @return javax.swing.JMenuItem
-	 */
-	private JMenuItem getOpenProjectMenu() {
-		if (openProjectMenu == null) {
-			openProjectMenu = new JMenuItem();
-			openProjectMenu.setText("Open Project File...");
-			openProjectMenu.setMnemonic('O');
-			openProjectMenu.setAccelerator(KeyStroke.getKeyStroke('O',
-					shortcutKey));
-			openProjectMenu.addActionListener(
-					new java.awt.event.ActionListener() {
-						public void actionPerformed(
-								java.awt.event.ActionEvent e) {
-							try {
-								JFileChooser fc = (main != null)
-										? new JFileChooser(main
-												.getProjectDirectory())
-										: new JFileChooser();
-								fc.setFileSelectionMode(
-										JFileChooser.DIRECTORIES_ONLY);
-								int res = fc.showOpenDialog(null);
-								if (res == JFileChooser.APPROVE_OPTION) {
-									main.readfile(fc.getSelectedFile(), main
-											.getProjectDirectory());
-								}
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							} catch (InvalidMidiDataException e1) {
-								e1.printStackTrace();
-							}
-						}
-					});
-		}
-		return openProjectMenu;
-	}
-
 	/**
 	 * This method initializes importXMLMenu
 	 *
@@ -325,319 +661,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 					});
 		}
 		return importXMLMenu;
-	}
-
-	/**
-	 * This method initializes quitMenu
-	 *
-	 * @return javax.swing.JMenuItem
-	 */
-	private JMenuItem getQuitMenu() {
-		if (quitMenu == null) {
-			quitMenu = new JMenuItem();
-			quitMenu.setMnemonic('Q');
-			quitMenu.setText("Quit");
-			quitMenu.setAccelerator(KeyStroke.getKeyStroke('Q', shortcutKey));
-
-			quitMenu.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					quit();
-				}
-			});
-		}
-		return quitMenu;
-	}
-
-	protected void quit() {
-		JOptionPane.showMessageDialog(this, "終了します.");
-		System.exit(0);
-	}
-
-	protected void onPreference() {
-		JTextArea textArea = new JTextArea();
-		textArea.setText(getSystemProperties(System.getProperty(
-				"line.separator")));
-
-		JScrollPane scr = new JScrollPane(textArea);
-		scr.setPreferredSize(new Dimension(400, 300));
-
-		JOptionPane.showMessageDialog(this, scr);
-	}
-
-	// システムプロパティをダンプする
-	private String getSystemProperties(String lineSep) {
-		ArrayList keys = new ArrayList();
-		StringBuffer buf = new StringBuffer();
-		for (Enumeration<?> enm = System.getProperties().keys(); enm
-				.hasMoreElements();) {
-			String key = (String) enm.nextElement();
-			keys.add(key);
-		}
-		Collections.sort(keys);
-		for (Iterator ite = keys.iterator(); ite.hasNext();) {
-			String key = (String) ite.next();
-			buf.append(key + "=" + System.getProperty(key) + lineSep);
-		}
-		buf.append("*EOF*");
-		return buf.toString();
-	}
-
-	/**
-	 * This method initializes desktop
-	 *
-	 * @return javax.swing.JDesktopPane
-	 */
-	private JDesktopPane getDesktop() {
-		if (desktop == null) {
-			desktop = new JDesktopPane();
-			desktop.setLayout(new BorderLayout()); // Generated
-			desktop.setPreferredSize(new Dimension(1024, 600)); // Generated
-			desktop.add(getMainPanel(), BorderLayout.CENTER); // Generated
-			desktop.add(getToolBarPanel(), BorderLayout.NORTH); // Generated
-		}
-		return desktop;
-	}
-
-	/**
-	 * This method initializes viewer
-	 *
-	 * @return javax.swing.JInternalFrame
-	 */
-	private JInternalFrame getViewer() {
-		if (viewer == null) {
-			viewer = new JInternalFrame();
-			viewer.setClosable(true);
-			viewer.setResizable(true);
-			viewer.setMaximizable(true);
-			viewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-			viewer.setBounds(new Rectangle(0, 0, 540, 390));
-			viewer.setContentPane(getTuneViewPane()); // Generated
-			// viewer.setBounds(new Rectangle(8, 8, 238, 155)); // Generated
-		}
-		return viewer;
-	}
-
-	/**
-	 * This method initializes tuneViewPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getTuneViewPane() {
-		if (tuneViewPanel == null) {
-			tuneViewPanel = new JPanel();
-			tuneViewPanel.setLayout(new BorderLayout()); // Generated
-			tuneViewPanel.add(getStructurePane(), java.awt.BorderLayout.NORTH);
-			tuneViewPanel.add(getPianorollPane(), BorderLayout.CENTER); // Generated
-			tuneViewPanel.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
-		}
-		return tuneViewPanel;
-	}
-
-	/**
-	 * This method initializes pianoroll
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	public PianoRoll getPianoroll() {
-		if (pianoroll == null) {
-			pianoroll = new PianoRoll();
-			pianoroll.setController(main);
-			pianoroll.setPreferredSize(new Dimension(DEFAULT_WIDTH, KeyBoard
-					.getKeyboardHeight() / 3 * 2));
-		}
-		return pianoroll;
-	}
-
-	/**
-	 * This method initializes akeyboard
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private KeyBoard getKeyboard() {
-		if (keyboard == null) {
-			keyboard = new KeyBoard();
-			main.addTuneDataListener(keyboard);
-		}
-		return keyboard;
-	}
-
-	/**
-	 * This method initializes pianorollPane
-	 *
-	 * @return javax.swing.JScrollPane
-	 */
-	private JScrollPane getPianorollPane() {
-		if (pianorollPane == null) {
-			pianorollPane = new JScrollPane();
-			pianorollPane.setRowHeaderView(getKeyboard());
-			pianorollPane.setViewportView(getPianoroll()); // Generated
-			pianorollPane.setHorizontalScrollBarPolicy(
-					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			pianorollPane.setVerticalScrollBarPolicy(
-					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		}
-		return pianorollPane;
-	}
-
-	/**
-	 * This method initializes jButton
-	 *
-	 * @return javax.swing.JButton
-	 */
-	protected JButton getPlayButton() {
-		if (playButton == null) {
-			playButton = new JButton();
-			playButton.setIcon(new ImageIcon(getClass().getResource(
-					"images/Play16.gif"))); // Generated
-			playButton.setActionCommand("Play");
-			playButton.setToolTipText("Play");
-			playButton.setEnabled(false); // Generated
-			playButton.setText("Play");
-			playButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					if (data == null)
-						return;
-					if (!data.getRootGroup(0).hasChild())
-						data.initializeNoteEvents();
-					data.setNoteScheduleEvent();
-					synthe.notifyStartPlaying(data.getInputFilename());
-				}
-			});
-		}
-		return playButton;
-	}
-
-	/**
-	 * This method initializes jButton
-	 *
-	 * @return javax.swing.JButton
-	 */
-	protected JButton getStopButton() {
-		if (stopButton == null) {
-			stopButton = new JButton();
-			stopButton.setIcon(new ImageIcon(getClass().getResource(
-					"images/Stop16.gif"))); // Generated
-			stopButton.setActionCommand("Stop");
-			stopButton.setEnabled(false); // Generated
-			stopButton.setToolTipText("Stop");
-			stopButton.setText("Stop");
-			stopButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					// data.setNoteScheduleEvent();
-					synthe.notifyStopPlaying();
-				}
-			});
-		}
-		return stopButton;
-	}
-
-	/**
-	 * This method initializes jButton
-	 *
-	 * @return javax.swing.JButton
-	 */
-	protected JButton getPauseButton() {
-		if (pauseButton == null) {
-			pauseButton = new JButton();
-			pauseButton.setIcon(new ImageIcon(getClass().getResource(
-					"images/Pause16.gif"))); // Generated
-			pauseButton.setActionCommand("Pause");
-			pauseButton.setEnabled(false); // Generated
-			pauseButton.setToolTipText("Pause");
-			pauseButton.setText("Pause");
-		}
-		return pauseButton;
-	}
-
-	/**
-	 * This method initializes jButton
-	 *
-	 * @return javax.swing.JButton
-	 */
-	protected JButton getDataSetButton() {
-		if (dataSetButton == null) {
-			dataSetButton = new JButton();
-			dataSetButton.setText("Set"); // Generated
-			dataSetButton.setEnabled(false); // Generated
-			dataSetButton.addActionListener(
-					new java.awt.event.ActionListener() {
-						public void actionPerformed(
-								java.awt.event.ActionEvent e) {
-							data.setNoteScheduleEvent();
-						}
-					});
-		}
-		return dataSetButton;
-	}
-
-	/**
-	 * This method initializes mainPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getMainPanel() {
-		if (mainPanel == null) {
-			mainPanel = new JPanel();
-			mainPanel.setLayout(null); // Generated
-			mainPanel.add(getViewer(), null); // Generated
-		}
-		return mainPanel;
-	}
-
-	/**
-	 * This method initializes jPanel1
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	public GroupingPanel getGroupingPanel() {
-		if (groupingPanel == null) {
-			groupingPanel = new GroupingPanel();
-			groupingPanel.setController(main);
-			main.addTuneDataListener(groupingPanel);
-		}
-		return groupingPanel;
-	}
-
-	/** 演奏事例データベースのリストを更新します． */
-	public void refreshDatabase() {
-		// dbListModel.clear();
-		// for (final String fn : Mixtract.db.getDatabaseListName()) {
-		// dbListModel.addElement(fn);
-		// }
-	}
-
-	/**
-	 * This method initializes partSelectorPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getPartSelectorPanel() {
-		if (partSelectorPanel == null) {
-			partSelectorPanel = new PartSelectorPanel();
-			partSelectorPanel.setPreferredSize(new Dimension(KeyBoard
-					.getKeyWidth(), 24)); // Generated
-			main.addTuneDataListener(partSelectorPanel);
-		}
-		return partSelectorPanel;
-	}
-
-	/**
-	 * This method initializes curveSplitPane
-	 *
-	 * @return javax.swing.JSplitPane
-	 */
-	private JSplitPane getCurveSplitPane() {
-		if (curveSplitPane == null) {
-			curveSplitPane = new JSplitPane();
-			curveSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT); // Generated
-			curveSplitPane.setPreferredSize(new Dimension(20, 200)); // Generated
-			curveSplitPane.setResizeWeight(0.5D); // Generated
-			curveSplitPane.setOneTouchExpandable(true); // Generated
-			curveSplitPane.setTopComponent(getJPanel4()); // Generated
-			curveSplitPane.setBottomComponent(getJPanel5()); // Generated
-			curveSplitPane.setDividerSize(10); // Generated
-		}
-		return curveSplitPane;
 	}
 
 	/**
@@ -708,10 +731,161 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		return jPanel7;
 	}
 
-	protected void onAbout() {
-		JOptionPane.showMessageDialog(this,
-				"Mixtract version 1.0.1 -CEDEC2011-", "Version Information",
-				JOptionPane.INFORMATION_MESSAGE);
+	/**
+	 * This method initializes akeyboard
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private KeyBoard getKeyboard() {
+		if (keyboard == null) {
+			keyboard = new KeyBoard();
+			main.addTuneDataListener(keyboard);
+		}
+		return keyboard;
+	}
+
+	/**
+	 * This method initializes mainPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getMainPanel() {
+		if (mainPanel == null) {
+			mainPanel = new JPanel();
+			mainPanel.setLayout(null); // Generated
+			mainPanel.add(getViewer(), null); // Generated
+		}
+		return mainPanel;
+	}
+
+	/**
+	 * メニューバーを生成します。
+	 */
+	private JMenuBar getMenubar() {
+		if (menubar == null) {
+			menubar = new JMenuBar();
+			menubar.add(getFileMenu());
+		}
+		return menubar;
+	}
+
+	/**
+	 * This method initializes openProjectMenu
+	 *
+	 * @return javax.swing.JMenuItem
+	 */
+	private JMenuItem getOpenProjectMenu() {
+		if (openProjectMenu == null) {
+			openProjectMenu = new JMenuItem();
+			openProjectMenu.setText("Open Project File...");
+			openProjectMenu.setMnemonic('O');
+			openProjectMenu.setAccelerator(KeyStroke.getKeyStroke('O',
+					shortcutKey));
+			openProjectMenu.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
+							try {
+								JFileChooser fc = (main != null)
+										? new JFileChooser(main
+												.getProjectDirectory())
+										: new JFileChooser();
+								fc.setFileSelectionMode(
+										JFileChooser.DIRECTORIES_ONLY);
+								int res = fc.showOpenDialog(null);
+								if (res == JFileChooser.APPROVE_OPTION) {
+									main.readfile(fc.getSelectedFile(), main
+											.getProjectDirectory());
+								}
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							} catch (InvalidMidiDataException e1) {
+								e1.printStackTrace();
+							}
+						}
+					});
+		}
+		return openProjectMenu;
+	}
+
+	/**
+	 * This method initializes partSelectorPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getPartSelectorPanel() {
+		if (partSelectorPanel == null) {
+			partSelectorPanel = new PartSelectorPanel();
+			partSelectorPanel.setPreferredSize(new Dimension(KeyBoard
+					.getKeyWidth(), 24)); // Generated
+			main.addTuneDataListener(partSelectorPanel);
+		}
+		return partSelectorPanel;
+	}
+
+	/**
+	 * This method initializes pianorollPane
+	 *
+	 * @return javax.swing.JScrollPane
+	 */
+	private JScrollPane getPianorollPane() {
+		if (pianorollPane == null) {
+			pianorollPane = new JScrollPane();
+			pianorollPane.setRowHeaderView(getKeyboard());
+			pianorollPane.setViewportView(getPianoroll()); // Generated
+			pianorollPane.setHorizontalScrollBarPolicy(
+					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			pianorollPane.setVerticalScrollBarPolicy(
+					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}
+		return pianorollPane;
+	}
+
+	/**
+	 * This method initializes quitMenu
+	 *
+	 * @return javax.swing.JMenuItem
+	 */
+	private JMenuItem getQuitMenu() {
+		if (quitMenu == null) {
+			quitMenu = new JMenuItem();
+			quitMenu.setMnemonic('Q');
+			quitMenu.setText("Quit");
+			quitMenu.setAccelerator(KeyStroke.getKeyStroke('Q', shortcutKey));
+
+			quitMenu.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					quit();
+				}
+			});
+		}
+		return quitMenu;
+	}
+
+	private JMenuItem getSaveAsMenu() {
+		if (saveAsMenu == null) {
+			saveAsMenu = new JMenuItem();
+			saveAsMenu.setText("Save As");
+			saveAsMenu.setEnabled(false);
+			saveAsMenu.setMnemonic(KeyEvent.VK_S);
+			saveAsMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+					shortcutKey + ActionEvent.SHIFT_MASK));
+			saveAsMenu.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					JFileChooser fc = new JFileChooser(main
+							.getProjectDirectory());
+					int res = fc.showSaveDialog(null);
+					if (res == JOptionPane.NO_OPTION) {
+						System.out.println("cancelled.");
+						return;
+					}
+					data.createNewOutputFile(fc);
+					savefile();
+					getViewer().setTitle(data.getOutputFile().getName());
+				}
+			});
+		}
+		return saveAsMenu;
 	}
 
 	/**
@@ -738,76 +912,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	/**
-	 * @throws AWTException
-	 * @throws IOException
-	 */
-	protected void saveScreenShot() throws AWTException, IOException {
-		Point pos = getViewer().getLocationOnScreen();
-		Dimension size = getViewer().getPreferredSize();
-		size.height -= 15;
-		data.writeScreenShot(pos, size);
-	}
-
-	/**
-	 * This method initializes jPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getToolBarPanel() {
-		if (jPanel == null) {
-			GridBagConstraints gridBagConstraints21 = new GridBagConstraints();
-			gridBagConstraints21.fill = GridBagConstraints.VERTICAL; // Generated
-			gridBagConstraints21.gridy = 0; // Generated
-			gridBagConstraints21.weightx = 1.0; // Generated
-			gridBagConstraints21.anchor = GridBagConstraints.WEST; // Generated
-			gridBagConstraints21.gridx = 4; // Generated
-			jPanel = new JPanel();
-			jPanel.setLayout(new GridBagLayout()); // Generated
-			jPanel.add(getJToolBar(), gridBagConstraints21); // Generated
-		}
-		return jPanel;
-	}
-
-	protected JToolBar getJToolBar() {
-		if (jToolBar == null) {
-			tempoValueLabel = new JLabel();
-			tempoValueLabel.setText("   BPM:");
-			jToolBar = new JToolBar();
-			jToolBar.add(getDataSetButton()); // Generated
-			jToolBar.add(getPlayButton()); // Generated
-			jToolBar.add(getPauseButton()); // Generated
-			jToolBar.add(getStopButton()); // Generated
-			jToolBar.add(getTempoSettingPanel());
-		}
-		return jToolBar;
-	}
-
-	/**
-	 * This method initializes bpmValue
-	 *
-	 * @return javax.swing.JTextField
-	 */
-	private JTextField getBpmValue() {
-		if (bpmValue == null) {
-			bpmValue = new JTextField();
-			bpmValue.setText(" 100"); // Generated
-			bpmValue.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					getTempoSlider().setIgnoreRepaint(true);
-					getTempoSlider().setValue(Integer.parseInt(bpmValue
-							.getText()));
-					getTempoSlider().setIgnoreRepaint(false);
-					System.out.println("actionPerformed()"); // TODO
-					if (data != null) {
-						data.setBPM(0, Integer.parseInt(bpmValue.getText()));
-					}
-				}
-			});
-		}
-		return bpmValue;
-	}
-
-	/**
 	 * This method initializes structurePane
 	 *
 	 * @return javax.swing.JScrollPane
@@ -821,6 +925,24 @@ public class MainFrame extends JFrame implements TuneDataListener,
 					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		}
 		return structurePane;
+	}
+
+	// システムプロパティをダンプする
+	private String getSystemProperties(String lineSep) {
+		ArrayList keys = new ArrayList();
+		StringBuffer buf = new StringBuffer();
+		for (Enumeration<?> enm = System.getProperties().keys(); enm
+				.hasMoreElements();) {
+			String key = (String) enm.nextElement();
+			keys.add(key);
+		}
+		Collections.sort(keys);
+		for (Iterator ite = keys.iterator(); ite.hasNext();) {
+			String key = (String) ite.next();
+			buf.append(key + "=" + System.getProperty(key) + lineSep);
+		}
+		buf.append("*EOF*");
+		return buf.toString();
 	}
 
 	/**
@@ -855,175 +977,57 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	/**
-	 * This method initializes tempoSettingPanel
+	 * This method initializes jPanel
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	protected JPanel getTempoSettingPanel() {
-		if (tempoSettingPanel == null) {
-			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
-			gridBagConstraints2.gridy = 0;
-			gridBagConstraints2.gridx = 2;
-			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-			gridBagConstraints1.gridx = 1;
-			gridBagConstraints1.gridy = 0;
-			GridBagConstraints gridBagConstraints = new GridBagConstraints();
-			gridBagConstraints.gridy = 0;
-			gridBagConstraints.gridx = 0;
-			tempoSettingPanel = new JPanel();
-			tempoSettingPanel.setLayout(new GridBagLayout());
-			tempoSettingPanel.add(tempoValueLabel, gridBagConstraints);
-			tempoSettingPanel.add(getBpmValue(), gridBagConstraints1);
-			tempoSettingPanel.add(getTempoSlider(), gridBagConstraints2);
+	private JPanel getToolBarPanel() {
+		if (jPanel == null) {
+			GridBagConstraints gridBagConstraints21 = new GridBagConstraints();
+			gridBagConstraints21.fill = GridBagConstraints.VERTICAL; // Generated
+			gridBagConstraints21.gridy = 0; // Generated
+			gridBagConstraints21.weightx = 1.0; // Generated
+			gridBagConstraints21.anchor = GridBagConstraints.WEST; // Generated
+			gridBagConstraints21.gridx = 4; // Generated
+			jPanel = new JPanel();
+			jPanel.setLayout(new GridBagLayout()); // Generated
+			jPanel.add(getJToolBar(), gridBagConstraints21); // Generated
 		}
-		return tempoSettingPanel;
+		return jPanel;
 	}
 
 	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Mixtract.main(args);
-	}
-
-	public void setTarget(TuneData target) {
-		data = target;
-		getViewer().setTitle(data.getOutputFile().getName());
-		getSaveAsMenu().setEnabled(true);
-		getSaveMenu().setEnabled(true);
-		getDataSetButton().setEnabled(true);
-		getPlayButton().setEnabled(true);
-
-		if (data != null) {
-			getBpmValue().setText(String.valueOf(data.getBPM().get(0)));
-			getTempoSlider().setValue(data.getBPM().get(0));
-		}
-		if (!getViewer().isVisible()) {
-			try {
-				getViewer().setMaximum(true);
-				getViewer().validate();
-				getViewer().pack();
-				getViewer().setVisible(true);
-			} catch (PropertyVetoException e) {
-				JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
-			}
-		}
-	}
-
-	public void startPlaying(String smfFilename) {
-		Mixtract.log.println("playing...");
-		playButton.setEnabled(false);
-		stopButton.setEnabled(true);
-		bpmValue.setEnabled(false);
-		tempoSlider.setEnabled(false);
-	}
-
-	public void stopPlaying() {
-		Mixtract.log.println("Sound stopped.");
-		playButton.setEnabled(true);
-		stopButton.setEnabled(false);
-		bpmValue.setEnabled(true);
-		tempoSlider.setEnabled(true);
-	}
-
-	public void stopPlaying(MIDIController synthe) {
-		throw new UnsupportedOperationException();
-	}
-
-	public void actionPerformed(ActionEvent e) {}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * jp.crestmuse.mixtract.gui.TuneDataListener#changeExpression(jp.crestmuse
-	 * .mixtract.data.PhraseProfile.PhraseCurveType)
-	 */
-	public void changeExpression(PhraseCurveType type) {}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * jp.crestmuse.mixtract.gui.GroupEditListener#addGroup(jp.crestmuse.
-	 * mixtract
-	 * .data.Group)
-	 */
-	public void addGroup(Group g) {
-		repaint();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * jp.crestmuse.mixtract.gui.GroupEditListener#deleteGroup(javax.swing
-	 * .JLabel)
-	 */
-	public void deleteGroup(GroupLabel g) {
-		repaint();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * jp.crestmuse.mixtract.gui.GroupEditListener#deselect(javax.swing.JLabel
-	 * )
-	 */
-	public void deselect(GroupLabel g) {}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * jp.crestmuse.mixtract.gui.GroupEditListener#editGroup(javax.swing.JLabel
-	 * )
-	 */
-	public void editGroup(GroupLabel g) {
-		throw new UnsupportedOperationException(); // TODO 実装
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * jp.crestmuse.mixtract.gui.GroupEditListener#selectGroup(javax.swing
-	 * .JLabel, boolean)
-	 */
-	public void selectGroup(GroupLabel g, boolean flg) {}
-
-	/**
-	 * @return
-	 */
-	public final TuneData getTarget() {
-		return data;
-	}
-
-	/**
-	 * 発音時刻や音長に対する横軸の長さを求めます．
+	 * This method initializes tuneViewPanel
 	 *
-	 * @param val
-	 * @return
+	 * @return javax.swing.JPanel
 	 */
-	public static int getXOfNote(final double val) {
-		return (int) Math.round(val / pixelperbeat);
-	}
-
-	protected void savefile() {
-		try {
-			data.setNoteScheduleEvent();
-			data.writefile();
-			// save screen shot
-			saveScreenShot();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} catch (AWTException e1) {
-			e1.printStackTrace();
-		} catch (InvalidMidiDataException e) {
-			e.printStackTrace();
+	private JPanel getTuneViewPane() {
+		if (tuneViewPanel == null) {
+			tuneViewPanel = new JPanel();
+			tuneViewPanel.setLayout(new BorderLayout()); // Generated
+			tuneViewPanel.add(getStructurePane(), java.awt.BorderLayout.NORTH);
+			tuneViewPanel.add(getPianorollPane(), BorderLayout.CENTER); // Generated
+			tuneViewPanel.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
 		}
+		return tuneViewPanel;
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.sound.MIDIEventListener#pausePlaying()
+	/**
+	 * This method initializes viewer
+	 *
+	 * @return javax.swing.JInternalFrame
 	 */
-	public void pausePlaying() {
-		// do nothing (unsupported in the CEDEC version)
+	private JInternalFrame getViewer() {
+		if (viewer == null) {
+			viewer = new JInternalFrame();
+			viewer.setClosable(true);
+			viewer.setResizable(true);
+			viewer.setMaximizable(true);
+			viewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+			viewer.setBounds(new Rectangle(0, 0, 540, 390));
+			viewer.setContentPane(getTuneViewPane()); // Generated
+			// viewer.setBounds(new Rectangle(8, 8, 238, 155)); // Generated
+		}
+		return viewer;
 	}
 } // @jve:decl-index=0:visual-constraint="10,10"
