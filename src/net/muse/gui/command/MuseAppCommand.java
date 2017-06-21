@@ -1,8 +1,9 @@
-package net.muse.misc;
+package net.muse.gui.command;
 
 import net.muse.MuseApp;
 import net.muse.data.TuneData;
 import net.muse.gui.*;
+import net.muse.misc.Command;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.command.GroupCommandInterface;
 import net.muse.mixtract.gui.command.MixtractCommand;

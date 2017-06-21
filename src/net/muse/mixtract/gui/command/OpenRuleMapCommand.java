@@ -1,6 +1,6 @@
 package net.muse.mixtract.gui.command;
 
-import net.muse.misc.MuseAppCommand.OpenMusicXMLCommand;
+import net.muse.gui.command.MuseAppCommand.OpenMusicXMLCommand;
 
 class OpenRuleMapCommand extends OpenMusicXMLCommand {
 
