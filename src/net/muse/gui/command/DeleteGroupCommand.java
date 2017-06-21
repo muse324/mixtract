@@ -1,9 +1,8 @@
 package net.muse.gui.command;
 
 import net.muse.gui.GroupLabel;
-import net.muse.mixtract.gui.command.MixtractCommand;
 
-final class DeleteGroupCommand extends MixtractCommand {
+final class DeleteGroupCommand extends MuseAppCommand {
 
 	public DeleteGroupCommand(String... lang) {
 		super(lang);

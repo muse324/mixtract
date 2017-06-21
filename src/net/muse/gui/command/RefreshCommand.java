@@ -1,8 +1,6 @@
 package net.muse.gui.command;
 
-import net.muse.mixtract.gui.command.MixtractCommand;
-
-final class RefreshCommand extends MixtractCommand {
+final class RefreshCommand extends MuseAppCommand {
 
 	public RefreshCommand(String... lang) {
 		super(lang);

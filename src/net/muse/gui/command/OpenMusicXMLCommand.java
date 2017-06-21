@@ -1,14 +1,12 @@
 package net.muse.gui.command;
 
-import net.muse.mixtract.gui.command.MixtractCommand;
-
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
  *         <address>http://www.m-use.net/</address>
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/03/12
  */
-public class OpenMusicXMLCommand extends MixtractCommand {
+public class OpenMusicXMLCommand extends MuseAppCommand {
 
 	protected OpenMusicXMLCommand(String... lang) {
 		super(lang);

@@ -1,8 +1,6 @@
 package net.muse.gui.command;
 
-import net.muse.mixtract.gui.command.MixtractCommand;
-
-final class AddGroupCommand extends MixtractCommand {
+final class AddGroupCommand extends MuseAppCommand {
 
 	public AddGroupCommand(String... lang) {
 		super(lang);

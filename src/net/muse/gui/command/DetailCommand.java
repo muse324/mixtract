@@ -1,8 +1,6 @@
 package net.muse.gui.command;
 
-import net.muse.mixtract.gui.command.MixtractCommand;
-
-final class DetailCommand extends MixtractCommand {
+final class DetailCommand extends MuseAppCommand {
 
 	public DetailCommand(String... lang) {
 		super(lang);
