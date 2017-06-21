@@ -37,28 +37,6 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 		return _target;
 	}
 
-	protected static final class AddGroupCommand extends MixtractCommand {
-
-		public AddGroupCommand(String... lang) {
-			super(lang);
-		}
-
-	}
-
-	protected static final class EditGroupCommand extends MixtractCommand {
-
-		public EditGroupCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {}
-
-	}
-
 	/**
 	 * @author Mitsuyo Hashida @ CrestMuse Project, JST
 	 *         <address>http://www.m-use.net/</address>
@@ -165,14 +143,6 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 			 */
 
 		@Override public void execute() {}
-
-	}
-
-	protected static final class SelectGroupCommand extends MixtractCommand {
-
-		public SelectGroupCommand(String... lang) {
-			super(lang);
-		}
 
 	}
 
