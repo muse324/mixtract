@@ -232,32 +232,6 @@ public class MixtractCommand extends MuseAppCommand {
 		return super.toString();
 	}
 
-	private static final class DeleteGroupCommand extends MixtractCommand {
-
-		public DeleteGroupCommand(String... lang) {
-			super(lang);
-		}/*
-			 * (non-Javadoc)
-			 * @see net.muse.misc.Command#execute()
-			 */
-
-		@Override public void execute() {
-			if (_target != null) {
-				GroupLabel sel = frame().getGroupingPanel()
-						.getSelectedGroup();
-				// _target.deleteGUIGroup(_selectedObjects.getGroupLabel());
-				// _selectedObjects.clearAll();
-				main().getData().deleteGroupFromData(sel.getGroup());
-				main().notifyDeleteGroup(sel);
-				// getPianorollScroll().repaint();
-				// getGroupingPanel().deselectLabel();
-				// getExpressionPanel().clearGroup();
-				// setTune(target);
-			}
-		}
-
-	}
-
 	private static final class ExprLineCommand extends MixtractCommand {
 
 		public ExprLineCommand(String... lang) {
