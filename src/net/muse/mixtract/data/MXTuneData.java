@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 
 import jp.crestmuse.cmx.filewrappers.*;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
+import net.muse.data.Harmony;
 import net.muse.data.TuneData;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;

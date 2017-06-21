@@ -1,5 +1,4 @@
-package net.muse.mixtract.data;
-
+package net.muse.data;
 
 import java.awt.Color;
 
@@ -107,7 +106,4 @@ public enum Harmony {
 
 	public abstract double parameter();
 
-	public ApexInfo rule() {
-		return new ApexInfo.SingleChordRule(parameter()/3.);
-	}
 }

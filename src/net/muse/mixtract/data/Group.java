@@ -3,6 +3,7 @@ package net.muse.mixtract.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.muse.data.Harmony;
 import net.muse.data.SequenceData;
 import net.muse.mixtract.data.curve.*;
 
@@ -186,7 +187,7 @@ public class Group extends SequenceData {
 		ApexInfo.applyRule(ApexInfo.UPPER_PROGRESS_NOTE, nlist, 0, sz);
 		ApexInfo.applyRule(ApexInfo.LOWER_PROGRESS_NOTE, nlist, 0, sz);
 		for (Harmony h : Harmony.values()) {
-			ApexInfo.applyRule(h.rule(), nlist, 0, sz);
+			ApexInfo.SingleChordRule.applyRule(h, nlist, 0, sz);
 		}
 		ApexInfo.applyRule(ApexInfo.CHORD_CHANGE, nlist, 0, sz);
 		ApexInfo.applyRule(ApexInfo.CADENTZ_I, nlist, 0, sz);

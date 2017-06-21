@@ -2,8 +2,8 @@ package net.muse.mixtract.gui.command;
 
 import java.awt.Component;
 
+import net.muse.data.Harmony;
 import net.muse.gui.NoteLabel;
-import net.muse.mixtract.data.Harmony;
 import net.muse.mixtract.gui.MixtractCommand;
 
 public class SetChordCommand extends MixtractCommand {
