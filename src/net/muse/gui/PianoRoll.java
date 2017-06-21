@@ -12,6 +12,7 @@ import javax.xml.transform.TransformerException;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.MuseApp;
 import net.muse.data.*;
+import net.muse.misc.MuseAppCommand;
 import net.muse.misc.Util;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
@@ -284,7 +285,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			@Override public void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				boolean enabled = selectedNoteLabels.size() > 0;
-				getPopup().add(addMenuItem(MixtractCommand.MAKE_GROUP,
+				getPopup().add(addMenuItem(MuseAppCommand.MAKE_GROUP,
 						enabled));
 				getPopup().addSeparator();
 

@@ -51,8 +51,6 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MuseAppCommand EXPR_VIEW_DISPLAY = new ExprViewCommand(
 			"Switch expression view");
 
-	public static final MuseAppCommand MAKE_GROUP = new PianoRoll.MakeGroupCommand(
-			"Make a group");
 	public static final MuseAppCommand CHANGE_PART = new PianoRoll.ChangePartCommand(
 			"Change part");
 
