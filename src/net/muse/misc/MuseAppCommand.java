@@ -1,6 +1,7 @@
 package net.muse.misc;
 
 import net.muse.MuseApp;
+import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MixtractCommand;
@@ -28,9 +29,15 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 				"Show parameters", "Show parameters");
 	public static final MuseAppCommand REFRESH = new RefreshCommand("Refresh",
 				"更新");
-	protected static MXTuneData _target;
+	protected static TuneData _target;
 	protected static MuseApp _main;
 	protected static MainFrame _mainFrame;
+
+
+	public static TuneData getTarget() {
+		return _target;
+	}
+
 
 	protected static final class DeleteGroupCommand extends MixtractCommand {
 

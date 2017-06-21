@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import net.muse.MuseApp;
+import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.gui.GroupingPanel.PrintGroupInfoCommand;
 import net.muse.misc.Command;
@@ -84,9 +85,7 @@ public class MixtractCommand extends MuseAppCommand {
 
 	public static final MuseAppCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
 			"GTTMAnalysis");
-	protected static MXTuneData _target;
 
-	protected static MuseApp _main;
 
 	protected static final SelectedObjects _selectedObjects = new SelectedObjects();
 
@@ -130,8 +129,8 @@ public class MixtractCommand extends MuseAppCommand {
 	/**
 	 * @return the _mainFrame
 	 */
-	public static final MainFrame getMainFrame() {
-		return _mainFrame;
+	public static final MXMainFrame getMainFrame() {
+		return (MXMainFrame) _mainFrame;
 	}
 
 	/**
@@ -145,7 +144,7 @@ public class MixtractCommand extends MuseAppCommand {
 	 * @return
 	 */
 	public static final MXTuneData getTarget() {
-		return _target;
+		return (MXTuneData) _target;
 	}
 
 	/**
@@ -169,7 +168,7 @@ public class MixtractCommand extends MuseAppCommand {
 		_main = main;
 	}
 
-	public static void setTarget(MXTuneData target) {
+	public static void setTarget(TuneData target) {
 		_target = target;
 	}
 
@@ -180,7 +179,8 @@ public class MixtractCommand extends MuseAppCommand {
 		if (_target == null)
 			return;
 		try {
-			_target.writeTempfileCurveParameters();
+			assert _target instanceof MXTuneData;
+			((MXTuneData) _target).writeTempfileCurveParameters();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -521,10 +521,12 @@ public class MixtractCommand extends MuseAppCommand {
 		 */
 		@Override public void execute() {
 			GUIUtil.printConsole("Hierarchical group list:");
-			for (Group g : _target.getRootGroup())
+			assert _target instanceof MXTuneData;
+			MXTuneData t = (MXTuneData) _target;
+			for (Group g : t.getRootGroup())
 				printGroupList(g);
 			GUIUtil.printConsole("Hierarchical group list:");
-			for (Group g : _target.getGroupArrayList())
+			for (Group g : t.getGroupArrayList())
 				printGroupList(g);
 		}
 
