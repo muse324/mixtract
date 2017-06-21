@@ -233,23 +233,6 @@ public class MixtractCommand extends MuseAppCommand {
 		return super.toString();
 	}
 
-	private static final class ApplyTopNoteCommand extends MixtractCommand {
-
-		public ApplyTopNoteCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			frame().getGroupingPanel()
-					.transferExpressionOfMostSimilarGroup();
-		}
-
-	}
-
 	private static final class DeleteGroupCommand extends MixtractCommand {
 
 		public DeleteGroupCommand(String... lang) {
