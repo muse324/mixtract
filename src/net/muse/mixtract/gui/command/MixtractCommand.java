@@ -232,14 +232,6 @@ public class MixtractCommand extends MuseAppCommand {
 		return super.toString();
 	}
 
-	private static final class ResetParameterCommand extends MixtractCommand {
-
-		public ResetParameterCommand(String... lang) {
-			super(lang);
-		}
-
-	}
-
 	private static class SearchCommand extends MixtractCommand {
 
 		protected SearchCommand(String... lang) {
