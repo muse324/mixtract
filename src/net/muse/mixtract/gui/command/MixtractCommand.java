@@ -232,39 +232,6 @@ public class MixtractCommand extends MuseAppCommand {
 		return super.toString();
 	}
 
-	private static final class GTTMAnalysisCommand extends
-			AnalyzeStructureCommand {
-
-		/**
-		 * @param string
-		 */
-		protected GTTMAnalysisCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.components.MixtractCommand.
-		 * AnalyseStructureCommand
-		 * #execute()
-		 */
-		@Override public void execute() {
-			makeUserGroup();
-		}
-
-		/* ユーザ定義のグルーピング */
-		private void makeUserGroup() {
-			// if (_target != null) {
-			// GTTMAnalyzer.run(_target, _mainFrame.getJCheckBoxMenuItem()
-			// .isSelected(), false);
-			// _main.notifySetTarget(_target);
-			// _mainFrame.refreshDatabase();
-			// }
-		}
-
-	}
-
 	private static final class MouseDisplayCommand extends MixtractCommand {
 
 		public MouseDisplayCommand(String... lang) {
