@@ -14,7 +14,7 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 			"Add group", "グループを追加");
 	public static final MuseAppCommand EDIT_GROUP = new EditGroupCommand(
 			"Edit group", "グループを編集");
-	public static final MuseAppCommand MAKE_GROUP = new PianoRoll.MakeGroupCommand(
+	public static final MuseAppCommand MAKE_GROUP = new MakeGroupCommand(
 			"Make a group");
 	public static final MuseAppCommand OPEN_MUSICXML = new OpenMusicXMLCommand(
 			"Open MusicXML", "MusicXMLを開く");

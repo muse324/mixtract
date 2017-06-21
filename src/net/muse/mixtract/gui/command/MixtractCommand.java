@@ -52,7 +52,7 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MuseAppCommand EXPR_VIEW_DISPLAY = new ExprViewCommand(
 			"Switch expression view");
 
-	public static final MuseAppCommand CHANGE_PART = new PianoRoll.ChangePartCommand(
+	public static final MuseAppCommand CHANGE_PART = new ChangePartCommand(
 			"Change part");
 
 	public static final MuseAppCommand MOUSE_DISPLAY = new MouseDisplayCommand(
@@ -94,9 +94,9 @@ public class MixtractCommand extends MuseAppCommand {
 
 	public static final MuseAppCommand OPEN_STRUCTURE_DATA = new OpenStructureDataCommand(
 			"Read structure data", "構造データ読込");
-	public static final MuseAppCommand SET_KEY = new PianoRoll.SetKeyCommand(
+	public static final MuseAppCommand SET_KEY = new SetKeyCommand(
 			"Change key", "調を変更");
-	public static final MuseAppCommand SET_KEYMODE = new PianoRoll.SetKeyModeCommand(
+	public static final MuseAppCommand SET_KEYMODE = new SetKeyModeCommand(
 			"Change key mode", "長調/短調");
 	public static final SetCrescendoCommand SET_TYPE_CRESC = new SetCrescendoCommand(
 			"< (cresc.)");

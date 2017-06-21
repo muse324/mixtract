@@ -52,7 +52,7 @@ public class NoteLabel extends GroupLabel {
 	/**
 	 * @return prev
 	 */
-	final NoteLabel prev() {
+	public final NoteLabel prev() {
 		return prev;
 	}
 
@@ -90,7 +90,8 @@ public class NoteLabel extends GroupLabel {
 	 * (非 Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.GroupLabel#setPartNumber(int)
 	 */
-	@Override protected void setPartNumber(int partNumber) {
+	@Override
+	public void setPartNumber(int partNumber) {
 		this.partNumber = partNumber;
 		setCurrentColor(new PartColor(partNumber).getColor());
 		note.getNote().setPartNumber(partNumber);
