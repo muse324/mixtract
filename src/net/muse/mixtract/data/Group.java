@@ -3,6 +3,7 @@ package net.muse.mixtract.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.muse.data.SequenceData;
 import net.muse.mixtract.data.curve.*;
 
 /**
@@ -23,7 +24,7 @@ import net.muse.mixtract.data.curve.*;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/10/23
  */
-public class Group {
+public class Group extends SequenceData {
 
 	private static boolean AVOID_LAST_RESTNOTE = true;
 
@@ -318,7 +319,11 @@ public class Group {
 		return _type;
 	}
 
-	public boolean hasChild() {
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.SequenceData#hasChild()
+	 */
+	@Override public boolean hasChild() {
 		return childFormerGroup != null && childLatterGroup != null;
 	}
 
@@ -328,14 +333,6 @@ public class Group {
 
 	public final boolean hasChildLatter() {
 		return childLatterGroup != null;
-	}
-
-	@Override public int hashCode() {
-		return super.hashCode();
-	}
-
-	public final boolean hasParent() {
-		return parent != null;
 	}
 
 	public final boolean hasPhraseCurve() {

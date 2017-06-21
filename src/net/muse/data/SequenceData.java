@@ -48,30 +48,34 @@ public abstract class SequenceData extends MuseObject {
 	 * @param child セットする child
 	 */
 	public void setChild(SequenceData note) {
-		if (this.child != note) {
-			this.child = note;
-			this.child.setParent(this);
+		if (child != note) {
+			child = note;
+			if (child != null)
+				child.setParent(this);
 		}
 	}
 
-	/**
-	 * @param next セットする next
-	 */
-	public void setNext(SequenceData next) {
+	public void setNext(SequenceData note) {
+		setPrevious(note, true);
+	}
+
+	public void setNext(SequenceData next, boolean sync) {
 		if (this.next != next) {
 			this.next = next;
-			if (this.next != null)
+			if (sync && this.next != null)
 				this.next.setPrevious(this);
 		}
 	}
 
-	/**
-	 * @param parent セットする parent
-	 */
 	public void setParent(SequenceData note) {
+		setPrevious(note, true);
+	}
+
+	public void setParent(SequenceData note, boolean sync) {
 		if (this.parent != note) {
 			this.parent = note;
-			this.parent.setChild(this);
+			if (sync && note != null)
+				this.parent.setChild(this);
 		}
 	}
 

@@ -1,5 +1,6 @@
 package net.muse.mixtract.data;
 
+import net.muse.data.SequenceData;
 
 /**
  * @author Mitsuyo Hashida & Haruhiro Katayose
@@ -8,12 +9,12 @@ package net.muse.mixtract.data;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/08/31
  */
-public class GroupNote {
+public class GroupNote extends SequenceData {
 	private NoteData note = null;
-	private GroupNote next = null;
-	private GroupNote prev = null;
-	private GroupNote parent = null;
-	private GroupNote child = null;
+	// private GroupNote next = null;
+	// private GroupNote prev = null;
+	// private GroupNote parent = null;
+	// private GroupNote child = null;
 
 	public GroupNote(NoteData note) {
 		super();
@@ -27,16 +28,15 @@ public class GroupNote {
 	/**
 	 * @return child
 	 */
-	public GroupNote child() {
-		return child;
+	@Override public GroupNote child() {
+		return (GroupNote) super.child();
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override
-	public boolean equals(Object obj) {
+	@Override public boolean equals(Object obj) {
 		return note.equals(((GroupNote) obj).getNote());
 	}
 
@@ -47,65 +47,28 @@ public class GroupNote {
 		return note;
 	}
 
-	public boolean hasChild() {
-		return child != null;
-	}
-
 	/*
 	 * (非 Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-	@Override
-	public int hashCode() {
+	@Override public int hashCode() {
 		return 1;
-	}
-
-	public boolean hasNext() {
-		return next != null;
-	}
-
-	public boolean hasParent() {
-		return parent != null;
-	}
-
-	public boolean hasPrevious() {
-		return prev != null;
 	}
 
 	public String id() {
 		return (note != null) ? note.id() : "null";
 	}
 
-	/**
-	 * @return next
-	 */
-	public GroupNote next() {
-		return next;
+	@Override public GroupNote next() {
+		return (GroupNote) super.next();
 	}
 
-	/**
-	 * @return parent
-	 */
-	public GroupNote parent() {
-		return parent;
+	@Override public GroupNote parent() {
+		return (GroupNote) super.parent();
 	}
 
-	/**
-	 * @return
-	 */
-	public GroupNote previous() {
-		return prev;
-	}
-
-	/**
-	 * @param child セットする child
-	 */
-	public void setChild(GroupNote note) {
-		if (this.child != note) {
-			this.child = note;
-			if (note != null)
-				this.child.setParent(this);
-		}
+	@Override public GroupNote previous() {
+		return (GroupNote) super.previous();
 	}
 
 	/**
@@ -127,17 +90,6 @@ public class GroupNote {
 	}
 
 	/**
-	 * @param parent セットする parent
-	 */
-	public void setParent(GroupNote note, boolean link) {
-		if (this.parent != note) {
-			this.parent = note;
-			if (link && note != null)
-				this.parent.setChild(this);
-		}
-	}
-
-	/**
 	 * @param prev セットする prev
 	 */
 	public void setPrevious(GroupNote prev) {
@@ -148,31 +100,13 @@ public class GroupNote {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
-	public String toString() {
+	@Override public String toString() {
 		if (note == null)
 			return "null";
-		return String.format("%s -> (%s) %s (%s) -> %s",
-				(hasPrevious()) ? previous().id() : "null",
-				(hasParent()) ? parent().id() : "null", id(),
-				(hasChild()) ? child().id() : "null",
+		return String.format("%s -> (%s) %s (%s) -> %s", (hasPrevious())
+				? previous().id() : "null", (hasParent()) ? parent().id()
+						: "null", id(), (hasChild()) ? child().id() : "null",
 				(hasNext()) ? next().id() : "null");
-	}
-
-	public void setNext(GroupNote note, boolean link) {
-		if (this.next != note) {
-			this.next = note;
-			if (link && this.next != null)
-				this.next.setPrevious(this);
-		}
-	}
-
-	public void setPrevious(GroupNote previous, boolean link) {
-		if (this.prev != previous) {
-			this.prev = previous;
-			if (link && this.prev != null)
-				this.prev.setNext(this);
-		}
 	}
 
 }
