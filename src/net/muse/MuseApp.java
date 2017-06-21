@@ -15,7 +15,7 @@ import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
-import net.muse.mixtract.gui.MixtractCommand;
+import net.muse.mixtract.gui.command.MixtractCommand;
 
 public class MuseApp extends MuseGUIObject<JFrame> {
 	protected static String mixtractLogImageFile = "mixtract-logo.png";

@@ -11,7 +11,7 @@ import net.muse.MuseApp;
 import net.muse.gui.GUIUtil;
 import net.muse.gui.MainFrame;
 import net.muse.mixtract.gui.MXMainFrame;
-import net.muse.mixtract.gui.MixtractCommand;
+import net.muse.mixtract.gui.command.MixtractCommand;
 
 /**
  * <h1>Mixtract</h1>

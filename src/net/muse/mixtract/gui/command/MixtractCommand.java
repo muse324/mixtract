@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui;
+package net.muse.mixtract.gui.command;
 
 import java.io.IOException;
 
@@ -14,6 +14,8 @@ import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.MXTuneData;
+import net.muse.mixtract.gui.MXMainFrame;
+import net.muse.mixtract.gui.SelectedObjects;
 import net.muse.mixtract.gui.command.*;
 
 /**

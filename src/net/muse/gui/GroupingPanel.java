@@ -14,6 +14,7 @@ import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.*;
+import net.muse.mixtract.gui.command.MixtractCommand;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST

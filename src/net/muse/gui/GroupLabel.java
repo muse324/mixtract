@@ -10,7 +10,7 @@ import javax.swing.*;
 import net.muse.MuseApp;
 import net.muse.data.GroupType;
 import net.muse.mixtract.data.Group;
-import net.muse.mixtract.gui.MixtractCommand;
+import net.muse.mixtract.gui.command.MixtractCommand;
 
 public class GroupLabel extends JLabel {
 
