@@ -2,13 +2,8 @@ package net.muse.mixtract.data;
 
 import java.util.ArrayList;
 
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.ShortMessage;
-import javax.swing.JOptionPane;
-
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
-import net.muse.data.*;
+import net.muse.data.NoteData;
 import net.muse.misc.Util;
 
 /**
@@ -24,26 +19,11 @@ import net.muse.misc.Util;
  */
 public class MXNoteData extends NoteData {
 
-	/** MusicXML.Note */
-	private Note note;
 
-	/** 声部番号。１から始まる。0の場合、声部の区別がされていないことを表す。 */
-	private int voice = 0;
-	/** 装飾音であるかどうかを判別します。 */
-	private boolean grace = false;
-	/** タイであるかどうかを判別します。 */
-	private boolean tied;
 	/** 当該音符に適用された保科理論ベースの頂点情報(ルール)の一覧 */
 	private final ArrayList<ApexInfo> apexlist = new ArrayList<ApexInfo>();
 	/** 頂点らしさを表すスコア。値のとる範囲は各プログラムで確認してください。 */
 	private double apexScore;
-
-	/**
-	 * @return
-	 */
-	private static int getDefaultGraseNoteDuration() {
-		return Math.round(getTicksPerBeat() / (float) 16.);
-	}
 
 	MXNoteData(int i, int partNumber, int onset, int offset, String noteName,
 			boolean rest, boolean grace, boolean tie, int tval, double beat) {
@@ -60,31 +40,8 @@ public class MXNoteData extends NoteData {
 		createMIDINoteEvent(getDefaultBPM(), getDefaultVelocity());
 	}
 
-	/**
-	 * @param note {@link MusicXMLWrapper}.Note object
-	 * @param partNumber Part number begins from 1 by integer.<br>
-	 * @param idx
-	 * @param bpm
-	 * @param vel
-	 */
 	public MXNoteData(Note note, int partNumber, int idx, int bpm, int vel) {
-		// 基本情報
-		super(idx);
-		this.note = note;
-		initialize(partNumber, note.noteName(), (note.rest()) ? -1
-				: note.notenum(), note.voice(), note.grace(), note
-						.tiedTo() != null, note.rest(), note.beat(), Harmony.I);
-
-		measureNumber = note.measure().number();
-		onset = note.onset(getTicksPerBeat());
-		offset = note.offset(getTicksPerBeat());
-		realOnset = onsetInMsec(bpm);
-		realOffset = offsetInMsec(bpm);
-		timeValue = (note.grace()) ? getDefaultGraseNoteDuration()
-				: note.tiedDuration(getTicksPerBeat());
-
-		// ノートイベント
-		createMIDINoteEvent(bpm, vel);
+		super(note, partNumber, idx, bpm, vel);
 	}
 
 	/*
@@ -126,16 +83,16 @@ public class MXNoteData extends NoteData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#parent()
 	 */
-	@Override public MXNoteData parent() {
-		return (MXNoteData) super.parent();
+	@Override public NoteData parent() {
+		return (NoteData) super.parent();
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#previous()
 	 */
-	@Override public MXNoteData previous() {
-		return (MXNoteData) super.previous();
+	@Override public NoteData previous() {
+		return (NoteData) super.previous();
 	}
 
 	/*
@@ -182,11 +139,6 @@ public class MXNoteData extends NoteData {
 		this.measureNumber = measureNumber;
 	}
 
-	public void setOffset(int offset) {
-		this.offset = offset;
-		getNoteOff().setOnset(offset);
-	}
-
 	/**
 	 * @param voice セットする voice
 	 */
@@ -207,33 +159,6 @@ public class MXNoteData extends NoteData {
 		for (ApexInfo a : apexlist)
 			score += a.getScore();
 		return score;
-	}
-
-	private void createMIDINoteEvent(int bpm, int vel) {
-		try {
-			noteOn = new NoteScheduleEvent(this, onsetInMsec(bpm),
-					ShortMessage.NOTE_ON, vel);
-			noteOff = new NoteScheduleEvent(this, offsetInMsec(bpm),
-					ShortMessage.NOTE_OFF, vel);
-		} catch (InvalidMidiDataException e) {
-			JOptionPane.showMessageDialog(null, String.format(
-					"invalid MIDI data for %s", this));
-		}
-	}
-
-	private void initialize(int partNumber, String noteName, int noteNumber,
-			int voice, boolean grace, boolean tie, boolean rest, double beat,
-			Harmony chord) {
-		this.partNumber = partNumber;
-		this.noteName = noteName;
-		this.noteNumber = noteNumber;
-		this.voice = voice;
-		this.grace = grace;
-		this.tied = tie;
-		this.rest = rest;
-		this.beat = beat;
-		this.chord = chord;
-		setNonChordNote(chord);
 	}
 
 	/**

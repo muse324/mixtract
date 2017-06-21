@@ -2,11 +2,10 @@ package net.muse.data;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
-import net.muse.mixtract.data.*;
 
 public class CMXNoteHandler extends AbstractCMXNoteHandler {
 
-	private MXNoteData cur = null;
+	private NoteData cur = null;
 
 	private Group primaryGrouplist = null;
 
@@ -19,9 +18,11 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 */
 	private int currentBPM = 120;
 	private int currentDefaultVelocity;
+
 	public CMXNoteHandler(TuneData tuneData) {
 		super(tuneData);
 	}
+
 	@Override public void beginMeasure(Measure measure,
 			MusicXMLWrapper wrapper) {
 		super.beginMeasure(measure, wrapper);
@@ -73,7 +74,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		if (primaryGrouplist == null) {
 			primaryGrouplist = g;
 			data().setGrouplist(partIndex, g);
-		} else if (MXTuneData.segmentGroupnoteLine) {
+		} else if (TuneData.segmentGroupnoteLine) {
 			linkToPrimaryGroup(g.getBeginGroupNote(), primaryGrouplist
 					.getBeginGroupNote());
 		} else {
@@ -96,8 +97,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		return new Group(n, i, type);
 	}
 
-	protected MXTuneData data() {
-		return (MXTuneData) data;
+	protected TuneData data() {
+		return data;
 	}
 
 	private void linkToPrimaryGroup(GroupNote note,
@@ -110,7 +111,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		}
 		if (note.getNote().onset() == currentPrimaryNote.getNote().onset()) {
 			setChild(currentPrimaryNote, note);
-			if (MXTuneData.segmentGroupnoteLine) {
+			if (TuneData.segmentGroupnoteLine) {
 				if (note.hasPrevious())
 					note.previous().setNext(null);
 				note.setPrevious(null);
@@ -136,7 +137,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 * @param md
 	 */
 	private void readNoteData(Note note) {
-		MXNoteData nd = new MXNoteData(note, currentPartNumber, ++idx, data()
+		NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
 				.getBPM().get(0), currentDefaultVelocity);
 		nd.setKeyMode(keyMode, fifths);
 		testPrintln(nd.toString());
@@ -161,6 +162,11 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			cur.setNext(nd);
 			cur = nd;
 		}
+	}
+
+	protected NoteData createNoteData(Note note, int partNumber, int idx,
+			Integer bpm, int vel) {
+		return new NoteData(note, partNumber, idx, bpm, vel);
 	}
 
 	private void setChild(GroupNote parent, GroupNote note) {

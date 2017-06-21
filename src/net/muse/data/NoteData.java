@@ -1,12 +1,16 @@
 package net.muse.data;
 
 import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.ShortMessage;
 import javax.swing.JOptionPane;
 
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.misc.Util;
 import net.muse.mixtract.data.NoteScheduleEvent;
 
 public class NoteData extends SequenceData {
+	/** MusicXML.Note */
+	protected Note note;
 
 	/** 音価の最小値。TODO 単位系は各プログラムで確認してください。 */
 	private static final int minimumDuration = 50;
@@ -65,11 +69,41 @@ public class NoteData extends SequenceData {
 	 * 小節内の拍の位置。 TODO １拍目を0.0とするか1.0とするかは各プログラムで確認してください。
 	 */
 	protected double beat;
+	/** 声部番号。１から始まる。0の場合、声部の区別がされていないことを表す。 */
+	protected int voice = 0;
+	/** 装飾音であるかどうかを判別します。 */
+	protected boolean grace = false;
+	/** タイであるかどうかを判別します。 */
+	protected boolean tied;
 
+	/**
+	 * @return
+	 */
+	protected static int getDefaultGraseNoteDuration() {
+		return Math.round(getTicksPerBeat() / (float) 16.);
+	}
 	public NoteData(int index) {
 		this.index = index;
 	}
+	public NoteData(Note note, int partNumber, int idx, int bpm, int vel) {
+		// 基本情報
+		this(idx);
+		this.note = note;
+		initialize(partNumber, note.noteName(), (note.rest()) ? -1
+				: note.notenum(), note.voice(), note.grace(), note
+						.tiedTo() != null, note.rest(), note.beat(), Harmony.I);
 
+		measureNumber = note.measure().number();
+		onset = note.onset(getTicksPerBeat());
+		offset = note.offset(getTicksPerBeat());
+		realOnset = onsetInMsec(bpm);
+		realOffset = offsetInMsec(bpm);
+		timeValue = (note.grace()) ? getDefaultGraseNoteDuration()
+				: note.tiedDuration(getTicksPerBeat());
+
+		// ノートイベント
+		createMIDINoteEvent(bpm, vel);
+	}
 	/**
 	 * @return
 	 */
@@ -307,6 +341,37 @@ public class NoteData extends SequenceData {
 	public void setChord(Harmony chord) {
 		this.chord = chord;
 		setNonChordNote(chord);
+	}
+
+	protected void initialize(int partNumber, String noteName, int noteNumber,
+			int voice, boolean grace, boolean tie, boolean rest, double beat,
+			Harmony chord) {
+				this.partNumber = partNumber;
+				this.noteName = noteName;
+				this.noteNumber = noteNumber;
+				this.voice = voice;
+				this.grace = grace;
+				this.tied = tie;
+				this.rest = rest;
+				this.beat = beat;
+				this.chord = chord;
+				setNonChordNote(chord);
+			}
+
+	protected void createMIDINoteEvent(int bpm, int vel) {
+		try {
+			noteOn = new NoteScheduleEvent(this, onsetInMsec(bpm),
+					ShortMessage.NOTE_ON, vel);
+			noteOff = new NoteScheduleEvent(this, offsetInMsec(bpm),
+					ShortMessage.NOTE_OFF, vel);
+		} catch (InvalidMidiDataException e) {
+			JOptionPane.showMessageDialog(null, String.format(
+					"invalid MIDI data for %s", this));
+		}
+	}
+	public void setOffset(int offset) {
+		this.offset = offset;
+		getNoteOff().setOnset(offset);
 	}
 
 }
