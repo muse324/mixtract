@@ -1,4 +1,4 @@
-package net.muse.mixtract.data;
+package net.muse.data;
 /**
  * mitsuyo 2008/09/08
  */

@@ -1,4 +1,4 @@
-package net.muse.mixtract.data;
+package net.muse.data;
 
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
@@ -6,6 +6,7 @@ import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Measure;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.MusicData;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Part;
 import jp.crestmuse.cmx.handlers.NoteHandlerPartwise;
+import net.muse.mixtract.data.MXTuneData;
 
 public class CMXNoteHandler implements NoteHandlerPartwise {
 	protected int currentPartNumber = 0;
