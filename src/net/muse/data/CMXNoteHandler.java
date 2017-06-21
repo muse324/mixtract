@@ -6,12 +6,10 @@ import net.muse.mixtract.data.*;
 
 public class CMXNoteHandler extends AbstractCMXNoteHandler {
 
-	public CMXNoteHandler(MXTuneData tuneData) {
-		super(tuneData);
-	}
-
 	private MXNoteData cur = null;
+
 	private Group primaryGrouplist = null;
+
 	private int idx = 0;
 	private KeyMode keyMode;
 	private int fifths;
@@ -21,7 +19,9 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 */
 	private int currentBPM = 120;
 	private int currentDefaultVelocity;
-
+	public CMXNoteHandler(TuneData tuneData) {
+		super(tuneData);
+	}
 	@Override public void beginMeasure(Measure measure,
 			MusicXMLWrapper wrapper) {
 		super.beginMeasure(measure, wrapper);
@@ -67,7 +67,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
 	 */
 	@Override public void endPart(Part part, MusicXMLWrapper wrapper) {
-		Group g = new MXGroup(data().getNoteList(partIndex), partIndex + 1,
+		Group g = createGroup(data().getNoteList(partIndex), partIndex + 1,
 				GroupType.NOTE);
 
 		if (primaryGrouplist == null) {
@@ -90,6 +90,14 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			readAttributes((Attributes) md);
 		else if (md instanceof Direction)
 			readDirections((Direction) md);
+	}
+
+	protected Group createGroup(NoteData n, int i, GroupType type) {
+		return new Group(n, i, type);
+	}
+
+	protected MXTuneData data() {
+		return (MXTuneData) data;
 	}
 
 	private void linkToPrimaryGroup(GroupNote note,

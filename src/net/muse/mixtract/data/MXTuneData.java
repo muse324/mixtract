@@ -43,12 +43,6 @@ public class MXTuneData extends TuneData {
 
 	public static boolean segmentGroupnoteLine = false;
 
-	/** MusicXML */
-	private MusicXMLWrapper xml;
-
-	/** DeviationInstanceXML */
-	private DeviationInstanceWrapper dev;
-
 	/** 声部ごとの音符情報 */
 	private ArrayList<MXNoteData> notelist = new ArrayList<MXNoteData>();
 
@@ -812,13 +806,10 @@ public class MXTuneData extends TuneData {
 		return inputFile.getParentFile();
 	}
 
-	/**
-	 *
-	 */
-	private void parseMusicXMLFile() {
+	protected void parseMusicXMLFile() {
 		if (xml == null)
 			return;
-		xml.processNotePartwise(new CMXNoteHandler(this));
+		xml.processNotePartwise(createCMXNoteHandler());
 	}
 
 	/**
@@ -1157,5 +1148,9 @@ public class MXTuneData extends TuneData {
 		}
 		setNoteScheduleEvent(note.child(), endOffset);
 		setNoteScheduleEvent(note.next(), endOffset);
+	}
+
+	protected CMXNoteHandler createCMXNoteHandler() {
+		return new CMXNoteHandler(this);
 	}
 }

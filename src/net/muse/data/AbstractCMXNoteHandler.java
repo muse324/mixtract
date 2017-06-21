@@ -12,19 +12,19 @@ public abstract class AbstractCMXNoteHandler extends MuseObject implements
 		NoteHandlerPartwise {
 	protected int currentPartNumber = 0;
 	protected int partIndex = 0;
-	private MXTuneData data;
+	protected TuneData data;
 
 	/**
 	 * @param tuneData
 	 */
-	public AbstractCMXNoteHandler(MXTuneData tuneData) {
+	public AbstractCMXNoteHandler(TuneData tuneData) {
 		this.data = tuneData;
 	}
 
 	/**
 	 * @return data
 	 */
-	protected MXTuneData data() {
+	protected TuneData data() {
 		return data;
 	}
 
