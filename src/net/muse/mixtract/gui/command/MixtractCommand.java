@@ -12,7 +12,6 @@ import net.muse.misc.Command;
 import net.muse.misc.MuseAppCommand;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
-import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;
 import net.muse.mixtract.gui.SelectedObjects;
@@ -443,116 +442,6 @@ public class MixtractCommand extends MuseAppCommand {
 			// } catch (TransformerException e) {
 			// e.printStackTrace();
 			// }
-		}
-
-	}
-
-	/**
-	 * <h1>PrintAllGroupsCommand</h1>
-	 * <p>
-	 * 登録されているすべてのグループ情報を出力します。
-	 *
-	 * @author Mitsuyo Hashida & Haruhiro Katayose
-	 *         <address>CrestMuse Project, JST</address>
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
-	 * @since 2009/10/29
-	 */
-	private static final class PrintAllGroupsCommand extends MixtractCommand {
-
-		public PrintAllGroupsCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			GUIUtil.printConsole("Hierarchical group list:");
-			assert _target instanceof MXTuneData;
-			MXTuneData t = (MXTuneData) _target;
-			for (Group g : t.getRootGroup())
-				printGroupList(g);
-			GUIUtil.printConsole("Hierarchical group list:");
-			for (Group g : t.getGroupArrayList())
-				printGroupList(g);
-		}
-
-		/**
-		 * 登録されているすべてのグループ情報を出力します。
-		 *
-		 * @param group 各声部のトップグループ
-		 */
-		private void printGroupList(Group group) {
-			if (group == null)
-				return;
-			printGroupList(group.getChildFormerGroup());
-			printGroupList(group.getChildLatterGroup());
-			System.out.println(group);
-		}
-	}
-
-	private static final class PrintAllSimilarGroupsCommand extends
-			MixtractCommand {
-
-		public PrintAllSimilarGroupsCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			main().printAllSimilarList();
-		}
-
-	}
-
-	private static final class PrintSimilarGroupsCommand extends
-			MixtractCommand {
-
-		public PrintSimilarGroupsCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			main().printSimilarList();
-		}
-
-	}
-
-	private static final class PrintSubgroupsCommand extends MixtractCommand {
-
-		public PrintSubgroupsCommand(String... lang) {
-			super(lang);
-		}/*
-			 * (non-Javadoc)
-			 * @see net.muse.misc.Command#execute()
-			 */
-
-		@Override public void execute() {
-			final GroupLabel gl = getSelectedObjects().getGroupLabel();
-			GUIUtil.printConsole(gl.getName() + "'s subgroups:");
-			printSubGroups(gl.getGroup());
-		}
-
-		/**
-		 * @param g
-		 */
-		private void printSubGroups(Group g) {
-			// if (g == null)
-			// return;
-			// GUIUtil.printConsole("Gr." + g.name() + ", hierarchy=" +
-			// g.isHierarchy()
-			// + ", level=" + g.getLevel() + ", " + g.getScoreNotelist());
-			// printSubGroups(g.getChildFormerGroup());
-			// printSubGroups(g.getChildLatterGroup());
 		}
 
 	}
