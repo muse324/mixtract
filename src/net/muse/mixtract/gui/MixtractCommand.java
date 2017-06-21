@@ -75,9 +75,6 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MuseAppCommand PRINT_SUBGROUPS = new PrintSubgroupsCommand(
 			"Print group", "下位グループを出力");
 
-	public static final MuseAppCommand REDRAW = new RedrawCommand("Redraw",
-			"再描画");
-
 	public static final MuseAppCommand REFRESH = new RefreshCommand("Refresh",
 			"更新");
 
@@ -631,19 +628,6 @@ public class MixtractCommand extends MuseAppCommand {
 		// printSubGroups(g.getChildFormerGroup());
 		// printSubGroups(g.getChildLatterGroup());
 		}
-
-	}
-
-	private static final class RedrawCommand extends MixtractCommand {
-
-		public RedrawCommand(String... lang) {
-			super(lang);
-		}/*
-			 * (non-Javadoc)
-			 * @see net.muse.misc.Command#execute()
-			 */
-
-		@Override public void execute() {}
 
 	}
 

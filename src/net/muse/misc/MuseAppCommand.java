@@ -18,6 +18,8 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 				"Make a group");
 	public static final MuseAppCommand OPEN_MUSICXML = new OpenMusicXMLCommand(
 				"Open MusicXML", "MusicXMLを開く");
+	public static final MuseAppCommand REDRAW = new RedrawCommand("Redraw",
+				"再描画");
 	protected static MXTuneData _target;
 	protected static MuseApp _main;
 	protected static MainFrame _mainFrame;
@@ -164,6 +166,19 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 			// _mainFrame.getDynamicsViewDialog().pack();
 			// _mainFrame.getDynamicsViewDialog().setVisible(true);
 			// }
+		}
+
+	protected static final class RedrawCommand extends MixtractCommand {
+
+			public RedrawCommand(String... lang) {
+				super(lang);
+			}/*
+				 * (non-Javadoc)
+				 * @see net.muse.misc.Command#execute()
+				 */
+
+			@Override public void execute() {}
+
 		}
 
 	public MuseAppCommand(String... lang) {
