@@ -8,8 +8,7 @@ import javax.swing.JOptionPane;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
-import net.muse.data.Harmony;
-import net.muse.data.SequenceData;
+import net.muse.data.*;
 import net.muse.misc.Util;
 
 /**

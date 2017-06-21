@@ -1,6 +1,4 @@
-package net.muse.mixtract.data;
-
-import net.muse.data.Harmony;
+package net.muse.data;
 
 /**
  * <h1>KeyMode</h1>
