@@ -7,10 +7,10 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import net.muse.app.Mixtract;
 import net.muse.data.Group;
 import net.muse.data.NoteData;
 import net.muse.gui.*;
-import net.muse.mixtract.Mixtract;
 
 class PianoRollSmall extends MXPianoroll {
 	private static final long serialVersionUID = 1L;

@@ -6,10 +6,10 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import net.muse.app.Mixtract;
 import net.muse.data.Group;
 import net.muse.misc.MuseObject;
 import net.muse.misc.Util;
-import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.MXTuneData;
 
 public abstract class PhraseCurve extends MuseObject {

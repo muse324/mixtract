@@ -5,9 +5,9 @@ import java.awt.BorderLayout;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-import net.muse.MuseApp;
+import net.muse.app.Mixtract;
+import net.muse.app.MuseApp;
 import net.muse.data.Group;
-import net.muse.mixtract.Mixtract;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST

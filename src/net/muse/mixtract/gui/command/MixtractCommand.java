@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import javax.swing.JFrame;
 
-import net.muse.MuseApp;
+import net.muse.app.Mixtract;
+import net.muse.app.MuseApp;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
 import net.muse.gui.command.*;
 import net.muse.misc.Command;
-import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;

@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 
-import net.muse.MuseApp;
+import net.muse.app.MuseApp;
 import net.muse.data.GroupNote;
 import net.muse.data.NoteData;
 

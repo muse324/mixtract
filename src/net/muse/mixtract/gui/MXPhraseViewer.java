@@ -4,9 +4,9 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import net.muse.app.Mixtract;
 import net.muse.data.Group;
 import net.muse.gui.*;
-import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXPhraseViewer extends PhraseViewer {

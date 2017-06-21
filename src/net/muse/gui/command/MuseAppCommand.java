@@ -1,6 +1,6 @@
 package net.muse.gui.command;
 
-import net.muse.MuseApp;
+import net.muse.app.MuseApp;
 import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.misc.Command;

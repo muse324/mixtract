@@ -1,4 +1,4 @@
-package net.muse;
+package net.muse.app;
 
 import java.awt.EventQueue;
 import java.io.*;

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-import net.muse.MuseApp;
+import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.mixtract.gui.command.MixtractCommand;

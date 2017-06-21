@@ -2,10 +2,10 @@ package net.muse.mixtract.gui;
 
 import java.awt.Rectangle;
 
-import net.muse.MuseApp;
+import net.muse.app.Mixtract;
+import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
-import net.muse.mixtract.Mixtract;
 
 public class MXGroupLabel extends GroupLabel {
 

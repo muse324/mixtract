@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.SwingUtilities;
 
-import net.muse.mixtract.Mixtract;
+import net.muse.app.Mixtract;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.curve.*;
 

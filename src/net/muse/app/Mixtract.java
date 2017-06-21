@@ -1,4 +1,4 @@
-package net.muse.mixtract;
+package net.muse.app;
 
 import java.awt.EventQueue;
 import java.io.FileNotFoundException;
@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 
 import javax.swing.*;
 
-import net.muse.MuseApp;
 import net.muse.gui.GUIUtil;
 import net.muse.gui.MainFrame;
 import net.muse.mixtract.gui.MXMainFrame;

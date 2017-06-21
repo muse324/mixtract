@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import javax.swing.*;
 
+import net.muse.app.Mixtract;
 import net.muse.gui.*;
-import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.MXTuneData;
 
 public class MXMainFrame extends MainFrame {
