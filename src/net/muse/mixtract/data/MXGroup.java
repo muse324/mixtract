@@ -12,6 +12,15 @@ public class MXGroup extends Group {
 	private ArticulationCurve articulationCurve;
 
 	/**
+	 * @param notelist
+	 * @param partIndex
+	 * @param type
+	 */
+	public MXGroup(NoteData notelist, int partIndex, GroupType type) {
+		super(notelist, partIndex, type);
+	}
+
+	/**
 	 * @param g1
 	 * @param g2
 	 * @param name
@@ -19,25 +28,6 @@ public class MXGroup extends Group {
 	 */
 	MXGroup(Group g1, Group g2, String name, int partNumber) {
 		super(g1, g2, name, partNumber);
-	}
-
-	protected void initialize() {
-		dynamicsCurve = (DynamicsCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.DYNAMICS);
-		tempoCurve = (TempoCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.TEMPO);
-		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.ARTICULATION);
-	}
-
-	/**
-	 * @param groupNoteList
-	 * @param endNote
-	 * @param type
-	 */
-	private MXGroup(GroupNote groupNoteList, GroupNote endNote,
-			GroupType type) {
-		super(groupNoteList, endNote, type);
 	}
 
 	/**
@@ -51,12 +41,13 @@ public class MXGroup extends Group {
 	}
 
 	/**
-	 * @param notelist
-	 * @param partIndex
+	 * @param groupNoteList
+	 * @param endNote
 	 * @param type
 	 */
-	public MXGroup(NoteData notelist, int partIndex, GroupType type) {
-		super(notelist, partIndex, type);
+	private MXGroup(GroupNote groupNoteList, GroupNote endNote,
+			GroupType type) {
+		super(groupNoteList, endNote, type);
 	}
 
 	/**
@@ -113,23 +104,6 @@ public class MXGroup extends Group {
 
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.mixtract.data.Group#addScoreNoteList(java.util.List)
-	 */
-	@Override protected void addScoreNoteList(List<? extends NoteData> list) {
-		for (NoteData n : list)
-			scoreNotelist.add((MXNoteData) n);
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.mixtract.data.Group#cresteScoreNoteList()
-	 */
-	@Override protected void createScoreNoteList() {
-		scoreNotelist = new ArrayList<MXNoteData>();
-	}
-
 	/**
 	 * @return articulationCurve
 	 */
@@ -154,6 +128,32 @@ public class MXGroup extends Group {
 	public final boolean hasPhraseCurve() {
 		return dynamicsCurve != null && tempoCurve != null
 				&& articulationCurve != null;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.mixtract.data.Group#addScoreNoteList(java.util.List)
+	 */
+	@Override protected void addScoreNoteList(List<? extends NoteData> list) {
+		for (NoteData n : list)
+			scoreNotelist.add((MXNoteData) n);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.mixtract.data.Group#cresteScoreNoteList()
+	 */
+	@Override protected void createScoreNoteList() {
+		scoreNotelist = new ArrayList<MXNoteData>();
+	}
+
+	protected void initialize() {
+		dynamicsCurve = (DynamicsCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.DYNAMICS);
+		tempoCurve = (TempoCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.TEMPO);
+		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.ARTICULATION);
 	}
 
 }

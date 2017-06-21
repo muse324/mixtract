@@ -3,8 +3,6 @@ package net.muse.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.muse.mixtract.data.curve.*;
-
 /**
  * <h1>Group</h1>
  * <p>
@@ -27,34 +25,34 @@ public class Group extends SequenceData {
 
 	private static boolean AVOID_LAST_RESTNOTE = true;
 
+	/** グループの種類 */
+	private GroupType _type;
+
+	/** グループの通し番号． */
+	private int index;
+	/** 階層レベル．最上階層(楽曲全体)を0として，下位構造に向かって正の整数で表されます． */
+	private int level;
+
+	private int partNumber;
+	private Group childFormerGroup = null;
+
+	private Group childLatterGroup = null;
+	private Group parent = null;
+	private GroupNote notelist = null;
+
+	private List<NoteData> scoreNotelist;
+	private GroupNote beginGroupNote = null;
+	private GroupNote topGroupNote = null;
+	private GroupNote endGroupNote = null;
+	private GroupNote centerNote;
+	private PhraseFeature flag;
+
 	/**
 	 * @param aVOID_LAST_RESTNOTE セットする aVOID_LAST_RESTNOTE
 	 */
 	public static void setAvoidLastRestsFromGroup(boolean aVOID_LAST_RESTNOTE) {
 		AVOID_LAST_RESTNOTE = aVOID_LAST_RESTNOTE;
 	}
-
-	/** グループの種類 */
-	private GroupType _type;
-	/** グループの通し番号． */
-	private int index;
-
-	/** 階層レベル．最上階層(楽曲全体)を0として，下位構造に向かって正の整数で表されます． */
-	private int level;
-	private int partNumber;
-
-	private Group childFormerGroup = null;
-	private Group childLatterGroup = null;
-	private Group parent = null;
-
-	private GroupNote notelist = null;
-	private List<NoteData> scoreNotelist;
-	private GroupNote beginGroupNote = null;
-	private GroupNote topGroupNote = null;
-	private GroupNote endGroupNote = null;
-	private GroupNote centerNote;
-
-	private PhraseFeature flag;
 
 	/**
 	 * @param groupNoteList
@@ -124,14 +122,6 @@ public class Group extends SequenceData {
 	private Group(GroupType type) {
 		_type = type;
 		initialize();
-	}
-
-	protected void initialize() {
-		createScoreNoteList();
-	}
-
-	protected void createScoreNoteList() {
-		scoreNotelist = new ArrayList<NoteData>();
 	}
 
 	/**
@@ -218,11 +208,6 @@ public class Group extends SequenceData {
 		} else if (scoreNotelist.size() <= 1)
 			makeScoreNotelist(getBeginGroupNote().getNote());
 		return scoreNotelist;
-	}
-
-	protected void addScoreNoteList(List<? extends NoteData> list) {
-		for (NoteData n : list)
-			scoreNotelist.add(n);
 	}
 
 	/**
@@ -324,6 +309,11 @@ public class Group extends SequenceData {
 		this.level = level;
 	}
 
+	public void setScoreNotelist(List<? extends NoteData> list) {
+		scoreNotelist.clear();
+		addScoreNoteList(list);
+	}
+
 	/**
 	 * @param note
 	 */
@@ -356,16 +346,17 @@ public class Group extends SequenceData {
 		return str;
 	}
 
-	/**
-	 *
-	 */
-	private void avoidLastRestnotesFromGroup() {
-		if (!AVOID_LAST_RESTNOTE)
-			return;
-		while (endGroupNote.getNote().rest()) {
-			endGroupNote = endGroupNote.previous();
-			endGroupNote.setNext(null);
-		}
+	protected void addScoreNoteList(List<? extends NoteData> list) {
+		for (NoteData n : list)
+			scoreNotelist.add(n);
+	}
+
+	protected void createScoreNoteList() {
+		scoreNotelist = new ArrayList<NoteData>();
+	}
+
+	protected void initialize() {
+		createScoreNoteList();
 	}
 
 	protected void makeScoreNotelist(NoteData root) {
@@ -376,6 +367,18 @@ public class Group extends SequenceData {
 		if (root.onset() >= getBeginGroupNote().getNote().onset())
 			scoreNotelist.add(root);
 		makeScoreNotelist(root.next());
+	}
+
+	/**
+	 *
+	 */
+	private void avoidLastRestnotesFromGroup() {
+		if (!AVOID_LAST_RESTNOTE)
+			return;
+		while (endGroupNote.getNote().rest()) {
+			endGroupNote = endGroupNote.previous();
+			endGroupNote.setNext(null);
+		}
 	}
 
 	private String notelistName(String str, GroupNote note) {
@@ -475,10 +478,5 @@ public class Group extends SequenceData {
 			gnote = gnote.next();
 		}
 		return len;
-	}
-
-	public void setScoreNotelist(List<? extends NoteData> list) {
-		scoreNotelist.clear();
-		addScoreNoteList(list);
 	}
 }
