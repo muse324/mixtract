@@ -26,6 +26,8 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 			"生成");
 	public static final MuseAppCommand DETAIL = new DetailCommand(
 				"Show parameters", "Show parameters");
+	public static final MuseAppCommand REFRESH = new RefreshCommand("Refresh",
+				"更新");
 	protected static MXTuneData _target;
 	protected static MuseApp _main;
 	protected static MainFrame _mainFrame;
@@ -230,6 +232,22 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 			 */
 			@Override public void execute() {
 				_mainFrame.getGroupingPanel().showDetailViewer();
+			}
+
+		}
+
+	protected static final class RefreshCommand extends MixtractCommand {
+
+			public RefreshCommand(String... lang) {
+				super(lang);
+			}
+
+			/*
+			 * (非 Javadoc)
+			 * @see net.muse.misc.Command#execute()
+			 */
+			@Override public void execute() {
+				_mainFrame.refreshDatabase();
 			}
 
 		}

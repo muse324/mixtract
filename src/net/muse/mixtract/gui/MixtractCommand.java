@@ -72,9 +72,6 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MuseAppCommand PRINT_SUBGROUPS = new PrintSubgroupsCommand(
 			"Print group", "下位グループを出力");
 
-	public static final MuseAppCommand REFRESH = new RefreshCommand("Refresh",
-			"更新");
-
 	public static final ApplyHierarchicalParamsCommand APPLY_HIERARCHICAL_PARAMS = new ApplyHierarchicalParamsCommand(
 			"Apply Parametrs", "階層表現に適用");
 
@@ -604,22 +601,6 @@ public class MixtractCommand extends MuseAppCommand {
 		// + ", level=" + g.getLevel() + ", " + g.getScoreNotelist());
 		// printSubGroups(g.getChildFormerGroup());
 		// printSubGroups(g.getChildLatterGroup());
-		}
-
-	}
-
-	private static final class RefreshCommand extends MixtractCommand {
-
-		public RefreshCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			_mainFrame.refreshDatabase();
 		}
 
 	}
