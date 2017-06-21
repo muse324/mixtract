@@ -1,10 +1,10 @@
-package net.muse.mixtract.data;
+package net.muse.data;
 
 import java.awt.Color;
 
 /**
  * グループのタイプ
- * 
+ *
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
  *         <address>http://www.m-use.net/</address>
  *         <address>hashida@kwansei.ac.jp</address>
@@ -86,7 +86,7 @@ public enum GroupType {
 		}
 	};
 
-	static GroupType is(char c) {
+	public static GroupType is(char c) {
 		switch (c) {
 		case 'U':
 			return USER;

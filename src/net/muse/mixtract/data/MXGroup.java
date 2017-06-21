@@ -2,8 +2,7 @@ package net.muse.mixtract.data;
 
 import java.util.*;
 
-import net.muse.data.Harmony;
-import net.muse.data.NoteData;
+import net.muse.data.*;
 
 public class MXGroup extends Group {
 	private List<MXNoteData> scoreNotelist;

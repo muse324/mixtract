@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.*;
 
 import net.muse.MuseApp;
+import net.muse.data.GroupType;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;

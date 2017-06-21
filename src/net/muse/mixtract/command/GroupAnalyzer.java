@@ -1,5 +1,6 @@
 package net.muse.mixtract.command;
 
+import net.muse.data.GroupType;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.data.*;
 

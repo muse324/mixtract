@@ -1,6 +1,6 @@
 package net.muse.mixtract.gui.command;
 
-import net.muse.mixtract.data.GroupType;
+import net.muse.data.GroupType;
 
 public class SetDiminuendoCommand extends SetCrescendoCommand {
 
