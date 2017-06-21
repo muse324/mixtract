@@ -10,6 +10,7 @@ import net.muse.gui.*;
 import net.muse.gui.GroupingPanel.PrintGroupInfoCommand;
 import net.muse.misc.Command;
 import net.muse.misc.MuseAppCommand;
+import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.MXTuneData;
@@ -22,6 +23,9 @@ import net.muse.mixtract.gui.command.*;
  * @since 2008/04/21
  */
 public class MixtractCommand extends MuseAppCommand {
+	public static Mixtract main() {
+		return (Mixtract) _main;
+	}
 
 	public static final MuseAppCommand SET_CHORD = new SetChordCommand(
 			"Set Chord", "和音を付与");
@@ -81,11 +85,11 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MuseAppCommand SHOW_SIMILAR_GROUPS = new ShowSimilarGroupsCommand(
 			"Show similar groups");
 
-	public static final MuseAppCommand SEARCH = new SearchCommand("Search", "検索");
+	public static final MuseAppCommand SEARCH = new SearchCommand("Search",
+			"検索");
 
 	public static final MuseAppCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
 			"GTTMAnalysis");
-
 
 	protected static final SelectedObjects _selectedObjects = new SelectedObjects();
 
@@ -105,14 +109,15 @@ public class MixtractCommand extends MuseAppCommand {
 	private static GroupAnalyzer ana;
 	private static MuseAppCommand commandLists[] = new MuseAppCommand[] {
 			ADD_GROUP, ANALYZE_STRUCTURE, DELETE_GROUP, DETAIL, EDIT_GROUP,
-			MOUSE_DISPLAY, OPEN_RULEPANEL, PRINT_ALL_SIMILAR_GROUPS, PRINT_ALLGROUPS,
-			PRINT_SIMILAR_GROUPS, PRINT_SUBGROUPS, OPEN_MUSICXML, OPEN_RULEMAP,
-			REDRAW, REFRESH, SELECT_GROUP, SHOW_SIMILAR_GROUPS, APPLY_PULSES_CHOPINS,
-			APPLY_PULSES_MOZARTS, APPLY_TOPONOTE, MAKE_GROUP, CHANGE_PART,
-			EXPR_LINE_DISPLAY, EXPR_VIEW_DISPLAY, RESET_PRAMETERS, SEARCH, RENDER,
-			ANALYZE_GTTM_STRUCTURE, APPLY_HIERARCHICAL_PARAMS, OPEN_STRUCTURE_DATA,
-			CLEAR_ALLGROUPS, SET_CHORD, SET_KEY, SET_TYPE_CRESC, SET_TYPE_DIM,
-			PRINT_GROUP_INFO };
+			MOUSE_DISPLAY, OPEN_RULEPANEL, PRINT_ALL_SIMILAR_GROUPS,
+			PRINT_ALLGROUPS, PRINT_SIMILAR_GROUPS, PRINT_SUBGROUPS,
+			OPEN_MUSICXML, OPEN_RULEMAP, REDRAW, REFRESH, SELECT_GROUP,
+			SHOW_SIMILAR_GROUPS, APPLY_PULSES_CHOPINS, APPLY_PULSES_MOZARTS,
+			APPLY_TOPONOTE, MAKE_GROUP, CHANGE_PART, EXPR_LINE_DISPLAY,
+			EXPR_VIEW_DISPLAY, RESET_PRAMETERS, SEARCH, RENDER,
+			ANALYZE_GTTM_STRUCTURE, APPLY_HIERARCHICAL_PARAMS,
+			OPEN_STRUCTURE_DATA, CLEAR_ALLGROUPS, SET_CHORD, SET_KEY,
+			SET_TYPE_CRESC, SET_TYPE_DIM, PRINT_GROUP_INFO };
 
 	/**
 	 * @param main
@@ -130,7 +135,7 @@ public class MixtractCommand extends MuseAppCommand {
 	 * @return the _mainFrame
 	 */
 	public static final MXMainFrame getMainFrame() {
-		return (MXMainFrame) _mainFrame;
+		return (MXMainFrame) frame();
 	}
 
 	/**
@@ -143,8 +148,11 @@ public class MixtractCommand extends MuseAppCommand {
 	/**
 	 * @return
 	 */
-	public static final MXTuneData getTarget() {
+	public static final MXTuneData target() {
 		return (MXTuneData) _target;
+	}
+	public static MXMainFrame frame() {
+		return (MXMainFrame) _mainFrame;
 	}
 
 	/**
@@ -158,14 +166,14 @@ public class MixtractCommand extends MuseAppCommand {
 	 * @param _frame
 	 */
 	public static void setJFrame(JFrame owner) {
-		_mainFrame = (MainFrame) owner;
+		setMainFrame((MainFrame) owner);
 	}
 
 	/**
 	 * @param main2
 	 */
 	public static void setMainObject(MuseApp main) {
-		_main = main;
+		setMain(main);
 	}
 
 	public static void setTarget(TuneData target) {
@@ -234,18 +242,20 @@ public class MixtractCommand extends MuseAppCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-		// _selectedObjects.clearAll();
-		// _target.getGroupArrayList();
-		// _mainFrame.getPianoroll().repaint();
-		// // _mainFrame.getExpressionPanel().clearGroup();
-		// ana = GTTMAnalyzer.run(_target, GTTMAnalyzer.doScoreAnalysis(),
-		// false);
-		// _target.setLatestGroupAnalysis(ana);
-		// _mainFrame.notifyReadTuneData(_target);
+			// _selectedObjects.clearAll();
+			// _target.getGroupArrayList();
+			// _mainFrame.getPianoroll().repaint();
+			// // _mainFrame.getExpressionPanel().clearGroup();
+			// ana = GTTMAnalyzer.run(_target, GTTMAnalyzer.doScoreAnalysis(),
+			// false);
+			// _target.setLatestGroupAnalysis(ana);
+			// _mainFrame.notifyReadTuneData(_target);
 		}
 
 	}
-	private static final class ApplyPuliseMozartsCommand extends MixtractCommand {
+
+	private static final class ApplyPuliseMozartsCommand extends
+			MixtractCommand {
 
 		public ApplyPuliseMozartsCommand(String... lang) {
 			super(lang);
@@ -256,12 +266,14 @@ public class MixtractCommand extends MuseAppCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-		// ExpressionMaker
-		// .transerPulsesTo(getSelectedObjects().getGroup(), "Mozart");
+			// ExpressionMaker
+			// .transerPulsesTo(getSelectedObjects().getGroup(), "Mozart");
 		}
 
 	}
-	private static final class ApplyPulseChopinsCommand extends MixtractCommand {
+
+	private static final class ApplyPulseChopinsCommand extends
+			MixtractCommand {
 
 		public ApplyPulseChopinsCommand(String... lang) {
 			super(lang);
@@ -276,6 +288,7 @@ public class MixtractCommand extends MuseAppCommand {
 		}
 
 	}
+
 	private static final class ApplyTopNoteCommand extends MixtractCommand {
 
 		public ApplyTopNoteCommand(String... lang) {
@@ -287,10 +300,12 @@ public class MixtractCommand extends MuseAppCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-			_mainFrame.getGroupingPanel().transferExpressionOfMostSimilarGroup();
+			frame().getGroupingPanel()
+					.transferExpressionOfMostSimilarGroup();
 		}
 
 	}
+
 	private static final class DeleteGroupCommand extends MixtractCommand {
 
 		public DeleteGroupCommand(String... lang) {
@@ -302,11 +317,12 @@ public class MixtractCommand extends MuseAppCommand {
 
 		@Override public void execute() {
 			if (_target != null) {
-				GroupLabel sel = _mainFrame.getGroupingPanel().getSelectedGroup();
+				GroupLabel sel = frame().getGroupingPanel()
+						.getSelectedGroup();
 				// _target.deleteGUIGroup(_selectedObjects.getGroupLabel());
 				// _selectedObjects.clearAll();
-				_main.getData().deleteGroupFromData(sel.getGroup());
-				_main.notifyDeleteGroup(sel);
+				main().getData().deleteGroupFromData(sel.getGroup());
+				main().notifyDeleteGroup(sel);
 				// getPianorollScroll().repaint();
 				// getGroupingPanel().deselectLabel();
 				// getExpressionPanel().clearGroup();
@@ -315,6 +331,7 @@ public class MixtractCommand extends MuseAppCommand {
 		}
 
 	}
+
 	private static final class ExprLineCommand extends MixtractCommand {
 
 		public ExprLineCommand(String... lang) {
@@ -325,13 +342,14 @@ public class MixtractCommand extends MuseAppCommand {
 			 */
 
 		@Override public void execute() {
-		// _mainFrame.getExpressionPanel().setShowExprLine(
-		// !_mainFrame
-		// .getExpressionPanel()
-		// .isShowExprLine());
+			// _mainFrame.getExpressionPanel().setShowExprLine(
+			// !_mainFrame
+			// .getExpressionPanel()
+			// .isShowExprLine());
 		}
 
 	}
+
 	private static final class ExprViewCommand extends MixtractCommand {
 
 		public ExprViewCommand(String... lang) {
@@ -342,13 +360,14 @@ public class MixtractCommand extends MuseAppCommand {
 			 */
 
 		@Override public void execute() {
-		// _mainFrame.getExpressionPanel()
-		// .setShowExpression(
-		// !_mainFrame.getExpressionPanel()
-		// .isShowExpression());
+			// _mainFrame.getExpressionPanel()
+			// .setShowExpression(
+			// !_mainFrame.getExpressionPanel()
+			// .isShowExpression());
 		}
 
 	}
+
 	private static final class GTTMAnalysisCommand extends
 			AnalyzeStructureCommand {
 
@@ -372,15 +391,16 @@ public class MixtractCommand extends MuseAppCommand {
 
 		/* ユーザ定義のグルーピング */
 		private void makeUserGroup() {
-		// if (_target != null) {
-		// GTTMAnalyzer.run(_target, _mainFrame.getJCheckBoxMenuItem()
-		// .isSelected(), false);
-		// _main.notifySetTarget(_target);
-		// _mainFrame.refreshDatabase();
-		// }
+			// if (_target != null) {
+			// GTTMAnalyzer.run(_target, _mainFrame.getJCheckBoxMenuItem()
+			// .isSelected(), false);
+			// _main.notifySetTarget(_target);
+			// _mainFrame.refreshDatabase();
+			// }
 		}
 
 	}
+
 	private static final class MouseDisplayCommand extends MixtractCommand {
 
 		public MouseDisplayCommand(String... lang) {
@@ -392,13 +412,12 @@ public class MixtractCommand extends MuseAppCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-			_mainFrame.getGroupingPanel()
-					.setDisplayMousePointer(
-																	!_mainFrame.getGroupingPanel()
-																			.isDisplayMousePointer());
+			frame().getGroupingPanel().setDisplayMousePointer(!frame()
+					.getGroupingPanel().isDisplayMousePointer());
 		}
 
 	}
+
 	private static class OpenRuleMapCommand extends OpenMusicXMLCommand {
 
 		protected OpenRuleMapCommand(String... lang) {
@@ -412,23 +431,24 @@ public class MixtractCommand extends MuseAppCommand {
 		 * ()
 		 */
 		@Override public void execute() {
-		// try {
-		// final File fp = new File(openFileDialog());
-		// GUIUtil.printConsole(fp.getName() + " is reading...");
-		// final Rulemap rulemap = Rulemap.createRulemap(fp);
-		// _mainFrame.getParamPanel().setRulemap(rulemap);
-		// _mainFrame.getParamPanel().assignRulemapToSliders();
-		// GUIUtil.printConsole("done.\n");
-		// } catch (final NullPointerException e) {
-		// GUIUtil.printConsole("openRuleMapFromDialog cancelled");
-		// } catch (final FileNotFoundException e) {
-		// e.printStackTrace();
-		// } catch (final IOException e) {
-		// e.printStackTrace();
-		// }
+			// try {
+			// final File fp = new File(openFileDialog());
+			// GUIUtil.printConsole(fp.getName() + " is reading...");
+			// final Rulemap rulemap = Rulemap.createRulemap(fp);
+			// _mainFrame.getParamPanel().setRulemap(rulemap);
+			// _mainFrame.getParamPanel().assignRulemapToSliders();
+			// GUIUtil.printConsole("done.\n");
+			// } catch (final NullPointerException e) {
+			// GUIUtil.printConsole("openRuleMapFromDialog cancelled");
+			// } catch (final FileNotFoundException e) {
+			// e.printStackTrace();
+			// } catch (final IOException e) {
+			// e.printStackTrace();
+			// }
 		}
 
 	}
+
 	private static final class OpenRulePanelCommand extends MixtractCommand {
 
 		public OpenRulePanelCommand(String... lang) {
@@ -444,12 +464,13 @@ public class MixtractCommand extends MuseAppCommand {
 		}
 
 		public void showParameterPanel() {
-		// final JDialog dialog = new JDialog(_mainFrame);
-		// dialog.add(_mainFrame.getParamPanel());
-		// dialog.pack();
-		// dialog.setVisible(true);
+			// final JDialog dialog = new JDialog(_mainFrame);
+			// dialog.add(_mainFrame.getParamPanel());
+			// dialog.pack();
+			// dialog.setVisible(true);
 		}
 	}
+
 	/**
 	 * <h1>OpenStructureDataCommand</h1>
 	 *
@@ -475,29 +496,30 @@ public class MixtractCommand extends MuseAppCommand {
 		 * ()
 		 */
 		@Override public void execute() {
-		// if (isAssertion()) {
-		// assert _target != null : "target is null";
-		// assert ana != null : "target has't been analysed structure yet";
-		// }
-		// String fn = openFileDialog();
-		// try {
-		// GTTMAnalyzer.setReadFile(true);
-		// ana.analyzeGroupStructure(fn);
-		// _target.setLatestGroupAnalysis(ana);
-		// _mainFrame.setNewData(true);
-		// if (_target != null) {
-		// _mainFrame.notifySetTarget(_target);
-		// _mainFrame.notifyReadTuneData(_target);
-		// _mainFrame.refreshDatabase();
-		// }
-		// // _mainFrame.getGroupingPanel().repaint();
-		// // _mainFrame.getTempoPanel().repaint();
-		// } catch (TransformerException e) {
-		// e.printStackTrace();
-		// }
+			// if (isAssertion()) {
+			// assert _target != null : "target is null";
+			// assert ana != null : "target has't been analysed structure yet";
+			// }
+			// String fn = openFileDialog();
+			// try {
+			// GTTMAnalyzer.setReadFile(true);
+			// ana.analyzeGroupStructure(fn);
+			// _target.setLatestGroupAnalysis(ana);
+			// _mainFrame.setNewData(true);
+			// if (_target != null) {
+			// _mainFrame.notifySetTarget(_target);
+			// _mainFrame.notifyReadTuneData(_target);
+			// _mainFrame.refreshDatabase();
+			// }
+			// // _mainFrame.getGroupingPanel().repaint();
+			// // _mainFrame.getTempoPanel().repaint();
+			// } catch (TransformerException e) {
+			// e.printStackTrace();
+			// }
 		}
 
 	}
+
 	/**
 	 * <h1>PrintAllGroupsCommand</h1>
 	 * <p>
@@ -556,12 +578,13 @@ public class MixtractCommand extends MuseAppCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-			_main.printAllSimilarList();
+			main().printAllSimilarList();
 		}
 
 	}
 
-	private static final class PrintSimilarGroupsCommand extends MixtractCommand {
+	private static final class PrintSimilarGroupsCommand extends
+			MixtractCommand {
 
 		public PrintSimilarGroupsCommand(String... lang) {
 			super(lang);
@@ -572,7 +595,7 @@ public class MixtractCommand extends MuseAppCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-			_main.printSimilarList();
+			main().printSimilarList();
 		}
 
 	}
@@ -596,13 +619,13 @@ public class MixtractCommand extends MuseAppCommand {
 		 * @param g
 		 */
 		private void printSubGroups(Group g) {
-		// if (g == null)
-		// return;
-		// GUIUtil.printConsole("Gr." + g.name() + ", hierarchy=" +
-		// g.isHierarchy()
-		// + ", level=" + g.getLevel() + ", " + g.getScoreNotelist());
-		// printSubGroups(g.getChildFormerGroup());
-		// printSubGroups(g.getChildLatterGroup());
+			// if (g == null)
+			// return;
+			// GUIUtil.printConsole("Gr." + g.name() + ", hierarchy=" +
+			// g.isHierarchy()
+			// + ", level=" + g.getLevel() + ", " + g.getScoreNotelist());
+			// printSubGroups(g.getChildFormerGroup());
+			// printSubGroups(g.getChildLatterGroup());
 		}
 
 	}
@@ -626,12 +649,13 @@ public class MixtractCommand extends MuseAppCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-		// _mainFrame.searchSimilarPhrases();
-		// // _mainFrame.getGroupingPanel().searchSimilarityOfThisGroup();
+			// _mainFrame.searchSimilarPhrases();
+			// // _mainFrame.getGroupingPanel().searchSimilarityOfThisGroup();
 		}
 	}
 
-	private static final class ShowSimilarGroupsCommand extends MixtractCommand {
+	private static final class ShowSimilarGroupsCommand extends
+			MixtractCommand {
 
 		public ShowSimilarGroupsCommand(String... lang) {
 			super(lang);
@@ -642,11 +666,12 @@ public class MixtractCommand extends MuseAppCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-		// final SimilarGroupPanel panel = new SimilarGroupPanel(_main, _target,
-		// getSelectedObjects().getGroupLabel().getGroup(), _mainFrame
-		// .getGroupingPanel().sim);
-		// panel.pack();
-		// panel.setVisible(true);
+			// final SimilarGroupPanel panel = new SimilarGroupPanel(_main,
+			// _target,
+			// getSelectedObjects().getGroupLabel().getGroup(), _mainFrame
+			// .getGroupingPanel().sim);
+			// panel.pack();
+			// panel.setVisible(true);
 		}
 
 	}

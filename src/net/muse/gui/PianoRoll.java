@@ -17,7 +17,8 @@ import net.muse.misc.Util;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
-import net.muse.mixtract.gui.*;
+import net.muse.mixtract.gui.MixtractCommand;
+import net.muse.mixtract.gui.ViewerMode;
 import net.muse.mixtract.gui.command.SetChordCommand;
 
 /**
@@ -285,8 +286,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			@Override public void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				boolean enabled = selectedNoteLabels.size() > 0;
-				getPopup().add(addMenuItem(MuseAppCommand.MAKE_GROUP,
-						enabled));
+				getPopup().add(addMenuItem(MuseAppCommand.MAKE_GROUP, enabled));
 				getPopup().addSeparator();
 
 				// annotate chord
@@ -785,7 +785,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	/**
 	 * @return selectedNoteLabels
 	 */
-	private final LinkedList<NoteLabel> getSelectedNoteLabels() {
+	public final LinkedList<NoteLabel> getSelectedNoteLabels() {
 		return selectedNoteLabels;
 	}
 
@@ -940,7 +940,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-			for (Component c : _mainFrame.getPianoroll().getComponents()) {
+			for (Component c : frame().getPianoroll().getComponents()) {
 				NoteLabel l = (NoteLabel) c;
 				if (l.isSelected()) {
 					l.setPartNumber(newPart);
@@ -968,15 +968,15 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-			final List<NoteLabel> notes = _mainFrame.getPianoroll()
+			LinkedList<NoteLabel> notes = frame().getPianoroll()
 					.getSelectedNoteLabels();
 			Group g = createUserGroup(notes.get(0), notes.get(notes.size()
 					- 1));
-			g.setIndex(_target.getUniqueGroupIndex());
-			_target.addGroupArrayList(g);
-			_main.notifyAddGroup(g);
-			_main.analyzeStructure(_target, null);
-			_main.notifySetTarget();
+			g.setIndex(target().getUniqueGroupIndex());
+			target().addGroupArrayList(g);
+			main().notifyAddGroup(g);
+			main().analyzeStructure(target(), null);
+			main().notifySetTarget();
 			// // ArrayList<Group> newlist = createUserGroup();
 			// _target.addUserGroup(g);
 			// _target.getGroupList(true);
@@ -1092,7 +1092,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-			for (Component c : _mainFrame.getPianoroll().getComponents()) {
+			for (Component c : frame().getPianoroll().getComponents()) {
 				NoteLabel l = (NoteLabel) c;
 				if (l.isSelected()) {
 					l.getScoreNote().setFifths(Util.valueOfFifths(newKey));
@@ -1134,7 +1134,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-			for (Component c : _mainFrame.getPianoroll().getComponents()) {
+			for (Component c : frame().getPianoroll().getComponents()) {
 				NoteLabel l = (NoteLabel) c;
 				if (l.isSelected()) {
 					l.getScoreNote().setKeyMode(newMode, l.getScoreNote()

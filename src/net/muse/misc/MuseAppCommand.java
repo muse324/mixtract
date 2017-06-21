@@ -34,7 +34,7 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	protected static MainFrame _mainFrame;
 
 
-	public static TuneData getTarget() {
+	public static TuneData target() {
 		return _target;
 	}
 
@@ -51,12 +51,12 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 		 */
 		@Override public void execute() {
 			if (_target != null) {
-				GroupLabel sel = _mainFrame.getGroupingPanel()
+				GroupLabel sel = frame().getGroupingPanel()
 						.getSelectedGroup();
 				// _target.deleteGUIGroup(_selectedObjects.getGroupLabel());
 				// _selectedObjects.clearAll();
-				_main.getData().deleteGroupFromData(sel.getGroup());
-				_main.notifyDeleteGroup(sel);
+				main().getData().deleteGroupFromData(sel.getGroup());
+				main().notifyDeleteGroup(sel);
 				// getPianorollScroll().repaint();
 				// getGroupingPanel().deselectLabel();
 				// getExpressionPanel().clearGroup();
@@ -238,7 +238,7 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 			 * @see net.muse.misc.Command#execute()
 			 */
 			@Override public void execute() {
-				_mainFrame.getGroupingPanel().showDetailViewer();
+				frame().getGroupingPanel().showDetailViewer();
 			}
 
 		}
@@ -254,7 +254,7 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 			 * @see net.muse.misc.Command#execute()
 			 */
 			@Override public void execute() {
-				_mainFrame.refreshDatabase();
+				frame().refreshDatabase();
 			}
 
 		}
@@ -264,5 +264,33 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	}
 
 	@Override public void setGroup(GroupLabel groupLabel) {}
+
+	/**
+	 * @return _main
+	 */
+	public static MuseApp main() {
+		return _main;
+	}
+
+	/**
+	 * @param _main セットする _main
+	 */
+	protected static void setMain(MuseApp _main) {
+		MuseAppCommand._main = _main;
+	}
+
+	/**
+	 * @return _mainFrame
+	 */
+	public static MainFrame frame() {
+		return _mainFrame;
+	}
+
+	/**
+	 * @param _mainFrame セットする _mainFrame
+	 */
+	public static void setMainFrame(MainFrame _mainFrame) {
+		MuseAppCommand._mainFrame = _mainFrame;
+	}
 
 }

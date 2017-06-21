@@ -25,7 +25,7 @@ public class SetChordCommand extends MixtractCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override public void execute() {
-		for (Component c : _mainFrame.getPianoroll().getComponents()) {
+		for (Component c : frame().getPianoroll().getComponents()) {
 			NoteLabel l = (NoteLabel) c;
 			if (l.isSelected()) {
 				l.getScoreNote().setChord(selectedChord);
