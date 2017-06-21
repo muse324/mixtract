@@ -295,7 +295,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 		this.synthe = synthe;
 	}
 
-	public void setTarget(TuneData target) {
+	public void setTarget(MXTuneData target) {
 		resetKeyRegister();
 
 		setKeyRegister(target.getRootGroup());

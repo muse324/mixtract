@@ -35,7 +35,7 @@ public class CMXUtilities extends MuseObject {
 	}
 
 	/*
-	public static TreeView<Note> checkBeam(TuneData data, Note note, int level,
+	public static TreeView<Note> checkBeam(MXTuneData data, Note note, int level,
 			TreeView<Note> tv) {
 		String val = note.getChildText("beam");
 		testPrint(val);

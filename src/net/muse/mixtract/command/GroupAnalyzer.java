@@ -15,7 +15,7 @@ import net.muse.mixtract.data.*;
 public class GroupAnalyzer extends MuseObject implements Runnable {
 
 	public static final int rootDiv = 480;
-	private final TuneData data;
+	private final MXTuneData data;
 	private Group root;
 
 	/**
@@ -27,7 +27,7 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 	 * @param target グループ構造を分析するTuneData
 	 * @param doScoreAnalysis インスタンス化と同時に楽譜分析をするかどうか
 	 */
-	public GroupAnalyzer(TuneData target, boolean doScoreAnalysis) {
+	public GroupAnalyzer(MXTuneData target, boolean doScoreAnalysis) {
 		setScoreAnalysis(doScoreAnalysis);
 		data = target;
 	}

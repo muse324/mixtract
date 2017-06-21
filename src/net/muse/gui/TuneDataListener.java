@@ -1,6 +1,6 @@
 package net.muse.gui;
 
-import net.muse.mixtract.data.TuneData;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 /**
@@ -20,7 +20,7 @@ public interface TuneDataListener extends GroupEditListener<GroupLabel>{
 	 *
 	 * @param target 楽曲データ
 	 */
-	void setTarget(TuneData target);
+	void setTarget(MXTuneData target);
 
 	/**
 	 * 演奏表情を変更します。

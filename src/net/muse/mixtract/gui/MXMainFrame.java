@@ -7,7 +7,7 @@ import javax.swing.*;
 
 import net.muse.gui.*;
 import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.TuneData;
+import net.muse.mixtract.data.MXTuneData;
 
 public class MXMainFrame extends MainFrame {
 
@@ -21,9 +21,9 @@ public class MXMainFrame extends MainFrame {
 
 	/*
 	 * (非 Javadoc)
-	 * @see net.muse.gui.MainFrame#setTarget(net.muse.mixtract.data.TuneData)
+	 * @see net.muse.gui.MainFrame#setTarget(net.muse.mixtract.data.MXTuneData)
 	 */
-	@Override public void setTarget(TuneData target) {
+	@Override public void setTarget(MXTuneData target) {
 		super.setTarget(target);
 		getAnalyzeButton().setEnabled(true);
 	}

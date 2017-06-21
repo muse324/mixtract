@@ -10,7 +10,7 @@ public class MixtractMIDIController extends MIDIController implements
 		TuneDataListener {
 
 	private ThreadPlayer smfplayer;
-	private TuneData data;
+	private MXTuneData data;
 
 	public MixtractMIDIController(String deviceName, int ticksPerBeat) {
 		openMidiDevice(deviceName);
@@ -34,7 +34,7 @@ public class MixtractMIDIController extends MIDIController implements
 		return new MixtractMIDIController(deviceName, ticksPerBeat);
 	}
 
-	public void setTarget(TuneData target) {
+	public void setTarget(MXTuneData target) {
 		data = target;
 	}
 

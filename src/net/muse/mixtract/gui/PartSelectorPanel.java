@@ -16,7 +16,7 @@ import net.muse.mixtract.data.curve.PhraseCurveType;
 public class PartSelectorPanel extends JPanel implements TuneDataListener {
 
 	private static final long serialVersionUID = 1L;
-	private TuneData data = null;
+	private MXTuneData data = null;
 	private ArrayList<JRadioButton> checkBoxList = new ArrayList<JRadioButton>(); // @jve:decl-index=0:
 	private ButtonGroup editGroup = new ButtonGroup();
 
@@ -73,7 +73,7 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 
 	}
 
-	public void setTarget(TuneData target) {
+	public void setTarget(MXTuneData target) {
 		if (data != target) {
 			data = target;
 			removeAll();

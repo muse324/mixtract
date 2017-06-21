@@ -24,7 +24,7 @@ public class TempoCurve extends PhraseCurve {
 	 * .data.TuneData)
 	 */
 	@Override
-	public void apply(TuneData target, Group gr) {
+	public void apply(MXTuneData target, Group gr) {
 		if (tempolist != target.getTempoList())
 			tempolist = target.getTempoList();
 		if (lastNote != target.getLastNote(0))

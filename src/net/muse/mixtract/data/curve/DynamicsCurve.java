@@ -24,7 +24,7 @@ public class DynamicsCurve extends PhraseCurve {
 	 * .data.TuneData)
 	 */
 	@Override
-	public void apply(TuneData target, Group gr) {
+	public void apply(MXTuneData target, Group gr) {
 		dynamicsList = target.getDynamicsList();
 		lastNote = target.getLastNote(0);
 		volume = target.getVolume();

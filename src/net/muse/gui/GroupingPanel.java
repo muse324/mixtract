@@ -78,7 +78,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	private MuseApp main;
 
 	/* 格納データ */
-	private TuneData data;
+	private MXTuneData data;
 	private final ArrayList<GroupLabel> grouplist;
 	private GroupLabel selectedGroup;
 	private int maximumGroupLevel = 0;
@@ -252,7 +252,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * @deprecated Use {@link #readTuneData()} instead
 	 */
 	@Deprecated
-	public void readTuneData(TuneData target) {
+	public void readTuneData(MXTuneData target) {
 		readTuneData();
 		repaint();
 	}
@@ -483,7 +483,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		return LABEL_HEIGHT * level + 15;
 	}
 
-	public void setTarget(TuneData target) {
+	public void setTarget(MXTuneData target) {
 		if (data != target) {
 			data = target;
 		}

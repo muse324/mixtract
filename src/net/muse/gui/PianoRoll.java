@@ -41,7 +41,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	private MuseApp main; // @jve:decl-index=0:
 	/** 楽曲データ */
-	private TuneData data; // @jve:decl-index=0:
+	private MXTuneData data; // @jve:decl-index=0:
 	/* 各種描画モード */
 	private ViewerMode viewerMode; // @jve:decl-index=0:
 	private boolean isMouseSelectBoxDraw;
@@ -215,7 +215,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	public void setShowCurrentX(boolean showCurrentX, int x) {}
 
-	public void setTarget(TuneData target) {
+	public void setTarget(MXTuneData target) {
 		this.setData(target);
 		ChangePartCommand.setPartSize(target.getRootGroup().size());
 		makeNoteLabel();
@@ -899,14 +899,14 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	/**
 	 * @return data
 	 */
-	public TuneData data() {
+	public MXTuneData data() {
 		return data;
 	}
 
 	/**
 	 * @param data セットする data
 	 */
-	public void setData(TuneData data) {
+	public void setData(MXTuneData data) {
 		this.data = data;
 	}
 

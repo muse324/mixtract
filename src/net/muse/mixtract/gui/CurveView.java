@@ -16,7 +16,7 @@ public class CurveView extends JScrollPane implements TuneDataListener {
 	private static final long serialVersionUID = 1L;
 	static final int DEFAULT_HEIGHT = 140;
 	private CurvePanel curvePanel = null;
-	private TuneData data; // @jve:decl-index=0:
+	private MXTuneData data; // @jve:decl-index=0:
 	private int bpmTick;
 	private PhraseCurveType type;
 
@@ -66,7 +66,7 @@ public class CurveView extends JScrollPane implements TuneDataListener {
 		this.setSize(new Dimension(305, 182)); // Generated
 	}
 
-	public void setTarget(TuneData target) {
+	public void setTarget(MXTuneData target) {
 		data = target;
 		if (Mixtract.isAssertion())
 			assert data != null : "data is null";

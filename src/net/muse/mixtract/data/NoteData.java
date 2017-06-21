@@ -1,6 +1,5 @@
 package net.muse.mixtract.data;
 
-
 import java.util.ArrayList;
 
 import javax.sound.midi.InvalidMidiDataException;
@@ -9,7 +8,7 @@ import javax.swing.JOptionPane;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
-import net.muse.misc.MuseObject;
+import net.muse.data.SequenceData;
 import net.muse.misc.Util;
 
 /**
@@ -23,21 +22,13 @@ import net.muse.misc.Util;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/09/20
  */
-public class NoteData extends MuseObject {
+public class NoteData extends SequenceData {
 
+	/** 音価の最小値。TODO 単位系は各プログラムで確認してください。 */
 	private static final int minimumDuration = 50;
 
 	/** MusicXML.Note */
 	private Note note;
-
-	/** 後続音 */
-	private NoteData next = null;
-	/** 先行音 */
-	private NoteData prev = null;
-	/** 和音(上) **/
-	private NoteData parent = null;
-	/** 和音(下) **/
-	private NoteData child = null;
 
 	/**
 	 * MIDI ノートオンイベント
@@ -53,10 +44,10 @@ public class NoteData extends MuseObject {
 	 */
 	private NoteScheduleEvent noteOff;
 
-	/** 発音時刻 */
+	/** 楽譜上の発音時刻。TODO 単位系は各プログラムで確認してください。 */
 	private int onset;
 
-	/** 消音時刻 */
+	/** 楽譜上の消音時刻。TODO 単位系は各プログラムで確認してください。 */
 	private int offset;
 
 	/** 音価（楽譜上） */
@@ -67,30 +58,51 @@ public class NoteData extends MuseObject {
 	 * 声部番号(1～)
 	 */
 	private int partNumber = 0;
+
 	/**
 	 * Measure number begins from 0 (Auftakt) by integer.<br>
 	 * 小節番号(0～)
 	 */
 	private int measureNumber = -1;
-	/** 内声番号(1～) */
+
+	/** 声部番号。１から始まる。0の場合、声部の区別がされていないことを表す。 */
 	private int voice = 0;
+	/** 音名 */
 	private String noteName = "";
+	/** MIDIノートナンバー */
 	private int noteNumber;
+	/** 装飾音であるかどうかを判別します。 */
 	private boolean grace = false;
+	/** タイであるかどうかを判別します。 */
 	private boolean tied;
 	private final int index;
+	/** 休符であるかどうかを判別します。 */
 	private boolean rest = false;
+	/**
+	 * 小節内の拍の位置。 TODO １拍目を0.0とするか1.0とするかは各プログラムで確認してください。
+	 */
 	private double beat;
+	/**
+	 * 実時間表記による開始時刻。TODO 単位を[秒]か[ミリ秒]にするかは各プログラムで確認してください。
+	 */
 	private double realOnset;
+	/**
+	 * 実時間表記による消音時刻。TODO 単位を[秒]か[ミリ秒]にするかは各プログラムで確認してください。
+	 */
 	private double realOffset;
-	/** 保科理論による頂点情報 */
+	/** 当該音符に適用された保科理論ベースの頂点情報(ルール)の一覧 */
 	private final ArrayList<ApexInfo> apexlist = new ArrayList<ApexInfo>();
+	/** 頂点らしさを表すスコア。値のとる範囲は各プログラムで確認してください。 */
 	private double apexScore;
+	/** 当該音符に割り当てられる和声記号 */
 	private Harmony chord = Harmony.I;
+	/** 当該音符に割り当てられる調性 [長調 or 単調]。 */
 	private KeyMode keyMode = KeyMode.major;
+	/** 当該音符に割り当てられる調号 */
 	private int fifths = 0;
-
+	/** 和音の根音であるかどうかを判別します。 */
 	private boolean nonChord = false;
+
 	/**
 	 * @return
 	 */
@@ -102,31 +114,15 @@ public class NoteData extends MuseObject {
 			boolean rest, boolean grace, boolean tie, int tval, double beat) {
 		// 基本情報
 		index = i;
+		initialize(partNumber, noteName, Util.getNoteNumber(noteName), 0, grace,
+				tie, rest, beat, chord);
 		realOnset = this.onset = onset;
 		realOffset = this.offset = offset;
-		this.partNumber = partNumber;
-		this.noteName = noteName;
-		this.noteNumber = Util.getNoteNumber(noteName);
 		this.timeValue = tval;
-		this.grace = grace;
-		this.tied = tie;
 		timeValue = (grace) ? getDefaultGraseNoteDuration() : offset - onset;
-		this.rest = rest;
-		this.beat = beat;
-		this.chord = Harmony.I;
 
 		// ノートイベント
-		try {
-			noteOn = new NoteScheduleEvent(this, onsetInMsec(getDefaultBPM()),
-					ShortMessage.NOTE_ON, getDefaultVelocity());
-			noteOff = new NoteScheduleEvent(this,
-					offsetInMsec(getDefaultBPM()), ShortMessage.NOTE_OFF,
-					getDefaultOffVelocity());
-		} catch (InvalidMidiDataException e) {
-			JOptionPane.showMessageDialog(null,
-					String.format("invalid MIDI data for %s", this));
-		}
-		setNonChordNote(chord);
+		createMIDINoteEvent(getDefaultBPM(), getDefaultVelocity());
 	}
 
 	/**
@@ -140,45 +136,32 @@ public class NoteData extends MuseObject {
 		this.note = note;
 		// 基本情報
 		index = idx;
-		this.partNumber = partNumber;
+		initialize(partNumber, note.noteName(), (note.rest()) ? -1
+				: note.notenum(), note.voice(), note.grace(), note
+						.tiedTo() != null, note.rest(), note.beat(), Harmony.I);
+
 		measureNumber = note.measure().number();
-		noteName = note.noteName();
-		noteNumber = (note.rest()) ? -1 : note.notenum();
-		voice = note.voice();
 		onset = note.onset(getTicksPerBeat());
 		offset = note.offset(getTicksPerBeat());
 		realOnset = onsetInMsec(bpm);
 		realOffset = offsetInMsec(bpm);
-		timeValue = (note.grace()) ? getDefaultGraseNoteDuration() : note
-				.tiedDuration(getTicksPerBeat());
-		rest = note.rest();
-		beat = note.beat();
-		chord = Harmony.I;
-
-		// 装飾系
-		grace = note.grace();
+		timeValue = (note.grace()) ? getDefaultGraseNoteDuration()
+				: note.tiedDuration(getTicksPerBeat());
 
 		// ノートイベント
-		try {
-			noteOn = new NoteScheduleEvent(this, onsetInMsec(bpm),
-					ShortMessage.NOTE_ON, vel);
-			noteOff = new NoteScheduleEvent(this, offsetInMsec(bpm),
-					ShortMessage.NOTE_OFF, vel);
-		} catch (InvalidMidiDataException e) {
-			e.printStackTrace();
-		}
-		setNonChordNote(chord);
+		createMIDINoteEvent(bpm, vel);
 	}
 
 	public double beat() {
 		return beat;
 	}
 
-	/**
-	 * @return down
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.SequenceData#child()
 	 */
-	public NoteData child() {
-		return child;
+	@Override public NoteData child() {
+		return (NoteData) super.child();
 	}
 
 	/**
@@ -196,8 +179,7 @@ public class NoteData extends MuseObject {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override
-	public boolean equals(Object obj) {
+	@Override public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
 		NoteData cmp = (NoteData) obj;
@@ -226,33 +208,16 @@ public class NoteData extends MuseObject {
 		return keyMode;
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
-
-	public boolean hasNext() {
-		return next != null;
-	}
-
-	public boolean hasParent() {
-		return parent != null;
-	}
-
-	public boolean hasPrevious() {
-		return prev != null;
-	}
-
 	public int measureNumber() {
 		return measureNumber;
 	}
 
-	public NoteData next() {
-		return next;
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.SequenceData#next()
+	 */
+	@Override public NoteData next() {
+		return (NoteData) super.next();
 	}
 
 	public String noteName() {
@@ -289,6 +254,14 @@ public class NoteData extends MuseObject {
 		return onset() * Util.bpmToBeatTime(bpm) / (double) getTicksPerBeat();
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.SequenceData#parent()
+	 */
+	@Override public NoteData parent() {
+		return (NoteData) super.parent();
+	}
+
 	/**
 	 * @return partNumber
 	 */
@@ -296,11 +269,12 @@ public class NoteData extends MuseObject {
 		return partNumber;
 	}
 
-	/**
-	 * @return prev
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.SequenceData#previous()
 	 */
-	public NoteData previous() {
-		return prev;
+	@Override public NoteData previous() {
+		return (NoteData) super.previous();
 	}
 
 	/**
@@ -354,8 +328,8 @@ public class NoteData extends MuseObject {
 	}
 
 	public void setRealOffset(double offset) {
-		realOffset = (offset < realOnset + minimumDuration)	? realOnset + minimumDuration
-															: offset;
+		realOffset = (offset < realOnset + minimumDuration) ? realOnset
+				+ minimumDuration : offset;
 		noteOff.setOnset((long) realOffset);
 	}
 
@@ -368,8 +342,8 @@ public class NoteData extends MuseObject {
 		try {
 			noteOn.setVelocity(vel);
 		} catch (InvalidMidiDataException e) {
-			JOptionPane.showMessageDialog(null,
-					String.format("invalid velocity %d for %s", vel, this));
+			JOptionPane.showMessageDialog(null, String.format(
+					"invalid velocity %d for %s", vel, this));
 		}
 	}
 
@@ -392,51 +366,16 @@ public class NoteData extends MuseObject {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
-	public String toString() {
-		return String
-				.format("idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tie=%b, fifths=%d, harmony=%s",
-						index(), onset(), noteName(), beat(), timeValue(),
-						partNumber(), measureNumber(), voice(), offset(),
-						velocity(), rest(), child != null, isGrace(), isTied(),
-						fifths(), chord());
+	@Override public String toString() {
+		return String.format(
+				"idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tie=%b, fifths=%d, harmony=%s",
+				index(), onset(), noteName(), beat(), timeValue(), partNumber(),
+				measureNumber(), voice(), offset(), velocity(), rest(),
+				child() != null, isGrace(), isTied(), fifths(), chord());
 	}
 
 	public int velocity() {
 		return noteOn.velocity();
-	}
-
-	/**
-	 * @return grace
-	 */
-	private boolean isGrace() {
-		return grace;
-	}
-
-	/**
-	 * @return tied
-	 */
-	private boolean isTied() {
-		return tied;
-	}
-
-	private void setNonChordNote(Harmony c) {
-		nonChord = true;
-		int[] notes = keyMode.noteIntervals(c);
-		int scale = (noteNumber - fifths) % 12;
-		for (int i = 0; i < notes.length; i++) {
-			if (notes[i] == scale) {
-				nonChord = false;
-				return;
-			}
-		}
-	}
-
-	/**
-	 * @return voice
-	 */
-	private int voice() {
-		return voice;
 	}
 
 	/**
@@ -490,27 +429,10 @@ public class NoteData extends MuseObject {
 	}
 
 	/**
-	 * @return up
-	 */
-	NoteData parent() {
-		return parent;
-	}
-
-	/**
 	 * @param apexScore the apexScore to set
 	 */
 	final void setApexScore(double apexScore) {
 		this.apexScore = apexScore;
-	}
-
-	/**
-	 * @param child セットする child
-	 */
-	void setChild(NoteData note) {
-		if (this.child != note) {
-			this.child = note;
-			this.child.setParent(this);
-		}
 	}
 
 	/**
@@ -520,45 +442,9 @@ public class NoteData extends MuseObject {
 		this.measureNumber = measureNumber;
 	}
 
-	/**
-	 * @param next セットする next
-	 */
-	void setNext(NoteData next) {
-		if (this.next != next) {
-			this.next = next;
-			if (this.next != null)
-				this.next.setPrevious(this);
-		}
-	}
-
 	void setOffset(int offset) {
 		this.offset = offset;
 		getNoteOff().setOnset(offset);
-	}
-
-	/**
-	 * @param note セットする parent
-	 */
-	void setParent(NoteData note) {
-		if (this.parent != note) {
-			this.parent = note;
-			this.parent.setChild(this);
-		}
-	}
-
-	/**
-	 * @param prev セットする prev
-	 */
-	void setPrevious(NoteData prev) {
-		setPrevious(prev, true);
-	}
-
-	void setPrevious(NoteData prev, boolean sync) {
-		if (this.prev != prev) {
-			this.prev = prev;
-			if (sync && prev != null)
-				this.prev.setNext(this);
-		}
 	}
 
 	/**
@@ -569,8 +455,7 @@ public class NoteData extends MuseObject {
 	}
 
 	// TODO 2011.09.02 使ってない様子
-	@Deprecated
-	void slide(int durationOffset) {
+	@Deprecated void slide(int durationOffset) {
 		setRealOffset(offset() + durationOffset);
 	}
 
@@ -582,6 +467,72 @@ public class NoteData extends MuseObject {
 		for (ApexInfo a : apexlist)
 			score += a.getScore();
 		return score;
+	}
+
+	private void createMIDINoteEvent(int bpm, int vel) {
+		try {
+			noteOn = new NoteScheduleEvent(this, onsetInMsec(bpm),
+					ShortMessage.NOTE_ON, vel);
+			noteOff = new NoteScheduleEvent(this, offsetInMsec(bpm),
+					ShortMessage.NOTE_OFF, vel);
+		} catch (InvalidMidiDataException e) {
+			JOptionPane.showMessageDialog(null, String.format(
+					"invalid MIDI data for %s", this));
+		}
+	}
+
+	private void initialize(int partNumber,
+			String noteName,
+			int noteNumber,
+			int voice,
+			boolean grace,
+			boolean tie,
+			boolean rest,
+			double beat,
+			Harmony chord) {
+		this.partNumber = partNumber;
+		this.noteName = noteName;
+		this.noteNumber = noteNumber;
+		this.voice = voice;
+		this.grace = grace;
+		this.tied = tie;
+		this.rest = rest;
+		this.beat = beat;
+		this.chord = chord;
+		setNonChordNote(chord);
+	}
+
+	/**
+	 * @return grace
+	 */
+	private boolean isGrace() {
+		return grace;
+	}
+
+	/**
+	 * @return tied
+	 */
+	private boolean isTied() {
+		return tied;
+	}
+
+	private void setNonChordNote(Harmony c) {
+		nonChord = true;
+		int[] notes = keyMode.noteIntervals(c);
+		int scale = (noteNumber - fifths) % 12;
+		for (int i = 0; i < notes.length; i++) {
+			if (notes[i] == scale) {
+				nonChord = false;
+				return;
+			}
+		}
+	}
+
+	/**
+	 * @return voice
+	 */
+	private int voice() {
+		return voice;
 	}
 
 }

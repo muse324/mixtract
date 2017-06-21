@@ -13,7 +13,7 @@ import javax.swing.*;
 import net.muse.MuseApp;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.Group;
-import net.muse.mixtract.data.TuneData;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.*;
 import net.muse.mixtract.sound.MixtractMIDIController;
@@ -60,7 +60,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JMenuItem importXMLMenu = null;
 	private JMenuItem quitMenu = null;
 	protected MuseApp main;
-	public TuneData data; // @jve:decl-index=0:
+	public MXTuneData data; // @jve:decl-index=0:
 	private JDesktopPane desktop = null;
 	private JInternalFrame viewer = null;
 	private JPanel tuneViewPanel = null;
@@ -226,7 +226,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	/**
 	 * @return
 	 */
-	public final TuneData getTarget() {
+	public final MXTuneData getTarget() {
 		return data;
 	}
 
@@ -267,7 +267,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	public void selectGroup(GroupLabel g, boolean flg) {}
 
-	public void setTarget(TuneData target) {
+	public void setTarget(MXTuneData target) {
 		data = target;
 		getViewer().setTitle(data.getOutputFile().getName());
 		getSaveAsMenu().setEnabled(true);

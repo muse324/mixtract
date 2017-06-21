@@ -10,7 +10,7 @@ import net.muse.misc.MuseObject;
 import net.muse.misc.Util;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.Group;
-import net.muse.mixtract.data.TuneData;
+import net.muse.mixtract.data.MXTuneData;
 
 public abstract class PhraseCurve extends MuseObject {
 
@@ -104,7 +104,7 @@ public abstract class PhraseCurve extends MuseObject {
 	 * @param target
 	 * @param gr
 	 */
-	public abstract void apply(TuneData target, Group gr);
+	public abstract void apply(MXTuneData target, Group gr);
 
 	public void calculate(double height) {
 		System.out.println("paramlist:");

@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
 
 import net.muse.gui.MainFrame;
-import net.muse.mixtract.data.TuneData;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class CurvePanel extends JPanel implements MouseInputListener {
@@ -96,7 +96,7 @@ public class CurvePanel extends JPanel implements MouseInputListener {
 		}
 	}
 
-	void setCurvelist(TuneData target) {
+	void setCurvelist(MXTuneData target) {
 		if (target == null)
 			return;
 		switch (viewerMode) {

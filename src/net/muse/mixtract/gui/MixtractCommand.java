@@ -11,7 +11,7 @@ import net.muse.misc.Command;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.Group;
-import net.muse.mixtract.data.TuneData;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.command.*;
 
 /**
@@ -107,7 +107,7 @@ public class MixtractCommand extends Command implements GroupCommandInterface {
 	public static final MixtractCommand RENDER = new RenderCommand("Render", "生成");
 	public static final MixtractCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
 			"GTTMAnalysis");
-	protected static TuneData _target;
+	protected static MXTuneData _target;
 
 	protected static MuseApp _main;
 
@@ -168,7 +168,7 @@ public class MixtractCommand extends Command implements GroupCommandInterface {
 	/**
 	 * @return
 	 */
-	public static final TuneData getTarget() {
+	public static final MXTuneData getTarget() {
 		return _target;
 	}
 
@@ -193,7 +193,7 @@ public class MixtractCommand extends Command implements GroupCommandInterface {
 		_main = main;
 	}
 
-	public static void setTarget(TuneData target) {
+	public static void setTarget(MXTuneData target) {
 		_target = target;
 	}
 

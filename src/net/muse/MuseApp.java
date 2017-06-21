@@ -13,7 +13,7 @@ import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
 import net.muse.gui.*;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.Group;
-import net.muse.mixtract.data.TuneData;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.MixtractCommand;
 
@@ -37,7 +37,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	private File projectDir;
 
 	/** 楽曲情報 */
-	private TuneData data;
+	private MXTuneData data;
 	private List<TuneDataListener> tdListenerList = new ArrayList<TuneDataListener>();
 	private ArrayList<PhraseViewer> phraseViewList;
 	/** 階層的フレーズ構造の分析履歴 */
@@ -124,7 +124,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param data2
 	 * @param object
 	 */
-	public void analyzeStructure(TuneData dat, Group group) {
+	public void analyzeStructure(MXTuneData dat, Group group) {
 		GroupAnalyzer ana = new GroupAnalyzer(dat, false);
 		ana.setRootGroup(group);
 		ana.run();
@@ -141,7 +141,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	/**
 	 * @return
 	 */
-	public TuneData getData() {
+	public MXTuneData getData() {
 		if (data == null)
 			throw new NullPointerException("data is null");
 		return data;
@@ -301,7 +301,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public void readfile(File in, File out) throws IOException,
 			InvalidMidiDataException {
-		data = new TuneData(in, out);
+		data = new MXTuneData(in, out);
 		log.printf("Open file: %s", in);
 		if (isShowGUI()) {
 			MixtractCommand.setTarget(data);
@@ -472,7 +472,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 		},
 		MAXIMUM_MIDICHANNEL {
 			@Override void exe(MuseApp app, String property) {
-				TuneData.setMaximumMIDIChannel(Integer.parseInt(property));
+				MXTuneData.setMaximumMIDIChannel(Integer.parseInt(property));
 			}
 		},
 		INPUT_FILENAME {
@@ -520,7 +520,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 		},
 		segmentGroupnoteLine {
 			@Override public void exe(MuseApp app, String property) {
-				TuneData.setSegmentGroupnoteLine(Boolean.parseBoolean(
+				MXTuneData.setSegmentGroupnoteLine(Boolean.parseBoolean(
 						property));
 			}
 		},
@@ -543,7 +543,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 		},
 		durationOffset {
 			@Override public void exe(MuseApp app, String property) {
-				TuneData.setDurationOffset(Integer.parseInt(property));
+				MXTuneData.setDurationOffset(Integer.parseInt(property));
 			}
 		};
 		private static File createDirectory(String path) {

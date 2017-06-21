@@ -22,7 +22,7 @@ public class ArticulationCurve extends PhraseCurve {
 	 * .data.TuneData)
 	 */
 	@Override
-	public void apply(TuneData target, Group gr) {
+	public void apply(MXTuneData target, Group gr) {
 		Group g = target.getRootGroup(0);
 		double bt = g.getBeginGroupNote().getNote()
 				.onsetInMsec(getDefaultBPM());

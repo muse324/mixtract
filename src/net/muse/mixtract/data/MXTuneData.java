@@ -1,6 +1,5 @@
 package net.muse.mixtract.data;
 
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -17,13 +16,13 @@ import org.apache.commons.io.FileUtils;
 
 import jp.crestmuse.cmx.filewrappers.*;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
-import net.muse.misc.MuseObject;
+import net.muse.data.TuneData;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.curve.*;
 
 /**
- * <h1>TuneData</h1>
+ * <h1>MXTuneData</h1>
  *
  * @author Mitsuyo Hashida & Haruhiro Katayose
  *         <address>@ CrestMuse Project, JST</address>
@@ -32,7 +31,7 @@ import net.muse.mixtract.data.curve.*;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/09/20
  */
-public class TuneData extends MuseObject {
+public class MXTuneData extends TuneData {
 
 	private static int MAXIMUM_MIDICHANNEL = 16;
 
@@ -43,51 +42,6 @@ public class TuneData extends MuseObject {
 	private static final String SCOREDATA_FILENAME = "score.dat";
 
 	private static boolean segmentGroupnoteLine = false;
-
-	public static void setDefaultBPM(int t) {
-		ApexInfo.setDefaultBPM(t);
-		ArticulationCurve.setDefaultBPM(t);
-		DynamicsCurve.setDefaultBPM(t);
-		ExGTTMRules.setDefaultBPM(t);
-		PhraseFeature.setDefaultBPM(t);
-		NoteData.setDefaultBPM(t);
-		PhraseCurve.setDefaultBPM(t);
-		TempoCurve.setDefaultBPM(t);
-		Mixtract.setDefaultBPM(t);
-	}
-
-	/**
-	 * @param durationOffset the durationOffset to set
-	 */
-	public static final void setDurationOffset(int durationOffset) {
-		TuneData.durationOffset = durationOffset;
-		log.printf("duration offset = %d\n", durationOffset);
-		System.out.printf("duration offset = %d\n", durationOffset);
-	}
-
-	public static void setMaximumMIDIChannel(int num) {
-		MAXIMUM_MIDICHANNEL = num;
-	}
-
-	/**
-	 * @param segmentGroupnoteLine セットする segmentGroupnoteLine
-	 */
-	public static void setSegmentGroupnoteLine(boolean segmentGroupnoteLine) {
-		TuneData.segmentGroupnoteLine = segmentGroupnoteLine;
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Mixtract.setShowGUI(false);
-		String str[] = {};
-		Mixtract.main(str);
-	}
-
-	private static void save(BufferedImage img, File f) throws IOException {
-		if (!ImageIO.write(img, "PNG", f)) { throw new IOException("フォーマットが対象外"); }
-	}
 
 	/** MusicXML */
 	private MusicXMLWrapper xml;
@@ -106,9 +60,9 @@ public class TuneData extends MuseObject {
 
 	/** 入力ファイル */
 	private File inputFile;
-
+	/** 出力ファイル */
 	private File outputFile;
-
+	/** MIDI出力用イベントリスト */
 	private LinkedList<NoteScheduleEvent> noteScheduleEventList = new LinkedList<NoteScheduleEvent>();
 
 	private double tempoListEndtime;
@@ -117,25 +71,71 @@ public class TuneData extends MuseObject {
 	private final LinkedList<Double> dynamicsList;
 	/** 楽曲全体のテンポカーブ */
 	private final LinkedList<Double> tempoList;
-
 	/** 楽曲全体のアーティキュレーションカーブ */
 	private final LinkedList<Double> articulationList;
 
 	/** 楽曲に含まれる非階層グループを格納するリスト */
 	private final List<Group> groupArrayList;
 
+	/** GUI等で選択されたグループ */
 	private Group selectedGroup = null;
 
 	/** ユーザにより指定されるプライマリフレーズライン */
 	private PrimaryPhraseSequence groupSequence = null;
 
 	private int hierarchicalGroupCount;
-
 	private int[] midiProgram = new int[MAXIMUM_MIDICHANNEL];
-
 	private double[] volume = new double[MAXIMUM_MIDICHANNEL];
 
-	public TuneData(File in, File out) throws IOException, InvalidMidiDataException {
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		Mixtract.setShowGUI(false);
+		String str[] = {};
+		Mixtract.main(str);
+	}
+
+	public static void setDefaultBPM(int t) {
+		ApexInfo.setDefaultBPM(t);
+		ArticulationCurve.setDefaultBPM(t);
+		DynamicsCurve.setDefaultBPM(t);
+		ExGTTMRules.setDefaultBPM(t);
+		PhraseFeature.setDefaultBPM(t);
+		NoteData.setDefaultBPM(t);
+		PhraseCurve.setDefaultBPM(t);
+		TempoCurve.setDefaultBPM(t);
+		Mixtract.setDefaultBPM(t);
+	}
+
+	/**
+	 * @param durationOffset the durationOffset to set
+	 */
+	public static final void setDurationOffset(int durationOffset) {
+		MXTuneData.durationOffset = durationOffset;
+		log.printf("duration offset = %d\n", durationOffset);
+		System.out.printf("duration offset = %d\n", durationOffset);
+	}
+
+	public static void setMaximumMIDIChannel(int num) {
+		MAXIMUM_MIDICHANNEL = num;
+	}
+
+	/**
+	 * @param segmentGroupnoteLine セットする segmentGroupnoteLine
+	 */
+	public static void setSegmentGroupnoteLine(boolean segmentGroupnoteLine) {
+		MXTuneData.segmentGroupnoteLine = segmentGroupnoteLine;
+	}
+
+	private static void save(BufferedImage img, File f) throws IOException {
+		if (!ImageIO.write(img, "PNG", f)) {
+			throw new IOException("フォーマットが対象外");
+		}
+	}
+
+	public MXTuneData(File in, File out) throws IOException,
+			InvalidMidiDataException {
 		groupArrayList = new ArrayList<Group>();
 		dynamicsList = new LinkedList<Double>();
 		tempoList = new LinkedList<Double>();
@@ -167,14 +167,12 @@ public class TuneData extends MuseObject {
 			NoteData st = group.getBeginGroupNote().getNote();
 			NoteData ed = group.getEndGroupNote().getNote();
 			// 前後にgroup sequence がある場合
-			if (st.hasPrevious() && st.previous().equals(
-						groupSequence.end().getGroup().getEndGroupNote()
-								.getNote())) {
+			if (st.hasPrevious() && st.previous().equals(groupSequence.end()
+					.getGroup().getEndGroupNote().getNote())) {
 				groupSequence.end().setNext(seq);
 				seq.setPrevious(groupSequence);
-			} else if (ed.hasNext() && ed.next().equals(
-								groupSequence.root().getGroup()
-										.getBeginGroupNote().getNote())) {
+			} else if (ed.hasNext() && ed.next().equals(groupSequence.root()
+					.getGroup().getBeginGroupNote().getNote())) {
 				groupSequence.root().setPrevious(seq);
 				seq.setNext(groupSequence);
 			}
@@ -210,8 +208,8 @@ public class TuneData extends MuseObject {
 	public void createNewOutputFile(JFileChooser fc) {
 		File name = fc.getSelectedFile();
 		if (!name.getName().endsWith(Mixtract.getProjectFileExtension()))
-			outputFile = new File(fc.getCurrentDirectory(),
-					name.getName() + Mixtract.getProjectFileExtension());
+			outputFile = new File(fc.getCurrentDirectory(), name.getName()
+					+ Mixtract.getProjectFileExtension());
 		outputFile.mkdir();
 	}
 
@@ -236,6 +234,13 @@ public class TuneData extends MuseObject {
 			}
 			deleteHierarchicalGroup(group, g);
 		}
+	}
+
+	/**
+	 * @return the articulationList
+	 */
+	public final LinkedList<Double> getArticulationList() {
+		return articulationList;
 	}
 
 	public ArrayList<Integer> getBPM() {
@@ -268,6 +273,10 @@ public class TuneData extends MuseObject {
 	 */
 	public String getInputFilename() {
 		return inputFile.getName();
+	}
+
+	public NoteData getLastNote(int partIndex) {
+		return getRootGroup(partIndex).getEndGroupNote().getNote();
 	}
 
 	public int[] getMIDIPrograms() {
@@ -365,8 +374,8 @@ public class TuneData extends MuseObject {
 		if (!outputFile.exists()) {
 			outputFile.mkdir();
 		} else {
-			int res = JOptionPane.showConfirmDialog(null,
-					outputFile.getAbsolutePath() + "\n is exist. Override?",
+			int res = JOptionPane.showConfirmDialog(null, outputFile
+					.getAbsolutePath() + "\n is exist. Override?",
 					"Project path confirmation",
 					JOptionPane.YES_NO_CANCEL_OPTION);
 			switch (res) {
@@ -420,23 +429,12 @@ public class TuneData extends MuseObject {
 	public void writeTempfileCurveParameters() throws IOException {
 		File fp = File.createTempFile("structure", null, outputFile);
 		fp.deleteOnExit();
-		PrintWriter out = new PrintWriter(
-				new BufferedWriter(new FileWriter(fp)));
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
+				fp)));
 		for (int i = 0; i < rootGroup.size(); i++)
 			writeGroupStructureData(out, rootGroup.get(i));
 		out.close();
 
-	}
-
-	/**
-	 * @return the articulationList
-	 */
-	public final LinkedList<Double> getArticulationList() {
-		return articulationList;
-	}
-
-	public NoteData getLastNote(int partIndex) {
-		return getRootGroup(partIndex).getEndGroupNote().getNote();
 	}
 
 	/**
@@ -455,7 +453,9 @@ public class TuneData extends MuseObject {
 	}
 
 	protected String writeCurveParam(Group group) {
-		if (group == null) { return "ERROR!"; }
+		if (group == null) {
+			return "ERROR!";
+		}
 
 		String str = "";
 		for (double v : group.getDynamicsCurve().getParamlist()) {
@@ -480,17 +480,17 @@ public class TuneData extends MuseObject {
 		writeGroupStructureData(out, group.getChildFormerGroup());
 		writeGroupStructureData(out, group.getChildLatterGroup());
 		out.format("%s;%s;%s\n", group, (group.hasTopNote()) ? group
-				.getTopGroupNote().getNote().id() : "null",
-				writeCurveParam(group));
+				.getTopGroupNote().getNote().id() : "null", writeCurveParam(
+						group));
 	}
 
 	protected void writeNoteData(PrintWriter out, NoteData note) {
 		if (note == null)
 			return;
 		writeNoteData(out, note.child());
-		out.format("n%s:%s:%s\n", note.index(), note,
-				(note.getXMLNote() != null) ? note.getXMLNote()
-						.getXPathExpression() : "null");
+		out.format("n%s:%s:%s\n", note.index(), note, (note
+				.getXMLNote() != null) ? note.getXMLNote().getXPathExpression()
+						: "null");
 		writeNoteData(out, note.next());
 	}
 
@@ -500,15 +500,13 @@ public class TuneData extends MuseObject {
 	protected void writeScoreData() throws IOException {
 		File fp = new File(outputFile, SCOREDATA_FILENAME);
 		fp.createNewFile();
-		PrintWriter out = new PrintWriter(
-				new BufferedWriter(new FileWriter(fp)));
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
+				fp)));
 		// out.format("cmx=%s\n", inputFile.getName());
 		out.format("cmx=%s\n", xml.getFileName());
 		out.format("str=%s\n", STRUCTURE_FILENAME);
-		out.format(
-				"bpm=%s\n",
-				getBPM().toString().subSequence(1,
-						getBPM().toString().length() - 1));
+		out.format("bpm=%s\n", getBPM().toString().subSequence(1, getBPM()
+				.toString().length() - 1));
 		for (int i = 0; i < notelist.size(); i++)
 			writeNoteData(out, notelist.get(i));
 		out.close();
@@ -519,8 +517,8 @@ public class TuneData extends MuseObject {
 		// 24tick=四分音符
 		// TODO ticksperbeatの設定の仕方がよくわからん。2011.8.31
 		// すべて480 でいいと思うのだけど、SMF出力すると0.5倍速になる。。
-		Sequence sequence = new Sequence(Sequence.PPQ,
-				Mixtract.getTicksPerBeat() * 2);
+		Sequence sequence = new Sequence(Sequence.PPQ, Mixtract
+				.getTicksPerBeat() * 2);
 		Track track = sequence.createTrack();
 		int offset = 100;
 		/*
@@ -530,8 +528,8 @@ public class TuneData extends MuseObject {
 		MetaMessage mmsg = new MetaMessage();
 		int tempo = getBPM().get(0);
 		int l = 60 * 1000000 / tempo;
-		mmsg.setMessage(0x51, new byte[] { (byte) (l / 65536),
-				(byte) (l % 65536 / 256), (byte) (l % 256) }, 3);
+		mmsg.setMessage(0x51, new byte[] { (byte) (l / 65536), (byte) (l % 65536
+				/ 256), (byte) (l % 256) }, 3);
 		track.add(new MidiEvent(mmsg, 0));
 
 		// set instrument
@@ -559,8 +557,8 @@ public class TuneData extends MuseObject {
 	protected void writeStructureData() throws IOException {
 		File fp = new File(outputFile, STRUCTURE_FILENAME);
 		fp.createNewFile();
-		PrintWriter out = new PrintWriter(
-				new BufferedWriter(new FileWriter(fp)));
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
+				fp)));
 		for (int i = 0; i < rootGroup.size(); i++)
 			writeGroupStructureData(out, rootGroup.get(i));
 		out.close();
@@ -600,9 +598,9 @@ public class TuneData extends MuseObject {
 		final double startTime = group.getBeginGroupNote().getNote().onset();
 		final double endTime = group.getEndGroupNote().getNote().offset();
 		final int st = (int) Math.round(GroupAnalyzer.rootDiv * startTime
-										/ tempoListEndtime);
+				/ tempoListEndtime);
 		final int ed = (int) Math.round(GroupAnalyzer.rootDiv * endTime
-										/ tempoListEndtime);
+				/ tempoListEndtime);
 
 		System.out.println(String.format("-- %s (st=%d - ed=%d)", group.name(),
 				st, ed));
@@ -643,10 +641,8 @@ public class TuneData extends MuseObject {
 	 * @param curve
 	 * @param list
 	 */
-	private void calculateHierarchicalParameters(	final int st,
-													final int ed,
-													final PhraseCurve curve,
-													final LinkedList<Double> list) {
+	private void calculateHierarchicalParameters(final int st, final int ed,
+			final PhraseCurve curve, final LinkedList<Double> list) {
 		final double div = curve.getDivision();
 		for (int i = st; i < ed; i++) {
 			final int idx = (int) Math.round(div * (i - st) / (ed - st));
@@ -666,8 +662,8 @@ public class TuneData extends MuseObject {
 	}
 
 	private BufferedImage createBufferedImage(Image img) {
-		BufferedImage bimg = new BufferedImage(img.getWidth(null),
-				img.getHeight(null), BufferedImage.TYPE_INT_RGB);
+		BufferedImage bimg = new BufferedImage(img.getWidth(null), img
+				.getHeight(null), BufferedImage.TYPE_INT_RGB);
 
 		Graphics g = bimg.getGraphics();
 		g.drawImage(img, 0, 0, null);
@@ -686,8 +682,8 @@ public class TuneData extends MuseObject {
 		deleteGroup(target.getChildLatterGroup());
 		target.setScoreNotelist(target.getScoreNotelist());
 		if (target.hasChild()) {
-			target.getChildFormerGroup().getEndGroupNote()
-					.setNext(target.getChildLatterGroup().getBeginGroupNote());
+			target.getChildFormerGroup().getEndGroupNote().setNext(target
+					.getChildLatterGroup().getBeginGroupNote());
 		}
 		target.setChild(null, null);
 	}
@@ -835,21 +831,19 @@ public class TuneData extends MuseObject {
 			private int currentBPM = 120;
 			private int currentDefaultVelocity;
 
-			@Override
-			public void beginMeasure(Measure measure, MusicXMLWrapper wrapper) {
+			@Override public void beginMeasure(Measure measure,
+					MusicXMLWrapper wrapper) {
 				super.beginMeasure(measure, wrapper);
 				if (currentPartNumber == 1) {
 					try {
-						currentBPM = (currentBPM == measure.tempo()) ? currentBPM
-																	: measure
-																			.tempo();
+						currentBPM = (currentBPM == measure.tempo())
+								? currentBPM : measure.tempo();
 						bpmlist.add(currentBPM);
 						if (currentPartNumber == 1 && measure.number() == 1) {
 							setDefaultBPM(currentBPM);
 						}
 						testPrintln("-----measure " + measure.number()
-									+ ", tempo="
-									+ currentBPM);
+								+ ", tempo=" + currentBPM);
 					} catch (NullPointerException e) {
 					}
 				}
@@ -862,14 +856,15 @@ public class TuneData extends MuseObject {
 			 * .cmx.filewrappers.MusicXMLWrapper.Part,
 			 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
 			 */
-			@Override
-			public void beginPart(Part part, MusicXMLWrapper wrapper) {
+			@Override public void beginPart(Part part,
+					MusicXMLWrapper wrapper) {
 				super.beginPart(part, wrapper);
 				int ch = part.midiChannel() - 1;
 				midiProgram[ch] = part.midiProgram();
 				// TODO 声部間velocityの調整 (volume[]) 決めうち。
 				volume[ch] = (ch == 0) ? 1.0 : 0.7;
-				currentDefaultVelocity = (int) (getDefaultVelocity() * volume[ch]);
+				currentDefaultVelocity = (int) (getDefaultVelocity()
+						* volume[ch]);
 				cur = null;
 				testPrintln("=====part " + currentPartNumber);
 			}
@@ -881,8 +876,7 @@ public class TuneData extends MuseObject {
 			 * cmx.filewrappers.MusicXMLWrapper.Part,
 			 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
 			 */
-			@Override
-			public void endPart(Part part, MusicXMLWrapper wrapper) {
+			@Override public void endPart(Part part, MusicXMLWrapper wrapper) {
 				Group g = new Group(data.getNoteList(partIndex), partIndex + 1,
 						GroupType.NOTE);
 
@@ -890,16 +884,16 @@ public class TuneData extends MuseObject {
 					primaryGrouplist = g;
 					data.setGrouplist(partIndex, g);
 				} else if (segmentGroupnoteLine) {
-					linkToPrimaryGroup(g.getBeginGroupNote(),
-							primaryGrouplist.getBeginGroupNote());
+					linkToPrimaryGroup(g.getBeginGroupNote(), primaryGrouplist
+							.getBeginGroupNote());
 				} else {
 					data.setGrouplist(partIndex, g);
 				}
 				super.endPart(part, wrapper);
 			}
 
-			@Override
-			public void processMusicData(MusicData md, MusicXMLWrapper wrapper) {
+			@Override public void processMusicData(MusicData md,
+					MusicXMLWrapper wrapper) {
 				if (md instanceof Note)
 					readNoteData((Note) md);
 				else if (md instanceof Attributes)
@@ -909,11 +903,12 @@ public class TuneData extends MuseObject {
 			}
 
 			private void linkToPrimaryGroup(GroupNote note,
-											GroupNote currentPrimaryNote) {
+					GroupNote currentPrimaryNote) {
 				if (note == null)
 					return;
-				while (currentPrimaryNote.hasNext() && note.getNote().onset() >= currentPrimaryNote
-								.next().getNote().onset()) {
+				while (currentPrimaryNote.hasNext() && note.getNote()
+						.onset() >= currentPrimaryNote.next().getNote()
+								.onset()) {
 					currentPrimaryNote = currentPrimaryNote.next();
 				}
 				if (note.getNote().onset() == currentPrimaryNote.getNote()
@@ -1032,8 +1027,7 @@ public class TuneData extends MuseObject {
 	}
 
 	private void readNoteData(int idx, BufferedReader in, String str,
-								NoteData pre, boolean preChord)
-			throws IOException {
+			NoteData pre, boolean preChord) throws IOException {
 		if (str == null)
 			return;
 		String[] val = str.split(":");
@@ -1250,7 +1244,7 @@ public class TuneData extends MuseObject {
 	}
 
 	private void setGroupNotelist(GroupNote list, String[] args, int idx,
-									int size) {
+			int size) {
 		if (idx == size)
 			return;
 		final String s = args[idx];

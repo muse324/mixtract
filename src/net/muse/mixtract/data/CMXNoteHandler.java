@@ -10,12 +10,12 @@ import jp.crestmuse.cmx.handlers.NoteHandlerPartwise;
 public class CMXNoteHandler implements NoteHandlerPartwise {
 	protected int currentPartNumber = 0;
 	protected int partIndex = 0;
-	protected TuneData data;
+	protected MXTuneData data;
 
 	/**
 	 * @param tuneData
 	 */
-	public CMXNoteHandler(TuneData tuneData) {
+	public CMXNoteHandler(MXTuneData tuneData) {
 		this.data = tuneData;
 	}
 
