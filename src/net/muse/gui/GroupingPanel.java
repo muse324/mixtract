@@ -11,7 +11,6 @@ import net.muse.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.gui.command.MuseAppCommand;
-import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.MelodyFlagViewer;
@@ -25,54 +24,6 @@ import net.muse.mixtract.gui.command.MixtractCommand;
  * @since 2008/04/24
  */
 public class GroupingPanel extends JPanel implements TuneDataListener {
-
-	/**
-	 * <h1>PrintGroupInfoCommand</h1>
-	 *
-	 * @author Mitsuyo Hashida & Haruhiro Katayose
-	 *         <address>CrestMuse Project, JST</address>
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
-	 * @since 2010/02/15
-	 */
-	public static class PrintGroupInfoCommand extends MixtractCommand {
-
-		private Group group = null;
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MixtractCommand#setGroup(jp.crestmuse.
-		 * mixtract
-		 * .gui.GroupLabel)
-		 */
-		@Override public void setGroup(GroupLabel groupLabel) {
-			this.group = groupLabel.getGroup();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			if (group == null) {
-				group = frame().getGroupingPanel().getSelectedGroup()
-						.getGroup();
-			}
-			if (group instanceof MXGroup) {
-				MXGroup g = (MXGroup) group;
-				System.out.println(String.format("Group %s\n\t%s\n\t%s\n\t%s\n",
-						group.name(), g.getDynamicsCurve(), g.getTempoCurve(), g
-								.getArticulationCurve()));
-			} else {
-				System.out.println(String.format("Group %s\n", group.name()));
-			}
-		}
-
-		public PrintGroupInfoCommand(String... lang) {
-			super(lang);
-		}
-	}
 
 	private MuseAppCommand cmd = MixtractCommand.PRINT_GROUP_INFO;
 	private BasicStroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_ROUND,

@@ -7,8 +7,8 @@ import javax.swing.JFrame;
 import net.muse.MuseApp;
 import net.muse.data.TuneData;
 import net.muse.gui.*;
-import net.muse.gui.GroupingPanel.PrintGroupInfoCommand;
 import net.muse.gui.command.MuseAppCommand;
+import net.muse.gui.command.PrintGroupInfoCommand;
 import net.muse.misc.Command;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
@@ -103,7 +103,7 @@ public class MixtractCommand extends MuseAppCommand {
 			"< (cresc.)");
 	public static final SetDiminuendoCommand SET_TYPE_DIM = new SetDiminuendoCommand(
 			"> (dim.)");
-	public static final PrintGroupInfoCommand PRINT_GROUP_INFO = new GroupingPanel.PrintGroupInfoCommand(
+	public static final PrintGroupInfoCommand PRINT_GROUP_INFO = new PrintGroupInfoCommand(
 			"Print group info.", "グループ情報");
 
 	private static GroupAnalyzer ana;
