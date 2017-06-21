@@ -11,7 +11,7 @@ import net.muse.data.NoteData;
 
 /**
  * <h1>NoteScheduleEvent</h1>
- * 
+ *
  * @author Mitsuyo Hashida & Haruhiro Katayose
  *         <address>CrestMuse Project, JST</address>
  *         <address>http://www.m-use.net/</address>
@@ -42,7 +42,7 @@ public class NoteScheduleEvent {
 	/** MIDI メッセージタイプ(ShortMessage.NOTE_ON, NOTE_OFF, ...) */
 	private NoteType type;
 
-	NoteScheduleEvent(NoteData note, double onset, int shortMessageType,
+	public NoteScheduleEvent(NoteData note, double onset, int shortMessageType,
 			int velocity) throws InvalidMidiDataException {
 		this.parent = note;
 		this.onset = (long) onset;
@@ -93,7 +93,7 @@ public class NoteScheduleEvent {
 	 * <li><code>0<=velocity<=127</code>に収まるようクリップ
 	 * <li>InvalidParameterExceptionをthrowする
 	 * </ul>
-	 * 
+	 *
 	 * @param velocity 代入するヴェロシティ値
 	 * @throws InvalidMidiDataException
 	 */

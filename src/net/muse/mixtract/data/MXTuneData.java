@@ -15,7 +15,7 @@ import javax.swing.JOptionPane;
 import org.apache.commons.io.FileUtils;
 
 import jp.crestmuse.cmx.filewrappers.*;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.data.*;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
@@ -33,30 +33,12 @@ import net.muse.mixtract.data.curve.*;
  */
 public class MXTuneData extends TuneData {
 
-	private static int MAXIMUM_MIDICHANNEL = 16;
-
 	private static int durationOffset = 100;
 
 	private static final String STRUCTURE_FILENAME = "structure.dat";
 
 	private static final String SCOREDATA_FILENAME = "score.dat";
 
-	private static boolean segmentGroupnoteLine = false;
-
-	/** MusicXML */
-	private MusicXMLWrapper xml;
-
-	/** DeviationInstanceXML */
-	private DeviationInstanceWrapper dev;
-
-	/** 声部ごとの音符情報 */
-	private ArrayList<MXNoteData> notelist = new ArrayList<MXNoteData>();
-
-	/** 声部ごとのフレーズ構造(二分木) */
-	private List<Group> rootGroup = new ArrayList<Group>();
-
-	/** テンポ情報 */
-	private ArrayList<Integer> bpmlist = new ArrayList<Integer>();
 
 	/** 入力ファイル */
 	private File inputFile;
@@ -84,8 +66,6 @@ public class MXTuneData extends TuneData {
 	private PrimaryPhraseSequence groupSequence = null;
 
 	private int hierarchicalGroupCount;
-	private int[] midiProgram = new int[MAXIMUM_MIDICHANNEL];
-	private double[] volume = new double[MAXIMUM_MIDICHANNEL];
 
 	/**
 	 * @param args
@@ -115,17 +95,6 @@ public class MXTuneData extends TuneData {
 		MXTuneData.durationOffset = durationOffset;
 		log.printf("duration offset = %d\n", durationOffset);
 		System.out.printf("duration offset = %d\n", durationOffset);
-	}
-
-	public static void setMaximumMIDIChannel(int num) {
-		MAXIMUM_MIDICHANNEL = num;
-	}
-
-	/**
-	 * @param segmentGroupnoteLine セットする segmentGroupnoteLine
-	 */
-	public static void setSegmentGroupnoteLine(boolean segmentGroupnoteLine) {
-		MXTuneData.segmentGroupnoteLine = segmentGroupnoteLine;
 	}
 
 	private static void save(BufferedImage img, File f) throws IOException {
@@ -183,7 +152,7 @@ public class MXTuneData extends TuneData {
 
 	public void calculateHierarchicalParameters() {
 		initializeParameters();
-		for (final Group root : rootGroup) {
+		for (final Group root : getRootGroup()) {
 			// tempo
 			tempoListEndtime = root.getTimeValue();
 			if (root.getTempoCurve().getParamlist().size() > 0)
@@ -243,10 +212,6 @@ public class MXTuneData extends TuneData {
 		return articulationList;
 	}
 
-	public ArrayList<Integer> getBPM() {
-		return bpmlist;
-	}
-
 	/**
 	 * @return dynamicsList2
 	 */
@@ -294,13 +259,7 @@ public class MXTuneData extends TuneData {
 		return outputFile;
 	}
 
-	public List<Group> getRootGroup() {
-		return rootGroup;
-	}
 
-	public Group getRootGroup(int partIndex) {
-		return rootGroup.get(partIndex);
-	}
 
 	/**
 	 * @return tempoList2
@@ -336,7 +295,7 @@ public class MXTuneData extends TuneData {
 	}
 
 	public void setBPM(int idx, int value) {
-		bpmlist.set(idx, value);
+		getBPM().set(idx, value);
 		setDefaultBPM(value);
 		if (getRootGroup() != null) {
 			getRootGroup(0).getTempoCurve().apply(this, getRootGroup(0));
@@ -351,8 +310,8 @@ public class MXTuneData extends TuneData {
 		if (selectedGroup != null)
 			setNoteScheduleEvent(selectedGroup);
 		else {
-			for (int i = 0; i < rootGroup.size(); i++) {
-				setNoteScheduleEvent(rootGroup.get(i));
+			for (int i = 0; i < getRootGroup().size(); i++) {
+				setNoteScheduleEvent(getRootGroup().get(i));
 			}
 		}
 		// log print
@@ -431,8 +390,8 @@ public class MXTuneData extends TuneData {
 		fp.deleteOnExit();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
 				fp)));
-		for (int i = 0; i < rootGroup.size(); i++)
-			writeGroupStructureData(out, rootGroup.get(i));
+		for (int i = 0; i < getRootGroup().size(); i++)
+			writeGroupStructureData(out, getRootGroup().get(i));
 		out.close();
 
 	}
@@ -507,8 +466,8 @@ public class MXTuneData extends TuneData {
 		out.format("str=%s\n", STRUCTURE_FILENAME);
 		out.format("bpm=%s\n", getBPM().toString().subSequence(1, getBPM()
 				.toString().length() - 1));
-		for (int i = 0; i < notelist.size(); i++)
-			writeNoteData(out, notelist.get(i));
+		for (int i = 0; i < getNotelist().size(); i++)
+			writeNoteData(out, (MXNoteData) getNoteList(i));
 		out.close();
 	}
 
@@ -559,8 +518,8 @@ public class MXTuneData extends TuneData {
 		fp.createNewFile();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
 				fp)));
-		for (int i = 0; i < rootGroup.size(); i++)
-			writeGroupStructureData(out, rootGroup.get(i));
+		for (int i = 0; i < getRootGroup().size(); i++)
+			writeGroupStructureData(out, getRootGroup().get(i));
 		out.close();
 	}
 
@@ -726,10 +685,6 @@ public class MXTuneData extends TuneData {
 		return n;
 	}
 
-	private NoteData getNoteList(int partIndex) {
-		return notelist.get(partIndex);
-	}
-
 	/**
 	 * @param rootGroup2
 	 * @param idxlist
@@ -756,7 +711,7 @@ public class MXTuneData extends TuneData {
 	 * @return
 	 */
 	private boolean hasGroupList() {
-		return rootGroup.size() > 0;
+		return getRootGroup().size() > 0;
 	}
 
 	private void initializeNoteEvents(Group group) {
@@ -812,169 +767,10 @@ public class MXTuneData extends TuneData {
 		return inputFile.getParentFile();
 	}
 
-	/**
-	 *
-	 */
-	private void parseMusicXMLFile() {
+	protected void parseMusicXMLFile() {
 		if (xml == null)
 			return;
-		xml.processNotePartwise(new CMXNoteHandler(this) {
-			private MXNoteData cur = null;
-			private Group primaryGrouplist = null;
-			private int idx = 0;
-			private KeyMode keyMode;
-			private int fifths;
-			/**
-			 * TODO この定数値(120)はMusicXMLWrapperのデフォルト値。
-			 * <sound>タグが存在しないとこの値が返ってくる
-			 */
-			private int currentBPM = 120;
-			private int currentDefaultVelocity;
-
-			@Override public void beginMeasure(Measure measure,
-					MusicXMLWrapper wrapper) {
-				super.beginMeasure(measure, wrapper);
-				if (currentPartNumber == 1) {
-					try {
-						currentBPM = (currentBPM == measure.tempo())
-								? currentBPM : measure.tempo();
-						bpmlist.add(currentBPM);
-						if (currentPartNumber == 1 && measure.number() == 1) {
-							setDefaultBPM(currentBPM);
-						}
-						testPrintln("-----measure " + measure.number()
-								+ ", tempo=" + currentBPM);
-					} catch (NullPointerException e) {
-					}
-				}
-			}
-
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.data.CMXNoteHandler#beginPart(jp.crestmuse
-			 * .cmx.filewrappers.MusicXMLWrapper.Part,
-			 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
-			 */
-			@Override public void beginPart(Part part,
-					MusicXMLWrapper wrapper) {
-				super.beginPart(part, wrapper);
-				int ch = part.midiChannel() - 1;
-				midiProgram[ch] = part.midiProgram();
-				// TODO 声部間velocityの調整 (volume[]) 決めうち。
-				volume[ch] = (ch == 0) ? 1.0 : 0.7;
-				currentDefaultVelocity = (int) (getDefaultVelocity()
-						* volume[ch]);
-				cur = null;
-				testPrintln("=====part " + currentPartNumber);
-			}
-
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.data.CMXNoteHandler#endPart(jp.crestmuse.
-			 * cmx.filewrappers.MusicXMLWrapper.Part,
-			 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
-			 */
-			@Override public void endPart(Part part, MusicXMLWrapper wrapper) {
-				Group g = new MXGroup(data.getNoteList(partIndex), partIndex + 1,
-						GroupType.NOTE);
-
-				if (primaryGrouplist == null) {
-					primaryGrouplist = g;
-					data.setGrouplist(partIndex, g);
-				} else if (segmentGroupnoteLine) {
-					linkToPrimaryGroup(g.getBeginGroupNote(), primaryGrouplist
-							.getBeginGroupNote());
-				} else {
-					data.setGrouplist(partIndex, g);
-				}
-				super.endPart(part, wrapper);
-			}
-
-			@Override public void processMusicData(MusicData md,
-					MusicXMLWrapper wrapper) {
-				if (md instanceof Note)
-					readNoteData((Note) md);
-				else if (md instanceof Attributes)
-					readAttributes((Attributes) md);
-				else if (md instanceof Direction)
-					readDirections((Direction) md);
-			}
-
-			private void linkToPrimaryGroup(GroupNote note,
-					GroupNote currentPrimaryNote) {
-				if (note == null)
-					return;
-				while (currentPrimaryNote.hasNext() && note.getNote()
-						.onset() >= currentPrimaryNote.next().getNote()
-								.onset()) {
-					currentPrimaryNote = currentPrimaryNote.next();
-				}
-				if (note.getNote().onset() == currentPrimaryNote.getNote()
-						.onset()) {
-					setChild(currentPrimaryNote, note);
-					if (segmentGroupnoteLine) {
-						if (note.hasPrevious())
-							note.previous().setNext(null);
-						note.setPrevious(null);
-					}
-				}
-				linkToPrimaryGroup(note.next(), currentPrimaryNote);
-			}
-
-			private void readAttributes(Attributes attr) {
-				keyMode = KeyMode.valueOf(attr.mode());
-				fifths = attr.fifths();
-			}
-
-			private void readDirections(Direction md) {
-				try {
-					bpmlist.add((int) md.tempo());
-				} catch (NullPointerException e) {
-				}
-				// TODO 他の Direction も実装する
-			}
-
-			/**
-			 * @param md
-			 */
-			private void readNoteData(Note note) {
-				MXNoteData nd = new MXNoteData(note, currentPartNumber, ++idx,
-						getBPM().get(0), currentDefaultVelocity);
-				nd.setKeyMode(keyMode, fifths);
-				testPrintln(nd.toString());
-				if (cur == null) {
-					// 冒頭音
-					cur = nd;
-					data.setNotelist(partIndex, nd);
-				} else if (note.chord()) {
-					// 和音
-					// 最高音へ移動
-					while (cur.parent() != null)
-						cur = cur.parent();
-					cur.setParent(nd);
-					nd.setPrevious(cur.previous());
-					if (cur.equals(data.getNoteList(partIndex)))
-						data.setNotelist(partIndex, nd);
-					cur = nd;
-				} else if (note.containsTieType("stop")) {
-					// タイ
-					cur.setOffset(nd.offset());
-				} else {
-					cur.setNext(nd);
-					cur = nd;
-				}
-			}
-
-			private void setChild(GroupNote parent, GroupNote note) {
-				if (!parent.hasChild()) {
-					parent.setChild(note);
-					return;
-				}
-				setChild(parent.child(), note);
-			}
-		});
+		xml.processNotePartwise(createCMXNoteHandler());
 	}
 
 	/**
@@ -1054,8 +850,8 @@ public class MXTuneData extends TuneData {
 		int fifths = Integer.parseInt(getValue(keys, 6));
 		Harmony chordName = Harmony.valueOf(getValue(keys, 7));
 
-		MXNoteData nd = new MXNoteData(++idx, partNumber, onset, offset, noteName,
-				rest, grace, tie, tval, beat);
+		MXNoteData nd = new MXNoteData(++idx, partNumber, onset, offset,
+				noteName, rest, grace, tie, tval, beat);
 		nd.setMeasureNumber(measureNumber);
 		nd.setVoice(voice);
 		nd.setVelocity(vel);
@@ -1130,7 +926,7 @@ public class MXTuneData extends TuneData {
 			// 3行目：BPM情報
 			String[] bpm = in.readLine().split("=")[1].split(",");
 			for (int i = 0; i < bpm.length; i++) {
-				bpmlist.add(Integer.parseInt(bpm[i].trim()));
+				getBPM().add(Integer.parseInt(bpm[i].trim()));
 			}
 
 			// 4行目以降：音符情報
@@ -1166,7 +962,7 @@ public class MXTuneData extends TuneData {
 	 */
 	private void readStructureData(File file) {
 		try {
-			rootGroup.clear();
+			getRootGroup().clear();
 			BufferedReader in = new BufferedReader(new FileReader(file));
 			String str = null;
 			List<Group> glist = new ArrayList<Group>();
@@ -1233,15 +1029,6 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	/**
-	 * @param rootGroup セットする rootGroup
-	 */
-	private void setGrouplist(int partIndex, Group rootGroup) {
-		if (partIndex >= this.rootGroup.size())
-			this.rootGroup.add(rootGroup);
-		else
-			this.rootGroup.set(partIndex, rootGroup);
-	}
 
 	private void setGroupNotelist(GroupNote list, String[] args, int idx,
 			int size) {
@@ -1264,8 +1051,8 @@ public class MXTuneData extends TuneData {
 			break;
 		case 'n':
 			NoteData n = null;
-			for (int i = 0; i < notelist.size(); i++) {
-				n = getNote(notelist.get(i), s);
+			for (int i = 0; i < getNotelist().size(); i++) {
+				n = getNote(getNoteList(i), s);
 				if (n != null)
 					break;
 			}
@@ -1279,13 +1066,6 @@ public class MXTuneData extends TuneData {
 		default:
 			setGroupNotelist(list, args, ++idx, size);
 		}
-	}
-
-	private void setNotelist(int partIndex, MXNoteData root) {
-		if (partIndex >= this.notelist.size())
-			notelist.add(root);
-		else
-			notelist.set(partIndex, root);
 	}
 
 	/**
@@ -1313,5 +1093,22 @@ public class MXTuneData extends TuneData {
 		}
 		setNoteScheduleEvent(note.child(), endOffset);
 		setNoteScheduleEvent(note.next(), endOffset);
+	}
+
+	protected CMXNoteHandler createCMXNoteHandler() {
+		return new CMXNoteHandler(this) {
+			protected MXTuneData data() {
+				return (MXTuneData) data;
+			}
+
+			protected MXGroup createGroup(NoteData n, int i, GroupType type) {
+				return new MXGroup(n, i, type);
+			}
+
+			protected NoteData createNoteData(Note note, int partNumber,
+					int idx, Integer bpm, int vel) {
+				return new MXNoteData(note, partNumber, idx, bpm, vel);
+			}
+		};
 	}
 }
