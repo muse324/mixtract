@@ -232,22 +232,6 @@ public class MixtractCommand extends MuseAppCommand {
 		return super.toString();
 	}
 
-	private static class SearchCommand extends MixtractCommand {
-
-		protected SearchCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			// _mainFrame.searchSimilarPhrases();
-			// // _mainFrame.getGroupingPanel().searchSimilarityOfThisGroup();
-		}
-	}
-
 	private static final class ShowSimilarGroupsCommand extends
 			MixtractCommand {
 

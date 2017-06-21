@@ -1,0 +1,17 @@
+package net.muse.mixtract.gui.command;
+
+class SearchCommand extends MixtractCommand {
+
+	protected SearchCommand(String... lang) {
+		super(lang);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.misc.Command#execute()
+	 */
+	@Override public void execute() {
+		// _mainFrame.searchSimilarPhrases();
+		// // _mainFrame.getGroupingPanel().searchSimilarityOfThisGroup();
+	}
+}
