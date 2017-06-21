@@ -8,7 +8,7 @@ import net.muse.MuseApp;
 import net.muse.gui.*;
 import net.muse.gui.GroupingPanel.PrintGroupInfoCommand;
 import net.muse.misc.Command;
-import net.muse.mixtract.Mixtract;
+import net.muse.misc.MuseAppCommand;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.MXTuneData;
@@ -20,92 +20,90 @@ import net.muse.mixtract.gui.command.*;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2008/04/21
  */
-public class MixtractCommand extends Command implements GroupCommandInterface {
+public class MixtractCommand extends MuseAppCommand {
 
-	public static final MixtractCommand ADD_GROUP = new AddGroupCommand(
-			"Add group", "グループを追加");
-	public static final MixtractCommand SET_CHORD = new SetChordCommand(
+	public static final MuseAppCommand SET_CHORD = new SetChordCommand(
 			"Set Chord", "和音を付与");
-	public static final MixtractCommand ANALYZE_STRUCTURE = new AnalyzeStructureCommand(
+	public static final MuseAppCommand ANALYZE_STRUCTURE = new AnalyzeStructureCommand(
 			"Analyze structure", "構造分析");
 
-	public static final MixtractCommand APPLY_PULSES_CHOPINS = new ApplyPulseChopinsCommand(
+	public static final MuseAppCommand APPLY_PULSES_CHOPINS = new ApplyPulseChopinsCommand(
 			"Apply pulses (chopin)");
 
-	public static final MixtractCommand APPLY_PULSES_MOZARTS = new ApplyPuliseMozartsCommand(
+	public static final MuseAppCommand APPLY_PULSES_MOZARTS = new ApplyPuliseMozartsCommand(
 			"Apply pulses (mozart)");
 
-	public static final MixtractCommand APPLY_TOPONOTE = new ApplyTopNoteCommand(
+	public static final MuseAppCommand APPLY_TOPONOTE = new ApplyTopNoteCommand(
 			"Apply the most similar expression");
 
-	public static final MixtractCommand CLEAR_ALLGROUPS = new GroupingPanel.ClearAllGroupsCommand(
+	public static final MuseAppCommand CLEAR_ALLGROUPS = new GroupingPanel.ClearAllGroupsCommand(
 			"Clear all groups", "フレーズ構造全体を削除");
 
-	public static final MixtractCommand DELETE_GROUP = new DeleteGroupCommand(
+	public static final MuseAppCommand DELETE_GROUP = new DeleteGroupCommand(
 			"Delete", "グループを削除");
 
-	public static final MixtractCommand DETAIL = new DetailCommand(
+	public static final MuseAppCommand DETAIL = new DetailCommand(
 			"Show parameters", "Show parameters");
 
-	public static final MixtractCommand EDIT_GROUP = new EditGroupCommand(
+	public static final MuseAppCommand EDIT_GROUP = new EditGroupCommand(
 			"Edit group", "グループを編集");
 
-	public static final MixtractCommand EXPR_LINE_DISPLAY = new ExprLineCommand(
+	public static final MuseAppCommand EXPR_LINE_DISPLAY = new ExprLineCommand(
 			"Show/hide expression line");
 
-	public static final MixtractCommand EXPR_VIEW_DISPLAY = new ExprViewCommand(
+	public static final MuseAppCommand EXPR_VIEW_DISPLAY = new ExprViewCommand(
 			"Switch expression view");
 
-	public static final MixtractCommand MAKE_GROUP = new PianoRoll.MakeGroupCommand(
+	public static final MuseAppCommand MAKE_GROUP = new PianoRoll.MakeGroupCommand(
 			"Make a group");
-	public static final MixtractCommand CHANGE_PART = new PianoRoll.ChangePartCommand(
+	public static final MuseAppCommand CHANGE_PART = new PianoRoll.ChangePartCommand(
 			"Change part");
 
-	public static final MixtractCommand MOUSE_DISPLAY = new MouseDisplayCommand(
+	public static final MuseAppCommand MOUSE_DISPLAY = new MouseDisplayCommand(
 			"Show/Hide mouse pointer", "マウスポインタを表示/非表示");
 
-	public static final MixtractCommand OPEN_RULEPANEL = new OpenRulePanelCommand(
+	public static final MuseAppCommand OPEN_RULEPANEL = new OpenRulePanelCommand(
 			"Open rulepanel", "ルールパネル");
 
-	public static final MixtractCommand OPEN_MUSICXML = new OpenMusicXMLCommand(
+	public static final MuseAppCommand OPEN_MUSICXML = new OpenMusicXMLCommand(
 			"Open MusicXML", "MusicXMLを開く");
 
-	public static final MixtractCommand OPEN_RULEMAP = new OpenRuleMapCommand(
+	public static final MuseAppCommand OPEN_RULEMAP = new OpenRuleMapCommand(
 			"Open Rulemap", "ルールマップを開く");
 
-	public static final MixtractCommand PRINT_ALL_SIMILAR_GROUPS = new PrintAllSimilarGroupsCommand(
+	public static final MuseAppCommand PRINT_ALL_SIMILAR_GROUPS = new PrintAllSimilarGroupsCommand(
 			"Show all similar groups", "Show all similar groups");
 
-	public static final MixtractCommand PRINT_ALLGROUPS = new PrintAllGroupsCommand(
+	public static final MuseAppCommand PRINT_ALLGROUPS = new PrintAllGroupsCommand(
 			"Print all groups", "全グループを出力");
 
-	public static final MixtractCommand PRINT_SIMILAR_GROUPS = new PrintSimilarGroupsCommand(
+	public static final MuseAppCommand PRINT_SIMILAR_GROUPS = new PrintSimilarGroupsCommand(
 			"Show similar groups");
 
-	public static final MixtractCommand PRINT_SUBGROUPS = new PrintSubgroupsCommand(
+	public static final MuseAppCommand PRINT_SUBGROUPS = new PrintSubgroupsCommand(
 			"Print group", "下位グループを出力");
 
-	public static final MixtractCommand REDRAW = new RedrawCommand("Redraw",
+	public static final MuseAppCommand REDRAW = new RedrawCommand("Redraw",
 			"再描画");
 
-	public static final MixtractCommand REFRESH = new RefreshCommand("Refresh",
+	public static final MuseAppCommand REFRESH = new RefreshCommand("Refresh",
 			"更新");
 
 	public static final ApplyHierarchicalParamsCommand APPLY_HIERARCHICAL_PARAMS = new ApplyHierarchicalParamsCommand(
 			"Apply Parametrs", "階層表現に適用");
 
-	public static final MixtractCommand RESET_PRAMETERS = new ResetParameterCommand(
+	public static final MuseAppCommand RESET_PRAMETERS = new ResetParameterCommand(
 			"Reset parameters");
-	public static final MixtractCommand SELECT_GROUP = new SelectGroupCommand(
+	public static final MuseAppCommand SELECT_GROUP = new SelectGroupCommand(
 			"Select group", "グループを選択");
 
-	public static final MixtractCommand SHOW_SIMILAR_GROUPS = new ShowSimilarGroupsCommand(
+	public static final MuseAppCommand SHOW_SIMILAR_GROUPS = new ShowSimilarGroupsCommand(
 			"Show similar groups");
 
-	public static final MixtractCommand SEARCH = new SearchCommand("Search", "検索");
+	public static final MuseAppCommand SEARCH = new SearchCommand("Search", "検索");
 
-	public static final MixtractCommand RENDER = new RenderCommand("Render", "生成");
-	public static final MixtractCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
+	public static final MuseAppCommand RENDER = new RenderCommand("Render", "生成");
+	public static final MuseAppCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
 			"GTTMAnalysis");
 	protected static MXTuneData _target;
 
@@ -114,11 +112,11 @@ public class MixtractCommand extends Command implements GroupCommandInterface {
 	protected static MainFrame _mainFrame;
 	protected static final SelectedObjects _selectedObjects = new SelectedObjects();
 
-	public static final MixtractCommand OPEN_STRUCTURE_DATA = new OpenStructureDataCommand(
+	public static final MuseAppCommand OPEN_STRUCTURE_DATA = new OpenStructureDataCommand(
 			"Read structure data", "構造データ読込");
-	public static final MixtractCommand SET_KEY = new PianoRoll.SetKeyCommand(
+	public static final MuseAppCommand SET_KEY = new PianoRoll.SetKeyCommand(
 			"Change key", "調を変更");
-	public static final MixtractCommand SET_KEYMODE = new PianoRoll.SetKeyModeCommand(
+	public static final MuseAppCommand SET_KEYMODE = new PianoRoll.SetKeyModeCommand(
 			"Change key mode", "長調/短調");
 	public static final SetCrescendoCommand SET_TYPE_CRESC = new SetCrescendoCommand(
 			"< (cresc.)");
@@ -128,7 +126,7 @@ public class MixtractCommand extends Command implements GroupCommandInterface {
 			"Print group info.", "グループ情報");
 
 	private static GroupAnalyzer ana;
-	private static MixtractCommand commandLists[] = new MixtractCommand[] {
+	private static MuseAppCommand commandLists[] = new MuseAppCommand[] {
 			ADD_GROUP, ANALYZE_STRUCTURE, DELETE_GROUP, DETAIL, EDIT_GROUP,
 			MOUSE_DISPLAY, OPEN_RULEPANEL, PRINT_ALL_SIMILAR_GROUPS, PRINT_ALLGROUPS,
 			PRINT_SIMILAR_GROUPS, PRINT_SUBGROUPS, OPEN_MUSICXML, OPEN_RULEMAP,
@@ -247,13 +245,6 @@ public class MixtractCommand extends Command implements GroupCommandInterface {
 		return super.toString();
 	}
 
-	private static final class AddGroupCommand extends MixtractCommand {
-
-		public AddGroupCommand(String... lang) {
-			super(lang);
-		}
-
-	}
 	private static class AnalyzeStructureCommand extends MixtractCommand {
 
 		protected AnalyzeStructureCommand(String... lang) {
@@ -863,5 +854,9 @@ public class MixtractCommand extends Command implements GroupCommandInterface {
 
 	}
 
-	public void setGroup(GroupLabel groupLabel) {}
+	@Override public void setGroup(GroupLabel groupLabel) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
 }

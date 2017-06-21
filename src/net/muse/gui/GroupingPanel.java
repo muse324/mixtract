@@ -9,6 +9,7 @@ import javax.swing.*;
 
 import net.muse.MuseApp;
 import net.muse.data.GroupType;
+import net.muse.misc.MuseAppCommand;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
@@ -66,7 +67,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		}
 	}
 
-	private MixtractCommand cmd = MixtractCommand.PRINT_GROUP_INFO;
+	private MuseAppCommand cmd = MixtractCommand.PRINT_GROUP_INFO;
 	private BasicStroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_ROUND,
 			BasicStroke.JOIN_ROUND, 10.0f, dashLineList, 0.0f);
 	private static final long serialVersionUID = 1L;
