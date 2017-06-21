@@ -4,7 +4,6 @@ import net.muse.MuseApp;
 import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.misc.Command;
-import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.command.GroupCommandInterface;
 import net.muse.mixtract.gui.command.MixtractCommand;
 
@@ -27,44 +26,15 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	public static final MuseAppCommand RENDER = new RenderCommand("Render",
 			"生成");
 	public static final MuseAppCommand DETAIL = new DetailCommand(
-				"Show parameters", "Show parameters");
+			"Show parameters", "Show parameters");
 	public static final MuseAppCommand REFRESH = new RefreshCommand("Refresh",
-				"更新");
+			"更新");
 	protected static TuneData _target;
 	protected static MuseApp _main;
 	protected static MainFrame _mainFrame;
 
-
 	public static TuneData target() {
 		return _target;
-	}
-
-
-	protected static final class DeleteGroupCommand extends MixtractCommand {
-
-		public DeleteGroupCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			if (_target != null) {
-				GroupLabel sel = frame().getGroupingPanel()
-						.getSelectedGroup();
-				// _target.deleteGUIGroup(_selectedObjects.getGroupLabel());
-				// _selectedObjects.clearAll();
-				main().getData().deleteGroupFromData(sel.getGroup());
-				main().notifyDeleteGroup(sel);
-				// getPianorollScroll().repaint();
-				// getGroupingPanel().deselectLabel();
-				// getExpressionPanel().clearGroup();
-				// setTune(target);
-			}
-		}
-
 	}
 
 	protected static final class AddGroupCommand extends MixtractCommand {
@@ -230,35 +200,35 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 
 	protected static final class DetailCommand extends MixtractCommand {
 
-			public DetailCommand(String... lang) {
-				super(lang);
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see net.muse.misc.Command#execute()
-			 */
-			@Override public void execute() {
-				frame().getGroupingPanel().showDetailViewer();
-			}
-
+		public DetailCommand(String... lang) {
+			super(lang);
 		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see net.muse.misc.Command#execute()
+		 */
+		@Override public void execute() {
+			frame().getGroupingPanel().showDetailViewer();
+		}
+
+	}
 
 	protected static final class RefreshCommand extends MixtractCommand {
 
-			public RefreshCommand(String... lang) {
-				super(lang);
-			}
-
-			/*
-			 * (非 Javadoc)
-			 * @see net.muse.misc.Command#execute()
-			 */
-			@Override public void execute() {
-				frame().refreshDatabase();
-			}
-
+		public RefreshCommand(String... lang) {
+			super(lang);
 		}
+
+		/*
+		 * (非 Javadoc)
+		 * @see net.muse.misc.Command#execute()
+		 */
+		@Override public void execute() {
+			frame().refreshDatabase();
+		}
+
+	}
 
 	public MuseAppCommand(String... lang) {
 		super(lang);

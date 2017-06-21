@@ -15,7 +15,6 @@ import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;
 import net.muse.mixtract.gui.SelectedObjects;
-import net.muse.mixtract.gui.command.*;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
