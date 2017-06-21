@@ -45,9 +45,6 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MuseAppCommand DETAIL = new DetailCommand(
 			"Show parameters", "Show parameters");
 
-	public static final MuseAppCommand EDIT_GROUP = new EditGroupCommand(
-			"Edit group", "グループを編集");
-
 	public static final MuseAppCommand EXPR_LINE_DISPLAY = new ExprLineCommand(
 			"Show/hide expression line");
 
@@ -350,19 +347,6 @@ public class MixtractCommand extends MuseAppCommand {
 		@Override public void execute() {
 			_mainFrame.getGroupingPanel().showDetailViewer();
 		}
-
-	}
-	private static final class EditGroupCommand extends MixtractCommand {
-
-		public EditGroupCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {}
 
 	}
 	private static final class ExprLineCommand extends MixtractCommand {

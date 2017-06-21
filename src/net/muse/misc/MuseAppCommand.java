@@ -11,8 +11,10 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 
 	public static final MuseAppCommand DELETE_GROUP = new DeleteGroupCommand(
 			"Delete", "グループを削除");
-	public static final MixtractCommand ADD_GROUP = new AddGroupCommand(
+	public static final MuseAppCommand ADD_GROUP = new AddGroupCommand(
 			"Add group", "グループを追加");
+	public static final MuseAppCommand EDIT_GROUP = new EditGroupCommand(
+			"Edit group", "グループを編集");
 	protected static MXTuneData _target;
 	protected static MuseApp _main;
 	protected static MainFrame _mainFrame;
@@ -48,6 +50,20 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 		public AddGroupCommand(String... lang) {
 			super(lang);
 		}
+
+	}
+
+	protected static final class EditGroupCommand extends MixtractCommand {
+
+		public EditGroupCommand(String... lang) {
+			super(lang);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see net.muse.misc.Command#execute()
+		 */
+		@Override public void execute() {}
 
 	}
 
