@@ -1,8 +1,8 @@
 package net.muse.mixtract.gui;
 
+import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.PianoRoll;
-import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXPianoroll extends PianoRoll {

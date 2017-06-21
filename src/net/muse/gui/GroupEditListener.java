@@ -2,7 +2,7 @@ package net.muse.gui;
 
 import javax.swing.JLabel;
 
-import net.muse.mixtract.data.Group;
+import net.muse.data.Group;
 
 /**
  * グループ編集に関するイベントを受け取るためのリスナーインタフェースです。

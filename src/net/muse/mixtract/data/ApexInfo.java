@@ -2,8 +2,7 @@ package net.muse.mixtract.data;
 
 import java.util.List;
 
-import net.muse.data.Harmony;
-import net.muse.data.NoteData;
+import net.muse.data.*;
 import net.muse.misc.MuseObject;
 
 /**

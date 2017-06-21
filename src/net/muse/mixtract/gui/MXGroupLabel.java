@@ -3,9 +3,9 @@ package net.muse.mixtract.gui;
 import java.awt.Rectangle;
 
 import net.muse.MuseApp;
+import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
 import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.Group;
 
 public class MXGroupLabel extends GroupLabel {
 

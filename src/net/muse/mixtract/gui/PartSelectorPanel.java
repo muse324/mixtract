@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
 import net.muse.mixtract.data.*;

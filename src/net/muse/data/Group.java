@@ -1,8 +1,10 @@
-package net.muse.mixtract.data;
+package net.muse.data;
 
 import java.util.*;
 
 import net.muse.data.*;
+import net.muse.mixtract.data.GroupNote;
+import net.muse.mixtract.data.PhraseFeature;
 import net.muse.mixtract.data.curve.*;
 
 /**
@@ -79,7 +81,7 @@ public class Group extends SequenceData {
 	 * @param name
 	 * @param partNumber
 	 */
-	Group(Group g1, Group g2, String name, int partNumber) {
+	protected Group(Group g1, Group g2, String name, int partNumber) {
 		this(GroupType.is(name.charAt(0)));
 		index = Integer.parseInt(name.substring(1));
 		this.partNumber = partNumber;
@@ -96,7 +98,7 @@ public class Group extends SequenceData {
 	 * @param list
 	 * @param type
 	 */
-	Group(int id, int partNumber, GroupNote list, GroupType type) {
+	protected Group(int id, int partNumber, GroupNote list, GroupType type) {
 		this(type);
 		index = id;
 		this.partNumber = partNumber;
@@ -115,7 +117,7 @@ public class Group extends SequenceData {
 	 * @param partIndex
 	 * @param type
 	 */
-	Group(NoteData notelist, int partIndex, GroupType type) {
+	protected Group(NoteData notelist, int partIndex, GroupType type) {
 		this(type);
 		this.notelist = new GroupNote(notelist);
 		this.beginGroupNote = this.notelist;

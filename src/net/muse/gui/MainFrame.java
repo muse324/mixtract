@@ -11,8 +11,8 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.*;
 
 import net.muse.MuseApp;
+import net.muse.data.Group;
 import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.*;

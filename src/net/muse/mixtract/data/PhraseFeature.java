@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
+import net.muse.data.Group;
 import net.muse.data.NoteData;
 import net.muse.misc.MuseObject;
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import net.muse.MuseApp;
+import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.gui.GroupingPanel.PrintGroupInfoCommand;
@@ -12,7 +13,6 @@ import net.muse.misc.Command;
 import net.muse.misc.MuseAppCommand;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
-import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.command.*;
 

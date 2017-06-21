@@ -5,6 +5,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
+import net.muse.data.Group;
 import net.muse.data.NoteData;
 import net.muse.mixtract.data.*;
 

@@ -877,7 +877,7 @@ public class MXTuneData extends TuneData {
 			 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
 			 */
 			@Override public void endPart(Part part, MusicXMLWrapper wrapper) {
-				Group g = new Group(data.getNoteList(partIndex), partIndex + 1,
+				Group g = new MXGroup(data.getNoteList(partIndex), partIndex + 1,
 						GroupType.NOTE);
 
 				if (primaryGrouplist == null) {
@@ -1189,7 +1189,7 @@ public class MXTuneData extends TuneData {
 				if (groupInfo.charAt(0) == '[') {
 					String group[] = groupInfo.split(" ");
 					setGroupNotelist(list, group, 1, group.length);
-					g = new Group(id, partNumber, list, GroupType.is(name
+					g = new MXGroup(id, partNumber, list, GroupType.is(name
 							.charAt(0)));
 					glist.add(g);
 					if (!hasGroupList())
@@ -1208,7 +1208,7 @@ public class MXTuneData extends TuneData {
 						}
 					}
 					if (g1 != null && g2 != null) {
-						g = new Group(g1, g2, name, partNumber);
+						g = new MXGroup(g1, g2, name, partNumber);
 						if (g1.equals(getRootGroup(partNumber - 1)))
 							setGrouplist(partNumber - 1, g);
 						glist.remove(g1);

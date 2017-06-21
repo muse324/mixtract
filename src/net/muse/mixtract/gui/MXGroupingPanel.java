@@ -2,8 +2,8 @@ package net.muse.mixtract.gui;
 
 import java.awt.Rectangle;
 
+import net.muse.data.Group;
 import net.muse.gui.GroupingPanel;
-import net.muse.mixtract.data.Group;
 
 public class MXGroupingPanel extends GroupingPanel {
 

@@ -7,10 +7,10 @@ import java.util.LinkedList;
 
 import javax.swing.*;
 
+import net.muse.data.Group;
 import net.muse.gui.*;
 import net.muse.gui.RoundedCornerButton.RoundButton;
 import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.Group;
 import net.muse.mixtract.data.curve.PhraseCurve;
 import net.muse.mixtract.gui.command.ApplyHierarchicalParamsCommand;
 

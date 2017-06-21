@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
 import net.muse.mixtract.Mixtract;

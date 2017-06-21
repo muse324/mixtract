@@ -13,7 +13,7 @@ public class MXGroup extends Group {
 	 * @param name
 	 * @param partNumber
 	 */
-	private MXGroup(Group g1, Group g2, String name, int partNumber) {
+	MXGroup(Group g1, Group g2, String name, int partNumber) {
 		super(g1, g2, name, partNumber);
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
@@ -35,9 +35,8 @@ public class MXGroup extends Group {
 	 * @param list
 	 * @param type
 	 */
-	private MXGroup(int id, int partNumber, GroupNote list, GroupType type) {
+	MXGroup(int id, int partNumber, GroupNote list, GroupType type) {
 		super(id, partNumber, list, type);
-		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
 	/**
@@ -45,9 +44,8 @@ public class MXGroup extends Group {
 	 * @param partIndex
 	 * @param type
 	 */
-	private MXGroup(NoteData notelist, int partIndex, GroupType type) {
+	MXGroup(NoteData notelist, int partIndex, GroupType type) {
 		super(notelist, partIndex, type);
-		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
 	/**

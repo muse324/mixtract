@@ -6,8 +6,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import net.muse.MuseApp;
+import net.muse.data.Group;
 import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.Group;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
