@@ -6,7 +6,8 @@ import javax.swing.JFrame;
 
 import net.muse.MuseApp;
 import net.muse.data.TuneData;
-import net.muse.gui.*;
+import net.muse.gui.GroupLabel;
+import net.muse.gui.MainFrame;
 import net.muse.gui.command.*;
 import net.muse.misc.Command;
 import net.muse.mixtract.Mixtract;
@@ -26,77 +27,77 @@ public class MixtractCommand extends MuseAppCommand {
 		return (Mixtract) _main;
 	}
 
-	public static final MuseAppCommand SET_CHORD = new SetChordCommand(
+	public static final MixtractCommand SET_CHORD = new SetChordCommand(
 			"Set Chord", "和音を付与");
-	public static final MuseAppCommand ANALYZE_STRUCTURE = new AnalyzeStructureCommand(
+	public static final MixtractCommand ANALYZE_STRUCTURE = new AnalyzeStructureCommand(
 			"Analyze structure", "構造分析");
 
-	public static final MuseAppCommand APPLY_PULSES_CHOPINS = new ApplyPulseChopinsCommand(
+	public static final MixtractCommand APPLY_PULSES_CHOPINS = new ApplyPulseChopinsCommand(
 			"Apply pulses (chopin)");
 
-	public static final MuseAppCommand APPLY_PULSES_MOZARTS = new ApplyPuliseMozartsCommand(
+	public static final MixtractCommand APPLY_PULSES_MOZARTS = new ApplyPuliseMozartsCommand(
 			"Apply pulses (mozart)");
 
-	public static final MuseAppCommand APPLY_TOPONOTE = new ApplyTopNoteCommand(
+	public static final MixtractCommand APPLY_TOPONOTE = new ApplyTopNoteCommand(
 			"Apply the most similar expression");
 
-	public static final MuseAppCommand CLEAR_ALLGROUPS = new ClearAllGroupsCommand(
+	public static final MixtractCommand CLEAR_ALLGROUPS = new ClearAllGroupsCommand(
 			"Clear all groups", "フレーズ構造全体を削除");
 
-	public static final MuseAppCommand DELETE_GROUP = new DeleteGroupCommand(
+	public static final MixtractCommand DELETE_GROUP = new DeleteGroupCommand(
 			"Delete", "グループを削除");
 
-	public static final MuseAppCommand EXPR_LINE_DISPLAY = new ExprLineCommand(
+	public static final MixtractCommand EXPR_LINE_DISPLAY = new ExprLineCommand(
 			"Show/hide expression line");
 
-	public static final MuseAppCommand EXPR_VIEW_DISPLAY = new ExprViewCommand(
+	public static final MixtractCommand EXPR_VIEW_DISPLAY = new ExprViewCommand(
 			"Switch expression view");
 
-	public static final MuseAppCommand CHANGE_PART = new ChangePartCommand(
+	public static final MixtractCommand CHANGE_PART = new ChangePartCommand(
 			"Change part");
 
-	public static final MuseAppCommand MOUSE_DISPLAY = new MouseDisplayCommand(
+	public static final MixtractCommand MOUSE_DISPLAY = new MouseDisplayCommand(
 			"Show/Hide mouse pointer", "マウスポインタを表示/非表示");
 
-	public static final MuseAppCommand OPEN_RULEPANEL = new OpenRulePanelCommand(
+	public static final MixtractCommand OPEN_RULEPANEL = new OpenRulePanelCommand(
 			"Open rulepanel", "ルールパネル");
 
 	public static final MuseAppCommand OPEN_RULEMAP = new OpenRuleMapCommand(
 			"Open Rulemap", "ルールマップを開く");
 
-	public static final MuseAppCommand PRINT_ALL_SIMILAR_GROUPS = new PrintAllSimilarGroupsCommand(
+	public static final MixtractCommand PRINT_ALL_SIMILAR_GROUPS = new PrintAllSimilarGroupsCommand(
 			"Show all similar groups", "Show all similar groups");
 
-	public static final MuseAppCommand PRINT_ALLGROUPS = new PrintAllGroupsCommand(
+	public static final MixtractCommand PRINT_ALLGROUPS = new PrintAllGroupsCommand(
 			"Print all groups", "全グループを出力");
 
-	public static final MuseAppCommand PRINT_SIMILAR_GROUPS = new PrintSimilarGroupsCommand(
+	public static final MixtractCommand PRINT_SIMILAR_GROUPS = new PrintSimilarGroupsCommand(
 			"Show similar groups");
 
-	public static final MuseAppCommand PRINT_SUBGROUPS = new PrintSubgroupsCommand(
+	public static final MixtractCommand PRINT_SUBGROUPS = new PrintSubgroupsCommand(
 			"Print group", "下位グループを出力");
 
 	public static final ApplyHierarchicalParamsCommand APPLY_HIERARCHICAL_PARAMS = new ApplyHierarchicalParamsCommand(
 			"Apply Parametrs", "階層表現に適用");
 
-	public static final MuseAppCommand RESET_PRAMETERS = new ResetParameterCommand(
+	public static final MixtractCommand RESET_PRAMETERS = new ResetParameterCommand(
 			"Reset parameters");
-	public static final MuseAppCommand SHOW_SIMILAR_GROUPS = new ShowSimilarGroupsCommand(
+	public static final MixtractCommand SHOW_SIMILAR_GROUPS = new ShowSimilarGroupsCommand(
 			"Show similar groups");
 
-	public static final MuseAppCommand SEARCH = new SearchCommand("Search",
+	public static final MixtractCommand SEARCH = new SearchCommand("Search",
 			"検索");
 
-	public static final MuseAppCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
+	public static final MixtractCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
 			"GTTMAnalysis");
 
 	protected static final SelectedObjects _selectedObjects = new SelectedObjects();
 
-	public static final MuseAppCommand OPEN_STRUCTURE_DATA = new OpenStructureDataCommand(
+	public static final MixtractCommand OPEN_STRUCTURE_DATA = new OpenStructureDataCommand(
 			"Read structure data", "構造データ読込");
-	public static final MuseAppCommand SET_KEY = new SetKeyCommand(
+	public static final MixtractCommand SET_KEY = new SetKeyCommand(
 			"Change key", "調を変更");
-	public static final MuseAppCommand SET_KEYMODE = new SetKeyModeCommand(
+	public static final MixtractCommand SET_KEYMODE = new SetKeyModeCommand(
 			"Change key mode", "長調/短調");
 	public static final SetCrescendoCommand SET_TYPE_CRESC = new SetCrescendoCommand(
 			"< (cresc.)");

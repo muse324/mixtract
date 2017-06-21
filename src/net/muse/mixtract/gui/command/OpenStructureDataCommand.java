@@ -11,7 +11,7 @@ import net.muse.gui.command.OpenMusicXMLCommand;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/09/01
  */
-class OpenStructureDataCommand extends OpenMusicXMLCommand {
+class OpenStructureDataCommand extends MixtractCommand {
 
 	/**
 	 * @param lang
