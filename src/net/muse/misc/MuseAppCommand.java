@@ -20,6 +20,9 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 				"Open MusicXML", "MusicXMLを開く");
 	public static final MuseAppCommand REDRAW = new RedrawCommand("Redraw",
 				"再描画");
+	public static final MuseAppCommand SELECT_GROUP = new SelectGroupCommand(
+				"Select group", "グループを選択");
+	public static final MuseAppCommand RENDER = new RenderCommand("Render", "生成");
 	protected static MXTuneData _target;
 	protected static MuseApp _main;
 	protected static MainFrame _mainFrame;
@@ -179,6 +182,36 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 
 			@Override public void execute() {}
 
+		}
+
+	protected static final class SelectGroupCommand extends MixtractCommand {
+
+			public SelectGroupCommand(String... lang) {
+				super(lang);
+			}
+
+		}
+
+	/**
+		 * @author Mitsuyo Hashida @ CrestMuse Project, JST
+		 *         <address>http://www.m-use.net/</address>
+		 *         <address>hashida@kwansei.ac.jp</address>
+		 * @since 2009/03/12
+		 */
+		protected static class RenderCommand extends MixtractCommand {
+
+			protected RenderCommand(String... lang) {
+				super(lang);
+			}
+
+			/*
+			 * (非 Javadoc)
+			 * @see net.muse.misc.Command#execute()
+			 */
+			@Override public void execute() {
+			// ExpressionMaker.render(_target);
+			// _mainFrame.notifySetTarget(_target);
+			}
 		}
 
 	public MuseAppCommand(String... lang) {

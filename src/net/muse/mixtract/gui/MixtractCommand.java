@@ -83,15 +83,11 @@ public class MixtractCommand extends MuseAppCommand {
 
 	public static final MuseAppCommand RESET_PRAMETERS = new ResetParameterCommand(
 			"Reset parameters");
-	public static final MuseAppCommand SELECT_GROUP = new SelectGroupCommand(
-			"Select group", "グループを選択");
-
 	public static final MuseAppCommand SHOW_SIMILAR_GROUPS = new ShowSimilarGroupsCommand(
 			"Show similar groups");
 
 	public static final MuseAppCommand SEARCH = new SearchCommand("Search", "検索");
 
-	public static final MuseAppCommand RENDER = new RenderCommand("Render", "生成");
 	public static final MuseAppCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
 			"GTTMAnalysis");
 	protected static MXTuneData _target;
@@ -647,28 +643,6 @@ public class MixtractCommand extends MuseAppCommand {
 
 	}
 
-	/**
-	 * @author Mitsuyo Hashida @ CrestMuse Project, JST
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
-	 * @since 2009/03/12
-	 */
-	private static class RenderCommand extends MixtractCommand {
-
-		protected RenderCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-		// ExpressionMaker.render(_target);
-		// _mainFrame.notifySetTarget(_target);
-		}
-	}
-
 	private static final class ResetParameterCommand extends MixtractCommand {
 
 		public ResetParameterCommand(String... lang) {
@@ -691,14 +665,6 @@ public class MixtractCommand extends MuseAppCommand {
 		// _mainFrame.searchSimilarPhrases();
 		// // _mainFrame.getGroupingPanel().searchSimilarityOfThisGroup();
 		}
-	}
-
-	private static final class SelectGroupCommand extends MixtractCommand {
-
-		public SelectGroupCommand(String... lang) {
-			super(lang);
-		}
-
 	}
 
 	private static final class ShowSimilarGroupsCommand extends MixtractCommand {
