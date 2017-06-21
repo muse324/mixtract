@@ -67,7 +67,7 @@ public class MXNoteData extends NoteData {
 	 * @param bpm
 	 * @param vel
 	 */
-	MXNoteData(Note note, int partNumber, int idx, int bpm, int vel) {
+	public MXNoteData(Note note, int partNumber, int idx, int bpm, int vel) {
 		// 基本情報
 		super(idx);
 		this.note = note;
@@ -182,7 +182,7 @@ public class MXNoteData extends NoteData {
 		this.measureNumber = measureNumber;
 	}
 
-	void setOffset(int offset) {
+	public void setOffset(int offset) {
 		this.offset = offset;
 		getNoteOff().setOnset(offset);
 	}
