@@ -3,8 +3,7 @@ package net.muse.mixtract.data.curve;
 
 import java.util.LinkedList;
 
-import net.muse.data.Group;
-import net.muse.data.NoteData;
+import net.muse.data.*;
 import net.muse.mixtract.data.*;
 
 public class ArticulationCurve extends PhraseCurve {

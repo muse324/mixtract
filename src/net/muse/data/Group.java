@@ -3,7 +3,6 @@ package net.muse.data;
 import java.util.*;
 
 import net.muse.data.*;
-import net.muse.mixtract.data.GroupNote;
 import net.muse.mixtract.data.PhraseFeature;
 import net.muse.mixtract.data.curve.*;
 

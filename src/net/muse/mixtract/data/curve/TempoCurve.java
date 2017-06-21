@@ -2,8 +2,7 @@ package net.muse.mixtract.data.curve;
 
 import java.util.*;
 
-import net.muse.data.Group;
-import net.muse.data.NoteData;
+import net.muse.data.*;
 import net.muse.mixtract.data.*;
 
 public class TempoCurve extends PhraseCurve {

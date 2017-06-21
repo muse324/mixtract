@@ -1,7 +1,4 @@
-package net.muse.mixtract.data;
-
-import net.muse.data.NoteData;
-import net.muse.data.SequenceData;
+package net.muse.data;
 
 /**
  * @author Mitsuyo Hashida & Haruhiro Katayose
@@ -18,7 +15,7 @@ public class GroupNote extends SequenceData {
 		this.note = note;
 	}
 
-	GroupNote() {
+	public GroupNote() {
 		super();
 	}
 

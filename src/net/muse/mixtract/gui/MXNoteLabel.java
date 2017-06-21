@@ -3,9 +3,9 @@ package net.muse.mixtract.gui;
 import java.awt.Color;
 import java.awt.Rectangle;
 
+import net.muse.data.GroupNote;
 import net.muse.gui.NoteLabel;
 import net.muse.gui.PartColor;
-import net.muse.mixtract.data.GroupNote;
 import net.muse.mixtract.data.MXNoteData;
 
 public class MXNoteLabel extends NoteLabel {
