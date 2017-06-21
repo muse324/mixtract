@@ -233,41 +233,6 @@ public class MixtractCommand extends MuseAppCommand {
 		return super.toString();
 	}
 
-	private static final class ApplyPuliseMozartsCommand extends
-			MixtractCommand {
-
-		public ApplyPuliseMozartsCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			// ExpressionMaker
-			// .transerPulsesTo(getSelectedObjects().getGroup(), "Mozart");
-		}
-
-	}
-
-	private static final class ApplyPulseChopinsCommand extends
-			MixtractCommand {
-
-		public ApplyPulseChopinsCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			throw new UnsupportedOperationException("chopin's pulse");
-		}
-
-	}
-
 	private static final class ApplyTopNoteCommand extends MixtractCommand {
 
 		public ApplyTopNoteCommand(String... lang) {
