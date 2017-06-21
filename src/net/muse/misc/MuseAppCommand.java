@@ -94,7 +94,7 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	 *         <address>hashida@kwansei.ac.jp</address>
 	 * @since 2009/03/12
 	 */
-	protected static class OpenMusicXMLCommand extends MixtractCommand {
+	public static class OpenMusicXMLCommand extends MixtractCommand {
 
 		protected OpenMusicXMLCommand(String... lang) {
 			super(lang);
