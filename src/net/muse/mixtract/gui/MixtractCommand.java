@@ -42,9 +42,6 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MuseAppCommand DELETE_GROUP = new DeleteGroupCommand(
 			"Delete", "グループを削除");
 
-	public static final MuseAppCommand DETAIL = new DetailCommand(
-			"Show parameters", "Show parameters");
-
 	public static final MuseAppCommand EXPR_LINE_DISPLAY = new ExprLineCommand(
 			"Show/hide expression line");
 
@@ -94,7 +91,6 @@ public class MixtractCommand extends MuseAppCommand {
 
 	protected static MuseApp _main;
 
-	protected static MainFrame _mainFrame;
 	protected static final SelectedObjects _selectedObjects = new SelectedObjects();
 
 	public static final MuseAppCommand OPEN_STRUCTURE_DATA = new OpenStructureDataCommand(
@@ -319,21 +315,6 @@ public class MixtractCommand extends MuseAppCommand {
 				// getExpressionPanel().clearGroup();
 				// setTune(target);
 			}
-		}
-
-	}
-	private static final class DetailCommand extends MixtractCommand {
-
-		public DetailCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			_mainFrame.getGroupingPanel().showDetailViewer();
 		}
 
 	}
