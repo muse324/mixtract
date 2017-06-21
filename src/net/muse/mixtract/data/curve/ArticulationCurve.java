@@ -3,6 +3,7 @@ package net.muse.mixtract.data.curve;
 
 import java.util.LinkedList;
 
+import net.muse.data.NoteData;
 import net.muse.mixtract.data.*;
 
 public class ArticulationCurve extends PhraseCurve {
@@ -59,7 +60,7 @@ public class ArticulationCurve extends PhraseCurve {
 	private void applyArticulationEvent(GroupNote gnote, double bt, double et) {
 		if (gnote == null)
 			return;
-		NoteData nd = gnote.getNote();
+		NoteData nd = (NoteData) gnote.getNote();
 		double on = nd.onsetInMsec(getDefaultBPM());
 		double tv = nd.timeValueInMsec(getDefaultBPM());
 		double t = on + tv; // current note の楽譜上のオフセット

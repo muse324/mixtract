@@ -56,7 +56,7 @@ public abstract class SequenceData extends MuseObject {
 	}
 
 	public void setNext(SequenceData note) {
-		setPrevious(note, true);
+		setNext(note, true);
 	}
 
 	public void setNext(SequenceData next, boolean sync) {
@@ -68,7 +68,7 @@ public abstract class SequenceData extends MuseObject {
 	}
 
 	public void setParent(SequenceData note) {
-		setPrevious(note, true);
+		setParent(note, true);
 	}
 
 	public void setParent(SequenceData note, boolean sync) {

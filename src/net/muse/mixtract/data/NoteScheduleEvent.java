@@ -7,6 +7,8 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 
+import net.muse.data.NoteData;
+
 /**
  * <h1>NoteScheduleEvent</h1>
  * 
@@ -28,7 +30,7 @@ public class NoteScheduleEvent {
 		CLIP_OVER_VELOCITY = cLIP_OVER_VELOCITY;
 	}
 
-	/** 参照元の {@link NoteData} */
+	/** 参照元の {@link MXNoteData} */
 	private final NoteData parent;
 
 	/** MIDI メッセージ */
@@ -79,7 +81,7 @@ public class NoteScheduleEvent {
 	/**
 	 * @param onset セットする onset
 	 */
-	void setOnset(long onset) {
+	public void setOnset(long onset) {
 		this.onset = onset;
 	}
 
@@ -95,12 +97,12 @@ public class NoteScheduleEvent {
 	 * @param velocity 代入するヴェロシティ値
 	 * @throws InvalidMidiDataException
 	 */
-	void setVelocity(int velocity) throws InvalidMidiDataException {
+	public void setVelocity(int velocity) throws InvalidMidiDataException {
 		message.setMessage(message.getCommand(), message.getChannel(),
 				message.getData1(), confirmAppropriateVelocity(velocity));
 	}
 
-	int velocity() {
+	public int velocity() {
 		return message.getData2();
 	}
 

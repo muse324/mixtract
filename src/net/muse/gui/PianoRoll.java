@@ -11,8 +11,7 @@ import javax.xml.transform.TransformerException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.MuseApp;
-import net.muse.data.Harmony;
-import net.muse.data.KeyMode;
+import net.muse.data.*;
 import net.muse.misc.Util;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
@@ -49,7 +48,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	private boolean isMouseSelectBoxDraw;
 	private boolean drawToolTips = true;
 
-	boolean displayApex = false;
 	private boolean drawMelodyLine = false;
 	/* マウス制御 */
 	private MouseActionListener mouseActions; // @jve:decl-index=0:
@@ -113,7 +111,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @see net.muse.mixtract.gui.GroupEditListener#deselect(javax.swing.JLabel)
 	 */
 	public void deselect(GroupLabel g) {
-		setDisplayApex(false);
 		setMouseOveredNoteLabel(null);
 		clearSelection();
 		repaint();
@@ -205,7 +202,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * .swing.JLabel, boolean)
 	 */
 	public void selectGroup(GroupLabel g, boolean flg) {
-		setDisplayApex(true);
 		selectGroup(g.getGroup());
 		repaint();
 	}
@@ -242,7 +238,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	public void selectGroup(Group group) {
 		clearSelection();
-		group.extractApex();
 		selectNote(notelist, group.getScoreNotelist());
 	}
 
@@ -610,13 +605,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	/**
-	 * @param b
-	 */
-	protected void setDisplayApex(boolean flg) {
-		displayApex = flg;
-	}
-
-	/**
 	 *
 	 */
 	private void clearSelection() {
@@ -874,16 +862,16 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	/**
 	 * @param notelist2
-	 * @param scoreNotelist
+	 * @param list
 	 */
-	private void selectNote(NoteLabel l, List<NoteData> scoreNotelist) {
+	private void selectNote(NoteLabel l, List<? extends NoteData> list) {
 		if (l == null)
 			return;
-		if (scoreNotelist.contains(l.getScoreNote())) {
+		if (list.contains(l.getScoreNote())) {
 			l.setSelected(true);
 			selectedNoteLabels.add(l);
 		}
-		selectNote(l.next(), scoreNotelist);
+		selectNote(l.next(), list);
 	}
 
 	private void setMouseEndPoint(MouseEvent e) {

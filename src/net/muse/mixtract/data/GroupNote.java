@@ -1,5 +1,6 @@
 package net.muse.mixtract.data;
 
+import net.muse.data.NoteData;
 import net.muse.data.SequenceData;
 
 /**
@@ -11,10 +12,6 @@ import net.muse.data.SequenceData;
  */
 public class GroupNote extends SequenceData {
 	private NoteData note = null;
-	// private GroupNote next = null;
-	// private GroupNote prev = null;
-	// private GroupNote parent = null;
-	// private GroupNote child = null;
 
 	public GroupNote(NoteData note) {
 		super();
@@ -71,29 +68,8 @@ public class GroupNote extends SequenceData {
 		return (GroupNote) super.previous();
 	}
 
-	/**
-	 * @param note セットする note
-	 */
-	public void setNext(GroupNote note) {
-		setNext(note, true);
-	}
-
 	public void setNote(NoteData note) {
 		this.note = note;
-	}
-
-	/**
-	 * @param parent セットする parent
-	 */
-	public void setParent(GroupNote note) {
-		setParent(note, true);
-	}
-
-	/**
-	 * @param prev セットする prev
-	 */
-	public void setPrevious(GroupNote prev) {
-		setPrevious(prev, true);
 	}
 
 	/*

@@ -50,7 +50,7 @@ public class MXTuneData extends TuneData {
 	private DeviationInstanceWrapper dev;
 
 	/** 声部ごとの音符情報 */
-	private ArrayList<NoteData> notelist = new ArrayList<NoteData>();
+	private ArrayList<MXNoteData> notelist = new ArrayList<MXNoteData>();
 
 	/** 声部ごとのフレーズ構造(二分木) */
 	private List<Group> rootGroup = new ArrayList<Group>();
@@ -102,7 +102,7 @@ public class MXTuneData extends TuneData {
 		DynamicsCurve.setDefaultBPM(t);
 		ExGTTMRules.setDefaultBPM(t);
 		PhraseFeature.setDefaultBPM(t);
-		NoteData.setDefaultBPM(t);
+		MXNoteData.setDefaultBPM(t);
 		PhraseCurve.setDefaultBPM(t);
 		TempoCurve.setDefaultBPM(t);
 		Mixtract.setDefaultBPM(t);
@@ -484,7 +484,7 @@ public class MXTuneData extends TuneData {
 						group));
 	}
 
-	protected void writeNoteData(PrintWriter out, NoteData note) {
+	protected void writeNoteData(PrintWriter out, MXNoteData note) {
 		if (note == null)
 			return;
 		writeNoteData(out, note.child());
@@ -819,7 +819,7 @@ public class MXTuneData extends TuneData {
 		if (xml == null)
 			return;
 		xml.processNotePartwise(new CMXNoteHandler(this) {
-			private NoteData cur = null;
+			private MXNoteData cur = null;
 			private Group primaryGrouplist = null;
 			private int idx = 0;
 			private KeyMode keyMode;
@@ -940,7 +940,7 @@ public class MXTuneData extends TuneData {
 			 * @param md
 			 */
 			private void readNoteData(Note note) {
-				NoteData nd = new NoteData(note, currentPartNumber, ++idx,
+				MXNoteData nd = new MXNoteData(note, currentPartNumber, ++idx,
 						getBPM().get(0), currentDefaultVelocity);
 				nd.setKeyMode(keyMode, fifths);
 				testPrintln(nd.toString());
@@ -1054,7 +1054,7 @@ public class MXTuneData extends TuneData {
 		int fifths = Integer.parseInt(getValue(keys, 6));
 		Harmony chordName = Harmony.valueOf(getValue(keys, 7));
 
-		NoteData nd = new NoteData(++idx, partNumber, onset, offset, noteName,
+		MXNoteData nd = new MXNoteData(++idx, partNumber, onset, offset, noteName,
 				rest, grace, tie, tval, beat);
 		nd.setMeasureNumber(measureNumber);
 		nd.setVoice(voice);
@@ -1157,7 +1157,7 @@ public class MXTuneData extends TuneData {
 	 * <li><em>GroupName</em>
 	 * <li><em>PartNumber</em> 0から始まるパート番号(int)
 	 * <li><em>Data</em> ふたつの下位グループ，あるいは最下層の音符列
-	 * <li><em>ApexNote</em> 頂点音をあらわす音符ID(NoteData)
+	 * <li><em>ApexNote</em> 頂点音をあらわす音符ID(MXNoteData)
 	 * <li><em>DynamicCurve</em> ダイナミクス表現のフリーカーブパラメータ
 	 * <li><em>TempoCurve</em> テンポ表現のフリーカーブパラメータ
 	 * </ul>
@@ -1281,7 +1281,7 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	private void setNotelist(int partIndex, NoteData root) {
+	private void setNotelist(int partIndex, MXNoteData root) {
 		if (partIndex >= this.notelist.size())
 			notelist.add(root);
 		else

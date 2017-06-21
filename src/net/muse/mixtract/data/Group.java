@@ -1,10 +1,8 @@
 package net.muse.mixtract.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import net.muse.data.Harmony;
-import net.muse.data.SequenceData;
+import net.muse.data.*;
 import net.muse.mixtract.data.curve.*;
 
 /**
@@ -135,6 +133,10 @@ public class Group extends SequenceData {
 				PhraseCurveType.TEMPO);
 		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
 				PhraseCurveType.ARTICULATION);
+		createScoreNoteList();
+	}
+
+	protected void createScoreNoteList() {
 		scoreNotelist = new ArrayList<NoteData>();
 	}
 
@@ -159,60 +161,6 @@ public class Group extends SequenceData {
 			// || !g.getType().equals(getType()) || !g.getLayer().equals(layer))
 			return false;
 		return true;
-	}
-
-	/**
-	 * 頂点らしさを算出します。
-	 */
-	public void extractApex() {
-		List<NoteData> nlist = getScoreNotelist();
-		// score clear
-		for (NoteData n : nlist) {
-			n.clearApexScore();
-		}
-
-		final int sz = nlist.size();
-		ApexInfo.applyRule(ApexInfo.LONGER_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.SAME_TIMEVALUE_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.HIGHER_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.SAME_PITCH_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.BEGIN_NOTE, this);
-		ApexInfo.applyRule(ApexInfo.END_NOTE, this);
-		ApexInfo.applyRule(ApexInfo.MOUNTAIN_PROGRESS, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.VALLEY_PROGRESS, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.ZIGZAG_PROGRESS1, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.ZIGZAG_PROGRESS2, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.UPPER_STETCH_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.LOWER_STETCH_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.UPPER_PROGRESS_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.LOWER_PROGRESS_NOTE, nlist, 0, sz);
-		for (Harmony h : Harmony.values()) {
-			ApexInfo.SingleChordRule.applyRule(h, nlist, 0, sz);
-		}
-		ApexInfo.applyRule(ApexInfo.CHORD_CHANGE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.CADENTZ_I, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.CADENTZ_I6, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.CADENTZ_VI, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.APPOGGIATURA_LONGER, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.APPOGGIATURA_SAME, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.APPOGGIATURA_SHORTER, nlist, 0, sz);
-		// summarize
-		double max = -1000.;
-		double min = 1000.;
-		ArrayList<Double> scoreList = new ArrayList<Double>();
-		for (NoteData n : nlist) {
-			double score = n.sumTotalApexScore();
-			if (score > max)
-				max = score;
-			if (score < min)
-				min = score;
-			scoreList.add(score);
-		}
-		double range = max - min;
-		for (int i = 0; i < sz; i++) {
-			nlist.get(i).setApexScore((scoreList.get(i) - min) / range);
-		}
-
 	}
 
 	/**
@@ -282,14 +230,19 @@ public class Group extends SequenceData {
 	/**
 	 * @return cur
 	 */
-	public final List<NoteData> getScoreNotelist() {
+	public List<? extends NoteData> getScoreNotelist() {
 		if (hasChild()) {
 			scoreNotelist.clear();
-			scoreNotelist.addAll(getChildFormerGroup().getScoreNotelist());
-			scoreNotelist.addAll(getChildLatterGroup().getScoreNotelist());
+			addScoreNoteList(getChildFormerGroup().getScoreNotelist());
+			addScoreNoteList(getChildLatterGroup().getScoreNotelist());
 		} else if (scoreNotelist.size() <= 1)
 			makeScoreNotelist(getBeginGroupNote().getNote());
 		return scoreNotelist;
+	}
+
+	protected void addScoreNoteList(List<? extends NoteData> list) {
+		for (NoteData n : list)
+			scoreNotelist.add(n);
 	}
 
 	/**
@@ -404,14 +357,6 @@ public class Group extends SequenceData {
 	}
 
 	/**
-	 * @param scoreNotelist the scoreNotelist to set
-	 */
-	public final void setScoreNotelist(List<NoteData> scoreNotelist) {
-		this.scoreNotelist.clear();
-		this.scoreNotelist.addAll(scoreNotelist);
-	}
-
-	/**
 	 * @param note
 	 */
 	public void setType(GroupType type) {
@@ -455,11 +400,7 @@ public class Group extends SequenceData {
 		}
 	}
 
-	private void makeScoreNotelist(NoteData root) {
-		// if (root == null) { // 実時間計算(仮)
-		// createDefaultRealtimeNotelist();
-		// return;
-		// }
+	protected void makeScoreNotelist(NoteData root) {
 		if (root == null)
 			return;
 		if (root.onset() > getEndGroupNote().getNote().onset())
@@ -566,5 +507,10 @@ public class Group extends SequenceData {
 			gnote = gnote.next();
 		}
 		return len;
+	}
+
+	public void setScoreNotelist(List<? extends NoteData> list) {
+		scoreNotelist.clear();
+		addScoreNoteList(list);
 	}
 }

@@ -3,6 +3,7 @@ package net.muse.mixtract.data;
 import java.util.List;
 
 import net.muse.data.Harmony;
+import net.muse.data.NoteData;
 import net.muse.misc.MuseObject;
 
 /**
@@ -47,11 +48,11 @@ abstract class ApexInfo extends MuseObject {
 		 * @see jp.crestmuse.mixtract.data.ApexInfo#apply(java.util.List, int,
 		 * int)
 		 */
-		@Override protected void apply(List<NoteData> notelist, int idx,
+		@Override protected void apply(List<MXNoteData> notelist, int idx,
 				int size) {
 			if (idx + 1 >= size)
 				return;
-			NoteData n1 = notelist.get(idx);
+			MXNoteData n1 = notelist.get(idx);
 			NoteData n2 = notelist.get(idx + 1);
 			if (n1.isNonChord() && !n2.isNonChord()) {
 				if (getAppoggiaturaScore(n1, n2))
@@ -83,7 +84,8 @@ abstract class ApexInfo extends MuseObject {
 		 * .Group)
 		 */
 		@Override public void apply(Group group) {
-			group.getBeginGroupNote().getNote().addApexScore(this);
+			((MXNoteData) group.getBeginGroupNote().getNote()).addApexScore(
+					this);
 		}
 	}
 
@@ -146,7 +148,7 @@ abstract class ApexInfo extends MuseObject {
 			super(2, 0, b, c);
 		}
 
-		public void addApexInfoToNotes(NoteData n1, NoteData n2) {
+		public void addApexInfoToNotes(MXNoteData n1, MXNoteData n2) {
 			n1.addApexScore(new ValleyProgressNoteRule(2, score1, score2,
 					score3));
 			n2.addApexScore(new ValleyProgressNoteRule(3, score1, score2,
@@ -159,13 +161,13 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.ApexInfo.MountainProgressNoteRule#apply
 		 * (java.util.List, int, int)
 		 */
-		@Override public void apply(List<NoteData> notelist, int idx,
+		@Override public void apply(List<MXNoteData> notelist, int idx,
 				int size) {
 			if (idx + 1 >= size)
 				return;
-			NoteData n1 = notelist.get(idx);
+			MXNoteData n1 = notelist.get(idx);
 			if (n1.chord() == Harmony.V || n1.chord() == Harmony.V7) {
-				NoteData n2 = notelist.get(idx + 1);
+				MXNoteData n2 = notelist.get(idx + 1);
 				if (isMatchedCondition(n2.chord())) {
 					addApexInfoToNotes(n1, n2);
 				}
@@ -186,7 +188,8 @@ abstract class ApexInfo extends MuseObject {
 			super(score);
 		}
 
-		@Override protected NoteData getPrimaryNote(NoteData n1, NoteData n2) {
+		@Override protected MXNoteData getPrimaryNote(MXNoteData n1,
+				MXNoteData n2) {
 			return n2;
 		}
 
@@ -211,7 +214,7 @@ abstract class ApexInfo extends MuseObject {
 		 * .Group)
 		 */
 		@Override public void apply(Group group) {
-			group.getEndGroupNote().getNote().addApexScore(this);
+			((MXNoteData) group.getEndGroupNote().getNote()).addApexScore(this);
 		}
 
 	}
@@ -241,7 +244,8 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected NoteData getPrimaryNote(NoteData n1, NoteData n2) {
+		@Override protected MXNoteData getPrimaryNote(MXNoteData n1,
+				MXNoteData n2) {
 			return (n1.noteNumber() > n2.noteNumber()) ? n1 : n2;
 		}
 
@@ -271,22 +275,23 @@ abstract class ApexInfo extends MuseObject {
 		 * @see jp.crestmuse.mixtract.data.ApexInfo#apply(java.util.List, int,
 		 * int)
 		 */
-		@Override public void apply(List<NoteData> notelist, int idx,
+		@Override public void apply(List<MXNoteData> notelist, int idx,
 				int size) {
 			if (idx + 1 >= size)
 				return;
-			NoteData n1 = notelist.get(idx);
-			NoteData n2 = notelist.get(idx + 1);
+			MXNoteData n1 = notelist.get(idx);
+			MXNoteData n2 = notelist.get(idx + 1);
 			if (isExceptedCondition(n1, n2)) {
 				apply(notelist, idx + 1, size);
 				return;
 			}
-			NoteData primaryNote = getPrimaryNote(n1, n2);
+			MXNoteData primaryNote = getPrimaryNote(n1, n2);
 			primaryNote.addApexScore(this);
 			apply(notelist, idx + 1, size);
 		}
 
-		protected abstract NoteData getPrimaryNote(NoteData n1, NoteData n2);
+		protected abstract MXNoteData getPrimaryNote(MXNoteData n1,
+				MXNoteData n2);
 
 		protected abstract boolean isExceptedCondition(NoteData n1,
 				NoteData n2);
@@ -348,7 +353,8 @@ abstract class ApexInfo extends MuseObject {
 		 * @param n2
 		 * @return
 		 */
-		@Override protected NoteData getPrimaryNote(NoteData n1, NoteData n2) {
+		@Override protected MXNoteData getPrimaryNote(MXNoteData n1,
+				MXNoteData n2) {
 			return ((n1.timeValue() > n2.timeValue()) ? n1 : n2);
 		}
 
@@ -428,8 +434,8 @@ abstract class ApexInfo extends MuseObject {
 			this.score3 = score3;
 		}
 
-		protected void addApexInfoToNotes(NoteData n1, NoteData n2,
-				NoteData n3) {
+		protected void addApexInfoToNotes(MXNoteData n1, MXNoteData n2,
+				MXNoteData n3) {
 			n1.addApexScore(new MountainProgressNoteRule(1, score1, score2,
 					score3));
 			n2.addApexScore(new MountainProgressNoteRule(2, score1, score2,
@@ -445,7 +451,7 @@ abstract class ApexInfo extends MuseObject {
 		 * @see jp.crestmuse.mixtract.data.ApexInfo#apply(java.util.List, int,
 		 * int)
 		 */
-		@Override public void apply(List<NoteData> notelist, int idx,
+		@Override public void apply(List<MXNoteData> notelist, int idx,
 				int size) {
 			if (idx < 2) {
 				apply(notelist, idx + 1, size);
@@ -454,9 +460,9 @@ abstract class ApexInfo extends MuseObject {
 			if (idx + 1 >= size)
 				return;
 			NoteData n1 = notelist.get(idx - 2);
-			NoteData n2 = notelist.get(idx - 1);
-			NoteData n3 = notelist.get(idx);
-			NoteData n4 = notelist.get(idx + 1);
+			MXNoteData n2 = notelist.get(idx - 1);
+			MXNoteData n3 = notelist.get(idx);
+			MXNoteData n4 = notelist.get(idx + 1);
 			int interval1 = interval(n1, n2);
 			int interval2 = interval(n2, n3);
 			int interval3 = interval(n3, n4);
@@ -587,13 +593,13 @@ abstract class ApexInfo extends MuseObject {
 		 * @see jp.crestmuse.mixtract.data.ApexInfo#apply(java.util.List, int,
 		 * int)
 		 */
-		@Override public void apply(List<NoteData> notelist, int idx,
+		@Override public void apply(List<MXNoteData> notelist, int idx,
 				int size) {
 			if (idx + 1 >= size)
 				return;
 			apply(notelist, idx + 1, size);
 
-			NoteData n1 = notelist.get(idx);
+			MXNoteData n1 = notelist.get(idx);
 			NoteData n2 = notelist.get(idx + 1);
 			if (matchCondition(n1, n2))
 				n1.addApexScore(this);
@@ -651,9 +657,9 @@ abstract class ApexInfo extends MuseObject {
 
 		@Override public void apply(Group group) {}
 
-		@Override public void apply(List<NoteData> notelist, int idx,
+		@Override public void apply(List<MXNoteData> notelist, int idx,
 				int size) {
-			NoteData n1 = notelist.get(idx);
+			MXNoteData n1 = notelist.get(idx);
 			n1.addApexScore(apply(n1.chord()));
 			apply(notelist, idx + 1, size);
 		}
@@ -662,11 +668,11 @@ abstract class ApexInfo extends MuseObject {
 			return new ApexInfo.SingleChordRule(chord.parameter() / 3.);
 		}
 
-		public static void applyRule(Harmony h, List<NoteData> notelist,
+		public static void applyRule(Harmony h, List<MXNoteData> notelist,
 				int idx, int size) {
 			if (idx >= size)
 				return;
-			NoteData n1 = notelist.get(idx);
+			MXNoteData n1 = notelist.get(idx);
 			ApexInfo r = apply(n1.chord());
 			n1.addApexScore(r);
 			r.apply(notelist, idx + 1, size);
@@ -680,7 +686,7 @@ abstract class ApexInfo extends MuseObject {
 			super(score);
 		}
 
-		@Override public void apply(List<NoteData> notelist, int idx,
+		@Override public void apply(List<MXNoteData> notelist, int idx,
 				int size) {}
 	}
 
@@ -723,12 +729,12 @@ abstract class ApexInfo extends MuseObject {
 
 		@Override public void apply(Group group) {}
 
-		@Override public void apply(List<NoteData> notelist, int idx,
+		@Override public void apply(List<MXNoteData> notelist, int idx,
 				int size) {
 			if (idx + 2 >= size)
 				return;
 			NoteData n1 = notelist.get(idx);
-			NoteData n2 = notelist.get(idx + 1);
+			MXNoteData n2 = notelist.get(idx + 1);
 			NoteData n3 = notelist.get(idx + 2);
 			int d1 = interval(n1, n2);
 			int d2 = interval(n2, n3);
@@ -766,8 +772,8 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected void addApexInfoToNotes(NoteData n1, NoteData n2,
-				NoteData n3) {
+		@Override protected void addApexInfoToNotes(MXNoteData n1,
+				MXNoteData n2, MXNoteData n3) {
 			n1.addApexScore(new ValleyProgressNoteRule(1, score1, score2,
 					score3));
 			n2.addApexScore(new ValleyProgressNoteRule(2, score1, score2,
@@ -800,8 +806,8 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected void addApexInfoToNotes(NoteData n1, NoteData n2,
-				NoteData n3) {
+		@Override protected void addApexInfoToNotes(MXNoteData n1,
+				MXNoteData n2, MXNoteData n3) {
 			n1.addApexScore(new ZigZagProgressNoteRule1(1, score1, score2,
 					score3));
 			n2.addApexScore(new ZigZagProgressNoteRule1(2, score1, score2,
@@ -827,8 +833,8 @@ abstract class ApexInfo extends MuseObject {
 			super(type, score1, score2, score3);
 		}
 
-		@Override protected void addApexInfoToNotes(NoteData n1, NoteData n2,
-				NoteData n3) {
+		@Override protected void addApexInfoToNotes(MXNoteData n1,
+				MXNoteData n2, MXNoteData n3) {
 			n1.addApexScore(new ZigZagProgressNoteRule2(1, score1, score2,
 					score3));
 			n2.addApexScore(new ZigZagProgressNoteRule2(2, score1, score2,
@@ -901,7 +907,7 @@ abstract class ApexInfo extends MuseObject {
 	 * @param i
 	 * @param size
 	 */
-	static void applyRule(ApexInfo type, List<NoteData> notelist, int idx,
+	static void applyRule(ApexInfo type, List<MXNoteData> notelist, int idx,
 			int size) {
 		type.apply(notelist, idx, size);
 	}
@@ -925,7 +931,7 @@ abstract class ApexInfo extends MuseObject {
 	 * @param idx
 	 * @param size
 	 */
-	protected abstract void apply(List<NoteData> notelist, int idx, int size);
+	protected abstract void apply(List<MXNoteData> notelist, int idx, int size);
 
 	/**
 	 * @return

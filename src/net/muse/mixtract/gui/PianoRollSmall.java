@@ -7,12 +7,12 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import net.muse.data.NoteData;
 import net.muse.gui.*;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.Group;
-import net.muse.mixtract.data.NoteData;
 
-class PianoRollSmall extends PianoRoll {
+class PianoRollSmall extends MXPianoroll {
 	private static final long serialVersionUID = 1L;
 	/* 制御データ */
 	private Group group; // @jve:decl-index=0:

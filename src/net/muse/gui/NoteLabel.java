@@ -1,14 +1,13 @@
 package net.muse.gui;
 
-import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 
 import net.muse.MuseApp;
+import net.muse.data.NoteData;
 import net.muse.mixtract.data.GroupNote;
-import net.muse.mixtract.data.NoteData;
 
 public class NoteLabel extends GroupLabel {
 
@@ -38,22 +37,15 @@ public class NoteLabel extends GroupLabel {
 	 * (non-Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.GroupLabel#setSelected(boolean)
 	 */
-	@Override
-	public void setSelected(boolean isSelected) {
+	@Override public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
-		if (isSelected) {
-			if (((PianoRoll) getParent()).displayApex) {
-				double w = 1. - note.getNote().getApexScore();
-				int r = PartColor.SELECTED_COLOR.getRed();
-				int c = (int) (255 * w);
-				setBackground(new Color(r, c, c));
-			} else
-				setBackground(PartColor.SELECTED_COLOR);
-			setBorder(BorderFactory.createLineBorder(PartColor.SELECTED_COLOR));
-		} else {
+		if (!isSelected) {
 			setBackground(getCurrentColor());
 			setBorder(null);
+			return;
 		}
+		setBackground(PartColor.SELECTED_COLOR);
+		setBorder(BorderFactory.createLineBorder(PartColor.SELECTED_COLOR));
 		repaint();
 	}
 
@@ -173,15 +165,6 @@ public class NoteLabel extends GroupLabel {
 		};
 		addMouseListener(mouseActions);
 		addMouseWheelListener(mouseActions);
-	}
-
-	/**
-	 * @return
-	 */
-	public Color getApexColor() {
-		double apex = note.getNote().getApexScore();
-		final int c = (int) (255 * (1. - apex));
-		return new Color(255, c, c);
 	}
 
 	public void setOffset(int offset) {

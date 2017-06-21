@@ -1,8 +1,8 @@
 package net.muse.mixtract.data.curve;
 
-
 import java.util.*;
 
+import net.muse.data.NoteData;
 import net.muse.mixtract.data.*;
 
 public class TempoCurve extends PhraseCurve {
@@ -23,8 +23,7 @@ public class TempoCurve extends PhraseCurve {
 	 * jp.crestmuse.mixtract.data.PhraseCurve#apply(jp.crestmuse.mixtract
 	 * .data.TuneData)
 	 */
-	@Override
-	public void apply(MXTuneData target, Group gr) {
+	@Override public void apply(MXTuneData target, Group gr) {
 		if (tempolist != target.getTempoList())
 			tempolist = target.getTempoList();
 		if (lastNote != target.getLastNote(0))
@@ -32,8 +31,7 @@ public class TempoCurve extends PhraseCurve {
 		applyTempoEvent(target.getRootGroup(), target.getBPM().get(0));
 	}
 
-	@Override
-	public double initialValue() {
+	@Override public double initialValue() {
 		return 0.;
 	}
 
@@ -45,7 +43,8 @@ public class TempoCurve extends PhraseCurve {
 		applyTempoEvent(group.getBeginGroupNote(), realtimeList);
 	}
 
-	private void applyTempoEvent(GroupNote note, ArrayList<Double> realtimeList) {
+	private void applyTempoEvent(GroupNote note,
+			ArrayList<Double> realtimeList) {
 		if (note == null)
 			return;
 		NoteData n = note.getNote();

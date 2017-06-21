@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.swing.*;
 
+import net.muse.data.NoteData;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
@@ -122,7 +123,8 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * jp.crestmuse.mixtract.gui.GroupEditListener#addGroup(jp.crestmuse.mixtract
+	 * jp.crestmuse.mixtract.gui.GroupEditListener#addGroup(jp.crestmuse.
+	 * mixtract
 	 * .data.Group)
 	 */
 	public void addGroup(Group g) {}
@@ -256,8 +258,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override
-	public void paintComponent(final Graphics g) {
+	@Override public void paintComponent(final Graphics g) {
 		/* おまじない */
 		final Graphics2D g2 = (Graphics2D) g;
 		super.paintComponent(g2);
@@ -326,8 +327,8 @@ public class KeyBoard extends JPanel implements MouseListener,
 						true);
 			}
 			g.setColor(Color.green);
-			g.drawString(String.valueOf(pitch), getKeyWidth() - 20,
-					curHeight + getKeyHeight());
+			g.drawString(String.valueOf(pitch), getKeyWidth() - 20, curHeight
+					+ getKeyHeight());
 			curHeight += getKeyHeight();
 		}
 		// 今なっている音を色づけ
@@ -366,8 +367,8 @@ public class KeyBoard extends JPanel implements MouseListener,
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createEtchedBorder());
 		setDoubleBuffered(true);
-		setPreferredSize(new Dimension(keyWidth,
-				(keyHeight * maximumKeyRegister)));
+		setPreferredSize(new Dimension(keyWidth, (keyHeight
+				* maximumKeyRegister)));
 
 		addMouseListener(this);
 		addMouseMotionListener(this);
