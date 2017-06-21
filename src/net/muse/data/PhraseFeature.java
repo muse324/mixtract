@@ -1,20 +1,17 @@
-package net.muse.mixtract.data;
-
+package net.muse.data;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
-import net.muse.data.Group;
-import net.muse.data.NoteData;
 import net.muse.misc.MuseObject;
 
 /**
  * <h1>PhraseFeature</h1>
  * <p>
  * 旋律の特徴情報を格納するクラスです。
- * 
+ *
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
  *         <address>http://www.m-use.net/</address>
  *         <address>hashida@kwansei.ac.jp</address>
@@ -55,7 +52,7 @@ public class PhraseFeature extends MuseObject {
 	/**
 	 * グループの旋律概形とリズムベクトルを求めます． グループの旋律概形は，前半開始音から頂点音の消音時刻までと，
 	 * 後半開始音から終了音の消音時刻までをそれぞれ結ぶ 2本の一次直線であらわされます．
-	 * 
+	 *
 	 * @param g
 	 *            音列グループ
 	 */
@@ -86,7 +83,7 @@ public class PhraseFeature extends MuseObject {
 
 	/**
 	 * 旋律外形の前半の最後の音符を返します．
-	 * 
+	 *
 	 * @return formerLastNote
 	 */
 	public final Note getFormerLastNote() {
@@ -95,7 +92,7 @@ public class PhraseFeature extends MuseObject {
 
 	/**
 	 * 後半の最初の音符を返します．
-	 * 
+	 *
 	 * @return latterFirstNote
 	 */
 	public final Note getLatterFirstNote() {
@@ -135,7 +132,7 @@ public class PhraseFeature extends MuseObject {
 	 * one. The cosine distance is exhaustively calculated. The system chooses
 	 * the largest cosine-distance obtained by this procedure as the
 	 * melodySimilarity of the surface rhythms simr.
-	 * 
+	 *
 	 * @param target
 	 *            音列グループ
 	 */
@@ -191,7 +188,7 @@ public class PhraseFeature extends MuseObject {
 	 * using least squares fitting. If the user regards the boundary suggested
 	 * by the automatic fitting to be unsatisfactory, he/she can manually edit
 	 * the position by using the GUI.
-	 * 
+	 *
 	 * @param g
 	 *            音列グループ
 	 */
@@ -214,13 +211,13 @@ public class PhraseFeature extends MuseObject {
 				.getNote().noteNumber()) / formarLength;
 		double ed = group.getEndGroupNote().getNote().offset();
 		double latterLength = ed - latterFirstNoteData.onset()
-								/ getTicksPerBeat();
-		slopeB = (group.getEndGroupNote().getNote().noteNumber() - latterFirstNoteData
-				.noteNumber()) / latterLength;
+				/ getTicksPerBeat();
+		slopeB = (group.getEndGroupNote().getNote().noteNumber()
+				- latterFirstNoteData.noteNumber()) / latterLength;
 		timeValue = (ed - st) / getTicksPerBeat();
 		ratioOfMalodyA = formarLength / timeValue;
 		pitchInterval = latterFirstNoteData.noteNumber() - formerLastNoteData
-								.noteNumber();
+				.noteNumber();
 
 		testPrintln("slopeA=" + slopeA);
 		testPrintln("slopeB=" + slopeB);

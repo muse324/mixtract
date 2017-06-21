@@ -1,9 +1,8 @@
 package net.muse.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import net.muse.data.*;
-import net.muse.mixtract.data.PhraseFeature;
 import net.muse.mixtract.data.curve.*;
 
 /**
