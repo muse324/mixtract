@@ -9,8 +9,9 @@ import javax.swing.*;
 
 import net.muse.MuseApp;
 import net.muse.data.GroupType;
-import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.*;
+import net.muse.misc.MuseAppCommand;
+import net.muse.mixtract.data.Group;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.*;
 
@@ -38,11 +39,11 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		/*
 		 * (non-Javadoc)
 		 * @see
-		 * jp.crestmuse.mixtract.gui.MixtractCommand#setGroup(jp.crestmuse.mixtract
+		 * jp.crestmuse.mixtract.gui.MixtractCommand#setGroup(jp.crestmuse.
+		 * mixtract
 		 * .gui.GroupLabel)
 		 */
-		@Override
-		public void setGroup(GroupLabel groupLabel) {
+		@Override public void setGroup(GroupLabel groupLabel) {
 			this.group = groupLabel.getGroup();
 		}
 
@@ -50,10 +51,9 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		 * (non-Javadoc)
 		 * @see net.muse.misc.Command#execute()
 		 */
-		@Override
-		public void execute() {
+		@Override public void execute() {
 			if (group == null) {
-				group = _mainFrame.getGroupingPanel().getSelectedGroup()
+				group = frame().getGroupingPanel().getSelectedGroup()
 						.getGroup();
 			}
 			System.out.println(String.format("Group %s\n\t%s\n\t%s\n\t%s\n",
@@ -66,7 +66,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		}
 	}
 
-	private MixtractCommand cmd = MixtractCommand.PRINT_GROUP_INFO;
+	private MuseAppCommand cmd = MixtractCommand.PRINT_GROUP_INFO;
 	private BasicStroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_ROUND,
 			BasicStroke.JOIN_ROUND, 10.0f, dashLineList, 0.0f);
 	private static final long serialVersionUID = 1L;
@@ -113,8 +113,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mousePressed(MouseEvent e) {
+			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (!SwingUtilities.isRightMouseButton(e))
 					_main.notifyDeselectGroup();
@@ -126,8 +125,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseReleased(MouseEvent e) {
+			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (selectedGroup == null)
 					_main.notifyDeselectGroup();
@@ -140,8 +138,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java.
 			 * awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseExited(MouseEvent e) {
+			@Override public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
 				if (isGroupEditable()) {
 					setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
@@ -157,8 +154,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
 			 * .event.MouseEvent)
 			 */
-			@Override
-			public void mouseMoved(MouseEvent e) {
+			@Override public void mouseMoved(MouseEvent e) {
 				super.mouseMoved(e);
 				repaint();
 			}
@@ -166,11 +162,11 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			/*
 			 * (非 Javadoc)
 			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu(java
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu(
+			 * java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			protected void createPopupMenu(MouseEvent e) {
+			@Override protected void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				MixtractCommand.SET_TYPE_CRESC.setGroup(getSelectedGroup());
 				MixtractCommand.SET_TYPE_DIM.setGroup(getSelectedGroup());
@@ -214,8 +210,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override
-	public void paintComponent(Graphics g) {
+	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		final Graphics2D g2 = (Graphics2D) g;
 
@@ -237,7 +232,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		}
 
 		if (mouseActions != null && mouseActions.isMousePressed()
-			&& !mouseActions.isShiftKeyPressed() && groupEditable) {
+				&& !mouseActions.isShiftKeyPressed() && groupEditable) {
 			drawEditArea(g2);
 		}
 	}
@@ -252,8 +247,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @deprecated Use {@link #readTuneData()} instead
 	 */
-	@Deprecated
-	public void readTuneData(MXTuneData target) {
+	@Deprecated public void readTuneData(MXTuneData target) {
 		readTuneData();
 		repaint();
 	}
@@ -292,9 +286,10 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	public void showDetailViewer() {
 		final Rectangle window = SwingUtilities.getLocalBounds(this);
 		if (selectedGroup != null) {
-			final JFrame f = new JFrame("Melody Information: "
-										+ selectedGroup.getGroup());
-			f.setLocation((int) (window.x + window.width * 0.25), window.height);
+			final JFrame f = new JFrame("Melody Information: " + selectedGroup
+					.getGroup());
+			f.setLocation((int) (window.x + window.width * 0.25),
+					window.height);
 			f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			f.setLayout(new BorderLayout());
 			f.add(MelodyFlagViewer.createNewViewer(selectedGroup.getGroup()),
@@ -393,18 +388,19 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		int x, w;
 		switch (viewerMode) {
 		case REALTIME_VIEW:
-			x = MainFrame.getXOfNote(group.realOnset())
-				+ PianoRoll.getDefaultAxisX();
+			x = MainFrame.getXOfNote(group.realOnset()) + PianoRoll
+					.getDefaultAxisX();
 			w = MainFrame.getXOfNote(group.duration()) - 2;
 			break;
 		default:
-			x = MainFrame.getXOfNote(group.onsetInTicks())
-				+ PianoRoll.getDefaultAxisX();
-			w = MainFrame.getXOfNote(group.offsetInTicks()
-										- group.onsetInTicks()) - 2;
+			x = MainFrame.getXOfNote(group.onsetInTicks()) + PianoRoll
+					.getDefaultAxisX();
+			w = MainFrame.getXOfNote(group.offsetInTicks() - group
+					.onsetInTicks()) - 2;
 			break;
 		}
-		final Rectangle r = new Rectangle(x, y, w, LABEL_HEIGHT - LEVEL_PADDING);
+		final Rectangle r = new Rectangle(x, y, w, LABEL_HEIGHT
+				- LEVEL_PADDING);
 		return r;
 	}
 
@@ -456,7 +452,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 				g2.setColor(Color.black);
 				final int x1 = child.getX() + child.getWidth() / 2;
 				final int y1 = child.getY() + child.getHeight()
-								- KeyBoard.keyHeight;
+						- KeyBoard.keyHeight;
 				final int x2 = parent.getX() + parent.getWidth() / 2;
 				final int y2 = parent.getY() + KeyBoard.keyHeight;
 				g2.drawLine(x1, y1, x2, y2);
@@ -551,12 +547,11 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		 * (non-Javadoc)
 		 * @see net.muse.misc.Command#execute()
 		 */
-		@Override
-		public void execute() {
-			getTarget().getGroupArrayList().clear();
-			for (Group g : getTarget().getRootGroup())
-				getTarget().deleteGroupFromData(g);
-			_main.notifySetTarget();
+		@Override public void execute() {
+			target().getGroupArrayList().clear();
+			for (Group g : target().getRootGroup())
+				target().deleteGroupFromData(g);
+			main().notifySetTarget();
 		}
 
 	}

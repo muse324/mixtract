@@ -18,13 +18,13 @@ public final class ApplyHierarchicalParamsCommand extends MixtractCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override public void execute() {
-		_target.calculateHierarchicalParameters();
+		target().calculateHierarchicalParameters();
 		if (cv != null) {
-			cv.apply(_target,group);
+			cv.apply(target(), group);
 		}
-		_main.notifyChangeHierarchicalParameters(cv.getType());
-		_mainFrame.getTempoView().repaint();
-		_mainFrame.getDynamicsView().repaint();
+		main().notifyChangeHierarchicalParameters(cv.getType());
+		frame().getTempoView().repaint();
+		frame().getDynamicsView().repaint();
 	}
 
 	/**
