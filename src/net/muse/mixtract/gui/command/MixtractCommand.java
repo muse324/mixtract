@@ -232,28 +232,6 @@ public class MixtractCommand extends MuseAppCommand {
 		return super.toString();
 	}
 
-	private static final class ShowSimilarGroupsCommand extends
-			MixtractCommand {
-
-		public ShowSimilarGroupsCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			// final SimilarGroupPanel panel = new SimilarGroupPanel(_main,
-			// _target,
-			// getSelectedObjects().getGroupLabel().getGroup(), _mainFrame
-			// .getGroupingPanel().sim);
-			// panel.pack();
-			// panel.setVisible(true);
-		}
-
-	}
-
 	@Override public void setGroup(GroupLabel groupLabel) {
 		// TODO 自動生成されたメソッド・スタブ
 
