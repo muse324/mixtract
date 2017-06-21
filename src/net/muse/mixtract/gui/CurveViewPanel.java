@@ -5,9 +5,8 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.SwingUtilities;
 
-import net.muse.data.Group;
 import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.curve.*;
 
 public class CurveViewPanel extends PhraseCanvas {
@@ -30,7 +29,7 @@ public class CurveViewPanel extends PhraseCanvas {
 	private boolean showArt = true;
 	private boolean showCurrentX;
 
-	public CurveViewPanel(Group group) {
+	public CurveViewPanel(MXGroup group) {
 		super(group, group.getDynamicsCurve());
 		this.group = group;
 		this.cvDyn = group.getDynamicsCurve();

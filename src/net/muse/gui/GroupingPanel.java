@@ -11,6 +11,7 @@ import net.muse.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.misc.MuseAppCommand;
+import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.*;
@@ -56,9 +57,14 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 				group = frame().getGroupingPanel().getSelectedGroup()
 						.getGroup();
 			}
-			System.out.println(String.format("Group %s\n\t%s\n\t%s\n\t%s\n",
-					group.name(), group.getDynamicsCurve(), group
-							.getTempoCurve(), group.getArticulationCurve()));
+			if (group instanceof MXGroup) {
+				MXGroup g = (MXGroup) group;
+				System.out.println(String.format("Group %s\n\t%s\n\t%s\n\t%s\n",
+						group.name(), g.getDynamicsCurve(), g.getTempoCurve(), g
+								.getArticulationCurve()));
+			} else {
+				System.out.println(String.format("Group %s\n", group.name()));
+			}
 		}
 
 		public PrintGroupInfoCommand(String... lang) {

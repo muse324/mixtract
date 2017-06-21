@@ -30,7 +30,7 @@ public class PhraseViewer extends JDialog implements CanvasMouseListener {
 	/* グラフィック */
 	private JPanel jContentPane = null;
 
-	protected Group group;
+	private Group group;
 
 	/**
 	 * @param main.getFrame()

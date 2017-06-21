@@ -39,7 +39,6 @@ public class MXTuneData extends TuneData {
 
 	private static final String SCOREDATA_FILENAME = "score.dat";
 
-
 	/** 入力ファイル */
 	private File inputFile;
 	/** 出力ファイル */
@@ -155,8 +154,8 @@ public class MXTuneData extends TuneData {
 		for (final Group root : getRootGroup()) {
 			// tempo
 			tempoListEndtime = root.getTimeValue();
-			if (root.getTempoCurve().getParamlist().size() > 0)
-				calculateHierarchicalParameters(root);
+			if (((MXGroup) root).getTempoCurve().getParamlist().size() > 0)
+				calculateHierarchicalParameters((MXGroup) root);
 
 			if (isDebug()) {
 				System.out.println("------ parameter lists calculation ------");
@@ -259,8 +258,6 @@ public class MXTuneData extends TuneData {
 		return outputFile;
 	}
 
-
-
 	/**
 	 * @return tempoList2
 	 */
@@ -298,7 +295,7 @@ public class MXTuneData extends TuneData {
 		getBPM().set(idx, value);
 		setDefaultBPM(value);
 		if (getRootGroup() != null) {
-			getRootGroup(0).getTempoCurve().apply(this, getRootGroup(0));
+			((MXGroup) getRootGroup(0)).getTempoCurve().apply(this, getRootGroup(0));
 		}
 	}
 
@@ -391,7 +388,7 @@ public class MXTuneData extends TuneData {
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
 				fp)));
 		for (int i = 0; i < getRootGroup().size(); i++)
-			writeGroupStructureData(out, getRootGroup().get(i));
+			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
 		out.close();
 
 	}
@@ -411,7 +408,7 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	protected String writeCurveParam(Group group) {
+	protected String writeCurveParam(MXGroup group) {
 		if (group == null) {
 			return "ERROR!";
 		}
@@ -433,11 +430,11 @@ public class MXTuneData extends TuneData {
 		return str;
 	}
 
-	protected void writeGroupStructureData(PrintWriter out, Group group) {
+	protected void writeGroupStructureData(PrintWriter out, MXGroup group) {
 		if (group == null)
 			return;
-		writeGroupStructureData(out, group.getChildFormerGroup());
-		writeGroupStructureData(out, group.getChildLatterGroup());
+		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
+		writeGroupStructureData(out, (MXGroup) group.getChildLatterGroup());
 		out.format("%s;%s;%s\n", group, (group.hasTopNote()) ? group
 				.getTopGroupNote().getNote().id() : "null", writeCurveParam(
 						group));
@@ -519,7 +516,7 @@ public class MXTuneData extends TuneData {
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
 				fp)));
 		for (int i = 0; i < getRootGroup().size(); i++)
-			writeGroupStructureData(out, getRootGroup().get(i));
+			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
 		out.close();
 	}
 
@@ -550,7 +547,7 @@ public class MXTuneData extends TuneData {
 		noteScheduleEventList.add(idx, note);
 	}
 
-	private void calculateHierarchicalParameters(Group group) {
+	private void calculateHierarchicalParameters(MXGroup group) {
 		if (group == null)
 			return;
 
@@ -590,8 +587,8 @@ public class MXTuneData extends TuneData {
 		// }
 		// }
 
-		calculateHierarchicalParameters(group.getChildFormerGroup());
-		calculateHierarchicalParameters(group.getChildLatterGroup());
+		calculateHierarchicalParameters((MXGroup) group.getChildFormerGroup());
+		calculateHierarchicalParameters((MXGroup) group.getChildLatterGroup());
 	}
 
 	/**
@@ -981,7 +978,7 @@ public class MXTuneData extends TuneData {
 				String[] dynCurveInfo = item[4].split(",");
 				String[] tmpCurveInfo = item[5].split(",");
 				String[] artCurveInfo = item[6].split(",");
-				Group g = null;
+				MXGroup g = null;
 				if (groupInfo.charAt(0) == '[') {
 					String group[] = groupInfo.split(" ");
 					setGroupNotelist(list, group, 1, group.length);
@@ -1028,7 +1025,6 @@ public class MXTuneData extends TuneData {
 			e.printStackTrace();
 		}
 	}
-
 
 	private void setGroupNotelist(GroupNote list, String[] args, int idx,
 			int size) {
@@ -1111,4 +1107,5 @@ public class MXTuneData extends TuneData {
 			}
 		};
 	}
+
 }

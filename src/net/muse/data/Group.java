@@ -54,10 +54,6 @@ public class Group extends SequenceData {
 	private GroupNote endGroupNote = null;
 	private GroupNote centerNote;
 
-	private DynamicsCurve dynamicsCurve;
-	private TempoCurve tempoCurve;
-	private ArticulationCurve articulationCurve;
-
 	private PhraseFeature flag;
 
 	/**
@@ -127,12 +123,10 @@ public class Group extends SequenceData {
 
 	private Group(GroupType type) {
 		_type = type;
-		dynamicsCurve = (DynamicsCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.DYNAMICS);
-		tempoCurve = (TempoCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.TEMPO);
-		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.ARTICULATION);
+		initialize();
+	}
+
+	protected void initialize() {
 		createScoreNoteList();
 	}
 
@@ -164,13 +158,6 @@ public class Group extends SequenceData {
 	}
 
 	/**
-	 * @return articulationCurve
-	 */
-	public final ArticulationCurve getArticulationCurve() {
-		return articulationCurve;
-	}
-
-	/**
 	 * @return beginGroupNote
 	 */
 	public GroupNote getBeginGroupNote() {
@@ -196,13 +183,6 @@ public class Group extends SequenceData {
 
 	public Group getChildLatterGroup() {
 		return childLatterGroup;
-	}
-
-	/**
-	 * @return dynamicsCurve
-	 */
-	public DynamicsCurve getDynamicsCurve() {
-		return dynamicsCurve;
 	}
 
 	/**
@@ -246,13 +226,6 @@ public class Group extends SequenceData {
 	}
 
 	/**
-	 * @return tempoCurve
-	 */
-	public TempoCurve getTempoCurve() {
-		return tempoCurve;
-	}
-
-	/**
 	 * @return
 	 */
 	public int getTimeValue() {
@@ -287,11 +260,6 @@ public class Group extends SequenceData {
 
 	public final boolean hasChildLatter() {
 		return childLatterGroup != null;
-	}
-
-	public final boolean hasPhraseCurve() {
-		return dynamicsCurve != null && tempoCurve != null
-				&& articulationCurve != null;
 	}
 
 	public final boolean hasTopNote() {

@@ -7,6 +7,7 @@ import javax.swing.*;
 import net.muse.data.Group;
 import net.muse.gui.*;
 import net.muse.mixtract.Mixtract;
+import net.muse.mixtract.data.MXGroup;
 
 public class MXPhraseViewer extends PhraseViewer {
 
@@ -35,8 +36,7 @@ public class MXPhraseViewer extends PhraseViewer {
 		super(main, group);
 		this.main = main;
 		setOwner((MXMainFrame) main.getFrame());
-		this.group = group;
-
+		setGroup(group);
 		setController(main);
 	}
 
@@ -77,7 +77,7 @@ public class MXPhraseViewer extends PhraseViewer {
 	 */
 	protected CurveViewPanel getCurveViewerPanel() {
 		if (curveViewerPanel == null) {
-			curveViewerPanel = new CurveViewPanel(group);
+			curveViewerPanel = new CurveViewPanel(group());
 			curveViewerPanel.showDynamicsCurve(getDynamicsToggleButton()
 					.isSelected());
 			curveViewerPanel.showTempoCurve(getTempoToggleButton()
@@ -135,7 +135,7 @@ public class MXPhraseViewer extends PhraseViewer {
 			selArtButton.addItemListener(new java.awt.event.ItemListener() {
 				public void itemStateChanged(java.awt.event.ItemEvent e) {
 					System.out.println("Edit: articulation");
-					getCurveViewerPanel().setCurve(group
+					getCurveViewerPanel().setCurve(group()
 							.getArticulationCurve());
 					repaint();
 				}
@@ -193,7 +193,7 @@ public class MXPhraseViewer extends PhraseViewer {
 			selDynButton.addItemListener(new java.awt.event.ItemListener() {
 				public void itemStateChanged(java.awt.event.ItemEvent e) {
 					System.out.println("Edit: dynamics");
-					getCurveViewerPanel().setCurve(group.getDynamicsCurve());
+					getCurveViewerPanel().setCurve(group().getDynamicsCurve());
 					repaint();
 				}
 			});
@@ -285,7 +285,7 @@ public class MXPhraseViewer extends PhraseViewer {
 			keyboard = new KeyBoard();
 			keyboard.setLayout(new GridBagLayout());
 			keyboard.resetKeyRegister();
-			keyboard.setKeyRegister(group.getBeginGroupNote());
+			keyboard.setKeyRegister(group().getBeginGroupNote());
 		}
 		return keyboard;
 	}
@@ -320,7 +320,7 @@ public class MXPhraseViewer extends PhraseViewer {
 			selTmpButton.addItemListener(new java.awt.event.ItemListener() {
 				public void itemStateChanged(java.awt.event.ItemEvent e) {
 					System.out.println("Edit: tempo");
-					getCurveViewerPanel().setCurve(group.getTempoCurve());
+					getCurveViewerPanel().setCurve(group().getTempoCurve());
 					repaint();
 				}
 			});
@@ -418,5 +418,13 @@ public class MXPhraseViewer extends PhraseViewer {
 	 */
 	public void setViewSelectionGroup(ButtonGroup viewSelectionGroup) {
 		this.viewSelectionGroup = viewSelectionGroup;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PhraseViewer#group()
+	 */
+	@Override public MXGroup group() {
+		return (MXGroup) super.group();
 	}
 }

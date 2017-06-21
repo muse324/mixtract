@@ -3,9 +3,13 @@ package net.muse.mixtract.data;
 import java.util.*;
 
 import net.muse.data.*;
+import net.muse.mixtract.data.curve.*;
 
 public class MXGroup extends Group {
 	private List<MXNoteData> scoreNotelist;
+	private DynamicsCurve dynamicsCurve;
+	private TempoCurve tempoCurve;
+	private ArticulationCurve articulationCurve;
 
 	/**
 	 * @param g1
@@ -15,7 +19,15 @@ public class MXGroup extends Group {
 	 */
 	MXGroup(Group g1, Group g2, String name, int partNumber) {
 		super(g1, g2, name, partNumber);
-		// TODO 自動生成されたコンストラクター・スタブ
+	}
+
+	protected void initialize() {
+		dynamicsCurve = (DynamicsCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.DYNAMICS);
+		tempoCurve = (TempoCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.TEMPO);
+		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.ARTICULATION);
 	}
 
 	/**
@@ -26,7 +38,6 @@ public class MXGroup extends Group {
 	private MXGroup(GroupNote groupNoteList, GroupNote endNote,
 			GroupType type) {
 		super(groupNoteList, endNote, type);
-		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
 	/**
@@ -117,6 +128,32 @@ public class MXGroup extends Group {
 	 */
 	@Override protected void createScoreNoteList() {
 		scoreNotelist = new ArrayList<MXNoteData>();
+	}
+
+	/**
+	 * @return articulationCurve
+	 */
+	public final ArticulationCurve getArticulationCurve() {
+		return articulationCurve;
+	}
+
+	/**
+	 * @return dynamicsCurve
+	 */
+	public DynamicsCurve getDynamicsCurve() {
+		return dynamicsCurve;
+	}
+
+	/**
+	 * @return tempoCurve
+	 */
+	public TempoCurve getTempoCurve() {
+		return tempoCurve;
+	}
+
+	public final boolean hasPhraseCurve() {
+		return dynamicsCurve != null && tempoCurve != null
+				&& articulationCurve != null;
 	}
 
 }
