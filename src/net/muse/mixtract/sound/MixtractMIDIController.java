@@ -5,6 +5,7 @@ import net.muse.gui.TuneDataListener;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.sound.MIDIController;
+import net.muse.sound.ThreadPlayer;
 
 public class MixtractMIDIController extends MIDIController implements
 		TuneDataListener {
