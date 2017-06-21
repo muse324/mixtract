@@ -496,22 +496,4 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	public GroupLabel getSelectedGroup() {
 		return selectedGroup;
 	}
-
-	public static class ClearAllGroupsCommand extends MixtractCommand {
-		public ClearAllGroupsCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			target().getGroupArrayList().clear();
-			for (Group g : target().getRootGroup())
-				target().deleteGroupFromData(g);
-			main().notifySetTarget();
-		}
-
-	}
 }

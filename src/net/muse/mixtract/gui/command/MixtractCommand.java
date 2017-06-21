@@ -7,8 +7,7 @@ import javax.swing.JFrame;
 import net.muse.MuseApp;
 import net.muse.data.TuneData;
 import net.muse.gui.*;
-import net.muse.gui.command.MuseAppCommand;
-import net.muse.gui.command.PrintGroupInfoCommand;
+import net.muse.gui.command.*;
 import net.muse.misc.Command;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
@@ -41,7 +40,7 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MuseAppCommand APPLY_TOPONOTE = new ApplyTopNoteCommand(
 			"Apply the most similar expression");
 
-	public static final MuseAppCommand CLEAR_ALLGROUPS = new GroupingPanel.ClearAllGroupsCommand(
+	public static final MuseAppCommand CLEAR_ALLGROUPS = new ClearAllGroupsCommand(
 			"Clear all groups", "フレーズ構造全体を削除");
 
 	public static final MuseAppCommand DELETE_GROUP = new DeleteGroupCommand(
