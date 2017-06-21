@@ -232,23 +232,6 @@ public class MixtractCommand extends MuseAppCommand {
 		return super.toString();
 	}
 
-	private static final class MouseDisplayCommand extends MixtractCommand {
-
-		public MouseDisplayCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			frame().getGroupingPanel().setDisplayMousePointer(!frame()
-					.getGroupingPanel().isDisplayMousePointer());
-		}
-
-	}
-
 	private static final class ResetParameterCommand extends MixtractCommand {
 
 		public ResetParameterCommand(String... lang) {
