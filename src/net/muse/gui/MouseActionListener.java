@@ -8,7 +8,7 @@ import javax.swing.*;
 import net.muse.MuseApp;
 import net.muse.misc.Command;
 import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.gui.MixtractCommand;
+import net.muse.mixtract.gui.command.MixtractCommand;
 
 public class MouseActionListener extends MouseAdapter implements
 		ActionListener {

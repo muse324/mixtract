@@ -13,6 +13,7 @@ import net.muse.gui.RoundedCornerButton.RoundButton;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.curve.PhraseCurve;
 import net.muse.mixtract.gui.command.ApplyHierarchicalParamsCommand;
+import net.muse.mixtract.gui.command.MixtractCommand;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST

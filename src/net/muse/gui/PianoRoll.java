@@ -17,8 +17,8 @@ import net.muse.misc.Util;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
-import net.muse.mixtract.gui.MixtractCommand;
 import net.muse.mixtract.gui.ViewerMode;
+import net.muse.mixtract.gui.command.MixtractCommand;
 import net.muse.mixtract.gui.command.SetChordCommand;
 
 /**

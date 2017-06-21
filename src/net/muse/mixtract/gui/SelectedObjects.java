@@ -25,7 +25,8 @@ import net.muse.mixtract.data.curve.PhraseCurve;
 	 *
 	 * @return groupLabel
 	 */
-	@Deprecated final GroupLabel getGroupLabel() {
+	@Deprecated
+	public final GroupLabel getGroupLabel() {
 		return groupLabel;
 	}
 

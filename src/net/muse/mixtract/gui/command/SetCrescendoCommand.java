@@ -2,7 +2,6 @@ package net.muse.mixtract.gui.command;
 
 import net.muse.data.GroupType;
 import net.muse.gui.GroupLabel;
-import net.muse.mixtract.gui.MixtractCommand;
 
 public class SetCrescendoCommand extends MixtractCommand {
 

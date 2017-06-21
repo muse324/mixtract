@@ -4,7 +4,6 @@ import java.awt.Component;
 
 import net.muse.data.Harmony;
 import net.muse.gui.NoteLabel;
-import net.muse.mixtract.gui.MixtractCommand;
 
 public class SetChordCommand extends MixtractCommand {
 	private static final int defaultSize = 4;

@@ -4,8 +4,8 @@ import net.muse.MuseApp;
 import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.mixtract.data.MXTuneData;
-import net.muse.mixtract.gui.MixtractCommand;
 import net.muse.mixtract.gui.command.GroupCommandInterface;
+import net.muse.mixtract.gui.command.MixtractCommand;
 
 public class MuseAppCommand extends Command implements GroupCommandInterface {
 

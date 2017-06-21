@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui;
+package net.muse.mixtract.gui.command;
 
 import java.io.IOException;
 
@@ -14,7 +14,8 @@ import net.muse.misc.MuseAppCommand;
 import net.muse.mixtract.Mixtract;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
-import net.muse.mixtract.gui.command.*;
+import net.muse.mixtract.gui.MXMainFrame;
+import net.muse.mixtract.gui.SelectedObjects;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -151,6 +152,7 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MXTuneData target() {
 		return (MXTuneData) _target;
 	}
+
 	public static MXMainFrame frame() {
 		return (MXMainFrame) _mainFrame;
 	}
@@ -231,29 +233,6 @@ public class MixtractCommand extends MuseAppCommand {
 		return super.toString();
 	}
 
-	private static class AnalyzeStructureCommand extends MixtractCommand {
-
-		protected AnalyzeStructureCommand(String... lang) {
-			super(lang);
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see net.muse.misc.Command#execute()
-		 */
-		@Override public void execute() {
-			// _selectedObjects.clearAll();
-			// _target.getGroupArrayList();
-			// _mainFrame.getPianoroll().repaint();
-			// // _mainFrame.getExpressionPanel().clearGroup();
-			// ana = GTTMAnalyzer.run(_target, GTTMAnalyzer.doScoreAnalysis(),
-			// false);
-			// _target.setLatestGroupAnalysis(ana);
-			// _mainFrame.notifyReadTuneData(_target);
-		}
-
-	}
-
 	private static final class ApplyPuliseMozartsCommand extends
 			MixtractCommand {
 
@@ -300,8 +279,7 @@ public class MixtractCommand extends MuseAppCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 		@Override public void execute() {
-			frame().getGroupingPanel()
-					.transferExpressionOfMostSimilarGroup();
+			frame().getGroupingPanel().transferExpressionOfMostSimilarGroup();
 		}
 
 	}
@@ -317,8 +295,7 @@ public class MixtractCommand extends MuseAppCommand {
 
 		@Override public void execute() {
 			if (_target != null) {
-				GroupLabel sel = frame().getGroupingPanel()
-						.getSelectedGroup();
+				GroupLabel sel = frame().getGroupingPanel().getSelectedGroup();
 				// _target.deleteGUIGroup(_selectedObjects.getGroupLabel());
 				// _selectedObjects.clearAll();
 				main().getData().deleteGroupFromData(sel.getGroup());
