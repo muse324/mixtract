@@ -6,7 +6,6 @@ import javax.swing.JOptionPane;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.misc.Util;
-import net.muse.mixtract.data.NoteScheduleEvent;
 
 public class NoteData extends SequenceData {
 	/** MusicXML.Note */

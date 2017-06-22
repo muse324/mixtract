@@ -1,13 +1,7 @@
-package net.muse.mixtract.data;
-
+package net.muse.data;
 
 import java.security.InvalidParameterException;
-
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.ShortMessage;
-
-import net.muse.data.NoteData;
+import javax.sound.midi.*;
 
 /**
  * <h1>NoteScheduleEvent</h1>
@@ -30,7 +24,7 @@ public class NoteScheduleEvent {
 		CLIP_OVER_VELOCITY = cLIP_OVER_VELOCITY;
 	}
 
-	/** 参照元の {@link MXNoteData} */
+	/** 参照元の {@link NoteData} */
 	private final NoteData parent;
 
 	/** MIDI メッセージ */
@@ -48,8 +42,8 @@ public class NoteScheduleEvent {
 		this.onset = (long) onset;
 		this.type = NoteType.is(shortMessageType);
 		message = new ShortMessage();
-		message.setMessage(shortMessageType, parent.partNumber() - 1,
-				(!parent.rest()) ? parent.noteNumber() : 0, velocity);
+		message.setMessage(shortMessageType, parent.partNumber() - 1, (!parent
+				.rest()) ? parent.noteNumber() : 0, velocity);
 	}
 
 	public MidiMessage getMidiMessage() {
@@ -67,14 +61,8 @@ public class NoteScheduleEvent {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
-	public String toString() {
-		return onset + " "
-				+ type
-				+ " "
-				+ parent.noteName()
-				+ " (v"
-				+ velocity()
+	@Override public String toString() {
+		return onset + " " + type + " " + parent.noteName() + " (v" + velocity()
 				+ ")";
 	}
 
@@ -98,8 +86,8 @@ public class NoteScheduleEvent {
 	 * @throws InvalidMidiDataException
 	 */
 	public void setVelocity(int velocity) throws InvalidMidiDataException {
-		message.setMessage(message.getCommand(), message.getChannel(),
-				message.getData1(), confirmAppropriateVelocity(velocity));
+		message.setMessage(message.getCommand(), message.getChannel(), message
+				.getData1(), confirmAppropriateVelocity(velocity));
 	}
 
 	public int velocity() {
@@ -119,8 +107,8 @@ public class NoteScheduleEvent {
 			if (velocity > 127)
 				return 127;
 		}
-		throw new InvalidParameterException(
-				"input velocity must be 0 to 127 (" + velocity + ").");
+		throw new InvalidParameterException("input velocity must be 0 to 127 ("
+				+ velocity + ").");
 	}
 
 	enum NoteType {
