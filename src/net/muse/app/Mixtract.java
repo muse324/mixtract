@@ -63,7 +63,7 @@ public class Mixtract extends MuseApp {
 		try {
 			final Mixtract main = new Mixtract(args);
 			if (!isShowGUI())
-				main.readfile(main.inputFileName, main.outputFileName);
+				main.readfile(main.getInputFileName(), main.getOutputFileName());
 			else {
 				// MacOSXでのJava実行環境用のシステムプロパティの設定.
 				main.setupSystemPropertiesForMacOSX();

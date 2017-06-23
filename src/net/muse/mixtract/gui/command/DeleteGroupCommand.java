@@ -17,7 +17,7 @@ final class DeleteGroupCommand extends MixtractCommand {
 					.getSelectedGroup();
 			// _target.deleteGUIGroup(_selectedObjects.getGroupLabel());
 			// _selectedObjects.clearAll();
-			main().getData().deleteGroupFromData(sel.getGroup());
+			main().data().deleteGroupFromData(sel.getGroup());
 			main().notifyDeleteGroup(sel);
 			// getPianorollScroll().repaint();
 			// getGroupingPanel().deselectLabel();

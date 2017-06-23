@@ -337,8 +337,8 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 							cv.calculate(getHalfRangeY());
 							paramApplicator.execute();
 							try {
-								assert main.getData() instanceof MXTuneData;
-								((MXTuneData) main.getData())
+								assert main.data() instanceof MXTuneData;
+								((MXTuneData) main.data())
 										.writeTempfileCurveParameters();
 							} catch (IOException e1) {
 								e1.printStackTrace();
@@ -472,8 +472,8 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 							cv.calculate(getHeight());
 							paramApplicator.execute();
 							try {
-								assert main.getData() instanceof MXTuneData;
-								((MXTuneData) main.getData())
+								assert main.data() instanceof MXTuneData;
+								((MXTuneData) main.data())
 										.writeTempfileCurveParameters();
 								((MainFrame) main.getFrame()).getTempoView()
 										.repaint();
@@ -670,8 +670,8 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 			// cv.calculate(getRangeY() / 2.);
 			paramApplicator.execute();
 			try {
-				assert _main.getData() instanceof MXTuneData;
-				((MXTuneData) _main.getData()).writeTempfileCurveParameters();
+				assert _main.data() instanceof MXTuneData;
+				((MXTuneData) _main.data()).writeTempfileCurveParameters();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

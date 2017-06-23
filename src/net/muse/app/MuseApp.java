@@ -29,8 +29,8 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	private boolean doSimilaritySearch = false;
 
 	/** 入出力ファイル */
-	public String inputFileName;
-	public String outputFileName;
+	private String inputFileName;
+	private String outputFileName;
 
 	/** ファイル格納場所 */
 	private File musicXMLDir;
@@ -43,14 +43,6 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	private ArrayList<PhraseViewer> phraseViewList;
 	/** 階層的フレーズ構造の分析履歴 */
 	private final ArrayList<GroupAnalyzer> analyzer = new ArrayList<GroupAnalyzer>();
-
-	public MuseApp(String[] args) throws FileNotFoundException, IOException {
-		/* 初期化 */
-		super();
-		setPropertyFilename(PROPERTY_FILENAME);
-		loadConfig();
-		setOption(args);
-	}
 
 	/**
 	 * @return projectfileextension
@@ -66,7 +58,8 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 		try {
 			final MuseApp main = new MuseApp(args);
 			if (!isShowGUI())
-				main.readfile(main.inputFileName, main.outputFileName);
+				main.readfile(main.getInputFileName(), main
+						.getOutputFileName());
 			else {
 				// MacOSXでのJava実行環境用のシステムプロパティの設定.
 				main.setupSystemPropertiesForMacOSX();
@@ -117,6 +110,18 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 		}
 	}
 
+	public MuseApp(String[] args) throws FileNotFoundException, IOException {
+		/* 初期化 */
+		super();
+		setPropertyFilename(PROPERTY_FILENAME);
+		loadConfig();
+		setOption(args);
+	}
+
+	public void addPhraseViewerList(PhraseViewer pv) {
+		getPhraseViewList().add(pv);
+	}
+
 	public void addTuneDataListener(TuneDataListener l) {
 		tdListenerList.add(l);
 	}
@@ -133,26 +138,19 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	/**
-	 * @return the doSimilaritySearch
-	 */
-	public final boolean doSimilaritySearch() {
-		return doSimilaritySearch;
-	}
-
-	/**
 	 * @return
 	 */
-	public TuneData getData() {
+	public TuneData data() {
 		if (data == null)
 			throw new NullPointerException("data is null");
 		return data;
 	}
 
 	/**
-	 * @return the inputFileName
+	 * @return the doSimilaritySearch
 	 */
-	public String getInputFileName() {
-		return inputFileName;
+	public final boolean doSimilaritySearch() {
+		return doSimilaritySearch;
 	}
 
 	/**
@@ -187,7 +185,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	 * @return
 	 */
 	public boolean hasTarget() {
-		return data != null;
+		return data() != null;
 	}
 
 	/**
@@ -227,8 +225,8 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	 *
 	 */
 	public void notifyDeselectGroup() {
-		if (data != null)
-			data.setSelectedGroup(null);
+		if (data() != null)
+			data().setSelectedGroup(null);
 		for (final TuneDataListener l : tdListenerList) {
 			l.deselect(null);
 		}
@@ -241,7 +239,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param b 選択(true)/解除(false)
 	 */
 	public void notifySelectGroup(GroupLabel g, boolean b) {
-		data.setSelectedGroup((b) ? g.getGroup() : null);
+		data().setSelectedGroup((b) ? g.getGroup() : null);
 		for (final TuneDataListener l : tdListenerList) {
 			l.selectGroup(g, b);
 		}
@@ -250,7 +248,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	public void notifySetTarget() {
 		getPhraseViewList().clear();
 		for (TuneDataListener l : tdListenerList) {
-			l.setTarget(data);
+			l.setTarget(data());
 		}
 	}
 
@@ -302,17 +300,23 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public void readfile(File in, File out) throws IOException,
 			InvalidMidiDataException {
-		data = createTuneData(in, out);
+		setData(createTuneData(in, out));
 		log.printf("Open file: %s", in);
 		if (isShowGUI()) {
-			MixtractCommand.setTarget(data);
+			MixtractCommand.setTarget(data());
 			notifySetTarget();
 		}
 	}
 
-	protected TuneData createTuneData(File in, File out) throws IOException,
-			InvalidMidiDataException {
-		return new TuneData(in, out);
+	public void readfile(String inputFilename, String outFilename)
+			throws IOException, InvalidMidiDataException {
+		File in = new File(inputFilename);
+		if (!in.exists())
+			in = new File(projectDir, inputFilename);
+		if (!in.exists())
+			in = new File(musicXMLDir, inputFilename);
+		File out = new File(outputDir, outFilename);
+		readfile(in, out);
 	}
 
 	/**
@@ -334,42 +338,6 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public final void setReadingStructureData(boolean isReadingStructureData) {
 		this.isReadingStructureData = isReadingStructureData;
-	}
-
-	protected void setMaximumMIDIChannel(int ch) {}
-
-	protected void setMidiDeviceName(String midiDeviceName) {
-		this.midiDeviceName = midiDeviceName;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see net.muse.misc.MuseObject#setOption(java.lang.String)
-	 */
-	@Override protected void setOption(String str)
-			throws IllegalArgumentException {
-		try {
-			super.setOption(str);
-		} catch (IllegalArgumentException e) {
-			try {
-				OptionType _cmd = OptionType.valueOf(str);
-				_cmd.exe(this, config.getProperty(str));
-				log.println("done.");
-			} catch (IllegalArgumentException e1) {
-				log.println("skipped.");
-			}
-		}
-	}
-
-	protected void setProjectDirectory(File dir) {
-		this.projectDir = dir;
-	}
-
-	/**
-	 * @param doSimilaritySearch the doSimilaritySearch to set
-	 */
-	protected final void setSimilaritySearch(boolean doSimilaritySearch) {
-		this.doSimilaritySearch = doSimilaritySearch;
 	}
 
 	/**
@@ -410,6 +378,54 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 		mtd.invoke(null, new Object[] { this.frame });
 	}
 
+	protected TuneData createTuneData(File in, File out) throws IOException,
+			InvalidMidiDataException {
+		return new TuneData(in, out);
+	}
+
+	/**
+	 * @param data セットする data
+	 */
+	protected void setData(TuneData data) {
+		this.data = data;
+	}
+
+	protected void setMaximumMIDIChannel(int ch) {}
+
+	protected void setMidiDeviceName(String midiDeviceName) {
+		this.midiDeviceName = midiDeviceName;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see net.muse.misc.MuseObject#setOption(java.lang.String)
+	 */
+	@Override
+	protected void setOption(String str) throws IllegalArgumentException {
+		try {
+			super.setOption(str);
+		} catch (IllegalArgumentException e) {
+			try {
+				OptionType _cmd = OptionType.valueOf(str);
+				_cmd.exe(this, config.getProperty(str));
+				log.println("done.");
+			} catch (IllegalArgumentException e1) {
+				log.println("skipped.");
+			}
+		}
+	}
+
+	protected void setProjectDirectory(File dir) {
+		this.projectDir = dir;
+	}
+
+	/**
+	 * @param doSimilaritySearch the doSimilaritySearch to set
+	 */
+	protected final void setSimilaritySearch(boolean doSimilaritySearch) {
+		this.doSimilaritySearch = doSimilaritySearch;
+	}
+
 	/**
 	 * @param g
 	 */
@@ -430,18 +446,6 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 			d.setVisible(false);
 			getPhraseViewList().remove(d);
 		}
-
-	}
-
-	public void readfile(String inputFilename, String outFilename)
-			throws IOException, InvalidMidiDataException {
-		File in = new File(inputFilename);
-		if (!in.exists())
-			in = new File(projectDir, inputFilename);
-		if (!in.exists())
-			in = new File(musicXMLDir, inputFilename);
-		File out = new File(outputDir, outFilename);
-		readfile(in, out);
 	}
 
 	/**
@@ -461,94 +465,130 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 			} else if (key.equals("-c")) {
 				setShowGUI(false);
 			} else if (key.equals("-xml")) {
-				inputFileName = args[i + 1];
+				setInputFileName(args[i + 1]);
 				doSearch = false;
 			} else if (key.equals("-mxt")) {
-				inputFileName = args[i + 1];
+				setInputFileName(args[i + 1]);
 				doSearch = false;
 			}
 		}
 	}
 
+	/**
+	 * @return inputFileName
+	 */
+	public String getInputFileName() {
+		return inputFileName;
+	}
+
+	/**
+	 * @return outputFileName
+	 */
+	public String getOutputFileName() {
+		return outputFileName;
+	}
+
+	/**
+	 * @param outputFileName セットする outputFileName
+	 */
+	public void setOutputFileName(String outputFileName) {
+		this.outputFileName = outputFileName;
+	}
+
 	public enum OptionType {
 		KEYBOARD_WIDTH {
-			@Override void exe(MuseApp app, String property) {
+			@Override
+			void exe(MuseApp app, String property) {
 				KeyBoard.setKeyWidth(Integer.parseInt(property));
 			}
 		},
 		MAXIMUM_MIDICHANNEL {
-			@Override void exe(MuseApp app, String property) {
+			@Override
+			void exe(MuseApp app, String property) {
 				MXTuneData.setMaximumMIDIChannel(Integer.parseInt(property));
 			}
 		},
 		INPUT_FILENAME {
-			@Override void exe(MuseApp app, String property) {
+			@Override
+			void exe(MuseApp app, String property) {
 				app.setInputFileName(property);
 			}
 		},
 		OUTPUT_FILENAME {
-			@Override void exe(MuseApp app, String property) {
-				app.outputFileName = property;
+			@Override
+			void exe(MuseApp app, String property) {
+				app.setOutputFileName(property);
 			}
 		},
 		MIXTRACT_LOGO {
-			@Override public void exe(MuseApp app, String property) {
+			@Override
+			public void exe(MuseApp app, String property) {
 				mixtractLogImageFile = property;
 			}
 		},
 		CMXCATALOG {
-			@Override void exe(MuseApp app, String property) {
+			@Override
+			void exe(MuseApp app, String property) {
 				CMXFileWrapper.catalogFileName = property;
 			}
 		},
 		MIDIDEVICE {
-			@Override void exe(MuseApp app, String property) {
+			@Override
+			void exe(MuseApp app, String property) {
 				app.setMidiDeviceName(property);
 			}
 		},
 		MUSICXML_DIR {
-			@Override void exe(MuseApp app, String property) {
+			@Override
+			void exe(MuseApp app, String property) {
 				app.setMusicXMLDirectory(createDirectory(new File(property)
 						.getAbsolutePath()));
 			}
 		},
 		PROJECT_DIR {
-			@Override void exe(MuseApp app, String property) {
+			@Override
+			void exe(MuseApp app, String property) {
 				app.setProjectDirectory(createDirectory(new File(property)
 						.getAbsolutePath()));
 			}
 		},
 		OUTPUT_DIR {
-			@Override void exe(MuseApp app, String property) {
+			@Override
+			void exe(MuseApp app, String property) {
 				app.outputDir = createDirectory(new File(property)
 						.getAbsolutePath());
 			}
 		},
 		segmentGroupnoteLine {
-			@Override public void exe(MuseApp app, String property) {
+			@Override
+			public void exe(MuseApp app, String property) {
 				MXTuneData.setSegmentGroupnoteLine(Boolean.parseBoolean(
 						property));
 			}
 		},
 		SHOW_GUI {
-			@Override public void exe(MuseApp app, String property) {
+			@Override
+			public void exe(MuseApp app, String property) {
 				setShowGUI(Boolean.parseBoolean(property));
 			}
 		},
 		READ_STRDATA_ON_READING {
-			@Override public void exe(MuseApp app, String property) {
+			@Override
+			public void exe(MuseApp app, String property) {
 				app.setReadingStructureData(Boolean.parseBoolean(property));
 			}
 
 		},
 		avoidLastRestsAsGroup {
-			@Override public void exe(MuseApp app, String property) {
+			@Override
+			public void exe(MuseApp app, String property) {
 				Group.setAvoidLastRestsFromGroup(Boolean.parseBoolean(
 						property));
 			}
 		},
 		durationOffset {
-			@Override public void exe(MuseApp app, String property) {
+			@Override
+			public void exe(MuseApp app, String property) {
 				MXTuneData.setDurationOffset(Integer.parseInt(property));
 			}
 		};
@@ -564,10 +604,6 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 		 * @param property
 		 */
 		abstract void exe(MuseApp app, String property);
-	}
-
-	public void addPhraseViewerList(PhraseViewer pv) {
-		getPhraseViewList().add(pv);
 	}
 
 }
