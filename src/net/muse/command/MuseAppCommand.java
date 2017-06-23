@@ -4,7 +4,6 @@ import net.muse.app.MuseApp;
 import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.misc.Command;
-import net.muse.mixtract.command.GroupCommandInterface;
 
 public class MuseAppCommand extends Command implements GroupCommandInterface {
 

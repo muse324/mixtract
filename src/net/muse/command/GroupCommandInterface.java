@@ -1,4 +1,4 @@
-package net.muse.mixtract.command;
+package net.muse.command;
 
 import net.muse.gui.GroupLabel;
 
