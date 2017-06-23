@@ -1,4 +1,4 @@
-package net.muse.mixtract.command;
+package net.muse.data;
 
 import net.muse.data.*;
 import net.muse.misc.MuseObject;
