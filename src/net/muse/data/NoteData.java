@@ -8,7 +8,9 @@ import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.misc.Util;
 
 public class NoteData extends SequenceData {
-	/** MusicXML.Note */
+	/**
+	 * MusicXML.Note クラスでの音符情報。改めてCMXからの情報を取得したい時に getXMLNote() を通じて呼び出してください。
+	 */
 	protected Note note;
 
 	/** 音価の最小値。TODO 単位系は各プログラムで確認してください。 */
@@ -63,7 +65,7 @@ public class NoteData extends SequenceData {
 	protected NoteScheduleEvent noteOff;
 	protected final int index;
 	/** 休符であるかどうかを判別します。 */
-	protected boolean rest = false;
+	private boolean rest = false;
 	/**
 	 * 小節内の拍の位置。 TODO １拍目を0.0とするか1.0とするかは各プログラムで確認してください。
 	 */
@@ -81,9 +83,11 @@ public class NoteData extends SequenceData {
 	protected static int getDefaultGraseNoteDuration() {
 		return Math.round(getTicksPerBeat() / (float) 16.);
 	}
+
 	public NoteData(int index) {
 		this.index = index;
 	}
+
 	public NoteData(Note note, int partNumber, int idx, int bpm, int vel) {
 		// 基本情報
 		this(idx);
@@ -103,6 +107,7 @@ public class NoteData extends SequenceData {
 		// ノートイベント
 		createMIDINoteEvent(bpm, vel);
 	}
+
 	/**
 	 * @return
 	 */
@@ -271,7 +276,8 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#child()
 	 */
-	@Override public NoteData child() {
+	@Override
+	public NoteData child() {
 		return (NoteData) super.child();
 	}
 
@@ -279,7 +285,8 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#next()
 	 */
-	@Override public NoteData next() {
+	@Override
+	public NoteData next() {
 		return (NoteData) super.next();
 	}
 
@@ -287,7 +294,8 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#parent()
 	 */
-	@Override public NoteData parent() {
+	@Override
+	public NoteData parent() {
 		return (NoteData) super.parent();
 	}
 
@@ -295,7 +303,8 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#previous()
 	 */
-	@Override public NoteData previous() {
+	@Override
+	public NoteData previous() {
 		return (NoteData) super.previous();
 	}
 
@@ -345,17 +354,17 @@ public class NoteData extends SequenceData {
 	protected void initialize(int partNumber, String noteName, int noteNumber,
 			int voice, boolean grace, boolean tie, boolean rest, double beat,
 			Harmony chord) {
-				this.partNumber = partNumber;
-				this.noteName = noteName;
-				this.noteNumber = noteNumber;
-				this.voice = voice;
-				this.grace = grace;
-				this.tied = tie;
-				this.rest = rest;
-				this.beat = beat;
-				this.chord = chord;
-				setNonChordNote(chord);
-			}
+		this.partNumber = partNumber;
+		this.noteName = noteName;
+		this.noteNumber = noteNumber;
+		this.voice = voice;
+		this.grace = grace;
+		this.tied = tie;
+		this.rest = rest;
+		this.beat = beat;
+		this.chord = chord;
+		setNonChordNote(chord);
+	}
 
 	protected void createMIDINoteEvent(int bpm, int vel) {
 		try {
@@ -368,6 +377,7 @@ public class NoteData extends SequenceData {
 					"invalid MIDI data for %s", this));
 		}
 	}
+
 	public void setOffset(int offset) {
 		this.offset = offset;
 		getNoteOff().setOnset(offset);

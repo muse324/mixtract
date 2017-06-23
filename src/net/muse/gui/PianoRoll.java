@@ -15,7 +15,6 @@ import net.muse.app.MuseApp;
 import net.muse.data.*;
 import net.muse.gui.command.*;
 import net.muse.misc.Util;
-import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.ViewerMode;
 import net.muse.mixtract.gui.command.MixtractCommand;

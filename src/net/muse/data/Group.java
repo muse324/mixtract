@@ -27,25 +27,34 @@ public class Group extends SequenceData {
 
 	/** グループの種類 */
 	private GroupType _type;
-
 	/** グループの通し番号． */
 	private int index;
+
 	/** 階層レベル．最上階層(楽曲全体)を0として，下位構造に向かって正の整数で表されます． */
 	private int level;
-
+	/** 声部番号（1〜） */
 	private int partNumber;
+	/// 子グループ TODO 第３グループを作る
 	private Group childFormerGroup = null;
-
 	private Group childLatterGroup = null;
+	/** 親グループ */
 	private Group parent = null;
+	/** このグループに含まれる音符列 */
 	private GroupNote notelist = null;
 
+	/** TODO 具体的にどう使ってるか確認する */
 	private List<NoteData> scoreNotelist;
+	/** 開始音 */
 	private GroupNote beginGroupNote = null;
-	private GroupNote topGroupNote = null;
+	/** 終了音 */
 	private GroupNote endGroupNote = null;
+
+	/** 頂点音 TODO Mixtract用にプッシュダウンする */
+	private GroupNote topGroupNote = null;
+	/** グループ中央付近にある音符。TODO Mixtract用にプッシュダウンする */
 	private GroupNote centerNote;
-	private PhraseFeature flag;
+	/** フレーズ（グループ）の詳細情報を格納します。 */
+	private PhraseFeature detail;
 
 	/**
 	 * @param aVOID_LAST_RESTNOTE セットする aVOID_LAST_RESTNOTE
@@ -135,7 +144,8 @@ public class Group extends SequenceData {
 	 * (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override public boolean equals(Object obj) {
+	@Override
+	public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
 		Group g = (Group) obj;
@@ -187,7 +197,7 @@ public class Group extends SequenceData {
 	}
 
 	public PhraseFeature getMelodyFlagment() {
-		return flag;
+		return detail;
 	}
 
 	/**
@@ -235,7 +245,8 @@ public class Group extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#hasChild()
 	 */
-	@Override public boolean hasChild() {
+	@Override
+	public boolean hasChild() {
 		return childFormerGroup != null && childLatterGroup != null;
 	}
 
@@ -336,7 +347,8 @@ public class Group extends SequenceData {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override public String toString() {
+	@Override
+	public String toString() {
 		String str = name() + ";" + partNumber + ";";
 		if (!hasChild())
 			return str + notelistToString();
