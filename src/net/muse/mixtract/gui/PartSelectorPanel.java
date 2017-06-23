@@ -12,13 +12,12 @@ import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
-import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class PartSelectorPanel extends JPanel implements TuneDataListener {
 
 	private static final long serialVersionUID = 1L;
-	private MXTuneData data = null;
+	private TuneData data = null;
 	private ArrayList<JRadioButton> checkBoxList = new ArrayList<JRadioButton>(); // @jve:decl-index=0:
 	private ButtonGroup editGroup = new ButtonGroup();
 
@@ -27,14 +26,14 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 		initialize();
 	}
 
-	public PartSelectorPanel(LayoutManager layout) {
-		super(layout);
+	public PartSelectorPanel(boolean isDoubleBuffered) {
+		super(isDoubleBuffered);
 		initialize();
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
-	public PartSelectorPanel(boolean isDoubleBuffered) {
-		super(isDoubleBuffered);
+	public PartSelectorPanel(LayoutManager layout) {
+		super(layout);
 		initialize();
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
@@ -45,20 +44,22 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
-	/**
-	 * This method initializes this
-	 */
-	private void initialize() {
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		this.setSize(new Dimension(58, 89));
-	}
-
 	public void addGroup(Group g) {
 		// TODO 自動生成されたメソッド・スタブ
 	}
 
+	public void changeExpression(PhraseCurveType type) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
 	public void deleteGroup(GroupLabel g) {
 		// TODO 自動生成されたメソッド・スタブ
+	}
+
+	public void deselect(GroupLabel g) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 	public void editGroup(GroupLabel g) {
@@ -70,15 +71,9 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 
 	}
 
-	public void deselect(GroupLabel g) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
 	public void setTarget(TuneData target) {
 		if (data != target) {
-			assert data instanceof MXTuneData;
-			data = (MXTuneData) target;
+			data = target;
 			removeAll();
 			checkBoxList.clear();
 			if (data == null)
@@ -101,9 +96,12 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 		}
 	}
 
-	public void changeExpression(PhraseCurveType type) {
-		// TODO 自動生成されたメソッド・スタブ
-
+	/**
+	 * This method initializes this
+	 */
+	private void initialize() {
+		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		this.setSize(new Dimension(58, 89));
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

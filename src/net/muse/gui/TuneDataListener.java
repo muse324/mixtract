@@ -1,7 +1,6 @@
 package net.muse.gui;
 
 import net.muse.data.TuneData;
-import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 /**
@@ -14,7 +13,7 @@ import net.muse.mixtract.data.curve.PhraseCurveType;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/10/25
  */
-public interface TuneDataListener extends GroupEditListener<GroupLabel>{
+public interface TuneDataListener extends GroupEditListener<GroupLabel> {
 
 	/**
 	 * 楽曲を読み込み，内部データに変換します．
