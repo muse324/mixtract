@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.sound.midi.InvalidMidiDataException;
-import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
 
@@ -114,8 +113,6 @@ public class MXTuneData extends TuneData {
 		getGroupArrayList().add(group);
 	}
 
-
-
 	/**
 	 * @return the groupSequence
 	 */
@@ -219,10 +216,6 @@ public class MXTuneData extends TuneData {
 
 		return bimg;
 	}
-
-
-
-
 
 	private NoteData getNote(NoteData list, String id) {
 		if (list == null)

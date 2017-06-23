@@ -19,7 +19,6 @@ import net.muse.misc.Util;
  */
 public class MXNoteData extends NoteData {
 
-
 	/** 当該音符に適用された保科理論ベースの頂点情報(ルール)の一覧 */
 	private final ArrayList<ApexInfo> apexlist = new ArrayList<ApexInfo>();
 	/** 頂点らしさを表すスコア。値のとる範囲は各プログラムで確認してください。 */
@@ -30,11 +29,14 @@ public class MXNoteData extends NoteData {
 		// 基本情報
 		super(i);
 		initialize(partNumber, noteName, Util.getNoteNumber(noteName), 0, grace,
-				tie, rest, beat, chord);
-		realOnset = this.onset = onset;
-		realOffset = this.offset = offset;
-		this.timeValue = tval;
-		timeValue = (grace) ? getDefaultGraseNoteDuration() : offset - onset;
+				tie, rest, beat, getChord());
+		setOnset(onset);
+		setOffset(offset);
+		setRealOnset(onset);
+		setRealOnset(onset);
+		setRealOffset(offset);
+//		this.timeValue = tval;
+		setTimeValue((grace) ? getDefaultGraseNoteDuration() : offset - onset);
 
 		// ノートイベント
 		createMIDINoteEvent(getDefaultBPM(), getDefaultVelocity());
@@ -48,7 +50,8 @@ public class MXNoteData extends NoteData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#child()
 	 */
-	@Override public MXNoteData child() {
+	@Override
+	public MXNoteData child() {
 		return (MXNoteData) super.child();
 	}
 
@@ -56,11 +59,12 @@ public class MXNoteData extends NoteData {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override public boolean equals(Object obj) {
+	@Override
+	public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
 		NoteData cmp = (NoteData) obj;
-		return partNumber == cmp.partNumber() && onset == cmp.onset()
+		return partNumber() == cmp.partNumber() && onset() == cmp.onset()
 				&& noteNumber() == cmp.noteNumber();
 	}
 
@@ -75,7 +79,8 @@ public class MXNoteData extends NoteData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#next()
 	 */
-	@Override public MXNoteData next() {
+	@Override
+	public MXNoteData next() {
 		return (MXNoteData) super.next();
 	}
 
@@ -83,7 +88,8 @@ public class MXNoteData extends NoteData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#parent()
 	 */
-	@Override public NoteData parent() {
+	@Override
+	public NoteData parent() {
 		return (NoteData) super.parent();
 	}
 
@@ -91,7 +97,8 @@ public class MXNoteData extends NoteData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#previous()
 	 */
-	@Override public NoteData previous() {
+	@Override
+	public NoteData previous() {
 		return (NoteData) super.previous();
 	}
 
@@ -99,7 +106,8 @@ public class MXNoteData extends NoteData {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override public String toString() {
+	@Override
+	public String toString() {
 		return String.format(
 				"idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tie=%b, fifths=%d, harmony=%s",
 				index(), onset(), noteName(), beat(), timeValue(), partNumber(),
@@ -119,35 +127,18 @@ public class MXNoteData extends NoteData {
 	}
 
 	/**
-	 * @return note
-	 */
-	Note getXMLNote() {
-		return note;
-	}
-
-	/**
 	 * @param apexScore the apexScore to set
 	 */
 	final void setApexScore(double apexScore) {
 		this.apexScore = apexScore;
 	}
 
-	/**
-	 * @param measureNumber セットする measureNumber
-	 */
-	final void setMeasureNumber(int measureNumber) {
-		this.measureNumber = measureNumber;
-	}
 
-	/**
-	 * @param voice セットする voice
-	 */
-	void setVoice(int voice) {
-		this.voice = voice;
-	}
+
 
 	// TODO 2011.09.02 使ってない様子
-	@Deprecated void slide(int durationOffset) {
+	@Deprecated
+	void slide(int durationOffset) {
 		setRealOffset(offset() + durationOffset);
 	}
 
@@ -161,25 +152,6 @@ public class MXNoteData extends NoteData {
 		return score;
 	}
 
-	/**
-	 * @return grace
-	 */
-	private boolean isGrace() {
-		return grace;
-	}
 
-	/**
-	 * @return tied
-	 */
-	private boolean isTied() {
-		return tied;
-	}
-
-	/**
-	 * @return voice
-	 */
-	private int voice() {
-		return voice;
-	}
 
 }

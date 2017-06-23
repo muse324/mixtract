@@ -11,44 +11,44 @@ public class NoteData extends SequenceData {
 	/**
 	 * MusicXML.Note クラスでの音符情報。改めてCMXからの情報を取得したい時に getXMLNote() を通じて呼び出してください。
 	 */
-	protected Note note;
+	private Note note;
 
 	/** 音価の最小値。TODO 単位系は各プログラムで確認してください。 */
 	private static final int minimumDuration = 50;
 	/** 当該音符に割り当てられる調号 */
-	protected int fifths = 0;
+	private int fifths = 0;
 	/** 当該音符に割り当てられる調性 [長調 or 単調]。 */
-	protected KeyMode keyMode = KeyMode.major;
+	private KeyMode keyMode = KeyMode.major;
 	/** 当該音符に割り当てられる和声記号 */
-	protected Harmony chord = Harmony.I;
+	private Harmony chord = Harmony.I;
 	/** MIDIノートナンバー */
-	protected int noteNumber;
+	private int noteNumber;
 	/**
 	 * 実時間表記による開始時刻。TODO 単位を[秒]か[ミリ秒]にするかは各プログラムで確認してください。
 	 */
-	protected double realOnset;
+	private double realOnset;
 	/**
 	 * 実時間表記による消音時刻。TODO 単位を[秒]か[ミリ秒]にするかは各プログラムで確認してください。
 	 */
-	protected double realOffset;
+	private double realOffset;
 	/** 楽譜上の発音時刻。TODO 単位系は各プログラムで確認してください。 */
-	protected int onset;
+	private int onset;
 	/** 楽譜上の消音時刻。TODO 単位系は各プログラムで確認してください。 */
-	protected int offset;
+	private int offset;
 	/** 音価（楽譜上） */
-	protected int timeValue = 0;
+	private int timeValue = 0;
 	/** 音名 */
-	protected String noteName = "";
+	private String noteName = "";
 	/**
 	 * Part number begins from 1 by integer.<br>
 	 * 声部番号(1～)
 	 */
-	protected int partNumber = 0;
+	private int partNumber = 0;
 	/**
 	 * Measure number begins from 0 (Auftakt) by integer.<br>
 	 * 小節番号(0～)
 	 */
-	protected int measureNumber = -1;
+	private int measureNumber = -1;
 	/** 和音の根音であるかどうかを判別します。 */
 	private boolean nonChord = false;
 	/**
@@ -56,26 +56,26 @@ public class NoteData extends SequenceData {
 	 *
 	 * @see {@link NoteScheduleEvent}
 	 */
-	protected NoteScheduleEvent noteOn;
+	private NoteScheduleEvent noteOn;
 	/**
 	 * MIDI ノートオフイベント
 	 *
 	 * @see {@link NoteScheduleEvent}
 	 */
-	protected NoteScheduleEvent noteOff;
-	protected final int index;
+	private NoteScheduleEvent noteOff;
+	private final int index;
 	/** 休符であるかどうかを判別します。 */
 	private boolean rest = false;
 	/**
 	 * 小節内の拍の位置。 TODO １拍目を0.0とするか1.0とするかは各プログラムで確認してください。
 	 */
-	protected double beat;
+	private double beat;
 	/** 声部番号。１から始まる。0の場合、声部の区別がされていないことを表す。 */
-	protected int voice = 0;
+	private int voice = 0;
 	/** 装飾音であるかどうかを判別します。 */
-	protected boolean grace = false;
+	private boolean grace = false;
 	/** タイであるかどうかを判別します。 */
-	protected boolean tied;
+	private boolean tied;
 
 	/**
 	 * @return
@@ -97,12 +97,12 @@ public class NoteData extends SequenceData {
 						.tiedTo() != null, note.rest(), note.beat(), Harmony.I);
 
 		measureNumber = note.measure().number();
-		onset = note.onset(getTicksPerBeat());
-		offset = note.offset(getTicksPerBeat());
-		realOnset = onsetInMsec(bpm);
-		realOffset = offsetInMsec(bpm);
-		timeValue = (note.grace()) ? getDefaultGraseNoteDuration()
-				: note.tiedDuration(getTicksPerBeat());
+		setOnset(note.onset(getTicksPerBeat()));
+		setOffset(note.offset(getTicksPerBeat()));
+		setRealOnset(onsetInMsec(bpm));
+		setRealOffset(offsetInMsec(bpm));
+		setTimeValue((note.grace()) ? getDefaultGraseNoteDuration()
+				: note.tiedDuration(getTicksPerBeat()));
 
 		// ノートイベント
 		createMIDINoteEvent(bpm, vel);
@@ -126,7 +126,7 @@ public class NoteData extends SequenceData {
 	 * @return chord
 	 */
 	public Harmony chord() {
-		return chord;
+		return getChord();
 	}
 
 	public double duration() {
@@ -221,7 +221,7 @@ public class NoteData extends SequenceData {
 	public void setKeyMode(KeyMode keyMode, int fifths) {
 		this.keyMode = keyMode;
 		this.fifths = fifths;
-		setNonChordNote(chord);
+		setNonChordNote(getChord());
 	}
 
 	/**
@@ -231,7 +231,7 @@ public class NoteData extends SequenceData {
 		return nonChord;
 	}
 
-	protected void setNonChordNote(Harmony c) {
+	private void setNonChordNote(Harmony c) {
 		nonChord = true;
 		int[] notes = keyMode.noteIntervals(c);
 		int scale = (noteNumber - fifths) % 12;
@@ -362,8 +362,50 @@ public class NoteData extends SequenceData {
 		this.tied = tie;
 		this.rest = rest;
 		this.beat = beat;
-		this.chord = chord;
+		this.setChord(chord);
 		setNonChordNote(chord);
+	}
+
+	/**
+	 * @return grace
+	 */
+	public boolean isGrace() {
+		return grace;
+	}
+
+	/**
+	 * @return tied
+	 */
+	public boolean isTied() {
+		return tied;
+	}
+
+	/**
+	 * @return voice
+	 */
+	public int voice() {
+		return voice;
+	}
+
+	/**
+	 * @param measureNumber セットする measureNumber
+	 */
+	public final void setMeasureNumber(int measureNumber) {
+		this.measureNumber = measureNumber;
+	}
+
+	/**
+	 * @param voice セットする voice
+	 */
+	public void setVoice(int voice) {
+		this.voice = voice;
+	}
+
+	/**
+	 * @return note
+	 */
+	public Note getXMLNote() {
+		return note;
 	}
 
 	protected void createMIDINoteEvent(int bpm, int vel) {
@@ -381,6 +423,27 @@ public class NoteData extends SequenceData {
 	public void setOffset(int offset) {
 		this.offset = offset;
 		getNoteOff().setOnset(offset);
+	}
+
+	/**
+	 * @return chord
+	 */
+	protected Harmony getChord() {
+		return chord;
+	}
+
+	/**
+	 * @param onset セットする onset
+	 */
+	protected void setOnset(int onset) {
+		this.onset = onset;
+	}
+
+	/**
+	 * @param timeValue セットする timeValue
+	 */
+	protected void setTimeValue(int timeValue) {
+		this.timeValue = timeValue;
 	}
 
 }
