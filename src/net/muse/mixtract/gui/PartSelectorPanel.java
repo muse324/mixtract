@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import net.muse.data.Group;
+import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class PartSelectorPanel extends JPanel implements TuneDataListener {
@@ -74,9 +75,10 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 
 	}
 
-	public void setTarget(MXTuneData target) {
+	public void setTarget(TuneData target) {
 		if (data != target) {
-			data = target;
+			assert data instanceof MXTuneData;
+			data = (MXTuneData) target;
 			removeAll();
 			checkBoxList.clear();
 			if (data == null)

@@ -8,8 +8,7 @@ import java.util.List;
 import javax.swing.*;
 
 import net.muse.app.MuseApp;
-import net.muse.data.Group;
-import net.muse.data.GroupType;
+import net.muse.data.*;
 import net.muse.gui.command.MuseAppCommand;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
@@ -38,7 +37,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	private MuseApp main;
 
 	/* 格納データ */
-	private MXTuneData data;
+	private TuneData data;
 	private final ArrayList<GroupLabel> grouplist;
 	private GroupLabel selectedGroup;
 	private int maximumGroupLevel = 0;
@@ -439,7 +438,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		return LABEL_HEIGHT * level + 15;
 	}
 
-	public void setTarget(MXTuneData target) {
+	public void setTarget(TuneData target) {
 		if (data != target) {
 			data = target;
 		}

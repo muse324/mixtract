@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.swing.*;
 
 import net.muse.app.Mixtract;
+import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.mixtract.data.MXTuneData;
 
@@ -23,7 +24,7 @@ public class MXMainFrame extends MainFrame {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#setTarget(net.muse.mixtract.data.MXTuneData)
 	 */
-	@Override public void setTarget(MXTuneData target) {
+	@Override public void setTarget(TuneData target) {
 		super.setTarget(target);
 		getAnalyzeButton().setEnabled(true);
 	}
@@ -93,7 +94,8 @@ public class MXMainFrame extends MainFrame {
 					new java.awt.event.ActionListener() {
 						public void actionPerformed(
 								java.awt.event.ActionEvent e) {
-							main.analyzeStructure(data, null);
+							assert data instanceof MXTuneData;
+							main.analyzeStructure((MXTuneData) data, null);
 							main.notifySetTarget();
 						}
 					});

@@ -8,9 +8,10 @@ import javax.swing.JScrollPane;
 
 import net.muse.app.Mixtract;
 import net.muse.data.Group;
+import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class CurveView extends JScrollPane implements TuneDataListener {
@@ -67,11 +68,12 @@ public class CurveView extends JScrollPane implements TuneDataListener {
 		this.setSize(new Dimension(305, 182)); // Generated
 	}
 
-	public void setTarget(MXTuneData target) {
-		data = target;
+	public void setTarget(TuneData target) {
+		assert target instanceof MXTuneData;
+		data = (MXTuneData) target;
 		if (Mixtract.isAssertion())
 			assert data != null : "data is null";
-		curvePanel.setCurvelist(target);
+		curvePanel.setCurvelist(data);
 		repaint();
 	}
 

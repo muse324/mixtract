@@ -13,9 +13,11 @@ import javax.swing.*;
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
+import net.muse.data.TuneData;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
-import net.muse.mixtract.gui.*;
+import net.muse.mixtract.gui.CurveView;
+import net.muse.mixtract.gui.PartSelectorPanel;
 import net.muse.mixtract.sound.MixtractMIDIController;
 import net.muse.sound.MIDIController;
 import net.muse.sound.MIDIEventListener;
@@ -60,7 +62,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JMenuItem importXMLMenu = null;
 	private JMenuItem quitMenu = null;
 	protected MuseApp main;
-	public MXTuneData data; // @jve:decl-index=0:
+	public TuneData data; // @jve:decl-index=0:
 	private JDesktopPane desktop = null;
 	private JInternalFrame viewer = null;
 	private JPanel tuneViewPanel = null;
@@ -226,7 +228,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	/**
 	 * @return
 	 */
-	public final MXTuneData getTarget() {
+	public final TuneData getTarget() {
 		return data;
 	}
 
@@ -267,7 +269,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	public void selectGroup(GroupLabel g, boolean flg) {}
 
-	public void setTarget(MXTuneData target) {
+	public void setTarget(TuneData target) {
 		data = target;
 		getViewer().setTitle(data.getOutputFile().getName());
 		getSaveAsMenu().setEnabled(true);
@@ -498,7 +500,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		Point pos = getViewer().getLocationOnScreen();
 		Dimension size = getViewer().getPreferredSize();
 		size.height -= 15;
-		data.writeScreenShot(pos, size);
+		assert data instanceof MXTuneData;
+		((MXTuneData) data).writeScreenShot(pos, size);
 	}
 
 	/**
@@ -1034,4 +1037,5 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		}
 		return viewer;
 	}
+
 } // @jve:decl-index=0:visual-constraint="10,10"

@@ -9,7 +9,6 @@ import javax.swing.*;
 
 import net.muse.app.Mixtract;
 import net.muse.data.*;
-import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.sound.MixtractMIDIController;
 import net.muse.sound.MIDIController;
@@ -296,7 +295,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 		this.synthe = synthe;
 	}
 
-	public void setTarget(MXTuneData target) {
+	public void setTarget(TuneData target) {
 		resetKeyRegister();
 
 		setKeyRegister(target.getRootGroup());

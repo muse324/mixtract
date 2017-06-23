@@ -1,9 +1,10 @@
 package net.muse.mixtract.sound;
 
 import net.muse.data.Group;
+import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.sound.MIDIController;
 import net.muse.sound.ThreadPlayer;
@@ -12,7 +13,7 @@ public class MixtractMIDIController extends MIDIController implements
 		TuneDataListener {
 
 	private ThreadPlayer smfplayer;
-	private MXTuneData data;
+	private TuneData data;
 
 	public MixtractMIDIController(String deviceName, int ticksPerBeat) {
 		openMidiDevice(deviceName);
@@ -36,7 +37,7 @@ public class MixtractMIDIController extends MIDIController implements
 		return new MixtractMIDIController(deviceName, ticksPerBeat);
 	}
 
-	public void setTarget(MXTuneData target) {
+	public void setTarget(TuneData target) {
 		data = target;
 	}
 

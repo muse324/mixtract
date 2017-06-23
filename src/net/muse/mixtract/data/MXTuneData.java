@@ -114,28 +114,7 @@ public class MXTuneData extends TuneData {
 		getGroupArrayList().add(group);
 	}
 
-	/**
-	 * @param group
-	 */
-	public void deleteGroupFromData(Group group) {
-		// 非階層グループから削除
-		if (getGroupArrayList().contains(group)) {
-			getGroupArrayList().remove(group);
-			return;
-		}
-		// 階層グループから削除
-		for (Group g : getRootGroup()) {
-			if (g.equals(group) && g.getType() == GroupType.NOTE) {
-				// 最上階層が階層化されていない場合は削除できない
-				if (!g.hasChild()) {
-					JOptionPane.showConfirmDialog(null,
-							"The whole note sequence can't be deleted.");
-					return;
-				}
-			}
-			deleteHierarchicalGroup(group, g);
-		}
-	}
+
 
 	/**
 	 * @return the groupSequence
@@ -146,10 +125,6 @@ public class MXTuneData extends TuneData {
 
 	public NoteData getLastNote(int partIndex) {
 		return getRootGroup(partIndex).getEndGroupNote().getNote();
-	}
-
-	public int[] getMIDIPrograms() {
-		return midiProgram;
 	}
 
 	/**
@@ -169,18 +144,8 @@ public class MXTuneData extends TuneData {
 		return idxlist.size();
 	}
 
-	public double[] getVolume() {
-		return volume;
-	}
-
-	public void initializeNoteEvents() {
-		for (int i = 0; i < getRootGroup().size(); i++)
-			initializeNoteEvents(getRootGroup(i));
-	}
-
 	public void setBPM(int idx, int value) {
-		getBPM().set(idx, value);
-		setDefaultBPM(value);
+		super.setBPM(idx, value);
 		if (getRootGroup() != null) {
 			((MXGroup) getRootGroup(0)).getTempoCurve().apply(this,
 					getRootGroup(0));
@@ -255,48 +220,9 @@ public class MXTuneData extends TuneData {
 		return bimg;
 	}
 
-	/**
-	 * @param target
-	 */
-	private void deleteGroup(Group target) {
-		if (target == null)
-			return;
-		deleteGroup(target.getChildFormerGroup());
-		deleteGroup(target.getChildLatterGroup());
-		target.setScoreNotelist(target.getScoreNotelist());
-		if (target.hasChild()) {
-			target.getChildFormerGroup().getEndGroupNote().setNext(target
-					.getChildLatterGroup().getBeginGroupNote());
-		}
-		target.setChild(null, null);
-	}
 
-	/**
-	 * 階層フレーズ中のグループを削除します。
-	 * もし target が子階層を持っている場合，以下の処理を行います。
-	 * <ol>
-	 * <li>子グループをすべて削除
-	 * <li>親グループを起点にし，再分析をかける
-	 * </ol>
-	 *
-	 * @param target 削除するフレーズ
-	 * @param structure 階層フレーズ
-	 */
-	private void deleteHierarchicalGroup(Group target, Group structure) {
-		if (structure == null)
-			return;
 
-		deleteHierarchicalGroup(target, structure.getChildFormerGroup());
-		deleteHierarchicalGroup(target, structure.getChildLatterGroup());
-		if (structure.equals(target)) {
-			// 子グループをすべて削除
-			deleteGroup(target);
-			target.setType(GroupType.USER);
-			// 親グループの再分析
-			// analyzeStructure(target);
-			return;
-		}
-	}
+
 
 	private NoteData getNote(NoteData list, String id) {
 		if (list == null)
@@ -336,38 +262,6 @@ public class MXTuneData extends TuneData {
 	 */
 	private boolean hasGroupList() {
 		return getRootGroup().size() > 0;
-	}
-
-	private void initializeNoteEvents(Group group) {
-		if (group == null)
-			return;
-		if (group.hasChild()) {
-			initializeNoteEvents(group.getChildFormerGroup()
-					.getBeginGroupNote());
-			initializeNoteEvents(group.getChildLatterGroup()
-					.getBeginGroupNote());
-		}
-		initializeNoteEvents(group.getBeginGroupNote());
-	}
-
-	private void initializeNoteEvents(GroupNote gnote) {
-		if (gnote == null)
-			return;
-		initializeNoteEvents(gnote.child());
-		initializeNoteEvents(gnote.next());
-		initializeNoteEvents(gnote.getNote());
-	}
-
-	private void initializeNoteEvents(NoteData nd) {
-		if (nd == null)
-			return;
-
-		nd.setRealOnset(nd.onsetInMsec(getBPM().get(0)));
-		nd.setRealOffset(nd.offsetInMsec(getBPM().get(0)));
-
-		initializeNoteEvents(nd.child());
-		initializeNoteEvents(nd.next());
-
 	}
 
 	protected void parseMusicXMLFile() {
