@@ -1,4 +1,4 @@
-package net.muse.gui.command;
+package net.muse.command;
 
 import net.muse.gui.GroupLabel;
 

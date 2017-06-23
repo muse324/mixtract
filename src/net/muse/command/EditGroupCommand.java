@@ -1,8 +1,8 @@
-package net.muse.gui.command;
+package net.muse.command;
 
-final class RedrawCommand extends MuseAppCommand {
+final class EditGroupCommand extends MuseAppCommand {
 
-	public RedrawCommand(String... lang) {
+	public EditGroupCommand(String... lang) {
 		super(lang);
 	}
 

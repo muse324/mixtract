@@ -12,6 +12,7 @@ import javax.xml.transform.TransformerException;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
+import net.muse.command.*;
 import net.muse.data.*;
 import net.muse.gui.command.*;
 import net.muse.misc.Util;

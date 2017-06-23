@@ -8,8 +8,8 @@ import java.util.List;
 import javax.swing.*;
 
 import net.muse.app.MuseApp;
+import net.muse.command.MuseAppCommand;
 import net.muse.data.*;
-import net.muse.gui.command.MuseAppCommand;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.MelodyFlagViewer;

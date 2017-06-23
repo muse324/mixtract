@@ -1,4 +1,4 @@
-package net.muse.gui.command;
+package net.muse.command;
 
 final class SelectGroupCommand extends MuseAppCommand {
 

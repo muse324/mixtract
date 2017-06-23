@@ -1,4 +1,4 @@
-package net.muse.gui.command;
+package net.muse.command;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST

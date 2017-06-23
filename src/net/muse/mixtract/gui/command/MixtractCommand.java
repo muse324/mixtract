@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
+import net.muse.command.*;
 import net.muse.data.GroupAnalyzer;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;

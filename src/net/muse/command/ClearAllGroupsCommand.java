@@ -1,4 +1,4 @@
-package net.muse.gui.command;
+package net.muse.command;
 
 import net.muse.data.Group;
 import net.muse.mixtract.gui.command.MixtractCommand;
