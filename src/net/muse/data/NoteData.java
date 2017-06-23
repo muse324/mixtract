@@ -8,13 +8,13 @@ import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.misc.Util;
 
 public class NoteData extends SequenceData {
+	/** 音価の最小値。TODO 単位系は各プログラムで確認してください。 */
+	private static final int minimumDuration = 50;
+
 	/**
 	 * MusicXML.Note クラスでの音符情報。改めてCMXからの情報を取得したい時に getXMLNote() を通じて呼び出してください。
 	 */
 	private Note note;
-
-	/** 音価の最小値。TODO 単位系は各プログラムで確認してください。 */
-	private static final int minimumDuration = 50;
 	/** 当該音符に割り当てられる調号 */
 	private int fifths = 0;
 	/** 当該音符に割り当てられる調性 [長調 or 単調]。 */
@@ -84,11 +84,11 @@ public class NoteData extends SequenceData {
 		return Math.round(getTicksPerBeat() / (float) 16.);
 	}
 
-	public NoteData(int index) {
+	protected NoteData(int index) {
 		this.index = index;
 	}
 
-	public NoteData(Note note, int partNumber, int idx, int bpm, int vel) {
+	protected NoteData(Note note, int partNumber, int idx, int bpm, int vel) {
 		// 基本情報
 		this(idx);
 		this.note = note;
@@ -108,6 +108,30 @@ public class NoteData extends SequenceData {
 		createMIDINoteEvent(bpm, vel);
 	}
 
+	public double beat() {
+		return beat;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.SequenceData#child()
+	 */
+	@Override
+	public NoteData child() {
+		return (NoteData) super.child();
+	}
+
+	/**
+	 * @return chord
+	 */
+	public Harmony chord() {
+		return chord;
+	}
+
+	public double duration() {
+		return realOffset() - realOnset();
+	}
+
 	/**
 	 * @return
 	 */
@@ -123,36 +147,77 @@ public class NoteData extends SequenceData {
 	}
 
 	/**
-	 * @return chord
+	 * @return noteOff
 	 */
-	public Harmony chord() {
-		return getChord();
-	}
-
-	public double duration() {
-		return realOffset() - realOnset();
-	}
-
-	public int noteNumber() {
-		return noteNumber;
+	final NoteScheduleEvent getNoteOff() {
+		return noteOff;
 	}
 
 	/**
-	 * @return realOffset
+	 * @return noteOn
 	 */
-	public final double realOffset() {
-		return realOffset;
+	final NoteScheduleEvent getNoteOn() {
+		return noteOn;
 	}
 
 	/**
-	 * @return realOnset
+	 * @return note
 	 */
-	public final double realOnset() {
-		return realOnset;
+	public Note getXMLNote() {
+		return note;
+	}
+
+	public String id() {
+		return "n" + index();
+	}
+
+	/**
+	 * @return index
+	 */
+	public int index() {
+		return index;
+	}
+
+	/**
+	 * @return grace
+	 */
+	public final boolean isGrace() {
+		return grace;
+	}
+
+	/**
+	 * @return the nonChord
+	 */
+	public final boolean isNonChord() {
+		return nonChord;
+	}
+
+	/**
+	 * @return tied
+	 */
+	public final boolean isTied() {
+		return tied;
+	}
+
+	public int measureNumber() {
+		return measureNumber;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.SequenceData#next()
+	 */
+	@Override
+	public NoteData next() {
+		return (NoteData) super.next();
 	}
 
 	public String noteName() {
 		return noteName;
+	}
+
+	public int noteNumber() {
+		return noteNumber;
 	}
 
 	/**
@@ -181,19 +246,13 @@ public class NoteData extends SequenceData {
 		return onset() * Util.bpmToBeatTime(bpm) / (double) getTicksPerBeat();
 	}
 
-	/**
-	 * 楽譜上の音価をdivisionで表します。
-	 * MusicXML形式の＜note＞-＜duration＞タグに相当します。作曲モードの場合にのみ値の更新が可能です。
-	 * 表情付けモードにおいては，<code>duration()</code>の初期値として参照されるよう，値を固定しておく必要があります。
-	 *
-	 * @return 楽譜上の音価
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.SequenceData#parent()
 	 */
-	public int timeValue() {
-		return timeValue;
-	}
-
-	public double timeValueInMsec(int bpm) {
-		return timeValue() * Util.bpmToBeatTime(bpm) / getTicksPerBeat();
+	@Override
+	public NoteData parent() {
+		return (NoteData) super.parent();
 	}
 
 	/**
@@ -203,8 +262,39 @@ public class NoteData extends SequenceData {
 		return partNumber;
 	}
 
-	public int measureNumber() {
-		return measureNumber;
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.SequenceData#previous()
+	 */
+	@Override
+	public NoteData previous() {
+		return (NoteData) super.previous();
+	}
+
+	/**
+	 * @return realOffset
+	 */
+	public final double realOffset() {
+		return realOffset;
+	}
+
+	/**
+	 * @return realOnset
+	 */
+	public final double realOnset() {
+		return realOnset;
+	}
+
+	public boolean rest() {
+		return rest;
+	}
+
+	/**
+	 * @param chord セットする chord
+	 */
+	public void setChord(Harmony chord) {
+		this.chord = chord;
+		setNonChordNote(chord);
 	}
 
 	/**
@@ -221,99 +311,19 @@ public class NoteData extends SequenceData {
 	public void setKeyMode(KeyMode keyMode, int fifths) {
 		this.keyMode = keyMode;
 		this.fifths = fifths;
-		setNonChordNote(getChord());
+		setNonChordNote(chord);
 	}
 
 	/**
-	 * @return the nonChord
+	 * @param measureNumber セットする measureNumber
 	 */
-	public final boolean isNonChord() {
-		return nonChord;
+	public final void setMeasureNumber(int measureNumber) {
+		this.measureNumber = measureNumber;
 	}
 
-	private void setNonChordNote(Harmony c) {
-		nonChord = true;
-		int[] notes = keyMode.noteIntervals(c);
-		int scale = (noteNumber - fifths) % 12;
-		for (int i = 0; i < notes.length; i++) {
-			if (notes[i] == scale) {
-				nonChord = false;
-				return;
-			}
-		}
-	}
-
-	public int velocity() {
-		return noteOn.velocity();
-	}
-
-	/**
-	 * @return noteOff
-	 */
-	public final NoteScheduleEvent getNoteOff() {
-		return noteOff;
-	}
-
-	/**
-	 * @return noteOn
-	 */
-	public final NoteScheduleEvent getNoteOn() {
-		return noteOn;
-	}
-
-	public String id() {
-		return "n" + index();
-	}
-
-	/**
-	 * @return index
-	 */
-	public int index() {
-		return index;
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.data.SequenceData#child()
-	 */
-	@Override
-	public NoteData child() {
-		return (NoteData) super.child();
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.data.SequenceData#next()
-	 */
-	@Override
-	public NoteData next() {
-		return (NoteData) super.next();
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.data.SequenceData#parent()
-	 */
-	@Override
-	public NoteData parent() {
-		return (NoteData) super.parent();
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.data.SequenceData#previous()
-	 */
-	@Override
-	public NoteData previous() {
-		return (NoteData) super.previous();
-	}
-
-	public boolean rest() {
-		return rest;
-	}
-
-	public double beat() {
-		return beat;
+	public void setOffset(int offset) {
+		this.offset = offset;
+		getNoteOff().setOnset(offset);
 	}
 
 	/**
@@ -321,15 +331,6 @@ public class NoteData extends SequenceData {
 	 */
 	public final void setPartNumber(int partNumber) {
 		this.partNumber = partNumber;
-	}
-
-	public void setVelocity(int vel) {
-		try {
-			noteOn.setVelocity(vel);
-		} catch (InvalidMidiDataException e) {
-			JOptionPane.showMessageDialog(null, String.format(
-					"invalid velocity %d for %s", vel, this));
-		}
 	}
 
 	public void setRealOffset(double offset) {
@@ -343,12 +344,58 @@ public class NoteData extends SequenceData {
 		noteOn.setOnset((long) onset);
 	}
 
+	public void setVelocity(int vel) {
+		try {
+			noteOn.setVelocity(vel);
+		} catch (InvalidMidiDataException e) {
+			JOptionPane.showMessageDialog(null, String.format(
+					"invalid velocity %d for %s", vel, this));
+		}
+	}
+
 	/**
-	 * @param chord セットする chord
+	 * @param voice セットする voice
 	 */
-	public void setChord(Harmony chord) {
-		this.chord = chord;
-		setNonChordNote(chord);
+	public void setVoice(int voice) {
+		this.voice = voice;
+	}
+
+	/**
+	 * 楽譜上の音価をdivisionで表します。
+	 * MusicXML形式の＜note＞-＜duration＞タグに相当します。作曲モードの場合にのみ値の更新が可能です。
+	 * 表情付けモードにおいては，<code>duration()</code>の初期値として参照されるよう，値を固定しておく必要があります。
+	 *
+	 * @return 楽譜上の音価
+	 */
+	public int timeValue() {
+		return timeValue;
+	}
+
+	public double timeValueInMsec(int bpm) {
+		return timeValue() * Util.bpmToBeatTime(bpm) / getTicksPerBeat();
+	}
+
+	public int velocity() {
+		return noteOn.velocity();
+	}
+
+	/**
+	 * @return voice
+	 */
+	public int voice() {
+		return voice;
+	}
+
+	protected void createMIDINoteEvent(int bpm, int vel) {
+		try {
+			noteOn = new NoteScheduleEvent(this, onsetInMsec(bpm),
+					ShortMessage.NOTE_ON, vel);
+			noteOff = new NoteScheduleEvent(this, offsetInMsec(bpm),
+					ShortMessage.NOTE_OFF, vel);
+		} catch (InvalidMidiDataException e) {
+			JOptionPane.showMessageDialog(null, String.format(
+					"invalid MIDI data for %s", this));
+		}
 	}
 
 	protected void initialize(int partNumber, String noteName, int noteNumber,
@@ -367,83 +414,29 @@ public class NoteData extends SequenceData {
 	}
 
 	/**
-	 * @return grace
-	 */
-	public boolean isGrace() {
-		return grace;
-	}
-
-	/**
-	 * @return tied
-	 */
-	public boolean isTied() {
-		return tied;
-	}
-
-	/**
-	 * @return voice
-	 */
-	public int voice() {
-		return voice;
-	}
-
-	/**
-	 * @param measureNumber セットする measureNumber
-	 */
-	public final void setMeasureNumber(int measureNumber) {
-		this.measureNumber = measureNumber;
-	}
-
-	/**
-	 * @param voice セットする voice
-	 */
-	public void setVoice(int voice) {
-		this.voice = voice;
-	}
-
-	/**
-	 * @return note
-	 */
-	public Note getXMLNote() {
-		return note;
-	}
-
-	protected void createMIDINoteEvent(int bpm, int vel) {
-		try {
-			noteOn = new NoteScheduleEvent(this, onsetInMsec(bpm),
-					ShortMessage.NOTE_ON, vel);
-			noteOff = new NoteScheduleEvent(this, offsetInMsec(bpm),
-					ShortMessage.NOTE_OFF, vel);
-		} catch (InvalidMidiDataException e) {
-			JOptionPane.showMessageDialog(null, String.format(
-					"invalid MIDI data for %s", this));
-		}
-	}
-
-	public void setOffset(int offset) {
-		this.offset = offset;
-		getNoteOff().setOnset(offset);
-	}
-
-	/**
-	 * @return chord
-	 */
-	protected Harmony getChord() {
-		return chord;
-	}
-
-	/**
 	 * @param onset セットする onset
 	 */
-	protected void setOnset(int onset) {
+	public void setOnset(int onset) {
 		this.onset = onset;
 	}
 
 	/**
 	 * @param timeValue セットする timeValue
 	 */
-	protected void setTimeValue(int timeValue) {
+	public void setTimeValue(int timeValue) {
 		this.timeValue = timeValue;
+	}
+
+	public void setNonChordNote(Harmony c) {
+		nonChord = true;
+		int[] notes = keyMode.noteIntervals(c);
+		int scale = (noteNumber - fifths) % 12;
+		for (int i = 0; i < notes.length; i++) {
+			if (notes[i] == scale) {
+				nonChord = false;
+				return;
+			}
+		}
 	}
 
 }

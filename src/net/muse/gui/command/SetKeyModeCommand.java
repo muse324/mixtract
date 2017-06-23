@@ -36,12 +36,12 @@ public class SetKeyModeCommand extends MixtractCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override
+	public void execute() {
 		for (Component c : frame().getPianoroll().getComponents()) {
 			NoteLabel l = (NoteLabel) c;
 			if (l.isSelected()) {
-				l.getScoreNote().setKeyMode(newMode, l.getScoreNote()
-						.fifths());
+				l.getScoreNote().setKeyMode(newMode, l.getScoreNote().fifths());
 				l.repaint();
 			}
 		}

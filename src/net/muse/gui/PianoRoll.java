@@ -130,7 +130,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override public void paintComponent(final Graphics g) {
+	@Override
+	public void paintComponent(final Graphics g) {
 		/* おまじない */
 		final Graphics2D g2 = (Graphics2D) g;
 		super.paintComponent(g2);
@@ -257,7 +258,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#actionPerformed
 			 * (java .awt.event.ActionEvent)
 			 */
-			@Override public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				JMenuItem src = (JMenuItem) e.getSource();
 				String cmd = src.getActionCommand();
 				if (cmd.equals(MixtractCommand.CHANGE_PART.name())) {
@@ -282,7 +284,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
 			 * (java .awt.event.MouseEvent)
 			 */
-			@Override public void createPopupMenu(MouseEvent e) {
+			@Override
+			public void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				boolean enabled = selectedNoteLabels.size() > 0;
 				getPopup().add(addMenuItem(MuseAppCommand.MAKE_GROUP, enabled));
@@ -334,7 +337,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			 * java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.
 			 * MouseEvent )
 			 */
-			@Override public void mouseDragged(MouseEvent e) {
+			@Override
+			public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
 				if (e.isAltDown()) {
 					Point cp = e.getPoint();
@@ -356,7 +360,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			 * java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.
 			 * MouseEvent )
 			 */
-			@Override public void mouseMoved(MouseEvent e) {
+			@Override
+			public void mouseMoved(MouseEvent e) {
 				super.mouseMoved(e);
 				setMouseOveredNoteLabel(null);
 				repaint();
@@ -369,7 +374,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			 * MouseEvent
 			 * )
 			 */
-			@Override public void mousePressed(MouseEvent e) {
+			@Override
+			public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (SwingUtilities.isLeftMouseButton(e)) {
 					if (e.isAltDown()) {
@@ -391,7 +397,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			 * MouseEvent
 			 * )
 			 */
-			@Override public void mouseReleased(MouseEvent e) {
+			@Override
+			public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (e.isAltDown()) {
 					setCursor(defCursor);

@@ -1,6 +1,5 @@
 package net.muse.mixtract.data.curve;
 
-
 import java.util.LinkedList;
 
 import net.muse.data.*;
@@ -25,8 +24,8 @@ public class ArticulationCurve extends PhraseCurve {
 	@Override
 	public void apply(MXTuneData target, Group gr) {
 		Group g = target.getRootGroup(0);
-		double bt = g.getBeginGroupNote().getNote()
-				.onsetInMsec(getDefaultBPM());
+		double bt = g.getBeginGroupNote().getNote().onsetInMsec(
+				getDefaultBPM());
 		double et = g.getEndGroupNote().getNote().offsetInMsec(getDefaultBPM());
 		articulationList = target.getArticulationList();
 		applyArticulationEvent(g, bt, et);
@@ -67,8 +66,8 @@ public class ArticulationCurve extends PhraseCurve {
 
 		int idx = (int) ((t - bt) / (et - bt) * articulationList.size()) - 1;
 
-		double artc = articulationList
-				.get((idx < articulationList.size()) ? idx : idx - 1);
+		double artc = articulationList.get((idx < articulationList.size()) ? idx
+				: idx - 1);
 		double newRealOffset = on + tv * artc;
 		nd.setRealOffset(newRealOffset);
 		applyArticulationEvent(gnote.child(), bt, et);

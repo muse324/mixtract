@@ -40,15 +40,16 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.ApexInfo#apply(jp.crestmuse.mixtract.data
 		 * .Group)
 		 */
-		@Override protected void apply(Group group) {}
+		@Override
+		protected void apply(Group group) {}
 
 		/*
 		 * (non-Javadoc)
 		 * @see jp.crestmuse.mixtract.data.ApexInfo#apply(java.util.List, int,
 		 * int)
 		 */
-		@Override protected void apply(List<MXNoteData> notelist, int idx,
-				int size) {
+		@Override
+		protected void apply(List<MXNoteData> notelist, int idx, int size) {
 			if (idx + 1 >= size)
 				return;
 			MXNoteData n1 = notelist.get(idx);
@@ -82,7 +83,8 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.ApexInfo#apply(jp.crestmuse.mixtract.data
 		 * .Group)
 		 */
-		@Override public void apply(Group group) {
+		@Override
+		public void apply(Group group) {
 			((MXNoteData) group.getBeginGroupNote().getNote()).addApexScore(
 					this);
 		}
@@ -100,7 +102,8 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.ApexInfo.CadentzIRule#isMatchedCondition
 		 * (jp.crestmuse.mixtract.data.Harmony)
 		 */
-		@Override public boolean isMatchedCondition(Harmony c) {
+		@Override
+		public boolean isMatchedCondition(Harmony c) {
 			return c == Harmony.I6;
 		}
 
@@ -118,7 +121,8 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.ApexInfo.CadentzIRule#isMatchedCondition
 		 * (jp.crestmuse.mixtract.data.Harmony)
 		 */
-		@Override public boolean isMatchedCondition(Harmony c) {
+		@Override
+		public boolean isMatchedCondition(Harmony c) {
 			return c == Harmony.VI;
 		}
 
@@ -136,7 +140,8 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.ApexInfo.CadentzRule#isMatchedCondition
 		 * (jp.crestmuse.mixtract.data.Harmony)
 		 */
-		@Override public boolean isMatchedCondition(Harmony c) {
+		@Override
+		public boolean isMatchedCondition(Harmony c) {
 			return c == Harmony.I;
 		}
 	}
@@ -160,8 +165,8 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.ApexInfo.MountainProgressNoteRule#apply
 		 * (java.util.List, int, int)
 		 */
-		@Override public void apply(List<MXNoteData> notelist, int idx,
-				int size) {
+		@Override
+		public void apply(List<MXNoteData> notelist, int idx, int size) {
 			if (idx + 1 >= size)
 				return;
 			MXNoteData n1 = notelist.get(idx);
@@ -187,13 +192,13 @@ abstract class ApexInfo extends MuseObject {
 			super(score);
 		}
 
-		@Override protected MXNoteData getPrimaryNote(MXNoteData n1,
-				MXNoteData n2) {
+		@Override
+		protected MXNoteData getPrimaryNote(MXNoteData n1, MXNoteData n2) {
 			return n2;
 		}
 
-		@Override protected boolean isExceptedCondition(NoteData n1,
-				NoteData n2) {
+		@Override
+		protected boolean isExceptedCondition(NoteData n1, NoteData n2) {
 			return n1.chord() == n2.chord();
 		}
 	}
@@ -212,7 +217,8 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.ApexInfo#apply(jp.crestmuse.mixtract.data
 		 * .Group)
 		 */
-		@Override public void apply(Group group) {
+		@Override
+		public void apply(Group group) {
 			((MXNoteData) group.getEndGroupNote().getNote()).addApexScore(this);
 		}
 
@@ -243,13 +249,13 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected MXNoteData getPrimaryNote(MXNoteData n1,
-				MXNoteData n2) {
+		@Override
+		protected MXNoteData getPrimaryNote(MXNoteData n1, MXNoteData n2) {
 			return (n1.noteNumber() > n2.noteNumber()) ? n1 : n2;
 		}
 
-		@Override protected boolean isExceptedCondition(NoteData n1,
-				NoteData n2) {
+		@Override
+		protected boolean isExceptedCondition(NoteData n1, NoteData n2) {
 			return n1.noteNumber() == n2.noteNumber();
 		}
 
@@ -267,15 +273,16 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.ApexInfo#apply(jp.crestmuse.mixtract.data
 		 * .Group)
 		 */
-		@Override public void apply(Group group) {}
+		@Override
+		public void apply(Group group) {}
 
 		/*
 		 * (非 Javadoc)
 		 * @see jp.crestmuse.mixtract.data.ApexInfo#apply(java.util.List, int,
 		 * int)
 		 */
-		@Override public void apply(List<MXNoteData> notelist, int idx,
-				int size) {
+		@Override
+		public void apply(List<MXNoteData> notelist, int idx, int size) {
 			if (idx + 1 >= size)
 				return;
 			MXNoteData n1 = notelist.get(idx);
@@ -322,8 +329,8 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected boolean getAppoggiaturaScore(NoteData n1,
-				NoteData n2) {
+		@Override
+		protected boolean getAppoggiaturaScore(NoteData n1, NoteData n2) {
 			return n1.duration() > n2.duration();
 		}
 
@@ -352,8 +359,8 @@ abstract class ApexInfo extends MuseObject {
 		 * @param n2
 		 * @return
 		 */
-		@Override protected MXNoteData getPrimaryNote(MXNoteData n1,
-				MXNoteData n2) {
+		@Override
+		protected MXNoteData getPrimaryNote(MXNoteData n1, MXNoteData n2) {
 			return ((n1.timeValue() > n2.timeValue()) ? n1 : n2);
 		}
 
@@ -362,8 +369,8 @@ abstract class ApexInfo extends MuseObject {
 		 * @param n2
 		 * @return
 		 */
-		@Override protected boolean isExceptedCondition(NoteData n1,
-				NoteData n2) {
+		@Override
+		protected boolean isExceptedCondition(NoteData n1, NoteData n2) {
 			return n1.timeValue() == n2.timeValue();
 		}
 
@@ -382,7 +389,8 @@ abstract class ApexInfo extends MuseObject {
 		 * matchCondition
 		 * (int, int)
 		 */
-		@Override protected boolean matchCondition(int d1, int d2) {
+		@Override
+		protected boolean matchCondition(int d1, int d2) {
 			return d1 > -4 && d1 < 0 && d2 > -4 && d2 < 0;
 		}
 
@@ -394,7 +402,8 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected boolean matchCondition(NoteData n1, NoteData n2) {
+		@Override
+		protected boolean matchCondition(NoteData n1, NoteData n2) {
 			int d = interval(n1, n2);
 			return d >= -4 && d < 0;
 		}
@@ -413,7 +422,8 @@ abstract class ApexInfo extends MuseObject {
 		 * matchCondition
 		 * (int, int)
 		 */
-		@Override protected boolean matchCondition(int d1, int d2) {
+		@Override
+		protected boolean matchCondition(int d1, int d2) {
 			return d1 > -4 && d1 < 0 && d2 > 0 && d2 < 4;
 		}
 	}
@@ -443,15 +453,16 @@ abstract class ApexInfo extends MuseObject {
 					score3));
 		}
 
-		@Override public void apply(Group group) {}
+		@Override
+		public void apply(Group group) {}
 
 		/*
 		 * (非 Javadoc)
 		 * @see jp.crestmuse.mixtract.data.ApexInfo#apply(java.util.List, int,
 		 * int)
 		 */
-		@Override public void apply(List<MXNoteData> notelist, int idx,
-				int size) {
+		@Override
+		public void apply(List<MXNoteData> notelist, int idx, int size) {
 			if (idx < 2) {
 				apply(notelist, idx + 1, size);
 				return;
@@ -477,7 +488,8 @@ abstract class ApexInfo extends MuseObject {
 		 * (非 Javadoc)
 		 * @see jp.crestmuse.mixtract.data.ApexInfo#getScore()
 		 */
-		@Override protected double getScore() {
+		@Override
+		protected double getScore() {
 			switch (type) {
 			case 1:
 				return score1;
@@ -524,8 +536,8 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override public boolean getAppoggiaturaScore(NoteData n1,
-				NoteData n2) {
+		@Override
+		public boolean getAppoggiaturaScore(NoteData n1, NoteData n2) {
 			return n1.duration() == n2.duration();
 		}
 
@@ -554,7 +566,8 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected boolean matchCondition(NoteData n1, NoteData n2) {
+		@Override
+		protected boolean matchCondition(NoteData n1, NoteData n2) {
 			return n1.noteNumber() == n2.noteNumber();
 		}
 
@@ -583,7 +596,8 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.ApexInfo#apply(jp.crestmuse.mixtract.data
 		 * .Group)
 		 */
-		@Override public void apply(Group group) {
+		@Override
+		public void apply(Group group) {
 			throw new UnsupportedOperationException(); // TODO 実装
 		}
 
@@ -592,8 +606,8 @@ abstract class ApexInfo extends MuseObject {
 		 * @see jp.crestmuse.mixtract.data.ApexInfo#apply(java.util.List, int,
 		 * int)
 		 */
-		@Override public void apply(List<MXNoteData> notelist, int idx,
-				int size) {
+		@Override
+		public void apply(List<MXNoteData> notelist, int idx, int size) {
 			if (idx + 1 >= size)
 				return;
 			apply(notelist, idx + 1, size);
@@ -641,8 +655,8 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override public boolean getAppoggiaturaScore(NoteData n1,
-				NoteData n2) {
+		@Override
+		public boolean getAppoggiaturaScore(NoteData n1, NoteData n2) {
 			return n1.duration() < n2.duration();
 		}
 
@@ -654,10 +668,11 @@ abstract class ApexInfo extends MuseObject {
 			super(score);
 		}
 
-		@Override public void apply(Group group) {}
+		@Override
+		public void apply(Group group) {}
 
-		@Override public void apply(List<MXNoteData> notelist, int idx,
-				int size) {
+		@Override
+		public void apply(List<MXNoteData> notelist, int idx, int size) {
 			MXNoteData n1 = notelist.get(idx);
 			n1.addApexScore(apply(n1.chord()));
 			apply(notelist, idx + 1, size);
@@ -685,8 +700,8 @@ abstract class ApexInfo extends MuseObject {
 			super(score);
 		}
 
-		@Override public void apply(List<MXNoteData> notelist, int idx,
-				int size) {}
+		@Override
+		public void apply(List<MXNoteData> notelist, int idx, int size) {}
 	}
 
 	public static class UpperProgressNoteRule extends UpperStetchNoteRule {
@@ -702,7 +717,8 @@ abstract class ApexInfo extends MuseObject {
 		 * matchCondition
 		 * (int, int)
 		 */
-		@Override protected boolean matchCondition(int d1, int d2) {
+		@Override
+		protected boolean matchCondition(int d1, int d2) {
 			return d1 < 4 && d1 > 0 && d2 < 4 && d2 > 0;
 		}
 
@@ -714,7 +730,8 @@ abstract class ApexInfo extends MuseObject {
 		 * (jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected boolean matchCondition(NoteData n1, NoteData n2) {
+		@Override
+		protected boolean matchCondition(NoteData n1, NoteData n2) {
 			int d = interval(n1, n2);
 			return d > 0 && d <= 4;
 		}
@@ -726,10 +743,11 @@ abstract class ApexInfo extends MuseObject {
 			super(score);
 		}
 
-		@Override public void apply(Group group) {}
+		@Override
+		public void apply(Group group) {}
 
-		@Override public void apply(List<MXNoteData> notelist, int idx,
-				int size) {
+		@Override
+		public void apply(List<MXNoteData> notelist, int idx, int size) {
 			if (idx + 2 >= size)
 				return;
 			NoteData n1 = notelist.get(idx);
@@ -771,8 +789,9 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected void addApexInfoToNotes(MXNoteData n1,
-				MXNoteData n2, MXNoteData n3) {
+		@Override
+		protected void addApexInfoToNotes(MXNoteData n1, MXNoteData n2,
+				MXNoteData n3) {
 			n1.addApexScore(new ValleyProgressNoteRule(1, score1, score2,
 					score3));
 			n2.addApexScore(new ValleyProgressNoteRule(2, score1, score2,
@@ -786,7 +805,8 @@ abstract class ApexInfo extends MuseObject {
 		 * @seejp.crestmuse.mixtract.data.ApexInfo.MountainProgressNoteRule#
 		 * matchCondition(int, int, int)
 		 */
-		@Override protected boolean matchCondition(int d1, int d2, int d3) {
+		@Override
+		protected boolean matchCondition(int d1, int d2, int d3) {
 			return d1 < 0 && d2 < 0 && d3 > 0;
 		}
 	}
@@ -805,8 +825,9 @@ abstract class ApexInfo extends MuseObject {
 		 * jp.crestmuse.mixtract.data.NoteData,
 		 * jp.crestmuse.mixtract.data.NoteData)
 		 */
-		@Override protected void addApexInfoToNotes(MXNoteData n1,
-				MXNoteData n2, MXNoteData n3) {
+		@Override
+		protected void addApexInfoToNotes(MXNoteData n1, MXNoteData n2,
+				MXNoteData n3) {
 			n1.addApexScore(new ZigZagProgressNoteRule1(1, score1, score2,
 					score3));
 			n2.addApexScore(new ZigZagProgressNoteRule1(2, score1, score2,
@@ -820,7 +841,8 @@ abstract class ApexInfo extends MuseObject {
 		 * @seejp.crestmuse.mixtract.data.ApexInfo.MountainProgressNoteRule#
 		 * matchCondition(int, int, int)
 		 */
-		@Override protected boolean matchCondition(int d1, int d2, int d3) {
+		@Override
+		protected boolean matchCondition(int d1, int d2, int d3) {
 			return d1 < 0 && d2 > 0 && d3 < 0;
 		}
 	}
@@ -832,8 +854,9 @@ abstract class ApexInfo extends MuseObject {
 			super(type, score1, score2, score3);
 		}
 
-		@Override protected void addApexInfoToNotes(MXNoteData n1,
-				MXNoteData n2, MXNoteData n3) {
+		@Override
+		protected void addApexInfoToNotes(MXNoteData n1, MXNoteData n2,
+				MXNoteData n3) {
 			n1.addApexScore(new ZigZagProgressNoteRule2(1, score1, score2,
 					score3));
 			n2.addApexScore(new ZigZagProgressNoteRule2(2, score1, score2,
@@ -842,7 +865,8 @@ abstract class ApexInfo extends MuseObject {
 					score3));
 		}
 
-		@Override protected boolean matchCondition(int d1, int d2, int d3) {
+		@Override
+		protected boolean matchCondition(int d1, int d2, int d3) {
 			return d1 > 0 && d2 < 0 && d3 > 0;
 		}
 	}

@@ -1,10 +1,9 @@
 package net.muse.mixtract.data.curve;
 
-
 import java.util.LinkedList;
 
 import net.muse.data.*;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.MXTuneData;
 
 public class DynamicsCurve extends PhraseCurve {
 

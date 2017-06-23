@@ -29,13 +29,12 @@ public class MXNoteData extends NoteData {
 		// 基本情報
 		super(i);
 		initialize(partNumber, noteName, Util.getNoteNumber(noteName), 0, grace,
-				tie, rest, beat, getChord());
+				tie, rest, beat, chord());
 		setOnset(onset);
 		setOffset(offset);
 		setRealOnset(onset);
-		setRealOnset(onset);
 		setRealOffset(offset);
-//		this.timeValue = tval;
+		// this.timeValue = tval;
 		setTimeValue((grace) ? getDefaultGraseNoteDuration() : offset - onset);
 
 		// ノートイベント
@@ -133,9 +132,6 @@ public class MXNoteData extends NoteData {
 		this.apexScore = apexScore;
 	}
 
-
-
-
 	// TODO 2011.09.02 使ってない様子
 	@Deprecated
 	void slide(int durationOffset) {
@@ -151,7 +147,5 @@ public class MXNoteData extends NoteData {
 			score += a.getScore();
 		return score;
 	}
-
-
 
 }
