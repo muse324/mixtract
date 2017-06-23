@@ -323,7 +323,8 @@ public class NoteData extends SequenceData {
 
 	public void setOffset(int offset) {
 		this.offset = offset;
-		getNoteOff().setOnset(offset);
+		if (noteOff != null)
+			noteOff.setOnset(offset);
 	}
 
 	/**
@@ -336,12 +337,14 @@ public class NoteData extends SequenceData {
 	public void setRealOffset(double offset) {
 		realOffset = (offset < realOnset + minimumDuration) ? realOnset
 				+ minimumDuration : offset;
-		noteOff.setOnset((long) realOffset);
+		if (noteOff != null)
+			noteOff.setOnset((long) realOffset);
 	}
 
 	public void setRealOnset(double onset) {
 		realOnset = onset;
-		noteOn.setOnset((long) onset);
+		if (noteOn != null)
+			noteOn.setOnset((long) onset);
 	}
 
 	public void setVelocity(int vel) {
