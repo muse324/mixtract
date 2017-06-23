@@ -1,6 +1,4 @@
-package net.muse.mixtract.data;
-
-import net.muse.data.Group;
+package net.muse.data;
 
 /**
  * <h1>PrimaryPhraseSequence</h1>

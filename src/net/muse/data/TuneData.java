@@ -13,7 +13,6 @@ import net.muse.app.Mixtract;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.MXGroup;
-import net.muse.mixtract.data.PrimaryPhraseSequence;
 import net.muse.mixtract.data.curve.PhraseCurve;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

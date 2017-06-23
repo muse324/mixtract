@@ -2,7 +2,6 @@ package net.muse.mixtract.command;
 
 import net.muse.data.*;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.data.PrimaryPhraseSequence;
 
 /**
  * 入力されたMusicXMLに対し，グループと頂点を推定します．
