@@ -4,21 +4,17 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.sound.midi.*;
-import javax.swing.JFileChooser;
+import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
 
-import jp.crestmuse.cmx.filewrappers.*;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.app.Mixtract;
 import net.muse.data.*;
-import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.curve.*;
 
 /**
@@ -32,39 +28,13 @@ import net.muse.mixtract.data.curve.*;
  * @since 2009/09/20
  */
 public class MXTuneData extends TuneData {
+	private static final String STRUCTURE_FILENAME = "structure.dat";
+	private static final String SCOREDATA_FILENAME = "score.dat";
 
 	private static int durationOffset = 100;
 
-	private static final String STRUCTURE_FILENAME = "structure.dat";
-
-	private static final String SCOREDATA_FILENAME = "score.dat";
-
-	/** 入力ファイル */
-	private File inputFile;
-	/** 出力ファイル */
-	private File outputFile;
-	/** MIDI出力用イベントリスト */
-	private LinkedList<NoteScheduleEvent> noteScheduleEventList = new LinkedList<NoteScheduleEvent>();
-
-	private double tempoListEndtime;
-
-	/** 楽曲全体のダイナミクスカーブ */
-	private final LinkedList<Double> dynamicsList;
-	/** 楽曲全体のテンポカーブ */
-	private final LinkedList<Double> tempoList;
-	/** 楽曲全体のアーティキュレーションカーブ */
-	private final LinkedList<Double> articulationList;
-
-	/** 楽曲に含まれる非階層グループを格納するリスト */
-	private final List<Group> groupArrayList;
-
-	/** GUI等で選択されたグループ */
-	private Group selectedGroup = null;
-
 	/** ユーザにより指定されるプライマリフレーズライン */
 	private PrimaryPhraseSequence groupSequence = null;
-
-	private int hierarchicalGroupCount;
 
 	/**
 	 * @param args
@@ -104,13 +74,8 @@ public class MXTuneData extends TuneData {
 
 	public MXTuneData(File in, File out) throws IOException,
 			InvalidMidiDataException {
-		groupArrayList = new ArrayList<Group>();
-		dynamicsList = new LinkedList<Double>();
-		tempoList = new LinkedList<Double>();
-		articulationList = new LinkedList<Double>();
-		this.inputFile = in;
-		this.outputFile = out;
-		readfile();
+		super(in, out);
+
 	}
 
 	/**
@@ -120,7 +85,7 @@ public class MXTuneData extends TuneData {
 	 */
 	public void addGroupArrayList(Group group) {
 		// 重複するグループがあれば処理中断
-		for (Group g : groupArrayList) {
+		for (Group g : getGroupArrayList()) {
 			if (g.nearlyEquals(group))
 				return;
 			// TODO 複数声部に未対応
@@ -129,7 +94,7 @@ public class MXTuneData extends TuneData {
 		// ----------------------------------
 		// TODO 未検証
 		final PrimaryPhraseSequence seq = new PrimaryPhraseSequence(group);
-		if (groupArrayList.size() <= 0) {
+		if (getGroupArrayList().size() <= 0) {
 			groupSequence = seq;
 		} else {
 			NoteData st = group.getBeginGroupNote().getNote();
@@ -146,39 +111,7 @@ public class MXTuneData extends TuneData {
 			}
 		}
 		// ----------------------------------
-		groupArrayList.add(group);
-	}
-
-	public void calculateHierarchicalParameters() {
-		initializeParameters();
-		for (final Group root : getRootGroup()) {
-			// tempo
-			tempoListEndtime = root.getTimeValue();
-			if (((MXGroup) root).getTempoCurve().getParamlist().size() > 0)
-				calculateHierarchicalParameters((MXGroup) root);
-
-			if (isDebug()) {
-				System.out.println("------ parameter lists calculation ------");
-				for (int i = 0; i < tempoList.size(); i++) {
-					System.out.println(String.format(
-							"%d: dyn2: %f, tempo2: %f, artc: %f", i,
-							dynamicsList.get(i), tempoList.get(i),
-							articulationList.get(i)));
-				}
-				System.out.println("---------------------------");
-			}
-		}
-	}
-
-	/**
-	 * @param fc
-	 */
-	public void createNewOutputFile(JFileChooser fc) {
-		File name = fc.getSelectedFile();
-		if (!name.getName().endsWith(Mixtract.getProjectFileExtension()))
-			outputFile = new File(fc.getCurrentDirectory(), name.getName()
-					+ Mixtract.getProjectFileExtension());
-		outputFile.mkdir();
+		getGroupArrayList().add(group);
 	}
 
 	/**
@@ -186,8 +119,8 @@ public class MXTuneData extends TuneData {
 	 */
 	public void deleteGroupFromData(Group group) {
 		// 非階層グループから削除
-		if (groupArrayList.contains(group)) {
-			groupArrayList.remove(group);
+		if (getGroupArrayList().contains(group)) {
+			getGroupArrayList().remove(group);
 			return;
 		}
 		// 階層グループから削除
@@ -205,38 +138,10 @@ public class MXTuneData extends TuneData {
 	}
 
 	/**
-	 * @return the articulationList
-	 */
-	public final LinkedList<Double> getArticulationList() {
-		return articulationList;
-	}
-
-	/**
-	 * @return dynamicsList2
-	 */
-	public LinkedList<Double> getDynamicsList() {
-		return dynamicsList;
-	}
-
-	/**
-	 * @return group list 楽曲に含まれるすべてのグループリスト
-	 */
-	public List<Group> getGroupArrayList() {
-		return groupArrayList;
-	}
-
-	/**
 	 * @return the groupSequence
 	 */
 	public PrimaryPhraseSequence getGroupSequence() {
 		return groupSequence;
-	}
-
-	/**
-	 * @return inputFilename
-	 */
-	public String getInputFilename() {
-		return inputFile.getName();
 	}
 
 	public NoteData getLastNote(int partIndex) {
@@ -248,29 +153,11 @@ public class MXTuneData extends TuneData {
 	}
 
 	/**
-	 * @return noteScheduleEventList
-	 */
-	public LinkedList<NoteScheduleEvent> getNoteScheduleEventList() {
-		return noteScheduleEventList;
-	}
-
-	public final File getOutputFile() {
-		return outputFile;
-	}
-
-	/**
-	 * @return tempoList2
-	 */
-	public LinkedList<Double> getTempoList() {
-		return tempoList;
-	}
-
-	/**
 	 * @return
 	 */
 	public int getUniqueGroupIndex() {
 		ArrayList<Integer> idxlist = new ArrayList<Integer>();
-		for (Group g : groupArrayList) {
+		for (Group g : getGroupArrayList()) {
 			if (!idxlist.contains(g.index()))
 				idxlist.add(g.index());
 		}
@@ -295,77 +182,9 @@ public class MXTuneData extends TuneData {
 		getBPM().set(idx, value);
 		setDefaultBPM(value);
 		if (getRootGroup() != null) {
-			((MXGroup) getRootGroup(0)).getTempoCurve().apply(this, getRootGroup(0));
+			((MXGroup) getRootGroup(0)).getTempoCurve().apply(this,
+					getRootGroup(0));
 		}
-	}
-
-	/**
-	 *
-	 */
-	public void setNoteScheduleEvent() {
-		noteScheduleEventList.clear();
-		if (selectedGroup != null)
-			setNoteScheduleEvent(selectedGroup);
-		else {
-			for (int i = 0; i < getRootGroup().size(); i++) {
-				setNoteScheduleEvent(getRootGroup().get(i));
-			}
-		}
-		// log print
-		Mixtract.log.println("---- noteScheduleEventList: ");
-		for (NoteScheduleEvent ev : noteScheduleEventList)
-			Mixtract.log.println(ev.toString());
-		Mixtract.log.println("----------------------------");
-	}
-
-	/**
-	 * @param group
-	 */
-	public void setSelectedGroup(Group group) {
-		selectedGroup = group;
-	}
-
-	public void writefile() throws IOException, InvalidMidiDataException {
-		// create mxt directory
-		if (!outputFile.exists()) {
-			outputFile.mkdir();
-		} else {
-			int res = JOptionPane.showConfirmDialog(null, outputFile
-					.getAbsolutePath() + "\n is exist. Override?",
-					"Project path confirmation",
-					JOptionPane.YES_NO_CANCEL_OPTION);
-			switch (res) {
-			case JOptionPane.CANCEL_OPTION:
-				testPrintln("cancelled.");
-				return;
-			case JOptionPane.NO_OPTION:
-				JFileChooser fc = new JFileChooser(outputFile.getParentFile());
-				res = fc.showSaveDialog(null);
-				if (res == JOptionPane.NO_OPTION) {
-					testPrintln("cancelled.");
-					return;
-				}
-				createNewOutputFile(fc);
-				break;
-			}
-		}
-		// -------- import cmx files --------------------------
-		importCMXFilesToProjectDirectory();
-
-		// -------- create score data -------------------------
-		writeScoreData();
-
-		// -------- create structure data ---------------------
-		writeStructureData();
-
-		// -------- create expressed SMF ---------------------
-		writeSMF();
-
-		// -------- create screen shot ---------------------
-		// writeScreenShot();
-
-		System.out.println("tempo curve list:");
-		System.out.println(tempoList);
 	}
 
 	public void writeScreenShot(Point position, Dimension size)
@@ -373,7 +192,7 @@ public class MXTuneData extends TuneData {
 		Robot robot = new Robot();
 		Image img = robot.createScreenCapture(new Rectangle(position.x,
 				position.y, size.width, size.height));
-		File fp = new File(outputFile, "screenshot.png");
+		File fp = new File(out(), "screenshot.png");
 		save(createBufferedImage(img), fp);
 	}
 
@@ -383,7 +202,7 @@ public class MXTuneData extends TuneData {
 	 * @throws IOException
 	 */
 	public void writeTempfileCurveParameters() throws IOException {
-		File fp = File.createTempFile("structure", null, outputFile);
+		File fp = File.createTempFile("structure", null, out());
 		fp.deleteOnExit();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
 				fp)));
@@ -391,21 +210,6 @@ public class MXTuneData extends TuneData {
 			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
 		out.close();
 
-	}
-
-	/**
-	 * @throws IOException
-	 */
-	protected void importCMXFilesToProjectDirectory() throws IOException {
-		File fp = null;
-		if (dev != null || xml != null) {
-			fp = new File(inputDirectory(), xml.getFileName());
-			if (fp.exists())
-				FileUtils.copyFileToDirectory(fp, outputFile, true);
-			if (dev != null) {
-				FileUtils.copyFileToDirectory(inputFile, outputFile, true);
-			}
-		}
 	}
 
 	protected String writeCurveParam(MXGroup group) {
@@ -438,183 +242,6 @@ public class MXTuneData extends TuneData {
 		out.format("%s;%s;%s\n", group, (group.hasTopNote()) ? group
 				.getTopGroupNote().getNote().id() : "null", writeCurveParam(
 						group));
-	}
-
-	protected void writeNoteData(PrintWriter out, MXNoteData note) {
-		if (note == null)
-			return;
-		writeNoteData(out, note.child());
-		out.format("n%s:%s:%s\n", note.index(), note, (note
-				.getXMLNote() != null) ? note.getXMLNote().getXPathExpression()
-						: "null");
-		writeNoteData(out, note.next());
-	}
-
-	/**
-	 * @throws IOException
-	 */
-	protected void writeScoreData() throws IOException {
-		File fp = new File(outputFile, SCOREDATA_FILENAME);
-		fp.createNewFile();
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
-				fp)));
-		// out.format("cmx=%s\n", inputFile.getName());
-		out.format("cmx=%s\n", xml.getFileName());
-		out.format("str=%s\n", STRUCTURE_FILENAME);
-		out.format("bpm=%s\n", getBPM().toString().subSequence(1, getBPM()
-				.toString().length() - 1));
-		for (int i = 0; i < getNotelist().size(); i++)
-			writeNoteData(out, (MXNoteData) getNoteList(i));
-		out.close();
-	}
-
-	protected void writeSMF() throws IOException, InvalidMidiDataException {
-		// SequenceとTrackの作成
-		// 24tick=四分音符
-		// TODO ticksperbeatの設定の仕方がよくわからん。2011.8.31
-		// すべて480 でいいと思うのだけど、SMF出力すると0.5倍速になる。。
-		Sequence sequence = new Sequence(Sequence.PPQ, Mixtract
-				.getTicksPerBeat() * 2);
-		Track track = sequence.createTrack();
-		int offset = 100;
-		/*
-		 * テンポの設定 四分音符の長さをμsecで指定し3バイトに分解する
-		 * 戻る
-		 */
-		MetaMessage mmsg = new MetaMessage();
-		int tempo = getBPM().get(0);
-		int l = 60 * 1000000 / tempo;
-		mmsg.setMessage(0x51, new byte[] { (byte) (l / 65536), (byte) (l % 65536
-				/ 256), (byte) (l % 256) }, 3);
-		track.add(new MidiEvent(mmsg, 0));
-
-		// set instrument
-		for (int i = 0; i < midiProgram.length; i++) {
-			ShortMessage message = new ShortMessage();
-			message.setMessage(ShortMessage.PROGRAM_CHANGE, i, midiProgram[i],
-					0);
-			track.add(new MidiEvent(message, 0));
-		}
-		// MIDI イベントを書き込んで行く
-		for (NoteScheduleEvent ev : noteScheduleEventList) {
-			track.add(new MidiEvent((ShortMessage) ev.getMidiMessage(), ev
-					.onset() + offset));
-		}
-
-		// write to file
-		File fp = new File(outputFile, "express.mid");
-		fp.createNewFile();
-		MidiSystem.write(sequence, 0, fp);
-	}
-
-	/**
-	 * @throws IOException
-	 */
-	protected void writeStructureData() throws IOException {
-		File fp = new File(outputFile, STRUCTURE_FILENAME);
-		fp.createNewFile();
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
-				fp)));
-		for (int i = 0; i < getRootGroup().size(); i++)
-			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
-		out.close();
-	}
-
-	/**
-	 * @param note TODO
-	 */
-	private void addNoteScheduleEventList(NoteData note) {
-		if (note == null)
-			return;
-		if (!noteScheduleEventList.contains(note.getNoteOn())) {
-			addNoteScheduleEventList(note.getNoteOn());
-			addNoteScheduleEventList(note.getNoteOff());
-		}
-		addNoteScheduleEventList(note.child());
-	}
-
-	private void addNoteScheduleEventList(NoteScheduleEvent note) {
-		if (noteScheduleEventList.size() == 0) {
-			noteScheduleEventList.add(note);
-			return;
-		}
-		int idx = 0;
-		for (NoteScheduleEvent ev : noteScheduleEventList) {
-			if (note.onset() >= ev.onset()) {
-				idx++;
-			}
-		}
-		noteScheduleEventList.add(idx, note);
-	}
-
-	private void calculateHierarchicalParameters(MXGroup group) {
-		if (group == null)
-			return;
-
-		final double startTime = group.getBeginGroupNote().getNote().onset();
-		final double endTime = group.getEndGroupNote().getNote().offset();
-		final int st = (int) Math.round(GroupAnalyzer.rootDiv * startTime
-				/ tempoListEndtime);
-		final int ed = (int) Math.round(GroupAnalyzer.rootDiv * endTime
-				/ tempoListEndtime);
-
-		System.out.println(String.format("-- %s (st=%d - ed=%d)", group.name(),
-				st, ed));
-
-		calculateHierarchicalParameters(st, ed, group.getDynamicsCurve(),
-				dynamicsList);
-		calculateHierarchicalParameters(st, ed, group.getTempoCurve(),
-				tempoList);
-		calculateHierarchicalParameters(st, ed, group.getArticulationCurve(),
-				articulationList);
-
-		// final TempoCurve tempoCurve = group.getTempoCurve();
-		// final int divT = tempoCurve.getDivision();// groupの分割数
-		// final DynamicsCurve dynamicsCurve = group.getDynamicsCurve();
-		// final int divD = dynamicsCurve.getDivision();// groupの分割数
-		// for (int i = st; i < ed; i++) {
-		// final int idxT = divT * (i - st) / (ed - st);
-		// final int idxD = divD * (i - st) / (ed - st);
-		// if (idxT < tempoCurve.getLogValueData().size()) {
-		// final double noteT2 = tempoCurve.getLogValueData().get(idxT);
-		// final double tempoLogValue = getTempoList().get(i) + noteT2;
-		// getTempoList().set(i, tempoLogValue);
-		// }
-		// if (idxD < dynamicsCurve.getLogValueData().size()) {
-		// final double noteD2 = dynamicsCurve.getLogValueData().get(idxD);
-		// final double dynamicsLogValue = getDynamicsList().get(i) + noteD2;
-		// getDynamicsList().set(i, dynamicsLogValue);
-		// }
-		// }
-
-		calculateHierarchicalParameters((MXGroup) group.getChildFormerGroup());
-		calculateHierarchicalParameters((MXGroup) group.getChildLatterGroup());
-	}
-
-	/**
-	 * @param st
-	 * @param ed
-	 * @param curve
-	 * @param list
-	 */
-	private void calculateHierarchicalParameters(final int st, final int ed,
-			final PhraseCurve curve, final LinkedList<Double> list) {
-		final double div = curve.getDivision();
-		for (int i = st; i < ed; i++) {
-			final int idx = (int) Math.round(div * (i - st) / (ed - st));
-			if (idx < curve.getParamlist().size()) {
-				final double noteT2 = curve.getParamlist().get(idx);
-				final double logValue;
-				switch (curve.getType()) {
-				case ARTICULATION:
-					logValue = list.get(i) * noteT2;
-					break;
-				default:
-					logValue = list.get(i) + noteT2;
-				}
-				list.set(i, logValue);
-			}
-		}
 	}
 
 	private BufferedImage createBufferedImage(Image img) {
@@ -743,80 +370,10 @@ public class MXTuneData extends TuneData {
 
 	}
 
-	/**
-	 *
-	 */
-	private void initializeParameters() {
-		tempoList.clear();
-		dynamicsList.clear();
-		articulationList.clear();
-		for (int i = 0; i < GroupAnalyzer.rootDiv; i++) {
-			tempoList.add(0.);
-			dynamicsList.add(0.);
-			articulationList.add(1.);
-		}
-	}
-
-	/**
-	 * @return
-	 */
-	private File inputDirectory() {
-		return inputFile.getParentFile();
-	}
-
 	protected void parseMusicXMLFile() {
 		if (xml == null)
 			return;
 		xml.processNotePartwise(createCMXNoteHandler());
-	}
-
-	/**
-	 * @param xmlFilename
-	 */
-	private void readCMXFile(String xmlFilename) {
-		testPrintln("import CMX file");
-		try {
-			CMXFileWrapper cmx = CMXFileWrapper.readfile(xmlFilename);
-			if (cmx instanceof DeviationInstanceWrapper) {
-				dev = ((DeviationInstanceWrapper) cmx);
-				xml = dev.getTargetMusicXML();
-				// TODO deviation データを読み込む処理
-			} else if (cmx instanceof MusicXMLWrapper) {
-				xml = (MusicXMLWrapper) cmx;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * inputFilename で指定された楽曲ファイルを読み込みます。
-	 * Mixtractが対応する楽曲ファイル形式は，
-	 * <ul>
-	 * <li>MusicXML(*.xml)
-	 * <li>DeviationInstanceXML形式(*.xml)
-	 * <li>Mixtractオリジナル形式(*.mxt: Mixtract.projectFileExtension()により規定)
-	 * </ul>
-	 * の3点です。
-	 * MusicXML, DeviationInstanceXML形式が指定された場合，
-	 * オリジナル形式への変換を行います。
-	 *
-	 * @throws IOException
-	 * @throws InvalidMidiDataException
-	 */
-	private void readfile() throws IOException, InvalidMidiDataException {
-		hierarchicalGroupCount = 0;
-		// Mixtract独自形式の読込
-		if (inputFile.isDirectory()) {
-			readOriginalFile();
-			outputFile = inputFile;
-		} else {
-			// CMX 形式からインポート
-			readCMXFile(inputFile.getAbsolutePath());
-			parseMusicXMLFile();
-			writefile();
-		}
-		calculateHierarchicalParameters();
 	}
 
 	private void readNoteData(int idx, BufferedReader in, String str,
@@ -868,9 +425,93 @@ public class MXTuneData extends TuneData {
 
 	}
 
-	private void readOriginalFile() throws IOException {
+	protected void confirmOutputFileLocation() {
+		if (!out().exists())
+			out().mkdir();
+		else
+			dialogOutputLocation();
+	}
+
+	@Override
+	public void writefile() throws IOException, InvalidMidiDataException {
+		confirmOutputFileLocation();
+
+		// -------- import cmx files --------------------------
+		importCMXFilesToProjectDirectory();
+
+		// -------- create score data -------------------------
+		writeScoreData();
+
+		// -------- create structure data ---------------------
+		writeStructureData();
+
+		// -------- create expressed SMF ---------------------
+		writeSMF();
+
+		// -------- create screen shot ---------------------
+		// writeScreenShot();
+
+		System.out.println("tempo curve list:");
+		System.out.println(getTempoList());
+	}
+
+	/**
+	 * @throws IOException
+	 */
+	@Override
+	public void writeScoreData() throws IOException {
+		File fp = new File(out(), SCOREDATA_FILENAME);
+		fp.createNewFile();
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
+				fp)));
+		// out.format("cmx=%s\n", inputFile.getName());
+		out.format("cmx=%s\n", xml.getFileName());
+		out.format("str=%s\n", STRUCTURE_FILENAME);
+		out.format("bpm=%s\n", getBPM().toString().subSequence(1, getBPM()
+				.toString().length() - 1));
+		for (int i = 0; i < getNotelist().size(); i++)
+			writeNoteData(out, (MXNoteData) getNoteList(i));
+		out.close();
+	}
+
+	protected void writeNoteData(PrintWriter out, MXNoteData note) {
+		if (note == null)
+			return;
+		writeNoteData(out, note.child());
+		out.format("n%s:%s:%s\n", note.index(), note, (note
+				.getXMLNote() != null) ? note.getXMLNote().getXPathExpression()
+						: "null");
+		writeNoteData(out, note.next());
+	}
+
+	protected void importCMXFilesToProjectDirectory() throws IOException {
+		File fp = null;
+		if (dev != null || xml != null) {
+			fp = new File(inputDirectory(), xml.getFileName());
+			if (fp.exists())
+				FileUtils.copyFileToDirectory(fp, out(), true);
+			if (dev != null) {
+				FileUtils.copyFileToDirectory(in(), out(), true);
+			}
+		}
+	}
+
+	/**
+	 * @throws IOException
+	 */
+	protected void writeStructureData() throws IOException {
+		File fp = new File(out(), STRUCTURE_FILENAME);
+		fp.createNewFile();
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
+				fp)));
+		for (int i = 0; i < getRootGroup().size(); i++)
+			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
+		out.close();
+	}
+
+	protected void readOriginalFile() throws IOException {
 		testPrintln("reading original format...");
-		File[] files = inputFile.listFiles();
+		File[] files = in().listFiles();
 		for (int i = 0; i < files.length; i++) {
 			String strfile = STRUCTURE_FILENAME;
 			if (files[i].getName().equals(SCOREDATA_FILENAME)) {
@@ -883,6 +524,10 @@ public class MXTuneData extends TuneData {
 				readStructureData(files[i]);
 		}
 
+	}
+
+	protected boolean isOriginalFileFormat() {
+		return in().isDirectory();
 	}
 
 	/**
@@ -1062,33 +707,6 @@ public class MXTuneData extends TuneData {
 		default:
 			setGroupNotelist(list, args, ++idx, size);
 		}
-	}
-
-	/**
-	 * @param g
-	 */
-	private void setNoteScheduleEvent(final Group g) {
-		if (g == null)
-			return;
-		if (g.hasChild()) {
-			setNoteScheduleEvent(g.getChildFormerGroup());
-			setNoteScheduleEvent(g.getChildLatterGroup());
-		} else {
-			setNoteScheduleEvent(g.getBeginGroupNote(), g.getEndGroupNote()
-					.getNote().offset());
-		}
-	}
-
-	private void setNoteScheduleEvent(GroupNote note, int endOffset) {
-		if (note == null)
-			return;
-		if (note.getNote() == null)
-			return;
-		if (!note.getNote().rest()) {
-			addNoteScheduleEventList(note.getNote());
-		}
-		setNoteScheduleEvent(note.child(), endOffset);
-		setNoteScheduleEvent(note.next(), endOffset);
 	}
 
 	protected CMXNoteHandler createCMXNoteHandler() {

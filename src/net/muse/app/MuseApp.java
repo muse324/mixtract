@@ -11,6 +11,7 @@ import javax.swing.*;
 
 import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
 import net.muse.data.Group;
+import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
@@ -37,7 +38,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	private File projectDir;
 
 	/** 楽曲情報 */
-	private MXTuneData data;
+	private TuneData data;
 	private List<TuneDataListener> tdListenerList = new ArrayList<TuneDataListener>();
 	private ArrayList<PhraseViewer> phraseViewList;
 	/** 階層的フレーズ構造の分析履歴 */
@@ -141,7 +142,7 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	/**
 	 * @return
 	 */
-	public MXTuneData getData() {
+	public TuneData getData() {
 		if (data == null)
 			throw new NullPointerException("data is null");
 		return data;
@@ -301,12 +302,17 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public void readfile(File in, File out) throws IOException,
 			InvalidMidiDataException {
-		data = new MXTuneData(in, out);
+		data = createTuneData(in, out);
 		log.printf("Open file: %s", in);
 		if (isShowGUI()) {
 			MixtractCommand.setTarget(data);
 			notifySetTarget();
 		}
+	}
+
+	protected TuneData createTuneData(File in, File out) throws IOException,
+			InvalidMidiDataException {
+		return new TuneData(in, out);
 	}
 
 	/**

@@ -1,14 +1,15 @@
 package net.muse.app;
 
 import java.awt.EventQueue;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Method;
 
+import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.*;
 
 import net.muse.gui.GUIUtil;
 import net.muse.gui.MainFrame;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;
 import net.muse.mixtract.gui.command.MixtractCommand;
 
@@ -23,6 +24,15 @@ import net.muse.mixtract.gui.command.MixtractCommand;
  * @since 2017/06/17 at m-use studio / Soai University
  */
 public class Mixtract extends MuseApp {
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
+	 */
+	@Override protected MXTuneData createTuneData(File in, File out)
+			throws IOException, InvalidMidiDataException {
+		return new MXTuneData(in, out);
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.MuseApp#createNewFrame()
