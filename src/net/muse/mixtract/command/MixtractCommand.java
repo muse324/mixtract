@@ -30,7 +30,7 @@ public class MixtractCommand extends MuseAppCommand {
 
 	public static final MixtractCommand SET_CHORD = new SetChordCommand(
 			"Set Chord", "和音を付与");
-	public static final MixtractCommand ANALYZE_STRUCTURE = new AnalyzeStructureCommand(
+	public static final MuseAppCommand ANALYZE_STRUCTURE = new AnalyzeStructureCommand(
 			"Analyze structure", "構造分析");
 
 	public static final MixtractCommand APPLY_PULSES_CHOPINS = new ApplyPulseChopinsCommand(
@@ -39,13 +39,13 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MixtractCommand APPLY_PULSES_MOZARTS = new ApplyPuliseMozartsCommand(
 			"Apply pulses (mozart)");
 
-	public static final MixtractCommand APPLY_TOPONOTE = new ApplyTopNoteCommand(
+	public static final MuseAppCommand APPLY_TOPONOTE = new ApplyTopNoteCommand(
 			"Apply the most similar expression");
 
 	public static final MuseAppCommand CLEAR_ALLGROUPS = new ClearAllGroupsCommand(
 			"Clear all groups", "フレーズ構造全体を削除");
 
-	public static final MixtractCommand DELETE_GROUP = new DeleteGroupCommand(
+	public static final MuseAppCommand DELETE_GROUP = new DeleteGroupCommand(
 			"Delete", "グループを削除");
 
 	public static final MixtractCommand EXPR_LINE_DISPLAY = new ExprLineCommand(
@@ -88,7 +88,7 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MixtractCommand SEARCH = new SearchCommand("Search",
 			"検索");
 
-	public static final MixtractCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
+	public static final MuseAppCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
 			"GTTMAnalysis");
 
 	protected static final Group _selectedObjects = null;

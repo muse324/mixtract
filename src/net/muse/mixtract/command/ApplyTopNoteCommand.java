@@ -1,6 +1,8 @@
 package net.muse.mixtract.command;
 
-final class ApplyTopNoteCommand extends MixtractCommand {
+import net.muse.command.MuseAppCommand;
+
+final class ApplyTopNoteCommand extends MuseAppCommand {
 
 	public ApplyTopNoteCommand(String... lang) {
 		super(lang);
