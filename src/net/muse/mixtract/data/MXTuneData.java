@@ -32,8 +32,6 @@ public class MXTuneData extends TuneData {
 
 	private static int durationOffset = 100;
 
-	/** ユーザにより指定されるプライマリフレーズライン */
-	private PrimaryPhraseSequence groupSequence = null;
 
 	/**
 	 * @param args
@@ -77,48 +75,9 @@ public class MXTuneData extends TuneData {
 
 	}
 
-	/**
-	 * 非階層のグループを登録します。
-	 *
-	 * @param group
-	 */
-	public void addGroupArrayList(Group group) {
-		// 重複するグループがあれば処理中断
-		for (Group g : getGroupArrayList()) {
-			if (g.nearlyEquals(group))
-				return;
-			// TODO 複数声部に未対応
-		}
 
-		// ----------------------------------
-		// TODO 未検証
-		final PrimaryPhraseSequence seq = new PrimaryPhraseSequence(group);
-		if (getGroupArrayList().size() <= 0) {
-			groupSequence = seq;
-		} else {
-			NoteData st = group.getBeginGroupNote().getNote();
-			NoteData ed = group.getEndGroupNote().getNote();
-			// 前後にgroup sequence がある場合
-			if (st.hasPrevious() && st.previous().equals(groupSequence.end()
-					.getGroup().getEndGroupNote().getNote())) {
-				groupSequence.end().setNext(seq);
-				seq.setPrevious(groupSequence);
-			} else if (ed.hasNext() && ed.next().equals(groupSequence.root()
-					.getGroup().getBeginGroupNote().getNote())) {
-				groupSequence.root().setPrevious(seq);
-				seq.setNext(groupSequence);
-			}
-		}
-		// ----------------------------------
-		getGroupArrayList().add(group);
-	}
 
-	/**
-	 * @return the groupSequence
-	 */
-	public PrimaryPhraseSequence getGroupSequence() {
-		return groupSequence;
-	}
+
 
 	public NoteData getLastNote(int partIndex) {
 		return getRootGroup(partIndex).getEndGroupNote().getNote();

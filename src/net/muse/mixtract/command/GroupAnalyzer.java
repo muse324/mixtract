@@ -2,7 +2,8 @@ package net.muse.mixtract.command;
 
 import net.muse.data.*;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.MXTuneData;
+import net.muse.mixtract.data.PrimaryPhraseSequence;
 
 /**
  * 入力されたMusicXMLに対し，グループと頂点を推定します．
@@ -16,8 +17,15 @@ import net.muse.mixtract.data.*;
 public class GroupAnalyzer extends MuseObject implements Runnable {
 
 	public static final int rootDiv = 480;
-	private final MXTuneData data;
+	private final TuneData data;
 	private Group root;
+
+	/** ユーザにより指定されるプライマリフレーズライン */
+	private PrimaryPhraseSequence groupSequence = null;
+
+	private PrimaryPhraseSequence _pendingSequence = null;
+
+	private boolean _completeHierarcy;
 
 	/**
 	 * @param doScoreAnalysis セットする doScoreAnalysis
@@ -28,19 +36,17 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 	 * @param target グループ構造を分析するTuneData
 	 * @param doScoreAnalysis インスタンス化と同時に楽譜分析をするかどうか
 	 */
-	public GroupAnalyzer(MXTuneData target, boolean doScoreAnalysis) {
+	public GroupAnalyzer(TuneData target, boolean doScoreAnalysis) {
 		setScoreAnalysis(doScoreAnalysis);
 		data = target;
 	}
 
 	/**
-	 * @param target
+	 * @return the groupSequence
 	 */
-	public void setRootGroup(Group target) {
-		root = target;
+	public PrimaryPhraseSequence getGroupSequence() {
+		return groupSequence;
 	}
-
-	private PrimaryPhraseSequence _pendingSequence = null;
 
 	/*
 	 * (non-Javadoc)
@@ -56,6 +62,25 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 	}
 
 	/**
+	 * @param target
+	 */
+	public void setRootGroup(Group target) {
+		root = target;
+	}
+
+	/**
+	 * @param sequence
+	 */
+	private void addPendingSequence(PrimaryPhraseSequence sequence) {
+		if (_pendingSequence == null)
+			_pendingSequence = sequence;
+		else if (_pendingSequence.getGroup().getEndGroupNote().getNote().next()
+				.equals(sequence.getGroup().getBeginGroupNote().getNote())) {
+			_pendingSequence.setNext(sequence);
+		}
+	}
+
+	/**
 	 * @param sequence
 	 */
 	private void createUpperLevelStructure(PrimaryPhraseSequence sequence) {
@@ -65,9 +90,11 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 		Group g2 = sequence.next().getGroup();
 		// g1とg2の長さがほぼ等価（GPR5:symmetry）なら親グループを生成
 		if (symmetryRate(g1.getTimeValue(), g2.getTimeValue()) <= 0.3) {
-			Group parent = new Group(new GroupNote(g1.getBeginGroupNote().getNote()),
-					new GroupNote(g2.getEndGroupNote().getNote()), GroupType.PARENT);
-			parent.setIndex(data.getUniqueGroupIndex());
+			Group parent = new Group(new GroupNote(g1.getBeginGroupNote()
+					.getNote()), new GroupNote(g2.getEndGroupNote().getNote()),
+					GroupType.PARENT);
+			assert data instanceof MXTuneData;
+			parent.setIndex(((MXTuneData) data).getUniqueGroupIndex());
 			_completeHierarcy = false;
 			parent = reachedHierarchy(parent, data.getRootGroup(0));
 			parent.setChild(g1, g2);
@@ -125,18 +152,6 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 	}
 
 	/**
-	 * @param sequence
-	 */
-	private void addPendingSequence(PrimaryPhraseSequence sequence) {
-		if (_pendingSequence == null)
-			_pendingSequence = sequence;
-		else if (_pendingSequence.getGroup().getEndGroupNote().getNote().next()
-				.equals(sequence.getGroup().getBeginGroupNote().getNote())) {
-			_pendingSequence.setNext(sequence);
-		}
-	}
-
-	/**
 	 * @param timeValue
 	 * @param timeValue2
 	 * @return
@@ -145,6 +160,4 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 		double rate = (val1 <= val2) ? val1 / val2 : val2 / val1;
 		return 1.0 - rate;
 	}
-
-	private boolean _completeHierarcy;
 }

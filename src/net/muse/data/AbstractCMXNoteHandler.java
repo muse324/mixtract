@@ -1,12 +1,9 @@
 package net.muse.data;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Measure;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.MusicData;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Part;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
 import jp.crestmuse.cmx.handlers.NoteHandlerPartwise;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.data.MXTuneData;
 
 public abstract class AbstractCMXNoteHandler extends MuseObject implements
 		NoteHandlerPartwise {
@@ -31,7 +28,7 @@ public abstract class AbstractCMXNoteHandler extends MuseObject implements
 	/**
 	 * @param data セットする data
 	 */
-	protected void setData(MXTuneData data) {
+	protected void setData(TuneData data) {
 		this.data = data;
 	}
 

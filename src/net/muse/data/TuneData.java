@@ -13,6 +13,7 @@ import net.muse.app.Mixtract;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.PrimaryPhraseSequence;
 import net.muse.mixtract.data.curve.PhraseCurve;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -58,6 +59,9 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/** MIDI出力用イベントリスト */
 	private LinkedList<NoteScheduleEvent> noteScheduleEventList = new LinkedList<NoteScheduleEvent>();
 
+	/** ユーザにより指定されるプライマリフレーズライン */
+	private PrimaryPhraseSequence groupSequence = null;
+
 	public static void setMaximumMIDIChannel(int num) {
 		MAXIMUM_MIDICHANNEL = num;
 	}
@@ -76,6 +80,42 @@ public class TuneData extends MuseObject implements TuneDataController {
 		this.inputFile = in;
 		this.outputFile = out;
 		readfile();
+	}
+
+	/**
+	 * 非階層のグループを登録します。
+	 *
+	 * @param group
+	 */
+	public void addGroupArrayList(Group group) {
+		// 重複するグループがあれば処理中断
+		for (Group g : getGroupArrayList()) {
+			if (g.nearlyEquals(group))
+				return;
+			// TODO 複数声部に未対応
+		}
+
+		// ----------------------------------
+		// TODO 未検証
+		final PrimaryPhraseSequence seq = new PrimaryPhraseSequence(group);
+		if (getGroupArrayList().size() <= 0) {
+			groupSequence = seq;
+		} else {
+			NoteData st = group.getBeginGroupNote().getNote();
+			NoteData ed = group.getEndGroupNote().getNote();
+			// 前後にgroup sequence がある場合
+			if (st.hasPrevious() && st.previous().equals(groupSequence.end()
+					.getGroup().getEndGroupNote().getNote())) {
+				groupSequence.end().setNext(seq);
+				seq.setPrevious(groupSequence);
+			} else if (ed.hasNext() && ed.next().equals(groupSequence.root()
+					.getGroup().getBeginGroupNote().getNote())) {
+				groupSequence.root().setPrevious(seq);
+				seq.setNext(groupSequence);
+			}
+		}
+		// ----------------------------------
+		getGroupArrayList().add(group);
 	}
 
 	public void calculateHierarchicalParameters() {
@@ -107,6 +147,26 @@ public class TuneData extends MuseObject implements TuneDataController {
 		outputFile.mkdir();
 	}
 
+	public void deleteGroupFromData(Group group) {
+		// 非階層グループから削除
+		if (getGroupArrayList().contains(group)) {
+			getGroupArrayList().remove(group);
+			return;
+		}
+		// 階層グループから削除
+		for (Group g : getRootGroup()) {
+			if (g.equals(group) && g.getType() == GroupType.NOTE) {
+				// 最上階層が階層化されていない場合は削除できない
+				if (!g.hasChild()) {
+					JOptionPane.showConfirmDialog(null,
+							"The whole note sequence can't be deleted.");
+					return;
+				}
+			}
+			deleteHierarchicalGroup(group, g);
+		}
+	}
+
 	/** @return the articulationList */
 	public final LinkedList<Double> getArticulationList() {
 		return articulationList;
@@ -126,9 +186,17 @@ public class TuneData extends MuseObject implements TuneDataController {
 		return groupArrayList;
 	}
 
+	public PrimaryPhraseSequence getGroupSequence() {
+		return groupSequence;
+	}
+
 	/** @return inputFilename */
 	public String getInputFilename() {
 		return inputFile.getName();
+	}
+
+	public int[] getMIDIPrograms() {
+		return midiProgram;
 	}
 
 	public ArrayList<NoteData> getNotelist() {
@@ -160,6 +228,15 @@ public class TuneData extends MuseObject implements TuneDataController {
 		return tempoList;
 	}
 
+	public double[] getVolume() {
+		return volume;
+	}
+
+	public void initializeNoteEvents() {
+		for (int i = 0; i < getRootGroup().size(); i++)
+			initializeNoteEvents(getRootGroup(i));
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneDataController#readfile()
@@ -176,6 +253,11 @@ public class TuneData extends MuseObject implements TuneDataController {
 			writefile();
 		}
 		calculateHierarchicalParameters();
+	}
+
+	public void setBPM(int idx, int value) {
+		getBPM().set(idx, value);
+		setDefaultBPM(value);
 	}
 
 	public void setGrouplist(int partIndex, Group rootGroup) {
@@ -341,6 +423,35 @@ public class TuneData extends MuseObject implements TuneDataController {
 		xml.processNotePartwise(createCMXNoteHandler());
 	}
 
+	/**
+	 * CrestMuseXML(CMX)形式のデータから読込処理を行います。
+	 * MusicXML、DeviationIncetanceWrapper形式についてはreadCMLFile(String)メソッドにてすでに格納されています。
+	 * このメソッドでは、それ以外の形式についての処理を実装してください。
+	 *
+	 * @param cmx
+	 * @see TuneData.readCMXFile(String)
+	 * @see {@link CrestMuseXML:<a href=
+	 *      "http://cmx.osdn.jp/">http://cmx.osdn.jp/</a>}
+	 */
+	protected void readCMXFile(CMXFileWrapper cmx) {}
+
+	protected void readCMXFile(String xmlFilename) {
+		testPrintln("import CMX file");
+		try {
+			CMXFileWrapper cmx = CMXFileWrapper.readfile(xmlFilename);
+			if (cmx instanceof DeviationInstanceWrapper) {
+				dev = ((DeviationInstanceWrapper) cmx);
+				xml = dev.getTargetMusicXML();
+				// TODO deviation データを読み込む処理
+			} else if (cmx instanceof MusicXMLWrapper) {
+				xml = (MusicXMLWrapper) cmx;
+			} else
+				readCMXFile(cmx);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	protected void readOriginalFile() throws IOException {
 		testPrintln("reading original format...(dummy)");
 	}
@@ -450,84 +561,47 @@ public class TuneData extends MuseObject implements TuneDataController {
 		calculateHierarchicalParameters((MXGroup) group.getChildLatterGroup());
 	}
 
-	private void initializeParameters() {
-		hierarchicalGroupCount = 0;
-		tempoList.clear();
-		dynamicsList.clear();
-		articulationList.clear();
-		for (int i = 0; i < GroupAnalyzer.rootDiv; i++) {
-			tempoList.add(0.);
-			dynamicsList.add(0.);
-			articulationList.add(1.);
+	/**
+	 * @param target
+	 */
+	private void deleteGroup(Group target) {
+		if (target == null)
+			return;
+		deleteGroup(target.getChildFormerGroup());
+		deleteGroup(target.getChildLatterGroup());
+		target.setScoreNotelist(target.getScoreNotelist());
+		if (target.hasChild()) {
+			target.getChildFormerGroup().getEndGroupNote().setNext(target
+					.getChildLatterGroup().getBeginGroupNote());
 		}
-	}
-
-	protected void readCMXFile(String xmlFilename) {
-		testPrintln("import CMX file");
-		try {
-			CMXFileWrapper cmx = CMXFileWrapper.readfile(xmlFilename);
-			if (cmx instanceof DeviationInstanceWrapper) {
-				dev = ((DeviationInstanceWrapper) cmx);
-				xml = dev.getTargetMusicXML();
-				// TODO deviation データを読み込む処理
-			} else if (cmx instanceof MusicXMLWrapper) {
-				xml = (MusicXMLWrapper) cmx;
-			} else
-				readCMXFile(cmx);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		target.setChild(null, null);
 	}
 
 	/**
-	 * CrestMuseXML(CMX)形式のデータから読込処理を行います。
-	 * MusicXML、DeviationIncetanceWrapper形式についてはreadCMLFile(String)メソッドにてすでに格納されています。
-	 * このメソッドでは、それ以外の形式についての処理を実装してください。
+	 * 階層フレーズ中のグループを削除します。
+	 * もし target が子階層を持っている場合，以下の処理を行います。
+	 * <ol>
+	 * <li>子グループをすべて削除
+	 * <li>親グループを起点にし，再分析をかける
+	 * </ol>
 	 *
-	 * @param cmx
-	 * @see TuneData.readCMXFile(String)
-	 * @see {@link CrestMuseXML:<a href=
-	 *      "http://cmx.osdn.jp/">http://cmx.osdn.jp/</a>}
+	 * @param target 削除するフレーズ
+	 * @param structure 階層フレーズ
 	 */
-	protected void readCMXFile(CMXFileWrapper cmx) {}
-
-	/** @param g */
-	private void setNoteScheduleEvent(final Group g) {
-		if (g == null)
+	private void deleteHierarchicalGroup(Group target, Group structure) {
+		if (structure == null)
 			return;
-		if (g.hasChild()) {
-			setNoteScheduleEvent(g.getChildFormerGroup());
-			setNoteScheduleEvent(g.getChildLatterGroup());
-		} else {
-			setNoteScheduleEvent(g.getBeginGroupNote(), g.getEndGroupNote()
-					.getNote().offset());
+
+		deleteHierarchicalGroup(target, structure.getChildFormerGroup());
+		deleteHierarchicalGroup(target, structure.getChildLatterGroup());
+		if (structure.equals(target)) {
+			// 子グループをすべて削除
+			deleteGroup(target);
+			target.setType(GroupType.USER);
+			// 親グループの再分析
+			// analyzeStructure(target);
+			return;
 		}
-	}
-
-	private void setNoteScheduleEvent(GroupNote note, int endOffset) {
-		if (note == null)
-			return;
-		if (note.getNote() == null)
-			return;
-		if (!note.getNote().rest()) {
-			addNoteScheduleEventList(note.getNote());
-		}
-		setNoteScheduleEvent(note.child(), endOffset);
-		setNoteScheduleEvent(note.next(), endOffset);
-	}
-
-	public void setBPM(int idx, int value) {
-		getBPM().set(idx, value);
-		setDefaultBPM(value);
-	}
-
-	public int[] getMIDIPrograms() {
-		return midiProgram;
-	}
-
-	public void initializeNoteEvents() {
-		for (int i = 0; i < getRootGroup().size(); i++)
-			initializeNoteEvents(getRootGroup(i));
 	}
 
 	private void initializeNoteEvents(Group group) {
@@ -562,71 +636,41 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 	}
 
-	public double[] getVolume() {
-		return volume;
-	}
-
-	public void deleteGroupFromData(Group group) {
-		// 非階層グループから削除
-		if (getGroupArrayList().contains(group)) {
-			getGroupArrayList().remove(group);
-			return;
-		}
-		// 階層グループから削除
-		for (Group g : getRootGroup()) {
-			if (g.equals(group) && g.getType() == GroupType.NOTE) {
-				// 最上階層が階層化されていない場合は削除できない
-				if (!g.hasChild()) {
-					JOptionPane.showConfirmDialog(null,
-							"The whole note sequence can't be deleted.");
-					return;
-				}
-			}
-			deleteHierarchicalGroup(group, g);
+	private void initializeParameters() {
+		hierarchicalGroupCount = 0;
+		tempoList.clear();
+		dynamicsList.clear();
+		articulationList.clear();
+		for (int i = 0; i < GroupAnalyzer.rootDiv; i++) {
+			tempoList.add(0.);
+			dynamicsList.add(0.);
+			articulationList.add(1.);
 		}
 	}
 
-	/**
-	 * 階層フレーズ中のグループを削除します。
-	 * もし target が子階層を持っている場合，以下の処理を行います。
-	 * <ol>
-	 * <li>子グループをすべて削除
-	 * <li>親グループを起点にし，再分析をかける
-	 * </ol>
-	 *
-	 * @param target 削除するフレーズ
-	 * @param structure 階層フレーズ
-	 */
-	private void deleteHierarchicalGroup(Group target, Group structure) {
-		if (structure == null)
+	/** @param g */
+	private void setNoteScheduleEvent(final Group g) {
+		if (g == null)
 			return;
-
-		deleteHierarchicalGroup(target, structure.getChildFormerGroup());
-		deleteHierarchicalGroup(target, structure.getChildLatterGroup());
-		if (structure.equals(target)) {
-			// 子グループをすべて削除
-			deleteGroup(target);
-			target.setType(GroupType.USER);
-			// 親グループの再分析
-			// analyzeStructure(target);
-			return;
+		if (g.hasChild()) {
+			setNoteScheduleEvent(g.getChildFormerGroup());
+			setNoteScheduleEvent(g.getChildLatterGroup());
+		} else {
+			setNoteScheduleEvent(g.getBeginGroupNote(), g.getEndGroupNote()
+					.getNote().offset());
 		}
 	}
 
-	/**
-	 * @param target
-	 */
-	private void deleteGroup(Group target) {
-		if (target == null)
+	private void setNoteScheduleEvent(GroupNote note, int endOffset) {
+		if (note == null)
 			return;
-		deleteGroup(target.getChildFormerGroup());
-		deleteGroup(target.getChildLatterGroup());
-		target.setScoreNotelist(target.getScoreNotelist());
-		if (target.hasChild()) {
-			target.getChildFormerGroup().getEndGroupNote().setNext(target
-					.getChildLatterGroup().getBeginGroupNote());
+		if (note.getNote() == null)
+			return;
+		if (!note.getNote().rest()) {
+			addNoteScheduleEventList(note.getNote());
 		}
-		target.setChild(null, null);
+		setNoteScheduleEvent(note.child(), endOffset);
+		setNoteScheduleEvent(note.next(), endOffset);
 	}
 
 }
