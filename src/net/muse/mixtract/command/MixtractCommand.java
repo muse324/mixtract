@@ -42,7 +42,7 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MixtractCommand APPLY_TOPONOTE = new ApplyTopNoteCommand(
 			"Apply the most similar expression");
 
-	public static final MixtractCommand CLEAR_ALLGROUPS = new ClearAllGroupsCommand(
+	public static final MuseAppCommand CLEAR_ALLGROUPS = new ClearAllGroupsCommand(
 			"Clear all groups", "フレーズ構造全体を削除");
 
 	public static final MixtractCommand DELETE_GROUP = new DeleteGroupCommand(
@@ -53,8 +53,7 @@ public class MixtractCommand extends MuseAppCommand {
 
 	public static final MixtractCommand EXPR_VIEW_DISPLAY = new ExprViewCommand(
 			"Switch expression view");
-
-	public static final MixtractCommand CHANGE_PART = new ChangePartCommand(
+	public static final MuseAppCommand CHANGE_PART = new ChangePartCommand(
 			"Change part");
 
 	public static final MixtractCommand MOUSE_DISPLAY = new MouseDisplayCommand(
@@ -96,9 +95,9 @@ public class MixtractCommand extends MuseAppCommand {
 
 	public static final MixtractCommand OPEN_STRUCTURE_DATA = new OpenStructureDataCommand(
 			"Read structure data", "構造データ読込");
-	public static final MixtractCommand SET_KEY = new SetKeyCommand(
-			"Change key", "調を変更");
-	public static final MixtractCommand SET_KEYMODE = new SetKeyModeCommand(
+	public static final MuseAppCommand SET_KEY = new SetKeyCommand("Change key",
+			"調を変更");
+	public static final MuseAppCommand SET_KEYMODE = new SetKeyModeCommand(
 			"Change key mode", "長調/短調");
 	public static final SetCrescendoCommand SET_TYPE_CRESC = new SetCrescendoCommand(
 			"< (cresc.)");

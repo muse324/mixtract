@@ -2,8 +2,10 @@ package net.muse.command;
 
 import net.muse.app.MuseApp;
 import net.muse.data.TuneData;
-import net.muse.gui.*;
+import net.muse.gui.GroupLabel;
+import net.muse.gui.MainFrame;
 import net.muse.misc.Command;
+import net.muse.mixtract.command.MixtractCommand;
 
 public class MuseAppCommand extends Command implements GroupCommandInterface {
 
@@ -39,7 +41,8 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 		super(lang);
 	}
 
-	@Override public void setGroup(GroupLabel groupLabel) {}
+	@Override
+	public void setGroup(GroupLabel groupLabel) {}
 
 	/**
 	 * @return _main

@@ -4,7 +4,6 @@ import java.awt.Component;
 
 import net.muse.gui.NoteLabel;
 import net.muse.misc.Util;
-import net.muse.mixtract.command.MixtractCommand;
 
 /**
  * <h1>SetKeyCommand</h1>
@@ -14,7 +13,7 @@ import net.muse.mixtract.command.MixtractCommand;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/12/21
  */
-public class SetKeyCommand extends MixtractCommand {
+public class SetKeyCommand extends MuseAppCommand {
 
 	private static String newKey = null;
 

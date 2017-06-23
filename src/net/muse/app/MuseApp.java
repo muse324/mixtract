@@ -128,8 +128,8 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param data2
 	 * @param object
 	 */
-	public void analyzeStructure(MXTuneData dat, Group group) {
-		GroupAnalyzer ana = new GroupAnalyzer(dat, false);
+	public void analyzeStructure(TuneData data, Group group) {
+		GroupAnalyzer ana = new GroupAnalyzer(data, false);
 		ana.setRootGroup(group);
 		ana.run();
 		analyzer.add(ana);

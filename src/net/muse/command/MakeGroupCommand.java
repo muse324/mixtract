@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import net.muse.data.*;
 import net.muse.gui.NoteLabel;
-import net.muse.mixtract.command.MixtractCommand;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -12,7 +11,7 @@ import net.muse.mixtract.command.MixtractCommand;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/03/12
  */
-public class MakeGroupCommand extends MixtractCommand {
+public class MakeGroupCommand extends MuseAppCommand {
 
 	public MakeGroupCommand(String... lang) {
 		super(lang);
@@ -22,11 +21,11 @@ public class MakeGroupCommand extends MixtractCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override
+	public void execute() {
 		LinkedList<NoteLabel> notes = frame().getPianoroll()
 				.getSelectedNoteLabels();
-		Group g = createUserGroup(notes.get(0), notes.get(notes.size()
-				- 1));
+		Group g = createUserGroup(notes.get(0), notes.get(notes.size() - 1));
 		g.setIndex(target().getUniqueGroupIndex());
 		target().addGroupArrayList(g);
 		main().notifyAddGroup(g);
@@ -111,7 +110,6 @@ public class MakeGroupCommand extends MixtractCommand {
 				true);
 		if (l == le)
 			return list;
-		return createUserGroupNotelist(l.next(), le, list, glist.next(),
-				false);
+		return createUserGroupNotelist(l.next(), le, list, glist.next(), false);
 	}
 }
