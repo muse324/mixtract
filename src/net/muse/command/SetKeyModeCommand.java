@@ -4,7 +4,7 @@ import java.awt.Component;
 
 import net.muse.data.KeyMode;
 import net.muse.gui.NoteLabel;
-import net.muse.mixtract.gui.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommand;
 
 /**
  * <h1>SetKeyModeCommand</h1>

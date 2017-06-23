@@ -4,7 +4,7 @@ import java.awt.Component;
 
 import net.muse.gui.NoteLabel;
 import net.muse.misc.Util;
-import net.muse.mixtract.gui.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommand;
 
 /**
  * <h1>SetKeyCommand</h1>

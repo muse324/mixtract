@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui.command;
+package net.muse.mixtract.command;
 
 import java.io.IOException;
 
@@ -11,7 +11,6 @@ import net.muse.data.GroupAnalyzer;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
-import net.muse.gui.command.*;
 import net.muse.misc.Command;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;
@@ -185,7 +184,8 @@ public class MixtractCommand extends MuseAppCommand {
 	/**
 	 * @deprecated
 	 */
-	@Deprecated public static void writefileCurveParameters() {
+	@Deprecated
+	public static void writefileCurveParameters() {
 		if (_target == null)
 			return;
 		try {
@@ -229,11 +229,13 @@ public class MixtractCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#toString()
 	 */
-	@Override public String toString() {
+	@Override
+	public String toString() {
 		return super.toString();
 	}
 
-	@Override public void setGroup(GroupLabel groupLabel) {
+	@Override
+	public void setGroup(GroupLabel groupLabel) {
 		// TODO 自動生成されたメソッド・スタブ
 
 	}

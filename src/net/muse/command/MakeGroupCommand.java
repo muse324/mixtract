@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import net.muse.data.*;
 import net.muse.gui.NoteLabel;
-import net.muse.mixtract.gui.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommand;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST

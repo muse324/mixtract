@@ -1,4 +1,4 @@
-package net.muse.mixtract.gui.command;
+package net.muse.mixtract.command;
 
 final class ApplyTopNoteCommand extends MixtractCommand {
 

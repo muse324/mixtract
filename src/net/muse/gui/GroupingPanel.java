@@ -10,11 +10,11 @@ import javax.swing.*;
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
 import net.muse.data.*;
+import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.MelodyFlagViewer;
 import net.muse.mixtract.gui.ViewerMode;
-import net.muse.mixtract.gui.command.MixtractCommand;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST

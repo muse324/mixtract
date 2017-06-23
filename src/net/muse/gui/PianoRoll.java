@@ -15,10 +15,10 @@ import net.muse.app.MuseApp;
 import net.muse.command.*;
 import net.muse.data.*;
 import net.muse.misc.Util;
+import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.command.SetChordCommand;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.ViewerMode;
-import net.muse.mixtract.gui.command.MixtractCommand;
-import net.muse.mixtract.gui.command.SetChordCommand;
 
 /**
  * ピアノロール（音符部分）を描画するクラスオブジェクトです．

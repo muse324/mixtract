@@ -2,8 +2,8 @@ package net.muse.command;
 
 import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
+import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.MXGroup;
-import net.muse.mixtract.gui.command.MixtractCommand;
 
 /**
  * <h1>PrintGroupInfoCommand</h1>

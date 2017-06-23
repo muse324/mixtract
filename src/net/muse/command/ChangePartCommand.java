@@ -3,7 +3,7 @@ package net.muse.command;
 import java.awt.Component;
 
 import net.muse.gui.NoteLabel;
-import net.muse.mixtract.gui.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommand;
 
 public class ChangePartCommand extends MixtractCommand {
 	private static final int defaultSize = 4;
