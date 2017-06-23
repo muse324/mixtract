@@ -6,12 +6,12 @@ import javax.swing.JFrame;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
+import net.muse.data.GroupAnalyzer;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
 import net.muse.gui.command.*;
 import net.muse.misc.Command;
-import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;
 import net.muse.mixtract.gui.SelectedObjects;

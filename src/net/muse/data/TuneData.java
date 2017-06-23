@@ -11,9 +11,7 @@ import javax.swing.JOptionPane;
 import jp.crestmuse.cmx.filewrappers.*;
 import net.muse.app.Mixtract;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.command.GroupAnalyzer;
 import net.muse.mixtract.data.MXGroup;
-import net.muse.mixtract.data.PrimaryPhraseSequence;
 import net.muse.mixtract.data.curve.PhraseCurve;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -673,4 +671,33 @@ public class TuneData extends MuseObject implements TuneDataController {
 		setNoteScheduleEvent(note.next(), endOffset);
 	}
 
+	/**
+	 * @return
+	 */
+	public int getUniqueGroupIndex() {
+		ArrayList<Integer> idxlist = new ArrayList<Integer>();
+		for (Group g : getGroupArrayList()) {
+			if (!idxlist.contains(g.index()))
+				idxlist.add(g.index());
+		}
+		getUniqueGroupIndex(getRootGroup(0), idxlist);
+		for (int i = 0; i < idxlist.size(); i++) {
+			if (!idxlist.contains(i))
+				return i;
+		}
+		return idxlist.size();
+	}
+
+	/**
+	 * @param rootGroup2
+	 * @param idxlist
+	 */
+	private void getUniqueGroupIndex(Group glist, ArrayList<Integer> idxlist) {
+		if (glist == null)
+			return;
+		getUniqueGroupIndex(glist.getChildFormerGroup(), idxlist);
+		getUniqueGroupIndex(glist.getChildLatterGroup(), idxlist);
+		if (!idxlist.contains(glist.index()))
+			idxlist.add(glist.index());
+	}
 }

@@ -1,9 +1,7 @@
-package net.muse.mixtract.command;
+package net.muse.data;
 
 import net.muse.data.*;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.data.MXTuneData;
-import net.muse.mixtract.data.PrimaryPhraseSequence;
 
 /**
  * 入力されたMusicXMLに対し，グループと頂点を推定します．
@@ -93,8 +91,7 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 			Group parent = new Group(new GroupNote(g1.getBeginGroupNote()
 					.getNote()), new GroupNote(g2.getEndGroupNote().getNote()),
 					GroupType.PARENT);
-			assert data instanceof MXTuneData;
-			parent.setIndex(((MXTuneData) data).getUniqueGroupIndex());
+			parent.setIndex(data.getUniqueGroupIndex());
 			_completeHierarcy = false;
 			parent = reachedHierarchy(parent, data.getRootGroup(0));
 			parent.setChild(g1, g2);
