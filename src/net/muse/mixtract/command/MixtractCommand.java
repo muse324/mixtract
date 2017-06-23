@@ -7,14 +7,12 @@ import javax.swing.JFrame;
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.command.*;
-import net.muse.data.GroupAnalyzer;
-import net.muse.data.TuneData;
+import net.muse.data.*;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
 import net.muse.misc.Command;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;
-import net.muse.mixtract.gui.SelectedObjects;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -23,6 +21,9 @@ import net.muse.mixtract.gui.SelectedObjects;
  * @since 2008/04/21
  */
 public class MixtractCommand extends MuseAppCommand {
+	private GroupLabel _groupLabel;
+	private Group _group;
+
 	public static Mixtract main() {
 		return (Mixtract) _main;
 	}
@@ -91,7 +92,7 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MixtractCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
 			"GTTMAnalysis");
 
-	protected static final SelectedObjects _selectedObjects = new SelectedObjects();
+	protected static final Group _selectedObjects = null;
 
 	public static final MixtractCommand OPEN_STRUCTURE_DATA = new OpenStructureDataCommand(
 			"Read structure data", "構造データ読込");
@@ -141,7 +142,7 @@ public class MixtractCommand extends MuseAppCommand {
 	/**
 	 * @return the _selectedTarget
 	 */
-	public static final SelectedObjects getSelectedObjects() {
+	public static final Object getSelectedObjects() {
 		return _selectedObjects;
 	}
 
@@ -236,8 +237,29 @@ public class MixtractCommand extends MuseAppCommand {
 
 	@Override
 	public void setGroup(GroupLabel groupLabel) {
-		// TODO 自動生成されたメソッド・スタブ
+		setGroupLabel(groupLabel);
+		_group = groupLabel.getGroup();
+	}
 
+	/**
+	 * @return _groupLabel
+	 */
+	public GroupLabel getGroupLabel() {
+		return _groupLabel;
+	}
+
+	/**
+	 * @param _groupLabel セットする _groupLabel
+	 */
+	public void setGroupLabel(GroupLabel _groupLabel) {
+		this._groupLabel = _groupLabel;
+	}
+
+	/**
+	 * @return _group
+	 */
+	public Group getGroup() {
+		return _group;
 	}
 
 }

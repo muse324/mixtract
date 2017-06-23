@@ -65,6 +65,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	private final Cursor hndCursor = Cursor.getPredefinedCursor(
 			Cursor.HAND_CURSOR); // @jve:decl-index=0:
+	private Group selectedGroup;
 
 	protected PianoRoll() {
 		super();
@@ -240,6 +241,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	public void selectGroup(Group group) {
 		clearSelection();
+		selectedGroup = group;
 		selectNote(notelist, group.getScoreNotelist());
 	}
 
@@ -617,6 +619,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	private void clearSelection() {
 		selectedNoteLabels.clear();
 		selectedVoice = -1;
+		selectedGroup = null;
 	}
 
 	/**
@@ -666,7 +669,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	private void drawMelodyFlagmentOfSelectedGroup(Graphics2D g2) {
 
-		final Group group = MixtractCommand.getSelectedObjects().getGroup();
+		final Group group = selectedGroup;
 		if (group == null || selectedNoteLabels.size() < 1)
 			return;
 

@@ -15,7 +15,8 @@ public class SetCrescendoCommand extends MixtractCommand {
 	 * (非 Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override
+	public void execute() {
 		groupLabel.getGroup().setType(GroupType.CRESC);
 		groupLabel.setTypeShape(GroupType.CRESC);
 		groupLabel.repaint();
@@ -27,14 +28,16 @@ public class SetCrescendoCommand extends MixtractCommand {
 	 * jp.crestmuse.mixtract.gui.command.GroupCommandInterface#setGroup(jp
 	 * .crestmuse.mixtract.data.Group)
 	 */
-	@Override public void setGroup(GroupLabel groupLabel) {
+	@Override
+	public void setGroup(GroupLabel groupLabel) {
 		this.groupLabel = groupLabel;
 	}
 
-	/**
-	 * @return groupLabel
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.mixtract.command.MixtractCommand#getGroupLabel()
 	 */
-	protected GroupLabel getGroupLabel() {
+	public GroupLabel getGroupLabel() {
 		return groupLabel;
 	}
 }

@@ -13,10 +13,13 @@ final class PrintSubgroupsCommand extends MixtractCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 
-	@Override public void execute() {
-		final GroupLabel gl = getSelectedObjects().getGroupLabel();
-		GUIUtil.printConsole(gl.getName() + "'s subgroups:");
-		printSubGroups(gl.getGroup());
+	@Override
+	public void execute() {
+		if (getSelectedObjects() instanceof GroupLabel) {
+			final GroupLabel gl = getGroupLabel();
+			GUIUtil.printConsole(gl.getName() + "'s subgroups:");
+			printSubGroups(gl.getGroup());
+		}
 	}
 
 	/**
