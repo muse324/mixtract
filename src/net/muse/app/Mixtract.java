@@ -87,27 +87,6 @@ public class Mixtract extends MuseApp {
 
 	/*
 	 * (非 Javadoc)
-	 * @see net.muse.MuseApp#createNewFrame()
-	 */
-	@Override
-	protected void createNewFrame() throws Exception {
-		this.frame = new MXMainFrame(this);
-		if (!isMac())
-			return;
-
-		// Mac用にスクリーンメニューとアプリケーション終了(cmd-Q)のハンドリングを設定する.
-		// com.apple.eawt.Applicationクラスで処理するが、MacOSX以外の実行環境では存在しないので、
-		// このクラスを直接使用するとMacOSX以外で起動できなくなってしまう.
-		// そのため、サポートクラスの中で処理させ、そのサポートクラスをリフレクションにより間接的に
-		// 必要になったときに呼び出す.(クラスのロードに失敗したら、そのときにコケる.)
-		Class<?> clz = Class.forName("net.muse.gui.MainFramePartialForMacOSX");
-		Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
-				MainFrame.class });
-		mtd.invoke(null, new Object[] { this.frame });
-	}
-
-	/*
-	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
 	 */
 	@Override
@@ -125,5 +104,12 @@ public class Mixtract extends MuseApp {
 		appImageFile = "mixtract-logo.png";
 		PROPERTY_FILENAME = "Mixtract.properties";
 		projectFileExtension = ".mxt";
+	}
+
+	@Override
+	protected MainFrame mainFrame() throws IOException {
+		if (frame == null)
+			return new MXMainFrame(this);
+		return (MainFrame) frame;
 	}
 }

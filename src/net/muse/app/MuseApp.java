@@ -325,7 +325,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	protected void createNewFrame() throws Exception {
-		this.frame = new MainFrame(this);
+		this.frame = mainFrame();
 		if (!isMac())
 			return;
 
@@ -339,6 +339,8 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 				MainFrame.class });
 		mtd.invoke(null, new Object[] { this.frame });
 	}
+
+	abstract protected MainFrame mainFrame() throws IOException;
 
 	protected TuneData createTuneData(File in, File out) throws IOException,
 			InvalidMidiDataException {

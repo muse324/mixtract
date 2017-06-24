@@ -6,8 +6,9 @@ import java.io.IOException;
 
 import javax.swing.*;
 
+import net.muse.command.MuseAppCommand;
 import net.muse.gui.GUIUtil;
-import net.muse.mixtract.command.MixtractCommand;
+import net.muse.gui.MainFrame;
 
 /**
  * <h1>TestApp</h1>
@@ -38,7 +39,9 @@ public class TestApp extends MuseApp {
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
 
-				MixtractCommand.setMainObject(main);
+				// 各種実行コマンド制御を行うMuseAppComandクラスにメインクラスを登録します。
+				// アプリケーション独自の制御コマンドを作成するにはMuseAppCommandクラスのサブクラスを定義してください。
+				MuseAppCommand.setMain(main);
 
 				/* sprash screen */
 				main.createSplashScreen(appImageFile);
@@ -51,14 +54,14 @@ public class TestApp extends MuseApp {
 
 				// create main frame
 				main.createNewFrame();
-				MixtractCommand.setJFrame(main.frame);
+				MuseAppCommand.setMainFrame((MainFrame) main.frame);
 				main.frame.setDefaultCloseOperation(
 						WindowConstants.EXIT_ON_CLOSE);
 				JFrame.setDefaultLookAndFeelDecorated(false);
 				main.frame.pack(); // ウィンドウサイズを最適化
 				main.frame.setVisible(true); // ウィンドウを表示させる
 
-				// 長い処理のdummy
+				// 3秒後にスプラッシュスクリーンを非表示にする
 				try {
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
@@ -66,11 +69,9 @@ public class TestApp extends MuseApp {
 				}
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						// showPanel();
-						// main.hideSplash();
+						main.hideSplash();
 					}
 				});
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -90,6 +91,21 @@ public class TestApp extends MuseApp {
 		appImageFile = "mixtract-logo.png";
 		PROPERTY_FILENAME = "Mixtract.properties";
 		projectFileExtension = ".mxt";
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.app.MuseApp#mainFrame()
+	 */
+	@Override
+	protected MainFrame mainFrame() throws IOException {
+		// GUIのメインフレーム(JFrameのサブクラス)を生成し、frameに格納します。
+		// MainFrameはJFrameのサブクラスです。
+		// 独自GUIクラスを作成することになりますので、独自にMainFrameのサブクラスを実装し、
+		// ここでそのクラスをインスタンス化してください。
+		if (frame == null)
+			return new MainFrame(this); // 独自クラスを定義したらここでそれを返す。
+		return (MainFrame) frame; // このキャストは MainFrame のままで良い
 	}
 
 }

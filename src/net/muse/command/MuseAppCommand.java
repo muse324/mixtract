@@ -53,7 +53,7 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	/**
 	 * @param _main セットする _main
 	 */
-	protected static void setMain(MuseApp _main) {
+	public static void setMain(MuseApp _main) {
 		MuseAppCommand._main = _main;
 	}
 
