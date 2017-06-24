@@ -5,7 +5,6 @@ import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
 import net.muse.misc.Command;
-import net.muse.mixtract.command.MixtractCommand;
 
 public class MuseAppCommand extends Command implements GroupCommandInterface {
 
@@ -16,9 +15,9 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	public static final MuseAppCommand EDIT_GROUP = new EditGroupCommand(
 			"Edit group", "グループを編集");
 	public static final MuseAppCommand MAKE_GROUP = new MakeGroupCommand(
-			"Make a group");
+			"Make a group","グループを作成");
 	public static final MuseAppCommand OPEN_MUSICXML = new OpenMusicXMLCommand(
-			"Open MusicXML", "MusicXMLを開く");
+			"Open MusicXML...", "MusicXMLを開く...");
 	public static final MuseAppCommand REDRAW = new RedrawCommand("Redraw",
 			"再描画");
 	public static final MuseAppCommand SELECT_GROUP = new SelectGroupCommand(
@@ -26,7 +25,7 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	public static final MuseAppCommand RENDER = new RenderCommand("Render",
 			"生成");
 	public static final MuseAppCommand DETAIL = new DetailCommand(
-			"Show parameters", "Show parameters");
+			"Show parameters", "詳細表示");
 	public static final MuseAppCommand REFRESH = new RefreshCommand("Refresh",
 			"更新");
 	protected static TuneData _target;

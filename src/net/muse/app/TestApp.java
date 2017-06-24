@@ -12,19 +12,23 @@ import net.muse.mixtract.command.MixtractCommand;
 /**
  * <h1>TestApp</h1>
  * MuseAppシリーズによるアプリケーション開発のサンプルプログラムです。
+ * <p>
+ * アプリケーション起動のためのメインクラスは、MuseApp クラスのサブクラスとして実装します。
+ * GUI起動までの基本的なメソッドが実行されます。main() 内の記述例も参考にしてください。
  *
- * @author hashida
+ * @since June 24, 2017
+ * @author Mitsuyo Hashida
  */
 public class TestApp extends MuseApp {
 
 	public static void main(String[] args) {
 		try {
 			TestApp main = new TestApp(args);
-			if (!isShowGUI()) // GUIを使わずメインエンジンのみテストする場合に使用。GUI設定は
-
+			if (!isShowGUI()) // isShowGUI()は、起動時にGUIを用いるかどうかを判別します。プロパティファイル内のSHOW_GUIによる値で判別します。
 				main.readfile(main.getInputFileName(), main
 						.getOutputFileName());
 			else {
+				// ---- GUI起動 ------------------------
 				// MacOSXでのJava実行環境用のシステムプロパティの設定.
 				main.setupSystemPropertiesForMacOSX();
 
@@ -37,7 +41,7 @@ public class TestApp extends MuseApp {
 				MixtractCommand.setMainObject(main);
 
 				/* sprash screen */
-				main.createSplashScreen("mixtract-logo.png");
+				main.createSplashScreen(appImageFile);
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						main.showSplashScreen();
@@ -77,7 +81,8 @@ public class TestApp extends MuseApp {
 		super(args);
 	}
 
-	/* (非 Javadoc)
+	/*
+	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#initialize()
 	 */
 	@Override

@@ -37,17 +37,23 @@ public abstract class MuseGUIObject<F extends JFrame> extends MuseObject {
 		return frame;
 	}
 
+	/**
+	 * アプリケーション起動時にスプラッシュスクリーンを数秒表示します。<br/>
+	 * showSplashScreen()が呼び出された後、自動で呼び出されるので、プログラミング時に明示的に呼び出す必要はありません。
+	 */
 	protected void hideSplash() {
 		splashScreen.setVisible(false);
 		splashScreen.dispose();
 		splashLabel = null;
 	}
 
+	/**
+	 * アプリケーション起動時にスプラッシュスクリーンを数秒表示します。
+	 */
 	protected void showSplashScreen() {
 		splashScreen.setAlwaysOnTop(true);
 		splashScreen.pack();
 		splashScreen.setVisible(true);
-
 	}
 
 	/**
@@ -58,6 +64,8 @@ public abstract class MuseGUIObject<F extends JFrame> extends MuseObject {
 	}
 
 	/**
+	 * 起動時にGUIを用いるかどうかを判別します。プロパティファイル内のSHOW_GUIによる値で判別します。
+	 *
 	 * @return showGUI
 	 */
 	public static boolean isShowGUI() {
