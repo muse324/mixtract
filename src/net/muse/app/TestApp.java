@@ -17,10 +17,6 @@ import net.muse.mixtract.command.MixtractCommand;
  */
 public class TestApp extends MuseApp {
 
-	public TestApp(String[] args) throws FileNotFoundException, IOException {
-		super(args);
-	}
-
 	public static void main(String[] args) {
 		try {
 			TestApp main = new TestApp(args);
@@ -75,6 +71,20 @@ public class TestApp extends MuseApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public TestApp(String[] args) throws FileNotFoundException, IOException {
+		super(args);
+	}
+
+	/* (非 Javadoc)
+	 * @see net.muse.app.MuseApp#initialize()
+	 */
+	@Override
+	protected void initialize() {
+		appImageFile = "mixtract-logo.png";
+		PROPERTY_FILENAME = "Mixtract.properties";
+		projectFileExtension = ".mxt";
 	}
 
 }

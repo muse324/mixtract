@@ -17,8 +17,8 @@ import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	protected static String appImageFile = "mixtract-logo.png";
-	private static final String PROPERTY_FILENAME = "Mixtract.properties";
-	private static final String projectFileExtension = ".mxt";
+	protected static String PROPERTY_FILENAME = "Mixtract.properties";
+	protected static String projectFileExtension = ".mxt";
 
 	/** 各種設定 */
 	private boolean isReadingStructureData;
@@ -62,10 +62,23 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	public MuseApp(String[] args) throws FileNotFoundException, IOException {
 		/* 初期化 */
 		super();
+		initialize();
 		setPropertyFilename(PROPERTY_FILENAME);
 		loadConfig();
 		setOption(args);
 	}
+
+	/**
+	 * アプリケーション起動前の初期設定を行います。下記の３パラメータについて必ず値を代入してください。
+	 *
+	 * @param appImageFile - アプリケーションロゴ画像の名称。画像ファイルはメインクラス(.java)と同じ場所に置いてください。
+	 * @param PROPERTY_FILENAME -
+	 *            アプリケーション用の環境設定ファイル名（.properties）。ファイルはプロジェクトフォルダのトップに置いてください。<br/>
+	 *            cf) Mixtract.properties
+	 * @param projectFileExtension - 独自ファイルを用いる場合の拡張子。".xxx"の形で記述します。 <div>ex)
+	 *            <code> projectFileExtension = ".mxt";</code></div>
+	 */
+	protected abstract void initialize();
 
 	public void addPhraseViewerList(PhraseViewer pv) {
 		getPhraseViewList().add(pv);

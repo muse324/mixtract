@@ -24,46 +24,13 @@ import net.muse.mixtract.gui.MXMainFrame;
  * @since 2017/06/17 at m-use studio / Soai University
  */
 public class Mixtract extends MuseApp {
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
-	 */
-	@Override protected MXTuneData createTuneData(File in, File out)
-			throws IOException, InvalidMidiDataException {
-		return new MXTuneData(in, out);
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.MuseApp#createNewFrame()
-	 */
-	@Override protected void createNewFrame() throws Exception {
-		this.frame = new MXMainFrame(this);
-		if (!isMac())
-			return;
-
-		// Mac用にスクリーンメニューとアプリケーション終了(cmd-Q)のハンドリングを設定する.
-		// com.apple.eawt.Applicationクラスで処理するが、MacOSX以外の実行環境では存在しないので、
-		// このクラスを直接使用するとMacOSX以外で起動できなくなってしまう.
-		// そのため、サポートクラスの中で処理させ、そのサポートクラスをリフレクションにより間接的に
-		// 必要になったときに呼び出す.(クラスのロードに失敗したら、そのときにコケる.)
-		Class<?> clz = Class.forName("net.muse.gui.MainFramePartialForMacOSX");
-		Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
-				MainFrame.class });
-		mtd.invoke(null, new Object[] { this.frame });
-	}
-
-	protected static String mixtractLogImageFile = "mixtract-logo.png";
-
-	public Mixtract(String[] args) throws FileNotFoundException, IOException {
-		super(args);
-	}
 
 	public static void main(String[] args) {
 		try {
 			final Mixtract main = new Mixtract(args);
 			if (!isShowGUI())
-				main.readfile(main.getInputFileName(), main.getOutputFileName());
+				main.readfile(main.getInputFileName(), main
+						.getOutputFileName());
 			else {
 				// MacOSXでのJava実行環境用のシステムプロパティの設定.
 				main.setupSystemPropertiesForMacOSX();
@@ -77,7 +44,7 @@ public class Mixtract extends MuseApp {
 				MixtractCommand.setMainObject(main);
 
 				/* sprash screen */
-				main.createSplashScreen(mixtractLogImageFile);
+				main.createSplashScreen(appImageFile);
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						main.showSplashScreen();
@@ -112,5 +79,51 @@ public class Mixtract extends MuseApp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Mixtract(String[] args) throws FileNotFoundException, IOException {
+		super(args);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.MuseApp#createNewFrame()
+	 */
+	@Override
+	protected void createNewFrame() throws Exception {
+		this.frame = new MXMainFrame(this);
+		if (!isMac())
+			return;
+
+		// Mac用にスクリーンメニューとアプリケーション終了(cmd-Q)のハンドリングを設定する.
+		// com.apple.eawt.Applicationクラスで処理するが、MacOSX以外の実行環境では存在しないので、
+		// このクラスを直接使用するとMacOSX以外で起動できなくなってしまう.
+		// そのため、サポートクラスの中で処理させ、そのサポートクラスをリフレクションにより間接的に
+		// 必要になったときに呼び出す.(クラスのロードに失敗したら、そのときにコケる.)
+		Class<?> clz = Class.forName("net.muse.gui.MainFramePartialForMacOSX");
+		Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
+				MainFrame.class });
+		mtd.invoke(null, new Object[] { this.frame });
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
+	 */
+	@Override
+	protected MXTuneData createTuneData(File in, File out) throws IOException,
+			InvalidMidiDataException {
+		return new MXTuneData(in, out);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.app.MuseApp#initialize()
+	 */
+	@Override
+	protected void initialize() {
+		appImageFile = "mixtract-logo.png";
+		PROPERTY_FILENAME = "Mixtract.properties";
+		projectFileExtension = ".mxt";
 	}
 }
