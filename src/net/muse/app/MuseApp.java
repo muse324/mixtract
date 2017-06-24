@@ -1,13 +1,12 @@
 package net.muse.app;
 
-import java.awt.EventQueue;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.sound.midi.InvalidMidiDataException;
-import javax.swing.*;
+import javax.swing.JFrame;
 
 import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
 import net.muse.data.*;
@@ -16,8 +15,8 @@ import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
-public class MuseApp extends MuseGUIObject<JFrame> {
-	protected static String mixtractLogImageFile = "mixtract-logo.png";
+public abstract class MuseApp extends MuseGUIObject<JFrame> {
+	protected static String appImageFile = "mixtract-logo.png";
 	private static final String PROPERTY_FILENAME = "Mixtract.properties";
 	private static final String projectFileExtension = ".mxt";
 
@@ -54,54 +53,6 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public static void main(String[] args) {
 		try {
-			final MuseApp main = new MuseApp(args);
-			if (!isShowGUI())
-				main.readfile(main.getInputFileName(), main
-						.getOutputFileName());
-			else {
-				// MacOSXでのJava実行環境用のシステムプロパティの設定.
-				main.setupSystemPropertiesForMacOSX();
-
-				// システム標準のL&Fを設定.
-				// MacOSXならAqua、WindowsXPならLuna、Vista/Windows7ならばAeroになる.
-				// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-
-				MixtractCommand.setMainObject(main);
-
-				/* sprash screen */
-				// main.createSplashScreen(mixtractLogImageFile);
-				// EventQueue.invokeLater(new Runnable() {
-				// public void run() {
-				// main.showSplashScreen();
-				// main.splashScreen.setLocationRelativeTo(null);
-				// }
-				// });
-
-				// create main frame
-				main.createNewFrame();
-				MixtractCommand.setJFrame(main.frame);
-				main.frame.setDefaultCloseOperation(
-						WindowConstants.EXIT_ON_CLOSE);
-				JFrame.setDefaultLookAndFeelDecorated(false);
-				main.frame.pack(); // ウィンドウサイズを最適化
-				main.frame.setVisible(true); // ウィンドウを表示させる
-
-				// 長い処理のdummy
-				try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					GUIUtil.printConsole(e.getMessage());
-				}
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						// showPanel();
-						// main.hideSplash();
-					}
-				});
-
-			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -518,10 +469,10 @@ public class MuseApp extends MuseGUIObject<JFrame> {
 				app.setOutputFileName(property);
 			}
 		},
-		MIXTRACT_LOGO {
+		APPLICATION_LOGO {
 			@Override
 			public void exe(MuseApp app, String property) {
-				mixtractLogImageFile = property;
+				appImageFile = property;
 			}
 		},
 		CMXCATALOG {
