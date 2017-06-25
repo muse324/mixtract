@@ -49,14 +49,16 @@ abstract class ApexInfo extends MuseObject {
 		 * int)
 		 */
 		@Override
-		protected void apply(List<MXNoteData> notelist, int idx, int size) {
+		protected void apply(List<? extends NoteData> notelist, int idx,
+				int size) {
 			if (idx + 1 >= size)
 				return;
-			MXNoteData n1 = notelist.get(idx);
+			NoteData n1 = notelist.get(idx);
 			NoteData n2 = notelist.get(idx + 1);
 			if (n1.isNonChord() && !n2.isNonChord()) {
 				if (getAppoggiaturaScore(n1, n2))
-					n1.addApexScore(this);
+					assert n1 instanceof MXNoteData;
+				((MXNoteData) n1).addApexScore(this);
 			}
 			apply(notelist, idx + 1, size);
 		}
@@ -166,14 +168,16 @@ abstract class ApexInfo extends MuseObject {
 		 * (java.util.List, int, int)
 		 */
 		@Override
-		public void apply(List<MXNoteData> notelist, int idx, int size) {
+		public void apply(List<? extends NoteData> notelist, int idx,
+				int size) {
 			if (idx + 1 >= size)
 				return;
-			MXNoteData n1 = notelist.get(idx);
+			NoteData n1 = notelist.get(idx);
 			if (n1.chord() == Harmony.V || n1.chord() == Harmony.V7) {
-				MXNoteData n2 = notelist.get(idx + 1);
+				NoteData n2 = notelist.get(idx + 1);
 				if (isMatchedCondition(n2.chord())) {
-					addApexInfoToNotes(n1, n2);
+					assert n1 instanceof MXNoteData && n2 instanceof MXNoteData;
+					addApexInfoToNotes((MXNoteData) n1, (MXNoteData) n2);
 				}
 			}
 			apply(notelist, idx + 1, size);
@@ -282,16 +286,19 @@ abstract class ApexInfo extends MuseObject {
 		 * int)
 		 */
 		@Override
-		public void apply(List<MXNoteData> notelist, int idx, int size) {
+		public void apply(List<? extends NoteData> notelist, int idx,
+				int size) {
 			if (idx + 1 >= size)
 				return;
-			MXNoteData n1 = notelist.get(idx);
-			MXNoteData n2 = notelist.get(idx + 1);
+			NoteData n1 = notelist.get(idx);
+			NoteData n2 = notelist.get(idx + 1);
 			if (isExceptedCondition(n1, n2)) {
 				apply(notelist, idx + 1, size);
 				return;
 			}
-			MXNoteData primaryNote = getPrimaryNote(n1, n2);
+			assert n1 instanceof MXNoteData && n2 instanceof MXNoteData;
+			MXNoteData primaryNote = getPrimaryNote((MXNoteData) n1,
+					(MXNoteData) n2);
 			primaryNote.addApexScore(this);
 			apply(notelist, idx + 1, size);
 		}
@@ -462,7 +469,8 @@ abstract class ApexInfo extends MuseObject {
 		 * int)
 		 */
 		@Override
-		public void apply(List<MXNoteData> notelist, int idx, int size) {
+		public void apply(List<? extends NoteData> notelist, int idx,
+				int size) {
 			if (idx < 2) {
 				apply(notelist, idx + 1, size);
 				return;
@@ -470,16 +478,19 @@ abstract class ApexInfo extends MuseObject {
 			if (idx + 1 >= size)
 				return;
 			NoteData n1 = notelist.get(idx - 2);
-			MXNoteData n2 = notelist.get(idx - 1);
-			MXNoteData n3 = notelist.get(idx);
-			MXNoteData n4 = notelist.get(idx + 1);
+			NoteData n2 = notelist.get(idx - 1);
+			NoteData n3 = notelist.get(idx);
+			NoteData n4 = notelist.get(idx + 1);
 			int interval1 = interval(n1, n2);
 			int interval2 = interval(n2, n3);
 			int interval3 = interval(n3, n4);
 			if (interval1 == REST || interval2 == REST || interval3 == REST)
 				apply(notelist, idx + 1, size);
 			if (matchCondition(interval1, interval2, interval3)) {
-				addApexInfoToNotes(n2, n3, n4);
+				assert n2 instanceof MXNoteData && n3 instanceof MXNoteData
+						&& n4 instanceof MXNoteData;
+				addApexInfoToNotes((MXNoteData) n2, (MXNoteData) n3,
+						(MXNoteData) n4);
 			}
 			apply(notelist, idx + 1, size);
 		}
@@ -607,15 +618,18 @@ abstract class ApexInfo extends MuseObject {
 		 * int)
 		 */
 		@Override
-		public void apply(List<MXNoteData> notelist, int idx, int size) {
+		public void apply(List<? extends NoteData> notelist, int idx,
+				int size) {
 			if (idx + 1 >= size)
 				return;
 			apply(notelist, idx + 1, size);
 
-			MXNoteData n1 = notelist.get(idx);
+			NoteData n1 = notelist.get(idx);
 			NoteData n2 = notelist.get(idx + 1);
-			if (matchCondition(n1, n2))
-				n1.addApexScore(this);
+			if (matchCondition(n1, n2)) {
+				assert n1 instanceof MXNoteData;
+				((MXNoteData) n1).addApexScore(this);
+			}
 		}
 
 		/**
@@ -672,9 +686,12 @@ abstract class ApexInfo extends MuseObject {
 		public void apply(Group group) {}
 
 		@Override
-		public void apply(List<MXNoteData> notelist, int idx, int size) {
-			MXNoteData n1 = notelist.get(idx);
-			n1.addApexScore(apply(n1.chord()));
+		public void apply(List<? extends NoteData> notelist, int idx,
+				int size) {
+			if(idx>=size)return;
+			NoteData n1 = notelist.get(idx);
+			assert n1 instanceof MXNoteData;
+			((MXNoteData) n1).addApexScore(apply(n1.chord()));
 			apply(notelist, idx + 1, size);
 		}
 
@@ -682,14 +699,15 @@ abstract class ApexInfo extends MuseObject {
 			return new ApexInfo.SingleChordRule(chord.parameter() / 3.);
 		}
 
-		public static void applyRule(Harmony h, List<MXNoteData> notelist,
+		public static void applyRule(Harmony h, List<? extends NoteData> nlist,
 				int idx, int size) {
 			if (idx >= size)
 				return;
-			MXNoteData n1 = notelist.get(idx);
+			NoteData n1 = nlist.get(idx);
 			ApexInfo r = apply(n1.chord());
-			n1.addApexScore(r);
-			r.apply(notelist, idx + 1, size);
+			assert n1 instanceof MXNoteData;
+			((MXNoteData) n1).addApexScore(r);
+			r.apply(nlist, idx + 1, size);
 		}
 
 	}
@@ -701,7 +719,8 @@ abstract class ApexInfo extends MuseObject {
 		}
 
 		@Override
-		public void apply(List<MXNoteData> notelist, int idx, int size) {}
+		public void apply(List<? extends NoteData> notelist, int idx,
+				int size) {}
 	}
 
 	public static class UpperProgressNoteRule extends UpperStetchNoteRule {
@@ -747,16 +766,19 @@ abstract class ApexInfo extends MuseObject {
 		public void apply(Group group) {}
 
 		@Override
-		public void apply(List<MXNoteData> notelist, int idx, int size) {
+		public void apply(List<? extends NoteData> notelist, int idx,
+				int size) {
 			if (idx + 2 >= size)
 				return;
 			NoteData n1 = notelist.get(idx);
-			MXNoteData n2 = notelist.get(idx + 1);
+			NoteData n2 = notelist.get(idx + 1);
 			NoteData n3 = notelist.get(idx + 2);
 			int d1 = interval(n1, n2);
 			int d2 = interval(n2, n3);
-			if (matchCondition(n1, n3) && matchCondition(d1, d2))
-				n2.addApexScore(this);
+			if (matchCondition(n1, n3) && matchCondition(d1, d2)) {
+				assert n2 instanceof MXNoteData;
+				((MXNoteData) n2).addApexScore(this);
+			}
 			apply(notelist, idx + 1, size);
 		}
 
@@ -930,9 +952,9 @@ abstract class ApexInfo extends MuseObject {
 	 * @param i
 	 * @param size
 	 */
-	static void applyRule(ApexInfo type, List<MXNoteData> notelist, int idx,
-			int size) {
-		type.apply(notelist, idx, size);
+	static void applyRule(ApexInfo type, List<? extends NoteData> nlist,
+			int idx, int size) {
+		type.apply(nlist, idx, size);
 	}
 
 	/** 頂点らしさを表すパラメータ */
@@ -950,11 +972,12 @@ abstract class ApexInfo extends MuseObject {
 
 	/**
 	 * @param type
-	 * @param notelist
+	 * @param nlist
 	 * @param idx
 	 * @param size
 	 */
-	protected abstract void apply(List<MXNoteData> notelist, int idx, int size);
+	protected abstract void apply(List<? extends NoteData> nlist, int idx,
+			int size);
 
 	/**
 	 * @return

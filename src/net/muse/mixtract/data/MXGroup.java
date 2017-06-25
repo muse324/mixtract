@@ -6,7 +6,6 @@ import net.muse.data.*;
 import net.muse.mixtract.data.curve.*;
 
 public class MXGroup extends Group {
-	private List<MXNoteData> scoreNotelist;
 	private DynamicsCurve dynamicsCurve;
 	private TempoCurve tempoCurve;
 	private ArticulationCurve articulationCurve;
@@ -45,19 +44,19 @@ public class MXGroup extends Group {
 	 * @param endNote
 	 * @param type
 	 */
-	private MXGroup(GroupNote groupNoteList, GroupNote endNote,
-			GroupType type) {
+	public MXGroup(GroupNote groupNoteList, GroupNote endNote, GroupType type) {
 		super(groupNoteList, endNote, type);
 	}
 
 	/**
 	 * 頂点らしさを算出します。
 	 */
-	@SuppressWarnings("unchecked") public void extractApex() {
-		List<MXNoteData> nlist = (List<MXNoteData>) getScoreNotelist();
+	public void extractApex() {
+		List<? extends NoteData> nlist = getScoreNotelist();
 		// score clear
-		for (MXNoteData n : nlist) {
-			n.clearApexScore();
+		for (NoteData n : nlist) {
+			assert n instanceof MXNoteData;
+			((MXNoteData) n).clearApexScore();
 		}
 
 		final int sz = nlist.size();
@@ -89,8 +88,9 @@ public class MXGroup extends Group {
 		double max = -1000.;
 		double min = 1000.;
 		ArrayList<Double> scoreList = new ArrayList<Double>();
-		for (MXNoteData n : nlist) {
-			double score = n.sumTotalApexScore();
+		for (NoteData n : nlist) {
+			assert n instanceof MXNoteData;
+			double score = ((MXNoteData) n).sumTotalApexScore();
 			if (score > max)
 				max = score;
 			if (score < min)
@@ -99,9 +99,9 @@ public class MXGroup extends Group {
 		}
 		double range = max - min;
 		for (int i = 0; i < sz; i++) {
-			nlist.get(i).setApexScore((scoreList.get(i) - min) / range);
+			((MXNoteData) nlist.get(i)).setApexScore((scoreList.get(i) - min)
+					/ range);
 		}
-
 	}
 
 	/**
@@ -134,17 +134,10 @@ public class MXGroup extends Group {
 	 * (非 Javadoc)
 	 * @see net.muse.mixtract.data.Group#addScoreNoteList(java.util.List)
 	 */
-	@Override protected void addScoreNoteList(List<? extends NoteData> list) {
+	@Override
+	protected void addScoreNoteList(List<? extends NoteData> list) {
 		for (NoteData n : list)
 			scoreNotelist.add((MXNoteData) n);
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.mixtract.data.Group#cresteScoreNoteList()
-	 */
-	@Override protected void createScoreNoteList() {
-		scoreNotelist = new ArrayList<MXNoteData>();
 	}
 
 	protected void initialize() {
@@ -155,5 +148,4 @@ public class MXGroup extends Group {
 		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
 				PhraseCurveType.ARTICULATION);
 	}
-
 }

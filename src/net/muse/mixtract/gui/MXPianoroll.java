@@ -1,11 +1,15 @@
 package net.muse.mixtract.gui;
 
+import java.awt.Rectangle;
+
 import net.muse.data.Group;
-import net.muse.gui.GroupLabel;
-import net.muse.gui.PianoRoll;
+import net.muse.data.GroupNote;
+import net.muse.gui.*;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXPianoroll extends PianoRoll {
+
+	private static final long serialVersionUID = 1L;
 
 	boolean displayApex = false;
 
@@ -13,20 +17,12 @@ public class MXPianoroll extends PianoRoll {
 		super();
 	}
 
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * @param b
-	 */
-	protected void setDisplayApex(boolean flg) {
-		displayApex = flg;
-	}
-
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#deselect(net.muse.gui.GroupLabel)
 	 */
-	@Override public void deselect(GroupLabel g) {
+	@Override
+	public void deselect(GroupLabel g) {
 		setDisplayApex(false);
 		super.deselect(g);
 	}
@@ -35,10 +31,23 @@ public class MXPianoroll extends PianoRoll {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#selectGroup(net.muse.mixtract.data.Group)
 	 */
-	@Override public void selectGroup(Group group) {
+	@Override
+	public void selectGroup(Group group) {
 		setDisplayApex(true);
 		((MXGroup) group).extractApex();
 		super.selectGroup(group);
+	}
+
+	protected NoteLabel createNoteLabel(final GroupNote note,
+			final Rectangle r) {
+		return new MXNoteLabel(note, r);
+	}
+
+	/**
+	 * @param b
+	 */
+	protected void setDisplayApex(boolean flg) {
+		displayApex = flg;
 	}
 
 }

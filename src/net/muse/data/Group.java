@@ -43,7 +43,7 @@ public class Group extends SequenceData {
 	private GroupNote notelist = null;
 
 	/** TODO 具体的にどう使ってるか確認する */
-	private List<NoteData> scoreNotelist;
+	protected List<NoteData> scoreNotelist;
 	/** 開始音 */
 	private GroupNote beginGroupNote = null;
 	/** 終了音 */
@@ -211,6 +211,8 @@ public class Group extends SequenceData {
 	 * @return cur
 	 */
 	public List<? extends NoteData> getScoreNotelist() {
+		if(scoreNotelist==null)
+			createScoreNoteList();
 		if (hasChild()) {
 			scoreNotelist.clear();
 			addScoreNoteList(getChildFormerGroup().getScoreNotelist());
@@ -364,7 +366,7 @@ public class Group extends SequenceData {
 	}
 
 	protected void createScoreNoteList() {
-		scoreNotelist = new ArrayList<NoteData>();
+		this.scoreNotelist = new ArrayList<NoteData>();
 	}
 
 	protected void initialize() {

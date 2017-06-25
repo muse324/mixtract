@@ -4,6 +4,8 @@ import java.util.LinkedList;
 
 import net.muse.data.*;
 import net.muse.gui.NoteLabel;
+import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.gui.MXNoteLabel;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -70,6 +72,8 @@ public class MakeGroupCommand extends MuseAppCommand {
 			if (groupNoteList.equals(begin.getGroupNote()))
 				break;
 		}
+		if (begin instanceof MXNoteLabel)
+			return new MXGroup(groupNoteList, endNote, GroupType.USER);
 		return new Group(groupNoteList, endNote, GroupType.USER);
 	}
 

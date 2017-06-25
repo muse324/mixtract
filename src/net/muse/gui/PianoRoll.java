@@ -837,7 +837,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			return;
 
 		final Rectangle r = getLabelBounds(note.getNote(), offset);
-		final NoteLabel n = new NoteLabel(note, r);
+		final NoteLabel n = createNoteLabel(note, r);
 		n.setController(main);
 		n.setSelected(selectedNoteLabels.contains(n));
 		// n.setOffset(offset);
@@ -868,6 +868,11 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			setPreferredSize(sz);
 			repaint();
 		}
+	}
+
+	protected NoteLabel createNoteLabel(final GroupNote note,
+			final Rectangle r) {
+		return new NoteLabel(note, r);
 	}
 
 	/**
