@@ -314,7 +314,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 */
 	@Override
 	public void writeScoreData() throws IOException {
-		throw new NotImplementedException();
+		JOptionPane.showMessageDialog(null,
+				"TuneDataのサブクラスにて、writeScoreData()をオーバーライド実装してください。");
 	}
 
 	/*
