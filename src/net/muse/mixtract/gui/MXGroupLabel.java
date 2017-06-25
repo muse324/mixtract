@@ -15,12 +15,7 @@ public class MXGroupLabel extends GroupLabel {
 		super(group, r);
 	}
 
-	protected void createPhraseViewer(MuseApp _main, Group gr) {
-		MXPhraseViewer pv = new MXPhraseViewer((Mixtract) _main, gr);
-		pv.setTitle(gr.name());
-		_main.addPhraseViewerList(pv);
-		pv.pack();
-		pv.setVisible(true);
-		pv.preset();
+	protected MXPhraseViewer createPhraseViewer(MuseApp _main, Group gr) {
+		return new MXPhraseViewer((Mixtract) _main, gr);
 	}
 }

@@ -202,7 +202,7 @@ public class GroupLabel extends JLabel {
 							return;
 						}
 					}
-					createPhraseViewer(_main, gr);
+					showPhraseViewer(_main, gr);
 				}
 				repaint();
 			}
@@ -442,13 +442,17 @@ public class GroupLabel extends JLabel {
 		this.startEdit = startEdit;
 	}
 
-	protected void createPhraseViewer(MuseApp app, Group gr) {
-		PhraseViewer pv = new PhraseViewer(app, gr);
+	private void showPhraseViewer(MuseApp app, Group gr) {
+		PhraseViewer pv = createPhraseViewer(app, gr);
 		pv.setTitle(gr.name());
 		app.addPhraseViewerList(pv);
 		pv.pack();
 		pv.setVisible(true);
 		pv.preset();
+	}
+
+	protected PhraseViewer createPhraseViewer(MuseApp app, Group gr) {
+		return new PhraseViewer(app, gr);
 	}
 
 }
