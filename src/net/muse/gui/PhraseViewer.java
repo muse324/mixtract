@@ -2,8 +2,7 @@ package net.muse.gui;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JDialog;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
@@ -39,7 +38,7 @@ public class PhraseViewer extends JDialog implements CanvasMouseListener {
 	protected PhraseViewer(MuseApp app, Group group) {
 		super(app.getFrame());
 		this.main = app;
-		setOwner((MainFrame) app.getFrame());
+		setOwner(app.getFrame());
 		this.group = group;
 		initialize();
 	}
@@ -48,7 +47,8 @@ public class PhraseViewer extends JDialog implements CanvasMouseListener {
 	 * (non-Javadoc)
 	 * @see java.awt.Dialog#setTitle(java.lang.String)
 	 */
-	@Override public void setTitle(String title) {
+	@Override
+	public void setTitle(String title) {
 		super.setTitle(title + " - " + this.getClass().getSimpleName());
 	}
 
@@ -139,8 +139,8 @@ public class PhraseViewer extends JDialog implements CanvasMouseListener {
 	/**
 	 * @param owner セットする owner
 	 */
-	public void setOwner(MainFrame owner) {
-		this.owner = owner;
+	public void setOwner(JFrame owner) {
+		this.owner = (MainFrame) owner;
 	}
 
 	/**

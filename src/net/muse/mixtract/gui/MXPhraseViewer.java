@@ -34,17 +34,14 @@ public class MXPhraseViewer extends PhraseViewer {
 
 	MXPhraseViewer(Mixtract main, Group group) {
 		super(main, group);
-		this.main = main;
-		setOwner((MXMainFrame) main.getFrame());
-		setGroup(group);
-		setController(main);
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PhraseViewer#owner()
 	 */
-	@Override public MXMainFrame owner() {
+	@Override
+	public MXMainFrame owner() {
 		return (MXMainFrame) owner;
 	}
 
@@ -56,7 +53,8 @@ public class MXPhraseViewer extends PhraseViewer {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PhraseViewer#setOwner(net.muse.gui.MainFrame)
 	 */
-	@Override public void setOwner(MainFrame owner) {
+	@Override
+	public void setOwner(JFrame owner) {
 		this.owner = (MXMainFrame) owner;
 	}
 
@@ -424,7 +422,8 @@ public class MXPhraseViewer extends PhraseViewer {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PhraseViewer#group()
 	 */
-	@Override public MXGroup group() {
+	@Override
+	public MXGroup group() {
 		return (MXGroup) super.group();
 	}
 }
