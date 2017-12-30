@@ -15,9 +15,9 @@ import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public abstract class MuseApp extends MuseGUIObject<JFrame> {
-	private String appImageFile = "mixtract-logo.png";
 	protected static String PROPERTY_FILENAME = "Mixtract.properties";
 	protected static String projectFileExtension = ".mxt";
+	private String appImageFile;
 
 	/** 各種設定 */
 	private boolean isReadingStructureData;
@@ -47,17 +47,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		return projectFileExtension;
 	}
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public MuseApp(String[] args) throws FileNotFoundException, IOException {
 		/* 初期化 */
 		super();
@@ -66,18 +55,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		loadConfig();
 		setOption(args);
 	}
-
-	/**
-	 * アプリケーション起動前の初期設定を行います。下記の３パラメータについて必ず値を代入してください。
-	 *
-	 * @param appImageFile - アプリケーションロゴ画像の名称。画像ファイルはメインクラス(.java)と同じ場所に置いてください。
-	 * @param PROPERTY_FILENAME -
-	 *            アプリケーション用の環境設定ファイル名（.properties）。ファイルはプロジェクトフォルダのトップに置いてください。<br/>
-	 *            cf) Mixtract.properties
-	 * @param projectFileExtension - 独自ファイルを用いる場合の拡張子。".xxx"の形で記述します。 <div>ex)
-	 *            <code> projectFileExtension = ".mxt";</code></div>
-	 */
-	protected abstract void initialize();
 
 	public void addPhraseViewerList(PhraseViewer pv) {
 		getPhraseViewList().add(pv);
@@ -114,6 +91,18 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		return doSimilaritySearch;
 	}
 
+	public String getAppImageFile() {
+		assert appImageFile != null;
+		return appImageFile;
+	}
+
+	/**
+	 * @return inputFileName
+	 */
+	public String getInputFileName() {
+		return inputFileName;
+	}
+
 	/**
 	 * @return midiDeviceName
 	 */
@@ -126,6 +115,13 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public File getMusicXMLDirectory() {
 		return musicXMLDir;
+	}
+
+	/**
+	 * @return outputFileName
+	 */
+	public String getOutputFileName() {
+		return outputFileName;
 	}
 
 	public ArrayList<PhraseViewer> getPhraseViewList() {
@@ -280,6 +276,10 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		readfile(in, out);
 	}
 
+	public void setAppImageFile(String imgFileName) {
+		appImageFile = imgFileName;
+	}
+
 	/**
 	 * @param inputFileName the inputFileName to set
 	 */
@@ -288,10 +288,40 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	/**
+	 * MIDIデバイス名を指定します。
+	 *
+	 * @param midiDeviceName
+	 */
+	public void setMidiDeviceName(String midiDeviceName) {
+		this.midiDeviceName = midiDeviceName;
+	}
+
+	/**
 	 * @param dir セットする musicXMLDir
 	 */
 	public void setMusicXMLDirectory(File dir) {
 		this.musicXMLDir = dir;
+	}
+
+	/**
+	 * @param outputDir 出力用ディレクトリ
+	 */
+	public void setOutputDirectory(File outputDir) {
+		this.outputDir = outputDir;
+	}
+
+	/**
+	 * @param outputFileName セットする outputFileName
+	 */
+	public void setOutputFileName(String outputFileName) {
+		this.outputFileName = outputFileName;
+	}
+
+	/**
+	 * @param dir プロジェクトデータを格納するディレクトリ
+	 */
+	public void setProjectDirectory(File dir) {
+		this.projectDir = dir;
 	}
 
 	/**
@@ -339,12 +369,28 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		mtd.invoke(null, new Object[] { this.frame });
 	}
 
-	abstract protected MainFrame mainFrame() throws IOException;
-
 	protected TuneData createTuneData(File in, File out) throws IOException,
 			InvalidMidiDataException {
 		return new TuneData(in, out);
 	}
+
+	protected File getOutputDirectory() {
+		return outputDir;
+	}
+
+	/**
+	 * アプリケーション起動前の初期設定を行います。下記の３パラメータについて必ず値を代入してください。
+	 *
+	 * @param appImageFile - アプリケーションロゴ画像の名称。画像ファイルはメインクラス(.java)と同じ場所に置いてください。
+	 * @param PROPERTY_FILENAME -
+	 *            アプリケーション用の環境設定ファイル名（.properties）。ファイルはプロジェクトフォルダのトップに置いてください。<br/>
+	 *            cf) Mixtract.properties
+	 * @param projectFileExtension - 独自ファイルを用いる場合の拡張子。".xxx"の形で記述します。 <div>ex)
+	 *            <code> projectFileExtension = ".mxt";</code></div>
+	 */
+	protected abstract void initialize();
+
+	abstract protected MainFrame mainFrame() throws IOException;
 
 	/**
 	 * @param data セットする data
@@ -354,15 +400,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	protected void setMaximumMIDIChannel(int ch) {}
-
-	/**
-	 * MIDIデバイス名を指定します。
-	 *
-	 * @param midiDeviceName
-	 */
-	public void setMidiDeviceName(String midiDeviceName) {
-		this.midiDeviceName = midiDeviceName;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -381,13 +418,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 				log.println("skipped.");
 			}
 		}
-	}
-
-	/**
-	 * @param dir プロジェクトデータを格納するディレクトリ
-	 */
-	public void setProjectDirectory(File dir) {
-		this.projectDir = dir;
 	}
 
 	/**
@@ -443,46 +473,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 				doSearch = false;
 			}
 		}
-	}
-
-	/**
-	 * @return inputFileName
-	 */
-	public String getInputFileName() {
-		return inputFileName;
-	}
-
-	/**
-	 * @return outputFileName
-	 */
-	public String getOutputFileName() {
-		return outputFileName;
-	}
-
-	/**
-	 * @param outputFileName セットする outputFileName
-	 */
-	public void setOutputFileName(String outputFileName) {
-		this.outputFileName = outputFileName;
-	}
-
-	protected File getOutputDirectory() {
-		return outputDir;
-	}
-
-	/**
-	 * @param outputDir 出力用ディレクトリ
-	 */
-	public void setOutputDirectory(File outputDir) {
-		this.outputDir = outputDir;
-	}
-
-	public String getAppImageFile() {
-		return appImageFile;
-	}
-
-	public void setAppImageFile(String imgFileName) {
-		appImageFile = imgFileName;
 	}
 
 }
