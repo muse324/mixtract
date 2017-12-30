@@ -517,8 +517,8 @@ public class MXTuneData extends TuneData {
 	private void writeGroupStructureData(PrintWriter out, MXGroup group) {
 		if (group == null)
 			return;
-		writeGroupStructureData(out, group.getChildFormerGroup());
-		writeGroupStructureData(out, group.getChildLatterGroup());
+		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
+		writeGroupStructureData(out, (MXGroup) group.getChildLatterGroup());
 		out.format("%s;%s;%s\n", group, (group.hasTopNote()) ? group
 				.getTopGroupNote().getNote().id() : "null", writeCurveParam(
 						group));

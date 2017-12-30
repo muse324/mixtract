@@ -111,23 +111,6 @@ public class MXGroup extends Group {
 		return articulationCurve;
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.data.Group#getChildFormerGroup()
-	 */
-	@Override
-	public MXGroup getChildFormerGroup() {
-		return (MXGroup) super.getChildFormerGroup();
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.data.Group#getChildLatterGroup()
-	 */
-	@Override
-	public MXGroup getChildLatterGroup() {
-		return (MXGroup) super.getChildLatterGroup();
-	}
 
 	/**
 	 * @return dynamicsCurve
