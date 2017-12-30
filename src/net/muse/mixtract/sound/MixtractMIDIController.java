@@ -4,7 +4,6 @@ import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
-import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.sound.MIDIController;
 import net.muse.sound.ThreadPlayer;

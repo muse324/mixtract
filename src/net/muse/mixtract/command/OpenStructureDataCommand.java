@@ -1,7 +1,5 @@
 package net.muse.mixtract.command;
 
-import net.muse.command.OpenMusicXMLCommand;
-
 /**
  * <h1>OpenStructureDataCommand</h1>
  *

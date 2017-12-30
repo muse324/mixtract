@@ -2,7 +2,6 @@ package net.muse.app;
 
 import java.awt.EventQueue;
 import java.io.*;
-import java.lang.reflect.Method;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.*;

@@ -5,7 +5,6 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.misc.Command;
 import net.muse.mixtract.command.MixtractCommand;
