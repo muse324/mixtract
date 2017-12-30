@@ -43,7 +43,7 @@ public class Mixtract extends MuseApp {
 				MixtractCommand.setMainObject(main);
 
 				/* sprash screen */
-				main.createSplashScreen(appImageFile);
+				main.createSplashScreen(main.getAppImageFile());
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						main.showSplashScreen();
@@ -100,7 +100,7 @@ public class Mixtract extends MuseApp {
 	 */
 	@Override
 	protected void initialize() {
-		appImageFile = "mixtract-logo.png";
+		setAppImageFile("mixtract-logo.png");
 		PROPERTY_FILENAME = "Mixtract.properties";
 		projectFileExtension = ".mxt";
 	}

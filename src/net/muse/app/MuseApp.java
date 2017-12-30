@@ -10,11 +10,12 @@ import javax.swing.JFrame;
 
 import net.muse.data.*;
 import net.muse.gui.*;
+import net.muse.misc.OptionType;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public abstract class MuseApp extends MuseGUIObject<JFrame> {
-	protected static String appImageFile = "mixtract-logo.png";
+	private String appImageFile = "mixtract-logo.png";
 	protected static String PROPERTY_FILENAME = "Mixtract.properties";
 	protected static String projectFileExtension = ".mxt";
 
@@ -354,7 +355,12 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 
 	protected void setMaximumMIDIChannel(int ch) {}
 
-	protected void setMidiDeviceName(String midiDeviceName) {
+	/**
+	 * MIDIデバイス名を指定します。
+	 *
+	 * @param midiDeviceName
+	 */
+	public void setMidiDeviceName(String midiDeviceName) {
 		this.midiDeviceName = midiDeviceName;
 	}
 
@@ -380,7 +386,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	/**
 	 * @param dir プロジェクトデータを格納するディレクトリ
 	 */
-	protected void setProjectDirectory(File dir) {
+	public void setProjectDirectory(File dir) {
 		this.projectDir = dir;
 	}
 
@@ -469,6 +475,14 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public void setOutputDirectory(File outputDir) {
 		this.outputDir = outputDir;
+	}
+
+	public String getAppImageFile() {
+		return appImageFile;
+	}
+
+	public void setAppImageFile(String imgFileName) {
+		appImageFile = imgFileName;
 	}
 
 }

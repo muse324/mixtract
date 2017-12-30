@@ -1,8 +1,9 @@
-package net.muse.app;
+package net.muse.misc;
 
 import java.io.File;
 
 import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
+import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.gui.KeyBoard;
 import net.muse.mixtract.data.MXTuneData;
@@ -10,63 +11,63 @@ import net.muse.mixtract.data.MXTuneData;
 public enum OptionType {
 	KEYBOARD_WIDTH {
 		@Override
-		void exe(MuseApp app, String property) {
+		public void exe(MuseApp app, String property) {
 			KeyBoard.setKeyWidth(Integer.parseInt(property));
 		}
 	},
 	MAXIMUM_MIDICHANNEL {
 		@Override
-		void exe(MuseApp app, String property) {
+		public void exe(MuseApp app, String property) {
 			MXTuneData.setMaximumMIDIChannel(Integer.parseInt(property));
 		}
 	},
 	INPUT_FILENAME {
 		@Override
-		void exe(MuseApp app, String property) {
+		public void exe(MuseApp app, String property) {
 			app.setInputFileName(property);
 		}
 	},
 	OUTPUT_FILENAME {
 		@Override
-		void exe(MuseApp app, String property) {
+		public void exe(MuseApp app, String property) {
 			app.setOutputFileName(property);
 		}
 	},
 	APPLICATION_LOGO {
 		@Override
 		public void exe(MuseApp app, String property) {
-			MuseApp.appImageFile = property;
+			app.setAppImageFile(property);
 		}
 	},
 	CMXCATALOG {
 		@Override
-		void exe(MuseApp app, String property) {
+		public void exe(MuseApp app, String property) {
 			CMXFileWrapper.catalogFileName = property;
 		}
 	},
 	MIDIDEVICE {
 		@Override
-		void exe(MuseApp app, String property) {
+		public void exe(MuseApp app, String property) {
 			app.setMidiDeviceName(property);
 		}
 	},
 	MUSICXML_DIR {
 		@Override
-		void exe(MuseApp app, String property) {
+		public void exe(MuseApp app, String property) {
 			app.setMusicXMLDirectory(createDirectory(new File(property)
 					.getAbsolutePath()));
 		}
 	},
 	PROJECT_DIR {
 		@Override
-		void exe(MuseApp app, String property) {
+		public void exe(MuseApp app, String property) {
 			app.setProjectDirectory(createDirectory(new File(property)
 					.getAbsolutePath()));
 		}
 	},
 	OUTPUT_DIR {
 		@Override
-		void exe(MuseApp app, String property) {
+		public void exe(MuseApp app, String property) {
 			app.setOutputDirectory(createDirectory(new File(property)
 					.getAbsolutePath()));
 		}
@@ -74,8 +75,7 @@ public enum OptionType {
 	segmentGroupnoteLine {
 		@Override
 		public void exe(MuseApp app, String property) {
-			MXTuneData.setSegmentGroupnoteLine(Boolean.parseBoolean(
-					property));
+			MXTuneData.setSegmentGroupnoteLine(Boolean.parseBoolean(property));
 		}
 	},
 	SHOW_GUI {
@@ -94,8 +94,7 @@ public enum OptionType {
 	avoidLastRestsAsGroup {
 		@Override
 		public void exe(MuseApp app, String property) {
-			Group.setAvoidLastRestsFromGroup(Boolean.parseBoolean(
-					property));
+			Group.setAvoidLastRestsFromGroup(Boolean.parseBoolean(property));
 		}
 	},
 	durationOffset {
@@ -115,5 +114,5 @@ public enum OptionType {
 	 * @param app
 	 * @param property
 	 */
-	abstract void exe(MuseApp app, String property);
+	public abstract void exe(MuseApp app, String property);
 }
