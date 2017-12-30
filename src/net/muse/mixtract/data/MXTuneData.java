@@ -27,10 +27,10 @@ import net.muse.mixtract.data.curve.*;
  * @since 2009/09/20
  */
 public class MXTuneData extends TuneData {
-	private static final String STRUCTURE_FILENAME = "structure.dat";
+	private static int durationOffset = 100;
 	private static final String SCOREDATA_FILENAME = "score.dat";
 
-	private static int durationOffset = 100;
+	private static final String STRUCTURE_FILENAME = "structure.dat";
 
 	/**
 	 * @param args
@@ -86,6 +86,48 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
+	@Override
+	public void writefile() throws IOException, InvalidMidiDataException {
+		confirmOutputFileLocation();
+
+		// -------- import cmx files --------------------------
+		importCMXFilesToProjectDirectory();
+
+		// -------- create score data -------------------------
+		writeScoreData();
+
+		// -------- create structure data ---------------------
+		writeStructureData();
+
+		// -------- create expressed SMF ---------------------
+		writeSMF();
+
+		// -------- create screen shot ---------------------
+		// writeScreenShot();
+
+		System.out.println("tempo curve list:");
+		System.out.println(getTempoList());
+	}
+
+	/**
+	 * @throws IOException
+	 */
+	@Override
+	public void writeScoreData() throws IOException {
+		File fp = new File(out(), SCOREDATA_FILENAME);
+		fp.createNewFile();
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
+				fp)));
+		// out.format("cmx=%s\n", inputFile.getName());
+		out.format("cmx=%s\n", xml.getFileName());
+		out.format("str=%s\n", STRUCTURE_FILENAME);
+		out.format("bpm=%s\n", getBPM().toString().subSequence(1, getBPM()
+				.toString().length() - 1));
+		for (int i = 0; i < getNotelist().size(); i++)
+			writeNoteData(out, (MXNoteData) getNoteList(i));
+		out.close();
+	}
+
 	public void writeScreenShot(Point position, Dimension size)
 			throws AWTException, IOException {
 		Robot robot = new Robot();
@@ -111,36 +153,60 @@ public class MXTuneData extends TuneData {
 
 	}
 
-	protected String writeCurveParam(MXGroup group) {
-		if (group == null) {
-			return "ERROR!";
-		}
-
-		String str = "";
-		for (double v : group.getDynamicsCurve().getParamlist()) {
-			str += (int) (v * 10000) / 10000. + ",";
-		}
-		str += "EOF;";
-		for (double v : group.getTempoCurve().getParamlist()) {
-			str += (int) (v * 10000) / 10000. + ",";
-		}
-		str += "EOF;";
-		for (double v : group.getArticulationCurve().getParamlist()) {
-			str += (int) (v * 10000) / 10000. + ",";
-		}
-		str += "EOF";
-		System.out.println(str);
-		return str;
+	@Override
+	protected void confirmOutputFileLocation() {
+		if (!out().exists())
+			out().mkdir();
+		else
+			dialogOutputLocation();
 	}
 
-	protected void writeGroupStructureData(PrintWriter out, MXGroup group) {
-		if (group == null)
+	@Override
+	protected CMXNoteHandler createCMXNoteHandler() {
+		return new CMXNoteHandler(this) {
+			protected MXGroup createGroup(NoteData n, int i, GroupType type) {
+				return new MXGroup(n, i, type);
+			}
+
+			protected NoteData createNoteData(Note note, int partNumber,
+					int idx, Integer bpm, int vel) {
+				return new MXNoteData(note, partNumber, idx, bpm, vel);
+			}
+
+			protected MXTuneData data() {
+				return (MXTuneData) data;
+			}
+		};
+	}
+
+	@Override
+	protected boolean isOriginalFileFormat() {
+		return in().isDirectory();
+	}
+
+	@Override
+	protected void parseMusicXMLFile() {
+		if (xml == null)
 			return;
-		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
-		writeGroupStructureData(out, (MXGroup) group.getChildLatterGroup());
-		out.format("%s;%s;%s\n", group, (group.hasTopNote()) ? group
-				.getTopGroupNote().getNote().id() : "null", writeCurveParam(
-						group));
+		xml.processNotePartwise(createCMXNoteHandler());
+	}
+
+	@Override
+	protected void readOriginalFile() throws IOException {
+		testPrintln("reading original format...");
+		File[] files = in().listFiles();
+		for (int i = 0; i < files.length; i++) {
+			String strfile = STRUCTURE_FILENAME;
+			if (files[i].getName().equals(SCOREDATA_FILENAME)) {
+				String s = readScoreData(files[i]);
+				if (s.length() == 0)
+					strfile = s;
+				continue;
+			}
+			if (files[i].getName().equals(strfile))
+				readStructureData(files[i]);
+		}
+
 	}
 
 	private BufferedImage createBufferedImage(Image img) {
@@ -181,10 +247,68 @@ public class MXTuneData extends TuneData {
 		return getRootGroup().size() > 0;
 	}
 
-	protected void parseMusicXMLFile() {
-		if (xml == null)
-			return;
-		xml.processNotePartwise(createCMXNoteHandler());
+	private void importCMXFilesToProjectDirectory() throws IOException {
+		File fp = null;
+		if (dev != null || xml != null) {
+			fp = new File(inputDirectory(), xml.getFileName());
+			if (fp.exists())
+				FileUtils.copyFileToDirectory(fp, out(), true);
+			if (dev != null) {
+				FileUtils.copyFileToDirectory(in(), out(), true);
+			}
+		}
+	}
+
+	private MXGroup parseGroupInfo(List<Group> glist, GroupNote list,
+			String name, int partNumber, String groupInfo) {
+		MXGroup g = null;
+		final int id = Integer.parseInt(name.substring(1));
+		if (groupInfo.charAt(0) == '[') {
+			String group[] = groupInfo.split(" ");
+			setGroupNotelist(list, group, 1, group.length);
+			g = new MXGroup(id, partNumber, list, GroupType.is(name.charAt(0)));
+			glist.add(g);
+			if (!hasGroupList())
+				setGrouplist(partNumber, g);
+		} else {
+			String[] group = groupInfo.split(",");
+			Group g1 = null, g2 = null;
+			for (Group root : glist) {
+				if (root.name().equals(group[0])) {
+					g1 = root;
+					continue;
+				}
+				if (root.name().equals(group[1])) {
+					g2 = root;
+					continue;
+				}
+			}
+			if (g1 != null && g2 != null) {
+				g = new MXGroup(g1, g2, name, partNumber);
+				if (g1.equals(getRootGroup(partNumber - 1)))
+					setGrouplist(partNumber - 1, g);
+				glist.remove(g1);
+				glist.remove(g2);
+				glist.add(g);
+			}
+		}
+		return g;
+	}
+
+	/**
+	 * @param curveInfo
+	 * @param curve
+	 */
+	private void parsePhraseProfile(String[] curveInfo, PhraseCurve curve) {
+		ArrayList<Double> val = curve.getParamlist();
+		val.clear();
+		for (String s : curveInfo) {
+			if (s.equals("EOF"))
+				break;
+			val.add(Double.parseDouble(s));
+		}
+		curve.setDivision(val.size());
+		return;
 	}
 
 	private void readNoteData(int idx, BufferedReader in, String str,
@@ -234,127 +358,6 @@ public class MXTuneData extends TuneData {
 		log.println(nd.toString());
 		readNoteData(idx, in, in.readLine(), nd, chord);
 
-	}
-
-	protected void confirmOutputFileLocation() {
-		if (!out().exists())
-			out().mkdir();
-		else
-			dialogOutputLocation();
-	}
-
-	@Override
-	public void writefile() throws IOException, InvalidMidiDataException {
-		confirmOutputFileLocation();
-
-		// -------- import cmx files --------------------------
-		importCMXFilesToProjectDirectory();
-
-		// -------- create score data -------------------------
-		writeScoreData();
-
-		// -------- create structure data ---------------------
-		writeStructureData();
-
-		// -------- create expressed SMF ---------------------
-		writeSMF();
-
-		// -------- create screen shot ---------------------
-		// writeScreenShot();
-
-		System.out.println("tempo curve list:");
-		System.out.println(getTempoList());
-	}
-
-	/**
-	 * @throws IOException
-	 */
-	@Override
-	public void writeScoreData() throws IOException {
-		File fp = new File(out(), SCOREDATA_FILENAME);
-		fp.createNewFile();
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
-				fp)));
-		// out.format("cmx=%s\n", inputFile.getName());
-		out.format("cmx=%s\n", xml.getFileName());
-		out.format("str=%s\n", STRUCTURE_FILENAME);
-		out.format("bpm=%s\n", getBPM().toString().subSequence(1, getBPM()
-				.toString().length() - 1));
-		for (int i = 0; i < getNotelist().size(); i++)
-			writeNoteData(out, (MXNoteData) getNoteList(i));
-		out.close();
-	}
-
-	protected void writeNoteData(PrintWriter out, MXNoteData note) {
-		if (note == null)
-			return;
-		writeNoteData(out, note.child());
-		out.format("n%s:%s:%s\n", note.index(), note, (note
-				.getXMLNote() != null) ? note.getXMLNote().getXPathExpression()
-						: "null");
-		writeNoteData(out, note.next());
-	}
-
-	protected void importCMXFilesToProjectDirectory() throws IOException {
-		File fp = null;
-		if (dev != null || xml != null) {
-			fp = new File(inputDirectory(), xml.getFileName());
-			if (fp.exists())
-				FileUtils.copyFileToDirectory(fp, out(), true);
-			if (dev != null) {
-				FileUtils.copyFileToDirectory(in(), out(), true);
-			}
-		}
-	}
-
-	/**
-	 * @throws IOException
-	 */
-	protected void writeStructureData() throws IOException {
-		File fp = new File(out(), STRUCTURE_FILENAME);
-		fp.createNewFile();
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
-				fp)));
-		for (int i = 0; i < getRootGroup().size(); i++)
-			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
-		out.close();
-	}
-
-	protected void readOriginalFile() throws IOException {
-		testPrintln("reading original format...");
-		File[] files = in().listFiles();
-		for (int i = 0; i < files.length; i++) {
-			String strfile = STRUCTURE_FILENAME;
-			if (files[i].getName().equals(SCOREDATA_FILENAME)) {
-				String s = readScoreData(files[i]);
-				if (s.length() == 0)
-					strfile = s;
-				continue;
-			}
-			if (files[i].getName().equals(strfile))
-				readStructureData(files[i]);
-		}
-
-	}
-
-	protected boolean isOriginalFileFormat() {
-		return in().isDirectory();
-	}
-
-	/**
-	 * @param curveInfo
-	 * @param curve
-	 */
-	private void readPhraseProfile(String[] curveInfo, PhraseCurve curve) {
-		ArrayList<Double> val = curve.getParamlist();
-		val.clear();
-		for (String s : curveInfo) {
-			if (s.equals("EOF"))
-				break;
-			val.add(Double.parseDouble(s));
-		}
-		curve.setDivision(val.size());
-		return;
 	}
 
 	private String readScoreData(File file) throws IOException {
@@ -409,6 +412,7 @@ public class MXTuneData extends TuneData {
 	 * <li><em>ApexNote</em> 頂点音をあらわす音符ID(MXNoteData)
 	 * <li><em>DynamicCurve</em> ダイナミクス表現のフリーカーブパラメータ
 	 * <li><em>TempoCurve</em> テンポ表現のフリーカーブパラメータ
+	 * <li><em>ArticulationCurve</em> アーティキュレーションのフリーカーブパラメータ
 	 * </ul>
 	 *
 	 * @param file
@@ -422,10 +426,7 @@ public class MXTuneData extends TuneData {
 			while ((str = in.readLine()) != null) {
 				GroupNote list = new GroupNote();
 				String item[] = str.split(";");
-				// group name
-				String name = item[0];
-				final int id = Integer.parseInt(name.substring(1));
-
+				String name = item[0]; // group name
 				int partNumber = Integer.parseInt(item[1]);
 				if (partNumber <= 0)
 					partNumber = 1;
@@ -434,46 +435,17 @@ public class MXTuneData extends TuneData {
 				String[] dynCurveInfo = item[4].split(",");
 				String[] tmpCurveInfo = item[5].split(",");
 				String[] artCurveInfo = item[6].split(",");
-				MXGroup g = null;
-				if (groupInfo.charAt(0) == '[') {
-					String group[] = groupInfo.split(" ");
-					setGroupNotelist(list, group, 1, group.length);
-					g = new MXGroup(id, partNumber, list, GroupType.is(name
-							.charAt(0)));
-					glist.add(g);
-					if (!hasGroupList())
-						setGrouplist(partNumber, g);
-				} else {
-					String[] group = groupInfo.split(",");
-					Group g1 = null, g2 = null;
-					for (Group root : glist) {
-						if (root.name().equals(group[0])) {
-							g1 = root;
-							continue;
-						}
-						if (root.name().equals(group[1])) {
-							g2 = root;
-							continue;
-						}
-					}
-					if (g1 != null && g2 != null) {
-						g = new MXGroup(g1, g2, name, partNumber);
-						if (g1.equals(getRootGroup(partNumber - 1)))
-							setGrouplist(partNumber - 1, g);
-						glist.remove(g1);
-						glist.remove(g2);
-						glist.add(g);
-
-					}
-				}
+				MXGroup g = parseGroupInfo(glist, list, name, partNumber,
+						groupInfo);
 				try {
-					readPhraseProfile(dynCurveInfo, g.getDynamicsCurve());
-					readPhraseProfile(tmpCurveInfo, g.getTempoCurve());
-					readPhraseProfile(artCurveInfo, g.getArticulationCurve());
+					parsePhraseProfile(dynCurveInfo, g.getDynamicsCurve());
+					parsePhraseProfile(tmpCurveInfo, g.getTempoCurve());
+					parsePhraseProfile(artCurveInfo, g.getArticulationCurve());
 				} catch (NullPointerException e) {
 					System.err.println("Irregal file format");
 				}
 			}
+			in.close();
 			++hierarchicalGroupCount;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -520,21 +492,59 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	protected CMXNoteHandler createCMXNoteHandler() {
-		return new CMXNoteHandler(this) {
-			protected MXTuneData data() {
-				return (MXTuneData) data;
-			}
+	private String writeCurveParam(MXGroup group) {
+		if (group == null) {
+			return "ERROR!";
+		}
 
-			protected MXGroup createGroup(NoteData n, int i, GroupType type) {
-				return new MXGroup(n, i, type);
-			}
+		String str = "";
+		for (double v : group.getDynamicsCurve().getParamlist()) {
+			str += (int) (v * 10000) / 10000. + ",";
+		}
+		str += "EOF;";
+		for (double v : group.getTempoCurve().getParamlist()) {
+			str += (int) (v * 10000) / 10000. + ",";
+		}
+		str += "EOF;";
+		for (double v : group.getArticulationCurve().getParamlist()) {
+			str += (int) (v * 10000) / 10000. + ",";
+		}
+		str += "EOF";
+		System.out.println(str);
+		return str;
+	}
 
-			protected NoteData createNoteData(Note note, int partNumber,
-					int idx, Integer bpm, int vel) {
-				return new MXNoteData(note, partNumber, idx, bpm, vel);
-			}
-		};
+	private void writeGroupStructureData(PrintWriter out, MXGroup group) {
+		if (group == null)
+			return;
+		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
+		writeGroupStructureData(out, (MXGroup) group.getChildLatterGroup());
+		out.format("%s;%s;%s\n", group, (group.hasTopNote()) ? group
+				.getTopGroupNote().getNote().id() : "null", writeCurveParam(
+						group));
+	}
+
+	private void writeNoteData(PrintWriter out, MXNoteData note) {
+		if (note == null)
+			return;
+		writeNoteData(out, note.child());
+		out.format("n%s:%s:%s\n", note.index(), note, (note
+				.getXMLNote() != null) ? note.getXMLNote().getXPathExpression()
+						: "null");
+		writeNoteData(out, note.next());
+	}
+
+	/**
+	 * @throws IOException
+	 */
+	private void writeStructureData() throws IOException {
+		File fp = new File(out(), STRUCTURE_FILENAME);
+		fp.createNewFile();
+		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
+				fp)));
+		for (int i = 0; i < getRootGroup().size(); i++)
+			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
+		out.close();
 	}
 
 }
