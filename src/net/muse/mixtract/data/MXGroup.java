@@ -7,9 +7,18 @@ import net.muse.mixtract.data.curve.*;
 
 public class MXGroup extends Group {
 	private DynamicsCurve dynamicsCurve;
-	private TempoCurve tempoCurve;
-	private ArticulationCurve articulationCurve;
 
+	private TempoCurve tempoCurve;
+
+	private ArticulationCurve articulationCurve;
+	/**
+	 * @param groupNoteList
+	 * @param endNote
+	 * @param type
+	 */
+	public MXGroup(GroupNote groupNoteList, GroupNote endNote, GroupType type) {
+		super(groupNoteList, endNote, type);
+	}
 	/**
 	 * @param notelist
 	 * @param partIndex
@@ -37,15 +46,6 @@ public class MXGroup extends Group {
 	 */
 	MXGroup(int id, int partNumber, GroupNote list, GroupType type) {
 		super(id, partNumber, list, type);
-	}
-
-	/**
-	 * @param groupNoteList
-	 * @param endNote
-	 * @param type
-	 */
-	public MXGroup(GroupNote groupNoteList, GroupNote endNote, GroupType type) {
-		super(groupNoteList, endNote, type);
 	}
 
 	/**
@@ -109,6 +109,24 @@ public class MXGroup extends Group {
 	 */
 	public final ArticulationCurve getArticulationCurve() {
 		return articulationCurve;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.Group#getChildFormerGroup()
+	 */
+	@Override
+	public MXGroup getChildFormerGroup() {
+		return (MXGroup) super.getChildFormerGroup();
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.Group#getChildLatterGroup()
+	 */
+	@Override
+	public MXGroup getChildLatterGroup() {
+		return (MXGroup) super.getChildLatterGroup();
 	}
 
 	/**

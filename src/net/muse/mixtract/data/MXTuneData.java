@@ -27,10 +27,9 @@ import net.muse.mixtract.data.curve.*;
  * @since 2009/09/20
  */
 public class MXTuneData extends TuneData {
-	private static int durationOffset = 100;
 	private static final String SCOREDATA_FILENAME = "score.dat";
-
 	private static final String STRUCTURE_FILENAME = "structure.dat";
+	private static int durationOffset = 100;
 
 	/**
 	 * @param args
@@ -88,6 +87,7 @@ public class MXTuneData extends TuneData {
 
 	@Override
 	public void writefile() throws IOException, InvalidMidiDataException {
+		// 出力ファイル (またはフォルダ）の所在を確認する
 		confirmOutputFileLocation();
 
 		// -------- import cmx files --------------------------
@@ -517,8 +517,8 @@ public class MXTuneData extends TuneData {
 	private void writeGroupStructureData(PrintWriter out, MXGroup group) {
 		if (group == null)
 			return;
-		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
-		writeGroupStructureData(out, (MXGroup) group.getChildLatterGroup());
+		writeGroupStructureData(out, group.getChildFormerGroup());
+		writeGroupStructureData(out, group.getChildLatterGroup());
 		out.format("%s;%s;%s\n", group, (group.hasTopNote()) ? group
 				.getTopGroupNote().getNote().id() : "null", writeCurveParam(
 						group));
