@@ -14,7 +14,6 @@ public abstract class MuseGUIObject<F extends JFrame> extends MuseObject {
 
 	private static boolean showGUI = true;
 	private F frame;
-	protected JLabel splashLabel;
 	protected JWindow splashScreen;
 
 	/**
@@ -26,10 +25,12 @@ public abstract class MuseGUIObject<F extends JFrame> extends MuseObject {
 
 	protected void createSplashScreen(String path) {
 		ImageIcon img = new ImageIcon(getClass().getResource(path));
-		splashLabel = new JLabel(img);
+		JLabel splashLabel = new JLabel(img);
 		splashLabel.setBorder(BorderFactory.createEtchedBorder());
-		splashScreen = new JWindow(getFrame());
-		splashScreen.getContentPane().add(splashLabel);
+		if (splashScreen == null) {
+			splashScreen = new JWindow(getFrame());
+			splashScreen.getContentPane().add(splashLabel);
+		}
 		splashScreen.setLocationRelativeTo(null);
 	}
 
@@ -42,15 +43,18 @@ public abstract class MuseGUIObject<F extends JFrame> extends MuseObject {
 	 * showSplashScreen()が呼び出された後、自動で呼び出されるので、プログラミング時に明示的に呼び出す必要はありません。
 	 */
 	protected void hideSplash() {
-		splashScreen.setVisible(false);
-		splashScreen.dispose();
-		splashLabel = null;
+		if (splashScreen != null) {
+			splashScreen.setVisible(false);
+			splashScreen.dispose();
+		}
 	}
 
 	/**
 	 * アプリケーション起動時にスプラッシュスクリーンを数秒表示します。
 	 */
 	protected void showSplashScreen() {
+		if (splashScreen == null)
+			return;
 		splashScreen.setAlwaysOnTop(true);
 		splashScreen.pack();
 		splashScreen.setVisible(true);
