@@ -8,11 +8,9 @@ import java.util.List;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.JFrame;
 
-import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
 import net.muse.data.*;
 import net.muse.gui.*;
 import net.muse.mixtract.command.MixtractCommand;
-import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public abstract class MuseApp extends MuseGUIObject<JFrame> {
@@ -31,7 +29,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 
 	/** ファイル格納場所 */
 	private File musicXMLDir;
-	protected File outputDir;
+	private File outputDir;
 	private File projectDir;
 
 	/** 楽曲情報 */
@@ -277,7 +275,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 			in = new File(projectDir, inputFilename);
 		if (!in.exists())
 			in = new File(musicXMLDir, inputFilename);
-		File out = new File(outputDir, outFilename);
+		File out = new File(getOutputDirectory(), outFilename);
 		readfile(in, out);
 	}
 
@@ -289,10 +287,10 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	/**
-	 * @param musicXMLDir セットする musicXMLDir
+	 * @param dir セットする musicXMLDir
 	 */
-	public void setMusicXMLDirectory(File musicXMLDir) {
-		this.musicXMLDir = musicXMLDir;
+	public void setMusicXMLDirectory(File dir) {
+		this.musicXMLDir = dir;
 	}
 
 	/**
@@ -379,6 +377,9 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		}
 	}
 
+	/**
+	 * @param dir プロジェクトデータを格納するディレクトリ
+	 */
 	protected void setProjectDirectory(File dir) {
 		this.projectDir = dir;
 	}
@@ -459,115 +460,15 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		this.outputFileName = outputFileName;
 	}
 
-	public enum OptionType {
-		KEYBOARD_WIDTH {
-			@Override
-			void exe(MuseApp app, String property) {
-				KeyBoard.setKeyWidth(Integer.parseInt(property));
-			}
-		},
-		MAXIMUM_MIDICHANNEL {
-			@Override
-			void exe(MuseApp app, String property) {
-				MXTuneData.setMaximumMIDIChannel(Integer.parseInt(property));
-			}
-		},
-		INPUT_FILENAME {
-			@Override
-			void exe(MuseApp app, String property) {
-				app.setInputFileName(property);
-			}
-		},
-		OUTPUT_FILENAME {
-			@Override
-			void exe(MuseApp app, String property) {
-				app.setOutputFileName(property);
-			}
-		},
-		APPLICATION_LOGO {
-			@Override
-			public void exe(MuseApp app, String property) {
-				appImageFile = property;
-			}
-		},
-		CMXCATALOG {
-			@Override
-			void exe(MuseApp app, String property) {
-				CMXFileWrapper.catalogFileName = property;
-			}
-		},
-		MIDIDEVICE {
-			@Override
-			void exe(MuseApp app, String property) {
-				app.setMidiDeviceName(property);
-			}
-		},
-		MUSICXML_DIR {
-			@Override
-			void exe(MuseApp app, String property) {
-				app.setMusicXMLDirectory(createDirectory(new File(property)
-						.getAbsolutePath()));
-			}
-		},
-		PROJECT_DIR {
-			@Override
-			void exe(MuseApp app, String property) {
-				app.setProjectDirectory(createDirectory(new File(property)
-						.getAbsolutePath()));
-			}
-		},
-		OUTPUT_DIR {
-			@Override
-			void exe(MuseApp app, String property) {
-				app.outputDir = createDirectory(new File(property)
-						.getAbsolutePath());
-			}
-		},
-		segmentGroupnoteLine {
-			@Override
-			public void exe(MuseApp app, String property) {
-				MXTuneData.setSegmentGroupnoteLine(Boolean.parseBoolean(
-						property));
-			}
-		},
-		SHOW_GUI {
-			@Override
-			public void exe(MuseApp app, String property) {
-				setShowGUI(Boolean.parseBoolean(property));
-			}
-		},
-		READ_STRDATA_ON_READING {
-			@Override
-			public void exe(MuseApp app, String property) {
-				app.setReadingStructureData(Boolean.parseBoolean(property));
-			}
+	protected File getOutputDirectory() {
+		return outputDir;
+	}
 
-		},
-		avoidLastRestsAsGroup {
-			@Override
-			public void exe(MuseApp app, String property) {
-				Group.setAvoidLastRestsFromGroup(Boolean.parseBoolean(
-						property));
-			}
-		},
-		durationOffset {
-			@Override
-			public void exe(MuseApp app, String property) {
-				MXTuneData.setDurationOffset(Integer.parseInt(property));
-			}
-		};
-		private static File createDirectory(String path) {
-			File dir = new File(path);
-			if (!dir.exists())
-				dir.mkdirs();
-			return dir;
-		}
-
-		/**
-		 * @param app
-		 * @param property
-		 */
-		abstract void exe(MuseApp app, String property);
+	/**
+	 * @param outputDir 出力用ディレクトリ
+	 */
+	public void setOutputDirectory(File outputDir) {
+		this.outputDir = outputDir;
 	}
 
 }

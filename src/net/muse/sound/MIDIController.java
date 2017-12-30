@@ -27,7 +27,8 @@ public abstract class MIDIController extends MuseObject implements
 	/** 内部音源 */
 	private MidiDevice device;
 	/**
-	 * 音源や外部のMIDIデバイスがMIDIメッセージを受け取る窓口． ここでは内部音源のMIDIメッセージ受け取りに使用します．
+	 * 音源や外部のMIDIデバイスがMIDIメッセージを受け取る窓口．
+	 * ここでは内部音源のMIDIメッセージ受け取りに使用します．
 	 */
 	private Receiver receiver;
 	protected ArrayList<MIDIEventListener> midiEventListenerList = new ArrayList<MIDIEventListener>();
@@ -140,8 +141,8 @@ public abstract class MIDIController extends MuseObject implements
 			if (isDebug())
 				System.out.println(String.format(
 						"cmd %d channel %d data1 = %d data2 = %d", msg
-								.getCommand(), msg.getChannel(),
-						msg.getData1(), msg.getData2()));
+								.getCommand(), msg.getChannel(), msg.getData1(),
+						msg.getData2()));
 		} else if (message instanceof MetaMessage) {
 			MetaMessage msg = (MetaMessage) message;
 			if (isDebug())
@@ -254,8 +255,8 @@ public abstract class MIDIController extends MuseObject implements
 
 	/** アプリで使用できるMIDIデバイスの一覧を取得します。 */
 	public MidiDevice.Info[] getDeviceList() {
-		if (deviceList == null
-				|| !deviceList.equals(MidiSystem.getMidiDeviceInfo()))
+		if (deviceList == null || !deviceList.equals(MidiSystem
+				.getMidiDeviceInfo()))
 			deviceList = MidiSystem.getMidiDeviceInfo();
 		return deviceList;
 	}
