@@ -13,7 +13,7 @@ import net.muse.misc.MuseObject;
 public abstract class MuseGUIObject<F extends JFrame> extends MuseObject {
 
 	private static boolean showGUI = true;
-	protected F frame;
+	private F frame;
 	protected JLabel splashLabel;
 	protected JWindow splashScreen;
 
@@ -70,6 +70,10 @@ public abstract class MuseGUIObject<F extends JFrame> extends MuseObject {
 	 */
 	public static boolean isShowGUI() {
 		return showGUI;
+	}
+
+	public void setFrame(F frame) {
+		this.frame = frame;
 	}
 
 }

@@ -54,12 +54,12 @@ public class TestApp extends MuseApp {
 
 				// create main frame
 				main.createNewFrame();
-				MuseAppCommand.setMainFrame((MainFrame) main.frame);
-				main.frame.setDefaultCloseOperation(
+				MuseAppCommand.setMainFrame((MainFrame) main.getFrame());
+				main.getFrame().setDefaultCloseOperation(
 						WindowConstants.EXIT_ON_CLOSE);
 				JFrame.setDefaultLookAndFeelDecorated(false);
-				main.frame.pack(); // ウィンドウサイズを最適化
-				main.frame.setVisible(true); // ウィンドウを表示させる
+				main.getFrame().pack(); // ウィンドウサイズを最適化
+				main.getFrame().setVisible(true); // ウィンドウを表示させる
 
 				// 3秒後にスプラッシュスクリーンを非表示にする
 				try {
@@ -103,9 +103,9 @@ public class TestApp extends MuseApp {
 		// MainFrameはJFrameのサブクラスです。
 		// 独自GUIクラスを作成することになりますので、独自にMainFrameのサブクラスを実装し、
 		// ここでそのクラスをインスタンス化してください。
-		if (frame == null)
+		if (getFrame() == null)
 			return new MainFrame(this); // 独自クラスを定義したらここでそれを返す。
-		return (MainFrame) frame; // このキャストは MainFrame のままで良い
+		return (MainFrame) getFrame(); // このキャストは MainFrame のままで良い
 	}
 
 }

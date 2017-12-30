@@ -53,12 +53,12 @@ public class Mixtract extends MuseApp {
 
 				// create main frame
 				main.createNewFrame();
-				MixtractCommand.setJFrame(main.frame);
-				main.frame.setDefaultCloseOperation(
+				MixtractCommand.setJFrame(main.getFrame());
+				main.getFrame().setDefaultCloseOperation(
 						WindowConstants.EXIT_ON_CLOSE);
 				JFrame.setDefaultLookAndFeelDecorated(false);
-				main.frame.pack(); // ウィンドウサイズを最適化
-				main.frame.setVisible(true); // ウィンドウを表示させる
+				main.getFrame().pack(); // ウィンドウサイズを最適化
+				main.getFrame().setVisible(true); // ウィンドウを表示させる
 
 				// 長い処理のdummy
 				try {
@@ -107,8 +107,8 @@ public class Mixtract extends MuseApp {
 
 	@Override
 	protected MainFrame mainFrame() throws IOException {
-		if (frame == null)
+		if (getFrame() == null)
 			return new MXMainFrame(this);
-		return (MainFrame) frame;
+		return (MainFrame) getFrame();
 	}
 }

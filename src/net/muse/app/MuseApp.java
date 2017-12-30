@@ -354,7 +354,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	protected void createNewFrame() throws Exception {
-		this.frame = mainFrame();
+		this.setFrame(mainFrame());
 		if (!isMac())
 			return;
 
@@ -366,7 +366,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		Class<?> clz = Class.forName("net.muse.gui.MainFramePartialForMacOSX");
 		Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
 				MainFrame.class });
-		mtd.invoke(null, new Object[] { this.frame });
+		mtd.invoke(null, new Object[] { this.getFrame() });
 	}
 
 	protected TuneData createTuneData(File in, File out) throws IOException,
