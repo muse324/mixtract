@@ -54,12 +54,12 @@ public class MXTuneData extends TuneData {
 	}
 
 	/**
-	 * @param durationOffset the durationOffset to set
+	 * @param val the durationOffset to set
 	 */
-	public static final void setDurationOffset(int durationOffset) {
-		MXTuneData.durationOffset = durationOffset;
-		log.printf("duration offset = %d\n", durationOffset);
-		System.out.printf("duration offset = %d\n", durationOffset);
+	public static final void setDurationOffset(int val) {
+		MXTuneData.durationOffset = val;
+		log.printf("duration offset = %d\n", val);
+		System.out.printf("duration offset = %d\n", val);
 	}
 
 	private static void save(BufferedImage img, File f) throws IOException {
