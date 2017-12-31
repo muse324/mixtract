@@ -619,7 +619,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		}
 	}
 
-	public class CanvasListener extends MXMouseActionListener {
+	public class CanvasListener extends MouseActionListener {
 		CanvasListener(Mixtract main, Container owner) {
 			super(main, owner);
 		}
@@ -653,6 +653,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			super.mouseReleased(e);
+			// ポップアップメニューを表示する
 			if (SwingUtilities.isRightMouseButton(e)) {
 				createPopupMenu(e);
 				repaint();
@@ -661,10 +662,6 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 			System.out.println("==== mouse released at PhraseCanvas =====");
 			System.out.println("group: " + ((group != null) ? group.name()
 					: "null"));
-			// System.out.println("graphic.data: " + cv
-			// .getGraphicRectangleData());
-			// System.out.println("scoretime.data: " + cv.getScoretimeData());
-			// System.out.println("logvalue.data: " + cv.getLogValueData());
 
 			cv.calculate(getHeight());
 			// cv.calculate(getRangeY() / 2.);
