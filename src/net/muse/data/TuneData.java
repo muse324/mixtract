@@ -91,28 +91,43 @@ public class TuneData extends MuseObject implements TuneDataController {
 				return;
 			// TODO 複数声部に未対応
 		}
-
-		// ----------------------------------
 		// TODO 未検証
-		final PrimaryPhraseSequence seq = new PrimaryPhraseSequence(group);
-		if (getGroupArrayList().size() <= 0) {
-			groupSequence = seq;
-		} else {
-			NoteData st = group.getBeginGroupNote().getNote();
-			NoteData ed = group.getEndGroupNote().getNote();
-			// 前後にgroup sequence がある場合
-			if (st.hasPrevious() && st.previous().equals(groupSequence.end()
-					.getGroup().getEndGroupNote().getNote())) {
-				groupSequence.end().setNext(seq);
-				seq.setPrevious(groupSequence);
-			} else if (ed.hasNext() && ed.next().equals(groupSequence.root()
-					.getGroup().getBeginGroupNote().getNote())) {
-				groupSequence.root().setPrevious(seq);
-				seq.setNext(groupSequence);
-			}
-		}
+		createPrimaryPhraseSequence(group);
 		// ----------------------------------
 		getGroupArrayList().add(group);
+	}
+
+	/**
+	 * TODO 未検証
+	 * <p>
+	 * グループ構造の基礎となるプライマリフレーズラインを構成します。
+	 * <ul>
+	 * <li>g1の最終音とg2の開始音は連続しており、重複や入れ子を許さない
+	 * </ul>
+	 *
+	 * @param group
+	 */
+	protected void createPrimaryPhraseSequence(Group group) {
+		final PrimaryPhraseSequence seq = new PrimaryPhraseSequence(group);
+
+		// 新規作成
+		if (getGroupArrayList().size() <= 0) {
+			groupSequence = seq;
+			return;
+		}
+
+		NoteData st = group.getBeginGroupNote().getNote();
+		NoteData ed = group.getEndGroupNote().getNote();
+		// 前後にgroup sequence がある場合
+		if (st.hasPrevious() && st.previous().equals(groupSequence.end()
+				.getGroup().getEndGroupNote().getNote())) {
+			groupSequence.end().setNext(seq);
+			seq.setPrevious(groupSequence);
+		} else if (ed.hasNext() && ed.next().equals(groupSequence.root()
+				.getGroup().getBeginGroupNote().getNote())) {
+			groupSequence.root().setPrevious(seq);
+			seq.setNext(groupSequence);
+		}
 	}
 
 	public void calculateHierarchicalParameters() {
