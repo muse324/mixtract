@@ -17,7 +17,7 @@ public class SetCrescendoCommand extends MixtractCommand {
 	 */
 	@Override
 	public void execute() {
-		groupLabel.getGroup().setType(GroupType.CRESC);
+		groupLabel.group().setType(GroupType.CRESC);
 		groupLabel.setTypeShape(GroupType.CRESC);
 		groupLabel.repaint();
 	}

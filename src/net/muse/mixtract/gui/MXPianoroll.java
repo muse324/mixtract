@@ -49,5 +49,11 @@ public class MXPianoroll extends PianoRoll {
 	protected void setDisplayApex(boolean flg) {
 		displayApex = flg;
 	}
-
+	protected void makeNoteLabel(MXGroup group) {
+		if (group.hasChild()) {
+			makeNoteLabel(group.getChildFormerGroup());
+			makeNoteLabel(group.getChildLatterGroup());
+		} else
+			makeNoteLabel(group.getBeginGroupNote(), false);
+	}
 }

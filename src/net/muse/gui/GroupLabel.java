@@ -11,6 +11,7 @@ import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.gui.MXGroupLabel;
 
 public class GroupLabel extends JLabel {
 
@@ -18,8 +19,6 @@ public class GroupLabel extends JLabel {
 
 	/* 格納データ */
 	private Group group;
-	private GroupLabel childFormer;
-	private GroupLabel childLatter;
 	private Color currentColor;
 	protected int partNumber;
 
@@ -30,6 +29,8 @@ public class GroupLabel extends JLabel {
 
 	/* イベント制御 */
 	private MouseAdapter mouseActions;
+
+	private GroupLabel child;
 
 	protected GroupLabel(Group group, Rectangle r) {
 		this();
@@ -65,41 +66,9 @@ public class GroupLabel extends JLabel {
 		initialize();
 	}
 
-	@Override public String toString() {
+	@Override
+	public String toString() {
 		return group.name();
-	}
-
-	GroupLabel getChildFormer(ArrayList<GroupLabel> grouplist) {
-		if (childFormer == null) {
-			for (GroupLabel l : grouplist) {
-				if (group.hasChildFormer() && group.getChildFormerGroup()
-						.equals(l.getGroup())) {
-					childFormer = l;
-					break;
-				}
-			}
-		}
-		return childFormer;
-	}
-
-	GroupLabel getChildLatter(ArrayList<GroupLabel> grouplist) {
-		if (childLatter == null) {
-			for (GroupLabel l : grouplist) {
-				if (group.hasChildLatter() && group.getChildLatterGroup()
-						.equals(l.getGroup())) {
-					childLatter = l;
-					break;
-				}
-			}
-		}
-		return childLatter;
-	}
-
-	/**
-	 * @return gr
-	 */
-	public final Group getGroup() {
-		return group;
 	}
 
 	void setController(MuseApp main) {
@@ -111,7 +80,8 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
 			 * (java.awt.event.MouseEvent)
 			 */
-			@Override public void createPopupMenu(MouseEvent e) {
+			@Override
+			public void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				MixtractCommand.SET_TYPE_CRESC.setGroup((GroupLabel) _owner);
 				MixtractCommand.SET_TYPE_DIM.setGroup((GroupLabel) _owner);
@@ -125,7 +95,8 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mousePressed(MouseEvent e) {
+			@Override
+			public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				GroupLabel l = (GroupLabel) e.getSource();
 				_main.notifySelectGroup(l, true);
@@ -142,7 +113,8 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseReleased(MouseEvent e) {
+			@Override
+			public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				_frame.getGroupingPanel().setGroupEditable(false);
 				_frame.getGroupingPanel().setCursor(new Cursor(
@@ -157,7 +129,8 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseDragged(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseDragged(MouseEvent e) {
+			@Override
+			public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
 				final GroupLabel src = (GroupLabel) e.getSource();
 				if (!_frame.getGroupingPanel().isGroupEditable()) {
@@ -175,7 +148,8 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
 			 * .event.MouseEvent)
 			 */
-			@Override public void mouseMoved(MouseEvent e) {
+			@Override
+			public void mouseMoved(MouseEvent e) {
 				super.mouseMoved(e);
 				setEditMode(getMousePoint());
 				repaint();
@@ -187,10 +161,11 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseClicked(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseClicked(MouseEvent e) {
+			@Override
+			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				final GroupLabel l = (GroupLabel) e.getSource();
-				Group gr = l.getGroup();
+				Group gr = l.group();
 				if (gr == null) {
 					_owner.repaint();
 					return;
@@ -213,7 +188,8 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseEntered(MouseEvent e) {
+			@Override
+			public void mouseEntered(MouseEvent e) {
 				super.mouseEntered(e);
 				((GroupLabel) e.getSource()).setMouseOver(true);
 			}
@@ -224,7 +200,8 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseExited(MouseEvent e) {
+			@Override
+			public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
 				((GroupLabel) e.getSource()).setMouseOver(false);
 				((GroupLabel) e.getSource()).setEditMode(getMousePoint());
@@ -268,19 +245,18 @@ public class GroupLabel extends JLabel {
 		r.y = p.y;
 		setBounds(r);
 		if (shiftKeyPressed) {
-			Point pc;
-			if (hasChildFormer()) {
-				pc = getChildFormer().getLocation();
-				pc.translate(e.getX(), e.getY());
-				getChildFormer().moveLabel(e, pc, mousePressed);
-			}
-			if (hasChildLatter()) {
-				pc = getChildLatter().getLocation();
-				pc.translate(e.getX(), e.getY());
-				getChildLatter().moveLabel(e, pc, mousePressed);
-			}
+			moveLabelVertical(e, mousePressed);
 		}
 		repaint();
+	}
+
+	protected void moveLabelVertical(MouseEvent e, boolean mousePressed) {
+		Point pc;
+		if (hasChild()) {
+			pc = child().getLocation();
+			pc.translate(e.getX(), e.getY());
+			child().moveLabel(e, pc, mousePressed);
+		}
 	}
 
 	/**
@@ -310,33 +286,11 @@ public class GroupLabel extends JLabel {
 		}
 	}
 
-	private GroupLabel getChildFormer() {
-		return childFormer;
-	}
-
-	private GroupLabel getChildLatter() {
-		return childLatter;
-	}
-
 	/**
 	 * @return the currentColor
 	 */
 	protected Color getCurrentColor() {
 		return currentColor;
-	}
-
-	/**
-	 * @return
-	 */
-	private boolean hasChildFormer() {
-		return group != null && group.hasChildFormer();
-	}
-
-	/**
-	 * @return
-	 */
-	private boolean hasChildLatter() {
-		return group != null && group.hasChildLatter();
 	}
 
 	/**
@@ -368,7 +322,7 @@ public class GroupLabel extends JLabel {
 	 * @param mousePressed TODO
 	 * @param src group/note/expression label
 	 */
-	private void moveLabel(MouseEvent e, Point p, boolean mousePressed) {
+	protected void moveLabel(MouseEvent e, Point p, boolean mousePressed) {
 
 		final Rectangle r = getBounds();
 		// if (!getGroupingPanel().isGroupEditable()) {
@@ -392,24 +346,29 @@ public class GroupLabel extends JLabel {
 			}
 		}
 		setBounds(r);
+		moveChildLabel(e, mousePressed);
+	}
+
+	protected void moveChildLabel(MouseEvent e, boolean mousePressed) {
 		if (mousePressed) {
 			Point pc;
 			GroupLabel c = null;
-			if (hasChildFormer()) {
-				c = getChildFormer();
-				c.setStartEdit(true);
-				pc = c.getLocation();
-				pc.translate(e.getX(), e.getY());
-				moveLabel(e, pc, mousePressed);
-			}
-			if (hasChildLatter()) {
-				c = getChildLatter();
-				c.setStartEdit(true);
-				pc = c.getLocation();
+			if (hasChild()) {
+				c = child();
+				child().setStartEdit(true);
+				pc = child().getLocation();
 				pc.translate(e.getX(), e.getY());
 				moveLabel(e, pc, mousePressed);
 			}
 		}
+	}
+
+	private GroupLabel child() {
+		return child;
+	}
+
+	private boolean hasChild() {
+		return child != null;
 	}
 
 	/**
@@ -438,7 +397,7 @@ public class GroupLabel extends JLabel {
 		// }
 	}
 
-	private void setStartEdit(boolean startEdit) {
+	protected void setStartEdit(boolean startEdit) {
 		this.startEdit = startEdit;
 	}
 
@@ -453,6 +412,26 @@ public class GroupLabel extends JLabel {
 
 	protected PhraseViewer createPhraseViewer(MuseApp app, Group gr) {
 		return new PhraseViewer(app, gr);
+	}
+
+	public Group group() {
+		return group;
+	}
+
+	public void setGroup(Group group) {
+		this.group = group;
+	}
+
+	public GroupLabel child(ArrayList<GroupLabel> grouplist) {
+		if (child == null) {
+			for (GroupLabel l : grouplist) {
+				if (group().hasChild() && group().child().equals(l.group())) {
+					child = l;
+					break;
+				}
+			}
+		}
+		return child;
 	}
 
 }

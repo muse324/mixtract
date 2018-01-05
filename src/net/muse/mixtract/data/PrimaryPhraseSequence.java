@@ -1,8 +1,10 @@
-package net.muse.data;
+package net.muse.mixtract.data;
+
+import net.muse.data.Group;
 
 /**
  * <h1>PrimaryPhraseSequence</h1>
- * 
+ *
  * @author Mitsuyo Hashida & Haruhiro Katayose
  *         <address>CrestMuse Project, JST</address>
  *         <address>http://www.m-use.net/</address>
@@ -10,14 +12,14 @@ package net.muse.data;
  * @since 2009/11/26
  */
 public class PrimaryPhraseSequence {
-	private Group group = null;
+	private MXGroup group = null;
 	private PrimaryPhraseSequence next = null;
 	private PrimaryPhraseSequence prev = null;
 
 	/**
 	 * @param g
 	 */
-	public PrimaryPhraseSequence(Group group) {
+	public PrimaryPhraseSequence(MXGroup group) {
 		this.group = group;
 	}
 
@@ -33,7 +35,7 @@ public class PrimaryPhraseSequence {
 	/**
 	 * @return the group
 	 */
-	public Group getGroup() {
+	public MXGroup getGroup() {
 		return group;
 	}
 
@@ -77,7 +79,7 @@ public class PrimaryPhraseSequence {
 	/**
 	 * @param group the group to set
 	 */
-	public void setGroup(Group group) {
+	public void setGroup(MXGroup group) {
 		this.group = group;
 	}
 

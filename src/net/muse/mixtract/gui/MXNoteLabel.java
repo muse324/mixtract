@@ -2,15 +2,18 @@ package net.muse.mixtract.gui;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 import net.muse.data.GroupNote;
-import net.muse.gui.NoteLabel;
-import net.muse.gui.PartColor;
+import net.muse.gui.*;
+import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXNoteData;
 
 public class MXNoteLabel extends NoteLabel {
 
 	private static final long serialVersionUID = 1L;
+	private MXGroupLabel childFormer;
+	private MXGroupLabel childLatter;
 
 	public MXNoteLabel(GroupNote note, Rectangle r) {
 		super(note, r);
@@ -21,7 +24,6 @@ public class MXNoteLabel extends NoteLabel {
 		final int c = (int) (255 * (1. - apex));
 		return new Color(255, c, c);
 	}
-
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.NoteLabel#setSelected(boolean)
@@ -42,6 +44,44 @@ public class MXNoteLabel extends NoteLabel {
 			setBackground(new Color(r, c, c));
 		}
 		repaint();
+	}
+
+	GroupLabel getChildLatter(ArrayList<GroupLabel> grouplist) {
+		if (childLatter == null) {
+			for (GroupLabel l : grouplist) {
+				assert l instanceof MXGroupLabel;
+				if (group().hasChildLatter() && group().getChildLatterGroup()
+						.equals(l.group())) {
+					childLatter = (MXGroupLabel) l;
+					break;
+				}
+			}
+		}
+		return childLatter;
+	}
+
+	protected GroupLabel getChildFormer(ArrayList<GroupLabel> grouplist) {
+		if (childFormer == null) {
+			for (GroupLabel l : grouplist) {
+				assert l instanceof MXGroupLabel;
+				if (group().hasChildFormer() && group().getChildFormerGroup()
+						.equals(l.group())) {
+					childFormer = (MXGroupLabel) l;
+					break;
+				}
+			}
+		}
+		return childFormer;
+	}
+
+
+	/* (非 Javadoc)
+	 * @see net.muse.gui.GroupLabel#group()
+	 */
+	@Override
+	public MXGroup group() {
+		// TODO 自動生成されたメソッド・スタブ
+		return (MXGroup) super.group();
 	}
 
 }

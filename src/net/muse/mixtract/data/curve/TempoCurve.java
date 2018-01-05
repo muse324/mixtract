@@ -23,7 +23,7 @@ public class TempoCurve extends PhraseCurve {
 	 * jp.crestmuse.mixtract.data.PhraseCurve#apply(jp.crestmuse.mixtract
 	 * .data.TuneData)
 	 */
-	@Override public void apply(MXTuneData target, Group gr) {
+	@Override public void apply(MXTuneData target, MXGroup gr) {
 		if (tempolist != target.getTempoList())
 			tempolist = target.getTempoList();
 		if (lastNote != target.getLastNote(0))
@@ -35,7 +35,7 @@ public class TempoCurve extends PhraseCurve {
 		return 0.;
 	}
 
-	private void applyTempoEvent(Group group, ArrayList<Double> realtimeList) {
+	private void applyTempoEvent(MXGroup group, ArrayList<Double> realtimeList) {
 		if (group == null)
 			return;
 		applyTempoEvent(group.getChildFormerGroup(), realtimeList);
@@ -92,7 +92,8 @@ public class TempoCurve extends PhraseCurve {
 		musicLengthInRealtimeMsec = currentTime;
 
 		for (Group g : rootGroup) {
-			applyTempoEvent(g, realtimeList);
+			assert g instanceof MXGroup;
+			applyTempoEvent((MXGroup) g, realtimeList);
 		}
 	}
 }

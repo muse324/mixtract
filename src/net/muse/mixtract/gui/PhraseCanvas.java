@@ -8,11 +8,11 @@ import java.util.LinkedList;
 import javax.swing.*;
 
 import net.muse.app.Mixtract;
-import net.muse.data.Group;
 import net.muse.gui.*;
 import net.muse.gui.RoundedCornerButton.RoundButton;
 import net.muse.mixtract.command.ApplyHierarchicalParamsCommand;
 import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurve;
 
@@ -38,7 +38,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 
 	/* 制御データ */
 	protected Mixtract main; // @jve:decl-index=0:
-	protected Group group; // @jve:decl-index=0:
+	protected MXGroup group; // @jve:decl-index=0:
 
 	private PhraseCurve cv; // @jve:decl-index=0:
 	private int axisX;
@@ -70,7 +70,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 	 * @param group
 	 * @param phraseCurve
 	 */
-	PhraseCanvas(final Group group, PhraseCurve phraseCurve) {
+	PhraseCanvas(final MXGroup group, PhraseCurve phraseCurve) {
 		this();
 		this.group = group;
 		this.cv = phraseCurve;

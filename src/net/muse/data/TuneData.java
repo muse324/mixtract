@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 import jp.crestmuse.cmx.filewrappers.*;
 import net.muse.app.Mixtract;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurve;
 
 public class TuneData extends MuseObject implements TuneDataController {
@@ -56,9 +56,6 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/** MIDI出力用イベントリスト */
 	private LinkedList<NoteScheduleEvent> noteScheduleEventList = new LinkedList<NoteScheduleEvent>();
 
-	/** ユーザにより指定されるプライマリフレーズライン */
-	private PrimaryPhraseSequence groupSequence = null;
-
 	public static void setMaximumMIDIChannel(int num) {
 		MAXIMUM_MIDICHANNEL = num;
 	}
@@ -91,43 +88,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 				return;
 			// TODO 複数声部に未対応
 		}
-		// TODO 未検証
-		createPrimaryPhraseSequence(group);
 		// ----------------------------------
 		getGroupArrayList().add(group);
-	}
-
-	/**
-	 * TODO 未検証
-	 * <p>
-	 * グループ構造の基礎となるプライマリフレーズラインを構成します。
-	 * <ul>
-	 * <li>g1の最終音とg2の開始音は連続しており、重複や入れ子を許さない
-	 * </ul>
-	 *
-	 * @param group
-	 */
-	protected void createPrimaryPhraseSequence(Group group) {
-		final PrimaryPhraseSequence seq = new PrimaryPhraseSequence(group);
-
-		// 新規作成
-		if (getGroupArrayList().size() <= 0) {
-			groupSequence = seq;
-			return;
-		}
-
-		NoteData st = group.getBeginGroupNote().getNote();
-		NoteData ed = group.getEndGroupNote().getNote();
-		// 前後にgroup sequence がある場合
-		if (st.hasPrevious() && st.previous().equals(groupSequence.end()
-				.getGroup().getEndGroupNote().getNote())) {
-			groupSequence.end().setNext(seq);
-			seq.setPrevious(groupSequence);
-		} else if (ed.hasNext() && ed.next().equals(groupSequence.root()
-				.getGroup().getBeginGroupNote().getNote())) {
-			groupSequence.root().setPrevious(seq);
-			seq.setNext(groupSequence);
-		}
 	}
 
 	public void calculateHierarchicalParameters() {
@@ -198,10 +160,6 @@ public class TuneData extends MuseObject implements TuneDataController {
 		return groupArrayList;
 	}
 
-	public PrimaryPhraseSequence getGroupSequence() {
-		return groupSequence;
-	}
-
 	/** @return inputFilename */
 	public String getInputFilename() {
 		return inputFile.getName();
@@ -231,8 +189,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 		return rootGroup;
 	}
 
-	public Group getRootGroup(int partIndex) {
-		return getRootGroup().get(partIndex);
+	public MXGroup getRootGroup(int partIndex) {
+		Group g = getRootGroup().get(partIndex);
+		assert g instanceof MXGroup;
+		return (MXGroup) g;
 	}
 
 	/** @return tempoList2 */
@@ -536,9 +496,9 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 		final double startTime = group.getBeginGroupNote().getNote().onset();
 		final double endTime = group.getEndGroupNote().getNote().offset();
-		final int st = (int) Math.round(GroupAnalyzer.rootDiv * startTime
+		final int st = (int) Math.round(MXGroupAnalyzer.rootDiv * startTime
 				/ tempoListEndtime);
-		final int ed = (int) Math.round(GroupAnalyzer.rootDiv * endTime
+		final int ed = (int) Math.round(MXGroupAnalyzer.rootDiv * endTime
 				/ tempoListEndtime);
 
 		System.out.println(String.format("-- %s (st=%d - ed=%d)", group.name(),
@@ -577,17 +537,12 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/**
 	 * @param target
 	 */
-	private void deleteGroup(Group target) {
+	protected void deleteGroup(Group target) {
 		if (target == null)
 			return;
-		deleteGroup(target.getChildFormerGroup());
-		deleteGroup(target.getChildLatterGroup());
+		deleteGroup(target.child());
 		target.setScoreNotelist(target.getScoreNotelist());
-		if (target.hasChild()) {
-			target.getChildFormerGroup().getEndGroupNote().setNext(target
-					.getChildLatterGroup().getBeginGroupNote());
-		}
-		target.setChild(null, null);
+		target.setChild(null);
 	}
 
 	/**
@@ -601,12 +556,11 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 * @param target 削除するフレーズ
 	 * @param structure 階層フレーズ
 	 */
-	private void deleteHierarchicalGroup(Group target, Group structure) {
+	protected void deleteHierarchicalGroup(Group target, Group structure) {
 		if (structure == null)
 			return;
 
-		deleteHierarchicalGroup(target, structure.getChildFormerGroup());
-		deleteHierarchicalGroup(target, structure.getChildLatterGroup());
+		deleteHierarchicalGroup(target, structure.child());
 		if (structure.equals(target)) {
 			// 子グループをすべて削除
 			deleteGroup(target);
@@ -617,19 +571,14 @@ public class TuneData extends MuseObject implements TuneDataController {
 		}
 	}
 
-	private void initializeNoteEvents(Group group) {
+	protected void initializeNoteEvents(Group group) {
 		if (group == null)
 			return;
-		if (group.hasChild()) {
-			initializeNoteEvents(group.getChildFormerGroup()
-					.getBeginGroupNote());
-			initializeNoteEvents(group.getChildLatterGroup()
-					.getBeginGroupNote());
-		}
+		initializeNoteEvents(group.child().getBeginGroupNote());
 		initializeNoteEvents(group.getBeginGroupNote());
 	}
 
-	private void initializeNoteEvents(GroupNote gnote) {
+	protected void initializeNoteEvents(GroupNote gnote) {
 		if (gnote == null)
 			return;
 		initializeNoteEvents(gnote.child());
@@ -654,27 +603,22 @@ public class TuneData extends MuseObject implements TuneDataController {
 		tempoList.clear();
 		dynamicsList.clear();
 		articulationList.clear();
-		for (int i = 0; i < GroupAnalyzer.rootDiv; i++) {
+		for (int i = 0; i < MXGroupAnalyzer.rootDiv; i++) {
 			tempoList.add(0.);
 			dynamicsList.add(0.);
 			articulationList.add(1.);
 		}
 	}
 
-	/** @param g */
-	private void setNoteScheduleEvent(final Group g) {
+	protected void setNoteScheduleEvent(final Group g) {
 		if (g == null)
 			return;
-		if (g.hasChild()) {
-			setNoteScheduleEvent(g.getChildFormerGroup());
-			setNoteScheduleEvent(g.getChildLatterGroup());
-		} else {
-			setNoteScheduleEvent(g.getBeginGroupNote(), g.getEndGroupNote()
-					.getNote().offset());
-		}
+		setNoteScheduleEvent(g.child());
+		setNoteScheduleEvent(g.getBeginGroupNote(), g.getEndGroupNote()
+				.getNote().offset());
 	}
 
-	private void setNoteScheduleEvent(GroupNote note, int endOffset) {
+	protected void setNoteScheduleEvent(GroupNote note, int endOffset) {
 		if (note == null)
 			return;
 		if (note.getNote() == null)
@@ -707,11 +651,11 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 * @param rootGroup2
 	 * @param idxlist
 	 */
-	private void getUniqueGroupIndex(Group glist, ArrayList<Integer> idxlist) {
+	protected void getUniqueGroupIndex(Group glist,
+			ArrayList<Integer> idxlist) {
 		if (glist == null)
 			return;
-		getUniqueGroupIndex(glist.getChildFormerGroup(), idxlist);
-		getUniqueGroupIndex(glist.getChildLatterGroup(), idxlist);
+		getUniqueGroupIndex(glist.child(), idxlist);
 		if (!idxlist.contains(glist.index()))
 			idxlist.add(glist.index());
 	}

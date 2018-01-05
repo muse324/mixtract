@@ -205,7 +205,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * .swing.JLabel, boolean)
 	 */
 	public void selectGroup(GroupLabel g, boolean flg) {
-		selectGroup(g.getGroup());
+		selectGroup(g.group());
 		repaint();
 	}
 
@@ -558,8 +558,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	protected void makeNoteLabel(Group group) {
 		if (group.hasChild()) {
-			makeNoteLabel(group.getChildFormerGroup());
-			makeNoteLabel(group.getChildLatterGroup());
+			makeNoteLabel(group.child());
 		} else
 			makeNoteLabel(group.getBeginGroupNote(), false);
 	}
@@ -809,7 +808,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		setDoubleBuffered(true);
 	}
 
-	private void makeNoteLabel(GroupNote note, boolean isChild) {
+	protected void makeNoteLabel(GroupNote note, boolean isChild) {
 		if (note == null)
 			return;
 		int offset = (note.hasNext() && note.next().getNote() != null && note

@@ -18,7 +18,7 @@ final class DeleteGroupCommand extends MuseAppCommand {
 					.getSelectedGroup();
 			// _target.deleteGUIGroup(_selectedObjects.getGroupLabel());
 			// _selectedObjects.clearAll();
-			main().data().deleteGroupFromData(sel.getGroup());
+			main().data().deleteGroupFromData(sel.group());
 			main().notifyDeleteGroup(sel);
 			// getPianorollScroll().repaint();
 			// getGroupingPanel().deselectLabel();

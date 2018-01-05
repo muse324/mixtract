@@ -25,7 +25,7 @@ public class PrintGroupInfoCommand extends MuseAppCommand {
 	 * .gui.GroupLabel)
 	 */
 	@Override public void setGroup(GroupLabel groupLabel) {
-		this.group = groupLabel.getGroup();
+		this.group = groupLabel.group();
 	}
 
 	/*
@@ -35,7 +35,7 @@ public class PrintGroupInfoCommand extends MuseAppCommand {
 	@Override public void execute() {
 		if (group == null) {
 			group = frame().getGroupingPanel().getSelectedGroup()
-					.getGroup();
+					.group();
 		}
 		if (group instanceof MXGroup) {
 			MXGroup g = (MXGroup) group;

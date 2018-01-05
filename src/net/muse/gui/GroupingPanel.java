@@ -71,7 +71,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mousePressed(MouseEvent e) {
+			@Override
+			public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (!SwingUtilities.isRightMouseButton(e))
 					_main.notifyDeselectGroup();
@@ -83,7 +84,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseReleased(MouseEvent e) {
+			@Override
+			public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (selectedGroup == null)
 					_main.notifyDeselectGroup();
@@ -96,7 +98,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java.
 			 * awt.event.MouseEvent)
 			 */
-			@Override public void mouseExited(MouseEvent e) {
+			@Override
+			public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
 				if (isGroupEditable()) {
 					setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
@@ -112,7 +115,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
 			 * .event.MouseEvent)
 			 */
-			@Override public void mouseMoved(MouseEvent e) {
+			@Override
+			public void mouseMoved(MouseEvent e) {
 				super.mouseMoved(e);
 				repaint();
 			}
@@ -124,7 +128,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override protected void createPopupMenu(MouseEvent e) {
+			@Override
+			protected void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				MixtractCommand.SET_TYPE_CRESC.setGroup(getSelectedGroup());
 				MixtractCommand.SET_TYPE_DIM.setGroup(getSelectedGroup());
@@ -168,7 +173,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override public void paintComponent(Graphics g) {
+	@Override
+	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		final Graphics2D g2 = (Graphics2D) g;
 
@@ -205,7 +211,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @deprecated Use {@link #readTuneData()} instead
 	 */
-	@Deprecated public void readTuneData(MXTuneData target) {
+	@Deprecated
+	public void readTuneData(MXTuneData target) {
 		readTuneData();
 		repaint();
 	}
@@ -213,7 +220,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	public void readTuneData() {
 		removeAll();
 		grouplist.clear();
-		maximumGroupLevel = 0;
+		setMaximumGroupLevel(0);
 		if (data == null)
 			return;
 		createHierarchicalGroupLabel(data.getRootGroup(), 0, 0);
@@ -245,12 +252,12 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		final Rectangle window = SwingUtilities.getLocalBounds(this);
 		if (selectedGroup != null) {
 			final JFrame f = new JFrame("Melody Information: " + selectedGroup
-					.getGroup());
+					.group());
 			f.setLocation((int) (window.x + window.width * 0.25),
 					window.height);
 			f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			f.setLayout(new BorderLayout());
-			f.add(MelodyFlagViewer.createNewViewer(selectedGroup.getGroup()),
+			f.add(MelodyFlagViewer.createNewViewer(selectedGroup.group()),
 					BorderLayout.CENTER);
 			f.pack();
 			f.setVisible(true);
@@ -287,7 +294,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		createHierarchicalGroupLabel(glist, index + 1, level);
 	}
 
-	private void createHierarchicalGroupLabel(Group group, int level) {
+	protected void createHierarchicalGroupLabel(Group group, int level) {
 		if (group == null)
 			return;
 
@@ -295,15 +302,14 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		if (group.hasChild() || group.hasParent())
 			createGroupLabel(group, level);
 
-		createHierarchicalGroupLabel(group.getChildFormerGroup(), level + 1);
-		createHierarchicalGroupLabel(group.getChildLatterGroup(), level + 1);
+		createHierarchicalGroupLabel(group.child(), level + 1);
 	}
 
 	/**
 	 * @param group
 	 * @param level
 	 */
-	private void createGroupLabel(Group group, int level) {
+	protected void createGroupLabel(Group group, int level) {
 		if (group == null)
 			return;
 		group.setHierarchy(group.hasChild() || group.hasParent());
@@ -311,8 +317,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		// if(!group.hasChild())
 		// return;
 
-		maximumGroupLevel = (level > maximumGroupLevel) ? level
-				: maximumGroupLevel;
+		setMaximumGroupLevel((level > getMaximumGroupLevel()) ? level
+				: getMaximumGroupLevel());
 
 		final Rectangle r = getLabelBounds(group, level);
 		final GroupLabel label = createGroupLabel(group, r);
@@ -365,14 +371,13 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @param list
 	 */
-	private void createNonHierarchicalGroupLabel() {
-		int level = maximumGroupLevel + 1;
+	protected void createNonHierarchicalGroupLabel() {
+		int level = getMaximumGroupLevel() + 1;
 		for (Group g : data.getGroupArrayList()) {
 			if (level < g.getLevel())
 				level = g.getLevel() + 1;
 			createGroupLabel(g, level);
-			createGroupLabel(g.getChildFormerGroup(), level + 1);
-			createGroupLabel(g.getChildLatterGroup(), level + 1);
+			createGroupLabel(g.child(), level + 1);
 		}
 	}
 
@@ -401,7 +406,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 
 		if (parent != null) {
 			// TODO ACII demo仕様：ユーザグループ以下の子グループは表示しない
-			if (parent.getGroup().getType() == GroupType.USER) {
+			if (parent.group().getType() == GroupType.USER) {
 				child.setVisible(false);
 			} else if (!parent.isVisible()) {
 				child.setVisible(false);
@@ -417,8 +422,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			}
 		}
 
-		drawHierarchyLine(g2, child.getChildFormer(grouplist), child);
-		drawHierarchyLine(g2, child.getChildLatter(grouplist), child);
+		drawHierarchyLine(g2, child.child(grouplist), child);
 	}
 
 	private void initialize() {
@@ -463,7 +467,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		if (type == PhraseCurveType.DYNAMICS)
 			return;
 		for (GroupLabel l : grouplist) {
-			Rectangle r = getLabelBounds(l.getGroup(), l.getGroup().getLevel());
+			Rectangle r = getLabelBounds(l.group(), l.group().getLevel());
 			l.setBounds(r);
 			// l.repaint();
 		}
@@ -494,5 +498,21 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 */
 	public GroupLabel getSelectedGroup() {
 		return selectedGroup;
+	}
+
+	protected int getMaximumGroupLevel() {
+		return maximumGroupLevel;
+	}
+
+	protected void setMaximumGroupLevel(int maximumGroupLevel) {
+		this.maximumGroupLevel = maximumGroupLevel;
+	}
+
+	protected TuneData data() {
+		return data;
+	}
+
+	protected void setData(TuneData data) {
+		this.data = data;
 	}
 }

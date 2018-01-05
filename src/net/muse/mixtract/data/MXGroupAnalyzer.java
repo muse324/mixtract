@@ -1,5 +1,6 @@
-package net.muse.data;
+package net.muse.mixtract.data;
 
+import net.muse.data.*;
 import net.muse.misc.MuseObject;
 
 /**
@@ -11,11 +12,11 @@ import net.muse.misc.MuseObject;
  *         <address>http://www.m-use.net/</address>
  * @since 2008/04/05
  */
-public class GroupAnalyzer extends MuseObject implements Runnable {
+public class MXGroupAnalyzer extends MuseObject implements Runnable {
 
 	public static final int rootDiv = 480;
-	private final TuneData data;
-	private Group root;
+	private final MXTuneData data;
+	private MXGroup root;
 
 	/** ユーザにより指定されるプライマリフレーズライン */
 	private PrimaryPhraseSequence groupSequence = null;
@@ -33,7 +34,7 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 	 * @param target グループ構造を分析するTuneData
 	 * @param doScoreAnalysis インスタンス化と同時に楽譜分析をするかどうか
 	 */
-	public GroupAnalyzer(TuneData target, boolean doScoreAnalysis) {
+	public MXGroupAnalyzer(MXTuneData target, boolean doScoreAnalysis) {
 		setScoreAnalysis(doScoreAnalysis);
 		data = target;
 	}
@@ -61,7 +62,7 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 	/**
 	 * @param target
 	 */
-	public void setRootGroup(Group target) {
+	public void setRootGroup(MXGroup target) {
 		root = target;
 	}
 
@@ -83,11 +84,11 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 	private void createUpperLevelStructure(PrimaryPhraseSequence sequence) {
 		if (sequence == null || !sequence.hasNext())
 			return;
-		Group g1 = sequence.getGroup();
-		Group g2 = sequence.next().getGroup();
+		MXGroup g1 = sequence.getGroup();
+		MXGroup g2 = sequence.next().getGroup();
 		// g1とg2の長さがほぼ等価（GPR5:symmetry）なら親グループを生成
 		if (symmetryRate(g1.getTimeValue(), g2.getTimeValue()) <= 0.3) {
-			Group parent = new Group(new GroupNote(g1.getBeginGroupNote()
+			MXGroup parent = new MXGroup(new GroupNote(g1.getBeginGroupNote()
 					.getNote()), new GroupNote(g2.getEndGroupNote().getNote()),
 					GroupType.PARENT);
 			parent.setIndex(data.getUniqueGroupIndex());
@@ -125,7 +126,7 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 	 * @param rootGroup
 	 * @return
 	 */
-	private Group reachedHierarchy(Group target, Group rootGroup) {
+	private MXGroup reachedHierarchy(MXGroup target, MXGroup rootGroup) {
 		if (rootGroup == null)
 			return target;
 		if (_completeHierarcy)
@@ -136,7 +137,7 @@ public class GroupAnalyzer extends MuseObject implements Runnable {
 			_completeHierarcy = true;
 			if (!rootGroup.hasParent())
 				return rootGroup;
-			Group parent = rootGroup.getParent();
+			MXGroup parent = rootGroup.getParent();
 			if (parent.getChildFormerGroup().equals(rootGroup))
 				parent.setChild(target, parent.getChildLatterGroup());
 			else if (parent.getChildLatterGroup().equals(rootGroup))

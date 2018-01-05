@@ -11,6 +11,7 @@ import net.muse.data.*;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
 import net.muse.misc.Command;
+import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;
 
@@ -106,7 +107,7 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final PrintGroupInfoCommand PRINT_GROUP_INFO = new PrintGroupInfoCommand(
 			"Print group info.", "グループ情報");
 
-	private static GroupAnalyzer ana;
+	private static MXGroupAnalyzer ana;
 	private static MuseAppCommand commandLists[] = new MuseAppCommand[] {
 			ADD_GROUP, ANALYZE_STRUCTURE, DELETE_GROUP, DETAIL, EDIT_GROUP,
 			MOUSE_DISPLAY, OPEN_RULEPANEL, PRINT_ALL_SIMILAR_GROUPS,
@@ -237,7 +238,7 @@ public class MixtractCommand extends MuseAppCommand {
 	@Override
 	public void setGroup(GroupLabel groupLabel) {
 		setGroupLabel(groupLabel);
-		_group = groupLabel.getGroup();
+		_group = groupLabel.group();
 	}
 
 	/**

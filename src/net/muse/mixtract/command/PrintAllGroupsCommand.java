@@ -2,6 +2,7 @@ package net.muse.mixtract.command;
 
 import net.muse.data.Group;
 import net.muse.gui.GUIUtil;
+import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXTuneData;
 
 /**
@@ -25,15 +26,20 @@ final class PrintAllGroupsCommand extends MixtractCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override
+	public void execute() {
 		GUIUtil.printConsole("Hierarchical group list:");
 		assert _target instanceof MXTuneData;
 		MXTuneData t = (MXTuneData) _target;
-		for (Group g : t.getRootGroup())
-			printGroupList(g);
+		for (Group g : t.getRootGroup()) {
+			assert g instanceof MXGroup;
+			printGroupList((MXGroup) g);
+		}
 		GUIUtil.printConsole("Hierarchical group list:");
-		for (Group g : t.getGroupArrayList())
-			printGroupList(g);
+		for (Group g : t.getGroupArrayList()) {
+			assert g instanceof MXGroup;
+			printGroupList((MXGroup) g);
+		}
 	}
 
 	/**
@@ -41,7 +47,7 @@ final class PrintAllGroupsCommand extends MixtractCommand {
 	 *
 	 * @param group 各声部のトップグループ
 	 */
-	private void printGroupList(Group group) {
+	private void printGroupList(MXGroup group) {
 		if (group == null)
 			return;
 		printGroupList(group.getChildFormerGroup());
