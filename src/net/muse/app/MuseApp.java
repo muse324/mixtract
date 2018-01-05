@@ -70,9 +70,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param data2
 	 * @param object
 	 */
-	public void analyzeStructure(TuneData data, Group group) {
-		throw new UnsupportedOperationException("サブクラスで実装してください");
-	}
+	public abstract void analyzeStructure(TuneData data, Group group);
 
 	/**
 	 * @return

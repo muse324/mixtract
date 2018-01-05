@@ -2,6 +2,7 @@ package net.muse.mixtract.gui;
 
 import java.awt.Rectangle;
 
+import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.GroupNote;
 import net.muse.gui.*;
@@ -49,6 +50,7 @@ public class MXPianoroll extends PianoRoll {
 	protected void setDisplayApex(boolean flg) {
 		displayApex = flg;
 	}
+
 	protected void makeNoteLabel(MXGroup group) {
 		if (group.hasChild()) {
 			makeNoteLabel(group.getChildFormerGroup());
@@ -56,4 +58,17 @@ public class MXPianoroll extends PianoRoll {
 		} else
 			makeNoteLabel(group.getBeginGroupNote(), false);
 	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.PianoRoll#createPianoRollMouseAction(net.muse.app.MuseApp)
+	 */
+	@Override
+	protected PianoRollAction createPianoRollMouseAction(MuseApp app) {
+		return new PianoRollAction(app, this) {
+
+		};
+	}
+
 }

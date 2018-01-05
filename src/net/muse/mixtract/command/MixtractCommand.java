@@ -7,12 +7,13 @@ import javax.swing.JFrame;
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.command.*;
-import net.muse.data.*;
+import net.muse.data.Group;
+import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
 import net.muse.misc.Command;
-import net.muse.mixtract.data.MXGroupAnalyzer;
-import net.muse.mixtract.data.MXTuneData;
+import net.muse.mixtract.data.*;
+import net.muse.mixtract.gui.MXGroupLabel;
 import net.muse.mixtract.gui.MXMainFrame;
 
 /**
@@ -22,8 +23,8 @@ import net.muse.mixtract.gui.MXMainFrame;
  * @since 2008/04/21
  */
 public class MixtractCommand extends MuseAppCommand {
-	private GroupLabel _groupLabel;
-	private Group _group;
+	private MXGroupLabel _groupLabel;
+	private MXGroup _group;
 
 	public static Mixtract main() {
 		return (Mixtract) _main;
@@ -171,13 +172,6 @@ public class MixtractCommand extends MuseAppCommand {
 		setMainFrame((MainFrame) owner);
 	}
 
-	/**
-	 * @param main2
-	 */
-	public static void setMainObject(MuseApp main) {
-		setMain(main);
-	}
-
 	public static void setTarget(TuneData target) {
 		_target = target;
 	}
@@ -238,7 +232,8 @@ public class MixtractCommand extends MuseAppCommand {
 	@Override
 	public void setGroup(GroupLabel groupLabel) {
 		setGroupLabel(groupLabel);
-		_group = groupLabel.group();
+		assert groupLabel instanceof MXGroupLabel;
+		_group = (MXGroup) groupLabel.group();
 	}
 
 	/**
@@ -252,7 +247,8 @@ public class MixtractCommand extends MuseAppCommand {
 	 * @param _groupLabel セットする _groupLabel
 	 */
 	public void setGroupLabel(GroupLabel _groupLabel) {
-		this._groupLabel = _groupLabel;
+		assert _groupLabel instanceof MXGroupLabel;
+		this._groupLabel = (MXGroupLabel) _groupLabel;
 	}
 
 	/**

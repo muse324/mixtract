@@ -41,7 +41,7 @@ public class Mixtract extends MuseApp {
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
 
-				MixtractCommand.setMainObject(main);
+				MixtractCommand.setMain(main);
 
 				/* sprash screen */
 				main.createSplashScreen(main.getAppImageFile());
@@ -131,9 +131,15 @@ public class Mixtract extends MuseApp {
 			getPhraseViewList().remove(d);
 		}
 	}
-	public void analyzeStructure(MXTuneData data, MXGroup group) {
-		MXGroupAnalyzer ana = new MXGroupAnalyzer(data, false);
-		ana.setRootGroup(group);
+
+	@Override
+	public void analyzeStructure(TuneData data, Group group) {
+		assert data != null && data instanceof MXTuneData;
+		if (group == null)
+			return;
+		assert group instanceof MXGroup;
+		MXGroupAnalyzer ana = new MXGroupAnalyzer((MXTuneData) data, false);
+		ana.setRootGroup((MXGroup) group);
 		ana.run();
 		analyzer.add(ana);
 	}
