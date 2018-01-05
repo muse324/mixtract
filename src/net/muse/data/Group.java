@@ -22,8 +22,8 @@ import java.util.List;
  * @since 2009/10/23
  */
 public class Group extends SequenceData {
-
-	private static boolean AVOID_LAST_RESTNOTE = true;
+	/** グループ最後尾において、休符をグループに含めるかどうか設定します。 */
+	private static boolean INCLUDE_LAST_RESTNOTE = true;
 
 	/** グループの種類 */
 	private GroupType _type;
@@ -57,10 +57,10 @@ public class Group extends SequenceData {
 	private PhraseFeature detail;
 
 	/**
-	 * @param aVOID_LAST_RESTNOTE セットする aVOID_LAST_RESTNOTE
+	 * @param INCLUDE_LAST_RESTNOTE セットする INCLUDE_LAST_RESTNOTE
 	 */
 	public static void setAvoidLastRestsFromGroup(boolean aVOID_LAST_RESTNOTE) {
-		AVOID_LAST_RESTNOTE = aVOID_LAST_RESTNOTE;
+		INCLUDE_LAST_RESTNOTE = aVOID_LAST_RESTNOTE;
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class Group extends SequenceData {
 		this.partNumber = partIndex;
 		setNotelist(notelist.child(), this.notelist);
 		setNotelist(notelist.next(), this.notelist);
-		avoidLastRestnotesFromGroup();
+		comfirmLastRestnotesFromGroup();
 	}
 
 	private Group(GroupType type) {
@@ -211,7 +211,7 @@ public class Group extends SequenceData {
 	 * @return cur
 	 */
 	public List<? extends NoteData> getScoreNotelist() {
-		if(scoreNotelist==null)
+		if (scoreNotelist == null)
 			createScoreNoteList();
 		if (hasChild()) {
 			scoreNotelist.clear();
@@ -384,10 +384,11 @@ public class Group extends SequenceData {
 	}
 
 	/**
-	 *
+	 * グループ最後尾において、休符がグループに含まれているかをチェックします。
+	 * INCLUDE_LAST_RESTNOTE が false の場合にのみ実行されます。
 	 */
-	private void avoidLastRestnotesFromGroup() {
-		if (!AVOID_LAST_RESTNOTE)
+	private void comfirmLastRestnotesFromGroup() {
+		if (INCLUDE_LAST_RESTNOTE)
 			return;
 		while (endGroupNote.getNote().rest()) {
 			endGroupNote = endGroupNote.previous();
