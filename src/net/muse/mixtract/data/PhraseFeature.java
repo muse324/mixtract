@@ -3,7 +3,8 @@ package net.muse.mixtract.data;
 import java.util.*;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
-import net.muse.data.*;
+import net.muse.data.AbstractPhraseFeature;
+import net.muse.data.NoteData;
 
 /**
  * <h1>PhraseFeature</h1>
@@ -54,10 +55,18 @@ public class PhraseFeature extends AbstractPhraseFeature {
 	 * @param g
 	 *            音列グループ
 	 */
-	public PhraseFeature(Group group) {
+	public PhraseFeature(MXGroup group) {
 		super(group);
 		setLineParameters();
 		makeRhythmVector();
+	}
+
+	/* (非 Javadoc)
+	 * @see net.muse.data.AbstractPhraseFeature#group()
+	 */
+	@Override
+	public MXGroup group() {
+		return (MXGroup) group;
 	}
 
 	public final double getCt1() {
@@ -136,12 +145,12 @@ public class PhraseFeature extends AbstractPhraseFeature {
 	 *            音列グループ
 	 */
 	private void makeRhythmVector() {
-		// int unit = getMinimumDuration(group.getBeginGroupNote());
-		// int length = (int) group.length();
+		// int unit = getMinimumDuration(group().getBeginGroupNote());
+		// int length = (int) group().length();
 		//
 		// ArrayList<Integer> vec = new ArrayList<Integer>();
-		// Note n = group.getBeginningNote(); // 開始音
-		// TreeView<Note> tv = group.getNotes();
+		// Note n = group().getBeginningNote(); // 開始音
+		// TreeView<Note> tv = group().getNotes();
 		// tv.jumpTo(n);// 最初が休符かもしれないから
 		// int onset = 0;
 		// int val = 0;
@@ -164,7 +173,7 @@ public class PhraseFeature extends AbstractPhraseFeature {
 		// }
 		// rhythmVector = vec;
 		// testPrintln(rhythmVector.toString());
-		// noteLevel = group.getMinimumNoteLevel();
+		// noteLevel = group().getMinimumNoteLevel();
 		// } catch (UnexpectedException e) {
 		// e.printStackTrace();
 		// }
@@ -197,21 +206,21 @@ public class PhraseFeature extends AbstractPhraseFeature {
 		 * 後半最初の音符を取得する。グループがもし頂点音を保有している場合は頂点音を、
 		 * そうでなければ時間長の半分の位置にある音符を格納する。
 		 */
-		latterFirstNoteData = (group.hasTopNote()) ? group.getTopGroupNote()
-				.getNote() : group.getCenterGroupNote().getNote();
+		latterFirstNoteData = (group().hasTopNote()) ? group().getTopGroupNote()
+				.getNote() : group().getCenterGroupNote().getNote();
 
 		// 前半最後の音符を取得
 		formerLastNoteData = latterFirstNoteData.previous();
 
-		double st = group.onsetInTicks();
+		double st = group().onsetInTicks();
 		double tp = formerLastNoteData.offset();
 		double formarLength = (tp - st) / getTicksPerBeat();
-		slopeA = (formerLastNoteData.noteNumber() - group.getBeginGroupNote()
+		slopeA = (formerLastNoteData.noteNumber() - group().getBeginGroupNote()
 				.getNote().noteNumber()) / formarLength;
-		double ed = group.getEndGroupNote().getNote().offset();
+		double ed = group().getEndGroupNote().getNote().offset();
 		double latterLength = ed - latterFirstNoteData.onset()
 				/ getTicksPerBeat();
-		slopeB = (group.getEndGroupNote().getNote().noteNumber()
+		slopeB = (group().getEndGroupNote().getNote().noteNumber()
 				- latterFirstNoteData.noteNumber()) / latterLength;
 		timeValue = (ed - st) / getTicksPerBeat();
 		ratioOfMalodyA = formarLength / timeValue;

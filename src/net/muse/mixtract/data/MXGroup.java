@@ -14,6 +14,8 @@ public class MXGroup extends Group {
 	private DynamicsCurve dynamicsCurve;
 	private TempoCurve tempoCurve;
 	private ArticulationCurve articulationCurve;
+	/** グループ中央付近にある音符。*/
+	private GroupNote centerNote;
 
 	/**
 	 * @param groupNoteList
@@ -152,5 +154,27 @@ public class MXGroup extends Group {
 				PhraseCurveType.TEMPO);
 		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
 				PhraseCurveType.ARTICULATION);
+	}
+
+	public GroupNote getCenterGroupNote() {
+		if (centerNote == null) {
+			// onset length
+			int len = getEndGroupNote().getNote().onset() - onsetInTicks();
+			int targetTime = len / 2;
+			searchCenterGroupNote(targetTime, getBeginGroupNote());
+			if (hasChild())
+				searchCenterGroupNote(targetTime, getChildLatterGroup()
+						.getBeginGroupNote());
+		}
+		return centerNote;
+	}
+
+	private void searchCenterGroupNote(int targetTime, GroupNote note) {
+		if (note == null)
+			return;
+		if (note.getNote().onset() >= targetTime)
+			return;
+		centerNote = note;
+		searchCenterGroupNote(targetTime, note.next());
 	}
 }

@@ -53,8 +53,6 @@ public class Group extends SequenceData {
 
 	/** 頂点音 TODO Mixtract用にプッシュダウンする */
 	private GroupNote topGroupNote = null;
-	/** グループ中央付近にある音符。TODO Mixtract用にプッシュダウンする */
-	private GroupNote centerNote;
 	/** フレーズ（グループ）の詳細情報を格納します。 */
 	private PhraseFeature detail;
 
@@ -164,19 +162,6 @@ public class Group extends SequenceData {
 	 */
 	public GroupNote getBeginGroupNote() {
 		return beginGroupNote;
-	}
-
-	public GroupNote getCenterGroupNote() {
-		if (centerNote == null) {
-			// onset length
-			int len = getEndGroupNote().getNote().onset() - onsetInTicks();
-			int targetTime = len / 2;
-			searchCenterGroupNote(targetTime, getBeginGroupNote());
-			if (hasChild())
-				searchCenterGroupNote(targetTime, getChildLatterGroup()
-						.getBeginGroupNote());
-		}
-		return centerNote;
 	}
 
 	public Group getChildFormerGroup() {
@@ -418,15 +403,6 @@ public class Group extends SequenceData {
 
 	private double realOffset() {
 		return getEndGroupNote().getNote().realOffset();
-	}
-
-	private void searchCenterGroupNote(int targetTime, GroupNote note) {
-		if (note == null)
-			return;
-		if (note.getNote().onset() >= targetTime)
-			return;
-		centerNote = note;
-		searchCenterGroupNote(targetTime, note.next());
 	}
 
 	/**

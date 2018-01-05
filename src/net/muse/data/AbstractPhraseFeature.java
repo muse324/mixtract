@@ -27,4 +27,8 @@ public class AbstractPhraseFeature extends MuseObject {
 		this.group = group;
 	}
 
+	public Group group() {
+		return group;
+	}
+
 }
