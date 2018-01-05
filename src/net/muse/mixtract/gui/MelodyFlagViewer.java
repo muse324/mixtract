@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.data.*;
+import net.muse.mixtract.data.PhraseFeature;
 
 public class MelodyFlagViewer extends JPanel {
 

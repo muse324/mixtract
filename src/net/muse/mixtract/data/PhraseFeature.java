@@ -1,11 +1,9 @@
-package net.muse.data;
+package net.muse.mixtract.data;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
-import net.muse.misc.MuseObject;
+import net.muse.data.*;
 
 /**
  * <h1>PhraseFeature</h1>
@@ -17,7 +15,7 @@ import net.muse.misc.MuseObject;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2008/05/02
  */
-public class PhraseFeature extends MuseObject {
+public class PhraseFeature extends AbstractPhraseFeature {
 	/** subphrase A の音高推移の傾き */
 	private double slopeA;
 
@@ -57,8 +55,9 @@ public class PhraseFeature extends MuseObject {
 	 *            音列グループ
 	 */
 	public PhraseFeature(Group group) {
-		setLineParameters(group);
-		makeRhythmVector(group);
+		super(group);
+		setLineParameters();
+		makeRhythmVector();
 	}
 
 	public final double getCt1() {
@@ -136,7 +135,7 @@ public class PhraseFeature extends MuseObject {
 	 * @param target
 	 *            音列グループ
 	 */
-	private void makeRhythmVector(Group group) {
+	private void makeRhythmVector() {
 		// int unit = getMinimumDuration(group.getBeginGroupNote());
 		// int length = (int) group.length();
 		//
@@ -192,11 +191,11 @@ public class PhraseFeature extends MuseObject {
 	 * @param g
 	 *            音列グループ
 	 */
-	private synchronized void setLineParameters(Group group) {
+	private synchronized void setLineParameters() {
 
 		/*
 		 * 後半最初の音符を取得する。グループがもし頂点音を保有している場合は頂点音を、
-		 * そうでなければ時間長の半分の位置にあ音符を格納する。
+		 * そうでなければ時間長の半分の位置にある音符を格納する。
 		 */
 		latterFirstNoteData = (group.hasTopNote()) ? group.getTopGroupNote()
 				.getNote() : group.getCenterGroupNote().getNote();

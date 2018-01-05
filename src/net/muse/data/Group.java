@@ -3,6 +3,8 @@ package net.muse.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.muse.mixtract.data.PhraseFeature;
+
 /**
  * <h1>Group</h1>
  * <p>

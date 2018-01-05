@@ -5,12 +5,16 @@ import java.util.*;
 import net.muse.data.*;
 import net.muse.mixtract.data.curve.*;
 
+/**
+ * 演奏デザイン支援ツールMixtractに必要なグループ情報を定義します。
+ * @see Group
+ * @author hashida
+ */
 public class MXGroup extends Group {
 	private DynamicsCurve dynamicsCurve;
-
 	private TempoCurve tempoCurve;
-
 	private ArticulationCurve articulationCurve;
+
 	/**
 	 * @param groupNoteList
 	 * @param endNote
@@ -19,6 +23,7 @@ public class MXGroup extends Group {
 	public MXGroup(GroupNote groupNoteList, GroupNote endNote, GroupType type) {
 		super(groupNoteList, endNote, type);
 	}
+
 	/**
 	 * @param notelist
 	 * @param partIndex
@@ -110,7 +115,6 @@ public class MXGroup extends Group {
 	public final ArticulationCurve getArticulationCurve() {
 		return articulationCurve;
 	}
-
 
 	/**
 	 * @return dynamicsCurve
