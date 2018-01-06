@@ -25,7 +25,8 @@ public class PrintGroupInfoCommand extends MuseAppCommand {
 	 */
 	@Override
 	public void setGroup(GroupLabel groupLabel) {
-		this.group = groupLabel.group();
+		if (groupLabel != null)
+			this.group = groupLabel.group();
 	}
 
 	/*
