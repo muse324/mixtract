@@ -1,8 +1,7 @@
 package net.muse.gui;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -11,7 +10,6 @@ import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.mixtract.command.MixtractCommand;
-import net.muse.mixtract.gui.MXGroupLabel;
 
 public class GroupLabel extends JLabel {
 
@@ -31,6 +29,8 @@ public class GroupLabel extends JLabel {
 	private MouseAdapter mouseActions;
 
 	private GroupLabel child;
+
+	private KeyActionListener keyActions;
 
 	protected GroupLabel(Group group, Rectangle r) {
 		this();
@@ -210,6 +210,27 @@ public class GroupLabel extends JLabel {
 		};
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
+		keyActions = new KeyActionListener(main, this) {
+
+			/*
+			 * (非 Javadoc)
+			 * @see
+			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
+			 */
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_BACK_SPACE:
+					GUIUtil.printConsole("delete group (dummy)");
+					MixtractCommand.DELETE_GROUP.execute();
+					break;
+				default:
+					GUIUtil.printConsole("Key pressed: ");
+				}
+			}
+
+		};
+		addKeyListener(keyActions);
 	}
 
 	void setMouseOver(boolean b) {
@@ -224,11 +245,12 @@ public class GroupLabel extends JLabel {
 	 */
 	public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
-		if (isSelected) {
-			setBackground(PartColor.SELECTED_COLOR);
-		} else {
-			setBackground(getCurrentColor());
-		}
+		setFocusable(isSelected);
+		MixtractCommand.DELETE_GROUP.setGroup(isSelected ? this : null);
+		setBackground(isSelected ? PartColor.SELECTED_COLOR
+				: getCurrentColor());
+		if (isSelected)
+			requestFocus();
 		repaint();
 	}
 
