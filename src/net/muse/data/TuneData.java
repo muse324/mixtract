@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 
 import jp.crestmuse.cmx.filewrappers.*;
 import net.muse.app.Mixtract;
+import net.muse.gui.GUIUtil;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.data.curve.PhraseCurve;
@@ -658,5 +659,28 @@ public class TuneData extends MuseObject implements TuneDataController {
 		getUniqueGroupIndex(glist.child(), idxlist);
 		if (!idxlist.contains(glist.index()))
 			idxlist.add(glist.index());
+	}
+
+	public void printAllGroups() {
+		GUIUtil.printConsole("Hierarchical group list:");
+		for (Group g : getRootGroup()) {
+			printGroupList(g);
+		}
+		GUIUtil.printConsole("Non hierarchical group list:");
+		for (Group g : getGroupArrayList()) {
+			printGroupList(g);
+		}
+	}
+
+	/**
+	 * 登録されているすべてのグループ情報を出力します。
+	 *
+	 * @param g 各声部のトップグループ
+	 */
+	protected void printGroupList(Group g) {
+		if (g == null)
+			return;
+		printGroupList(g.child());
+		System.out.println(g);
 	}
 }

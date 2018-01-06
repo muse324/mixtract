@@ -15,7 +15,7 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	public static final MuseAppCommand EDIT_GROUP = new EditGroupCommand(
 			"Edit group", "グループを編集");
 	public static final MuseAppCommand MAKE_GROUP = new MakeGroupCommand(
-			"Make a group","グループを作成");
+			"Make a group", "グループを作成");
 	public static final MuseAppCommand OPEN_MUSICXML = new OpenMusicXMLCommand(
 			"Open MusicXML...", "MusicXMLを開く...");
 	public static final MuseAppCommand REDRAW = new RedrawCommand("Redraw",
@@ -28,6 +28,8 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 			"Show parameters", "詳細表示");
 	public static final MuseAppCommand REFRESH = new RefreshCommand("Refresh",
 			"更新");
+	public static final MuseAppCommand PRINT_ALLGROUPS = new PrintAllGroupsCommand(
+			"Print all groups", "全グループを出力");
 	protected static TuneData _target;
 	protected static MuseApp _main;
 	protected static MainFrame _mainFrame;

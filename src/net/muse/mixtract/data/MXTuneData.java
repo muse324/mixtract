@@ -692,4 +692,19 @@ public class MXTuneData extends TuneData {
 	public PrimaryPhraseSequence getGroupSequence() {
 		return groupSequence;
 	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.TuneData#printGroupList(net.muse.data.Group)
+	 */
+	@Override
+	protected void printGroupList(Group group) {
+		if (group == null)
+			return;
+		assert group instanceof MXGroup;
+		MXGroup g = (MXGroup) group;
+		printGroupList(g.getChildFormerGroup());
+		printGroupList(g.getChildLatterGroup());
+		System.out.println(g);
+	}
 }
