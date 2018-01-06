@@ -24,6 +24,15 @@ public class MXNoteLabel extends NoteLabel {
 		final int c = (int) (255 * (1. - apex));
 		return new Color(255, c, c);
 	}
+	/* (非 Javadoc)
+	 * @see net.muse.gui.GroupLabel#group()
+	 */
+	@Override
+	public MXGroup group() {
+		// TODO 自動生成されたメソッド・スタブ
+		return (MXGroup) super.group();
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.NoteLabel#setSelected(boolean)
@@ -60,6 +69,7 @@ public class MXNoteLabel extends NoteLabel {
 		return childLatter;
 	}
 
+
 	protected GroupLabel getChildFormer(ArrayList<GroupLabel> grouplist) {
 		if (childFormer == null) {
 			for (GroupLabel l : grouplist) {
@@ -72,16 +82,6 @@ public class MXNoteLabel extends NoteLabel {
 			}
 		}
 		return childFormer;
-	}
-
-
-	/* (非 Javadoc)
-	 * @see net.muse.gui.GroupLabel#group()
-	 */
-	@Override
-	public MXGroup group() {
-		// TODO 自動生成されたメソッド・スタブ
-		return (MXGroup) super.group();
 	}
 
 }

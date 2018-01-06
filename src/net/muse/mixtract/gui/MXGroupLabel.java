@@ -21,28 +21,20 @@ public class MXGroupLabel extends GroupLabel {
 		super(group, r);
 	}
 
-	protected MXPhraseViewer createPhraseViewer(MuseApp _main, Group gr) {
-		return new MXPhraseViewer((Mixtract) _main, gr);
-	}
-
-	protected GroupLabel getChildFormer(ArrayList<MXGroupLabel> grouplist) {
-		if (childFormer == null) {
-			for (MXGroupLabel l : grouplist) {
-				if (group().hasChildFormer() && group()
-						.getChildFormerGroup().equals(l.group())) {
-					childFormer = l;
-					break;
-				}
-			}
-		}
-		return childFormer;
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.GroupLabel#group()
+	 */
+	@Override
+	public MXGroup group() {
+		return (MXGroup) super.group();
 	}
 
 	GroupLabel getChildLatter(ArrayList<MXGroupLabel> grouplist) {
 		if (childLatter == null) {
 			for (MXGroupLabel l : grouplist) {
-				if (group().hasChildLatter() && group()
-						.getChildLatterGroup().equals(l.group())) {
+				if (group().hasChildLatter() && group().getChildLatterGroup()
+						.equals(l.group())) {
 					childLatter = l;
 					break;
 				}
@@ -51,26 +43,42 @@ public class MXGroupLabel extends GroupLabel {
 		return childLatter;
 	}
 
-	private MXGroupLabel getChildFormer() {
+	protected MXPhraseViewer createPhraseViewer(MuseApp _main, Group gr) {
+		return new MXPhraseViewer((Mixtract) _main, gr);
+	}
+
+	protected GroupLabel getChildFormer(ArrayList<MXGroupLabel> grouplist) {
+		if (childFormer == null) {
+			for (MXGroupLabel l : grouplist) {
+				if (group().hasChildFormer() && group().getChildFormerGroup()
+						.equals(l.group())) {
+					childFormer = l;
+					break;
+				}
+			}
+		}
 		return childFormer;
 	}
 
-	private MXGroupLabel getChildLatter() {
-		return childLatter;
-	}
-
-	/**
-	 * @return
-	 */
-	private boolean hasChildFormer() {
-		return childFormer != null;
-	}
-
-	/**
-	 * @return
-	 */
-	private boolean hasChildLatter() {
-		return childLatter != null;
+	protected void moveChildLabel(MouseEvent e, boolean mousePressed) {
+		if (!mousePressed)
+			return;
+		Point pc;
+		MXGroupLabel c = null;
+		if (hasChildFormer()) {
+			c = getChildFormer();
+			c.setStartEdit(true);
+			pc = c.getLocation();
+			pc.translate(e.getX(), e.getY());
+			moveLabel(e, pc, mousePressed);
+		}
+		if (hasChildLatter()) {
+			c = getChildLatter();
+			c.setStartEdit(true);
+			pc = c.getLocation();
+			pc.translate(e.getX(), e.getY());
+			moveLabel(e, pc, mousePressed);
+		}
 	}
 
 	protected void moveLabelVertical(MouseEvent e, boolean mousePressed) {
@@ -107,34 +115,26 @@ public class MXGroupLabel extends GroupLabel {
 		repaint();
 	}
 
-	protected void moveChildLabel(MouseEvent e, boolean mousePressed) {
-		if (mousePressed) {
-			Point pc;
-			MXGroupLabel c = null;
-			if (hasChildFormer()) {
-				c = getChildFormer();
-				c.setStartEdit(true);
-				pc = c.getLocation();
-				pc.translate(e.getX(), e.getY());
-				moveLabel(e, pc, mousePressed);
-			}
-			if (hasChildLatter()) {
-				c = getChildLatter();
-				c.setStartEdit(true);
-				pc = c.getLocation();
-				pc.translate(e.getX(), e.getY());
-				moveLabel(e, pc, mousePressed);
-			}
-		}
+	private MXGroupLabel getChildFormer() {
+		return childFormer;
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.gui.GroupLabel#group()
+	private MXGroupLabel getChildLatter() {
+		return childLatter;
+	}
+
+	/**
+	 * @return
 	 */
-	@Override
-	public MXGroup group() {
-		return (MXGroup) super.group();
+	private boolean hasChildFormer() {
+		return childFormer != null;
+	}
+
+	/**
+	 * @return
+	 */
+	private boolean hasChildLatter() {
+		return childLatter != null;
 	}
 
 }

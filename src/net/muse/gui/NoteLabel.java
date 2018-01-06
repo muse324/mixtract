@@ -33,21 +33,10 @@ public class NoteLabel extends GroupLabel {
 		return next;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see jp.crestmuse.mixtract.gui.GroupLabel#setSelected(boolean)
-	 */
 	@Override
-	public void setSelected(boolean isSelected) {
-		this.isSelected = isSelected;
-		if (!isSelected) {
-			setBackground(getCurrentColor());
-			setBorder(null);
-			return;
-		}
-		setBackground(PartColor.SELECTED_COLOR);
-		setBorder(BorderFactory.createLineBorder(PartColor.SELECTED_COLOR));
-		repaint();
+	protected void setSelectedOption(boolean isSelected) {
+		setBorder(!isSelected ? null
+				: BorderFactory.createLineBorder(PartColor.SELECTED_COLOR));
 	}
 
 	/**
@@ -93,7 +82,7 @@ public class NoteLabel extends GroupLabel {
 	 */
 	@Override
 	public void setPartNumber(int partNumber) {
-		this.partNumber = partNumber;
+		super.setPartNumber(partNumber);
 		setCurrentColor(new PartColor(partNumber).getColor());
 		note.getNote().setPartNumber(partNumber);
 	}
