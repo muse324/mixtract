@@ -35,7 +35,7 @@ final class PrintAllGroupsCommand extends MixtractCommand {
 			assert g instanceof MXGroup;
 			printGroupList((MXGroup) g);
 		}
-		GUIUtil.printConsole("Hierarchical group list:");
+		GUIUtil.printConsole("Non hierarchical group list:");
 		for (Group g : t.getGroupArrayList()) {
 			assert g instanceof MXGroup;
 			printGroupList((MXGroup) g);

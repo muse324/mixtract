@@ -403,4 +403,8 @@ public class Group extends SequenceData {
 	public void setPartNumber(int partNumber) {
 		this.partNumber = partNumber;
 	}
+
+	public String printInfo() {
+		return String.format("Group %s\n", name());
+	}
 }

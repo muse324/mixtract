@@ -2,7 +2,6 @@ package net.muse.command;
 
 import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
-import net.muse.mixtract.data.MXGroup;
 
 /**
  * <h1>PrintGroupInfoCommand</h1>
@@ -24,7 +23,8 @@ public class PrintGroupInfoCommand extends MuseAppCommand {
 	 * mixtract
 	 * .gui.GroupLabel)
 	 */
-	@Override public void setGroup(GroupLabel groupLabel) {
+	@Override
+	public void setGroup(GroupLabel groupLabel) {
 		this.group = groupLabel.group();
 	}
 
@@ -32,19 +32,12 @@ public class PrintGroupInfoCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override
+	public void execute() {
 		if (group == null) {
-			group = frame().getGroupingPanel().getSelectedGroup()
-					.group();
+			group = frame().getGroupingPanel().getSelectedGroup().group();
 		}
-		if (group instanceof MXGroup) {
-			MXGroup g = (MXGroup) group;
-			System.out.println(String.format("Group %s\n\t%s\n\t%s\n\t%s\n",
-					group.name(), g.getDynamicsCurve(), g.getTempoCurve(), g
-							.getArticulationCurve()));
-		} else {
-			System.out.println(String.format("Group %s\n", group.name()));
-		}
+		System.out.println(group.printInfo());
 	}
 
 	public PrintGroupInfoCommand(String... lang) {

@@ -280,11 +280,22 @@ public class MXGroup extends Group {
 		setChildLatter(g2);
 	}
 
-	/* (非 Javadoc)
+	/*
+	 * (非 Javadoc)
 	 * @see net.muse.data.Group#getParent()
 	 */
 	@Override
 	public MXGroup getParent() {
 		return (MXGroup) super.getParent();
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.Group#printInfo()
+	 */
+	@Override
+	public String printInfo() {
+		return String.format("Group %s\n\t%s\n\t%s\n\t%s\n", name(),
+				getDynamicsCurve(), getTempoCurve(), getArticulationCurve());
 	}
 }

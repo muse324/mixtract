@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import net.muse.app.Mixtract;
-import net.muse.app.MuseApp;
 import net.muse.command.*;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
