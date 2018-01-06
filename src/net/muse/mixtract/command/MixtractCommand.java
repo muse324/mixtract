@@ -106,7 +106,7 @@ public class MixtractCommand extends MuseAppCommand {
 
 	private static MXGroupAnalyzer ana;
 	private static MuseAppCommand commandLists[] = new MuseAppCommand[] {
-			ADD_GROUP, ANALYZE_STRUCTURE, DELETE_GROUP, DETAIL, EDIT_GROUP,
+			 ANALYZE_STRUCTURE, DELETE_GROUP, DETAIL, EDIT_GROUP,
 			MOUSE_DISPLAY, OPEN_RULEPANEL, PRINT_ALL_SIMILAR_GROUPS,
 			MuseAppCommand.PRINT_ALLGROUPS, PRINT_SIMILAR_GROUPS,
 			PRINT_SUBGROUPS, OPEN_MUSICXML, OPEN_RULEMAP, REDRAW, REFRESH,
