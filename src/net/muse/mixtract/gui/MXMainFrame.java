@@ -16,7 +16,8 @@ public class MXMainFrame extends MainFrame {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#createGroupingPanel()
 	 */
-	@Override protected GroupingPanel createGroupingPanel() {
+	@Override
+	protected GroupingPanel createGroupingPanel() {
 		return new MXGroupingPanel();
 	}
 
@@ -24,7 +25,8 @@ public class MXMainFrame extends MainFrame {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#setTarget(net.muse.mixtract.data.MXTuneData)
 	 */
-	@Override public void setTarget(TuneData target) {
+	@Override
+	public void setTarget(TuneData target) {
 		super.setTarget(target);
 		getAnalyzeButton().setEnabled(true);
 	}
@@ -33,7 +35,8 @@ public class MXMainFrame extends MainFrame {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#initialize()
 	 */
-	@Override protected void initialize() {
+	@Override
+	protected void initialize() {
 		super.initialize();
 		getScoreViewButton().setSelected(true);
 	}
@@ -48,7 +51,8 @@ public class MXMainFrame extends MainFrame {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#getPianoroll()
 	 */
-	@Override public MXPianoroll getPianoroll() {
+	@Override
+	public MXPianoroll getPianoroll() {
 		if (pianoroll == null) {
 			pianoroll = new MXPianoroll();
 			pianoroll.setController(main);
@@ -63,20 +67,19 @@ public class MXMainFrame extends MainFrame {
 	private JButton analyzeButton = null;
 	private ButtonGroup pianorollViewerGroup;
 
-	@Override protected JToolBar getJToolBar() {
-		if (jToolBar == null) {
-			tempoValueLabel = new JLabel();
-			tempoValueLabel.setText("   BPM:");
-			jToolBar = new JToolBar();
-			jToolBar.add(getDataSetButton()); // Generated
-			jToolBar.add(getPlayButton()); // Generated
-			jToolBar.add(getPauseButton()); // Generated
-			jToolBar.add(getStopButton()); // Generated
-			jToolBar.add(getScoreViewButton()); // Generated
-			jToolBar.add(getRealtimeViewButton()); // Generated
-			jToolBar.add(getAnalyzeButton()); // Generated
-			jToolBar.add(getTempoSettingPanel());
-		}
+	@Override
+	protected JToolBar getJToolBar() {
+		tempoValueLabel = new JLabel();
+		tempoValueLabel.setText("   BPM:");
+		JToolBar jToolBar = new JToolBar();
+		jToolBar.add(getDataSetButton()); // Generated
+		jToolBar.add(getPlayButton()); // Generated
+		jToolBar.add(getPauseButton()); // Generated
+		jToolBar.add(getStopButton()); // Generated
+		jToolBar.add(getScoreViewButton()); // Generated
+		jToolBar.add(getRealtimeViewButton()); // Generated
+		jToolBar.add(getAnalyzeButton()); // Generated
+		jToolBar.add(getTempoSettingPanel());
 		return jToolBar;
 	}
 
