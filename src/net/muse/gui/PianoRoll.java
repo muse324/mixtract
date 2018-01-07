@@ -815,10 +815,12 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	private void drawTooltips() {
 		if (selectedNoteLabels.size() == 0)
-			setToolTipText(
-					"<html>Drag in this area to select notes. <br>The system automatically understand the specific part-number you selected first.</html>");
+			setToolTipText("<html>Drag in this area to select notes. <br>"
+					+ "The system automatically understand the specific part-number you selected first.</html>");
 		else
-			setToolTipText("Click the right button to show the contect menu.");
+			setToolTipText(
+					"<html>Click the right button - show the contect menu.<br>"
+							+ "Press `g': make a group");
 	}
 
 	/**

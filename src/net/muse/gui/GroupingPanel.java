@@ -205,7 +205,9 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 *
 	 */
 	private void drawTooltips() {
-		setToolTipText("Click the right button to show the contect menu.");
+		setToolTipText(
+				"<html>Click the right button to show the contect menu.<br>"
+						+ "Press `backspace': delete the selected group.");
 	}
 
 	/**
