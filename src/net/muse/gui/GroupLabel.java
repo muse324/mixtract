@@ -241,11 +241,11 @@ public class GroupLabel extends JLabel {
 			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_BACK_SPACE:
-					GUIUtil.printConsole("delete group (dummy)");
+					GUIUtil.printConsole("delete group");
 					MixtractCommand.DELETE_GROUP.execute();
 					break;
 				default:
-					GUIUtil.printConsole("Key pressed: ");
+					GUIUtil.printConsole("Group: Key pressed ");
 				}
 			}
 

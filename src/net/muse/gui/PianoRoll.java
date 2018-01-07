@@ -1,8 +1,7 @@
 package net.muse.gui;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,7 +27,7 @@ import net.muse.mixtract.gui.ViewerMode;
 public class PianoRoll extends JPanel implements TuneDataListener,
 		CanvasMouseListener {
 
-	 public class PianoRollAction extends MouseActionListener {
+	public class PianoRollAction extends MouseActionListener {
 		private final Point pp = new Point();
 
 		public PianoRollAction(MuseApp main, Container owner) {
@@ -191,6 +190,10 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				selectNotes();
 				if (selectedNoteLabels.size() == 0)
 					_main.notifyDeselectGroup();
+				else {
+					setFocusable(true);
+					requestFocus();
+				}
 			}
 			repaint();
 		}
@@ -260,6 +263,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	private final Cursor hndCursor = Cursor.getPredefinedCursor(
 			Cursor.HAND_CURSOR); // @jve:decl-index=0:
 	private Group selectedGroup;
+	private KeyActionListener keyActions;
 
 	protected PianoRoll() {
 		super();
@@ -276,6 +280,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * Group)
 	 */
 	public void addGroup(Group g) {
+		setFocusable(false);
 		repaint();
 	}
 
@@ -309,6 +314,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	public void deselect(GroupLabel g) {
 		setMouseOveredNoteLabel(null);
 		clearSelection();
+		setFocusable(false);
 		repaint();
 	}
 
@@ -448,6 +454,31 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		mouseActions = createPianoRollMouseAction(app);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
+		keyActions = createKeyActions(app);
+		addKeyListener(keyActions);
+	}
+
+	protected KeyActionListener createKeyActions(MuseApp app) {
+		return new KeyActionListener(app, this) {
+
+			/*
+			 * (非 Javadoc)
+			 * @see
+			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
+			 */
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_G:
+					GUIUtil.printConsole("make group");
+					MixtractCommand.MAKE_GROUP.execute();
+					break;
+				default:
+					GUIUtil.printConsole("Pianoroll: pressed: ");
+				}
+			}
+
+		};
 	}
 
 	protected PianoRollAction createPianoRollMouseAction(MuseApp app) {
