@@ -197,8 +197,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		if (pianoroll == null) {
 			pianoroll = createPianoRollPane();
 			pianoroll.setController(main);
-			pianoroll.setPreferredSize(new Dimension(DEFAULT_WIDTH, KeyBoard
-					.getKeyboardHeight() / 3 * 2));
+			// pianoroll.setPreferredSize(new Dimension(DEFAULT_WIDTH, KeyBoard
+			// .getKeyboardHeight() / 3 * 2));
 		}
 		return pianoroll;
 	}
@@ -415,20 +415,11 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	protected JPanel getTempoSettingPanel() {
 		if (tempoSettingPanel == null) {
-			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
-			gridBagConstraints2.gridy = 0;
-			gridBagConstraints2.gridx = 2;
-			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-			gridBagConstraints1.gridx = 1;
-			gridBagConstraints1.gridy = 0;
-			GridBagConstraints gridBagConstraints = new GridBagConstraints();
-			gridBagConstraints.gridy = 0;
-			gridBagConstraints.gridx = 0;
 			tempoSettingPanel = new JPanel();
 			tempoSettingPanel.setLayout(new GridBagLayout());
-			tempoSettingPanel.add(tempoValueLabel, gridBagConstraints);
-			tempoSettingPanel.add(getBpmValue(), gridBagConstraints1);
-			tempoSettingPanel.add(getTempoSlider(), gridBagConstraints2);
+			tempoSettingPanel.add(tempoValueLabel);
+			tempoSettingPanel.add(getBpmValue());
+			tempoSettingPanel.add(getTempoSlider());
 		}
 		return tempoSettingPanel;
 	}
