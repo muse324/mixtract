@@ -33,19 +33,17 @@ import net.muse.sound.MIDIEventListener;
 public class MainFrame extends JFrame implements TuneDataListener,
 		MIDIEventListener, ActionListener {
 
-	static int pixelperbeat = 30;
-	protected static final int DEFAULT_WIDTH = 1260;
+	private static final int DEFAULT_WIDTH = 1260;
+	private static int pixelperbeat = 30;
 	/**  */
 	private static final long serialVersionUID = 1L;
 
-	public TuneData data; // @jve:decl-index=0:
-
 	/** JFrameおよびDockのアイコン */
-	protected Image icon;
+	Image icon;
+
+	protected TuneData data; // @jve:decl-index=0:
 
 	protected MuseApp main;
-	protected PianoRoll pianoroll = null;
-	protected JLabel tempoValueLabel = null;
 	private JTextField bpmValue = null;
 	private JButton dataSetButton = null;
 	private CurveView dynamicsView;
@@ -53,6 +51,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private GroupingPanel groupingPanel = null; // @jve:decl-index=0:visual-constraint="-16,274"
 	private JMenuBar menubar = null;
 	private JButton pauseButton = null;
+	private PianoRoll pianoroll = null;
 	private JButton playButton = null;
 	private JMenuItem saveAsMenu;
 	private JMenuItem saveMenu = null;
@@ -61,6 +60,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private final MixtractMIDIController synthe;
 	private JPanel tempoSettingPanel = null;
 	private JSlider tempoSlider = null;
+	private JLabel tempoValueLabel = null;
 	private CurveView tempoView;
 	private JInternalFrame viewer = null;
 
@@ -77,7 +77,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	private static void main(String[] args) {
 		Mixtract.main(args);
 	}
 
@@ -203,10 +203,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		return pianoroll;
 	}
 
-	protected PianoRoll createPianoRollPane() {
-		return new PianoRoll();
-	}
-
 	/**
 	 * @return
 	 */
@@ -275,6 +271,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		}
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.sound.MIDIEventListener#startPlaying(java.lang.String)
+	 */
 	public void startPlaying(String smfFilename) {
 		Mixtract.log.println("playing...");
 		playButton.setEnabled(false);
@@ -283,6 +283,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		tempoSlider.setEnabled(false);
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.sound.MIDIEventListener#stopPlaying()
+	 */
 	public void stopPlaying() {
 		Mixtract.log.println("Sound stopped.");
 		playButton.setEnabled(true);
@@ -291,33 +295,43 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		tempoSlider.setEnabled(true);
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.sound.MIDIEventListener#stopPlaying(net.muse.sound.
+	 * MIDIController)
+	 */
 	public void stopPlaying(MIDIController synthe) {
 		throw new UnsupportedOperationException();
+	}
+
+	void onAbout() {
+		JOptionPane.showMessageDialog(this,
+				"Mixtract version 1.0.1 -CEDEC2011-", "Version Information",
+				JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	void onPreference() {
+		JTextArea textArea = new JTextArea();
+		textArea.setText(getSystemProperties(System.getProperty(
+				"line.separator")));
+
+		JScrollPane scr = new JScrollPane(textArea);
+		scr.setPreferredSize(new Dimension(400, 300));
+
+		JOptionPane.showMessageDialog(this, scr);
+	}
+
+	void quit() {
+		JOptionPane.showMessageDialog(this, "終了します.");
+		System.exit(0);
 	}
 
 	protected GroupingPanel createGroupingPanel() {
 		return new GroupingPanel();
 	}
 
-	/**
-	 * This method initializes jButton
-	 *
-	 * @return javax.swing.JButton
-	 */
-	protected JButton getDataSetButton() {
-		if (dataSetButton == null) {
-			dataSetButton = new JButton();
-			dataSetButton.setText("Set"); // Generated
-			dataSetButton.setEnabled(false); // Generated
-			dataSetButton.addActionListener(
-					new java.awt.event.ActionListener() {
-						public void actionPerformed(
-								java.awt.event.ActionEvent e) {
-							data.setNoteScheduleEvent();
-						}
-					});
-		}
-		return dataSetButton;
+	protected PianoRoll createPianoRollPane() {
+		return new PianoRoll();
 	}
 
 	protected JToolBar getJToolBar() {
@@ -330,76 +344,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		jToolBar.add(getStopButton()); // Generated
 		jToolBar.add(getTempoSettingPanel());
 		return jToolBar;
-	}
-
-	/**
-	 * This method initializes jButton
-	 *
-	 * @return javax.swing.JButton
-	 */
-	protected JButton getPauseButton() {
-		if (pauseButton == null) {
-			pauseButton = new JButton();
-			pauseButton.setIcon(new ImageIcon(getClass().getResource(
-					"images/Pause16.gif"))); // Generated
-			pauseButton.setActionCommand("Pause");
-			pauseButton.setEnabled(false); // Generated
-			pauseButton.setToolTipText("Pause");
-			pauseButton.setText("Pause");
-		}
-		return pauseButton;
-	}
-
-	/**
-	 * This method initializes jButton
-	 *
-	 * @return javax.swing.JButton
-	 */
-	protected JButton getPlayButton() {
-		if (playButton == null) {
-			playButton = new JButton();
-			playButton.setIcon(new ImageIcon(getClass().getResource(
-					"images/Play16.gif"))); // Generated
-			playButton.setActionCommand("Play");
-			playButton.setToolTipText("Play");
-			playButton.setEnabled(false); // Generated
-			playButton.setText("Play");
-			playButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					if (data == null)
-						return;
-					if (!data.getRootGroup(0).hasChild())
-						data.initializeNoteEvents();
-					data.setNoteScheduleEvent();
-					synthe.notifyStartPlaying(data.getInputFilename());
-				}
-			});
-		}
-		return playButton;
-	}
-
-	/**
-	 * This method initializes jButton
-	 *
-	 * @return javax.swing.JButton
-	 */
-	protected JButton getStopButton() {
-		if (stopButton == null) {
-			stopButton = new JButton();
-			stopButton.setIcon(new ImageIcon(getClass().getResource(
-					"images/Stop16.gif"))); // Generated
-			stopButton.setActionCommand("Stop");
-			stopButton.setEnabled(false); // Generated
-			stopButton.setToolTipText("Stop");
-			stopButton.setText("Stop");
-			stopButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					// data.setNoteScheduleEvent();
-					synthe.notifyStopPlaying();
-				}
-			});
-		}
-		return stopButton;
 	}
 
 	/**
@@ -433,55 +377,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize()); // ウィンドウサイズ
 		this.setContentPane(createDesktop()); // メインの描画領域(詳細)
 		this.setJMenuBar(getMenubar()); // メニューバー
-	}
-
-	protected void onAbout() {
-		JOptionPane.showMessageDialog(this,
-				"Mixtract version 1.0.1 -CEDEC2011-", "Version Information",
-				JOptionPane.INFORMATION_MESSAGE);
-	}
-
-	protected void onPreference() {
-		JTextArea textArea = new JTextArea();
-		textArea.setText(getSystemProperties(System.getProperty(
-				"line.separator")));
-
-		JScrollPane scr = new JScrollPane(textArea);
-		scr.setPreferredSize(new Dimension(400, 300));
-
-		JOptionPane.showMessageDialog(this, scr);
-	}
-
-	protected void quit() {
-		JOptionPane.showMessageDialog(this, "終了します.");
-		System.exit(0);
-	}
-
-	protected void savefile() {
-		try {
-			data.setNoteScheduleEvent();
-			data.writefile();
-			// save screen shot
-			saveScreenShot();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} catch (AWTException e1) {
-			e1.printStackTrace();
-		} catch (InvalidMidiDataException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * @throws AWTException
-	 * @throws IOException
-	 */
-	protected void saveScreenShot() throws AWTException, IOException {
-		Point pos = getViewer().getLocationOnScreen();
-		Dimension size = getViewer().getSize();
-		size.height -= 15;
-		assert data instanceof MXTuneData;
-		((MXTuneData) data).writeScreenShot(pos, size);
 	}
 
 	/**
@@ -539,6 +434,27 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		p.setBottomComponent(getTempoCurvePane()); // Generated
 		p.setDividerSize(10); // Generated
 		return p;
+	}
+
+	/**
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
+	 */
+	private JButton getDataSetButton() {
+		if (dataSetButton == null) {
+			dataSetButton = new JButton();
+			dataSetButton.setText("Set"); // Generated
+			dataSetButton.setEnabled(false); // Generated
+			dataSetButton.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
+							data.setNoteScheduleEvent();
+						}
+					});
+		}
+		return dataSetButton;
 	}
 
 	/**
@@ -733,6 +649,24 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	/**
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
+	 */
+	private JButton getPauseButton() {
+		if (pauseButton == null) {
+			pauseButton = new JButton();
+			pauseButton.setIcon(new ImageIcon(getClass().getResource(
+					"images/Pause16.gif"))); // Generated
+			pauseButton.setActionCommand("Pause");
+			pauseButton.setEnabled(false); // Generated
+			pauseButton.setToolTipText("Pause");
+			pauseButton.setText("Pause");
+		}
+		return pauseButton;
+	}
+
+	/**
 	 * This method initializes pianorollPane
 	 *
 	 * @return javax.swing.JScrollPane
@@ -745,6 +679,34 @@ public class MainFrame extends JFrame implements TuneDataListener,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		p.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		return p;
+	}
+
+	/**
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
+	 */
+	private JButton getPlayButton() {
+		if (playButton == null) {
+			playButton = new JButton();
+			playButton.setIcon(new ImageIcon(getClass().getResource(
+					"images/Play16.gif"))); // Generated
+			playButton.setActionCommand("Play");
+			playButton.setToolTipText("Play");
+			playButton.setEnabled(false); // Generated
+			playButton.setText("Play");
+			playButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					if (data == null)
+						return;
+					if (!data.getRootGroup(0).hasChild())
+						data.initializeNoteEvents();
+					data.setNoteScheduleEvent();
+					synthe.notifyStartPlaying(data.getInputFilename());
+				}
+			});
+		}
+		return playButton;
 	}
 
 	/**
@@ -813,6 +775,30 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			});
 		}
 		return saveMenu;
+	}
+
+	/**
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
+	 */
+	private JButton getStopButton() {
+		if (stopButton == null) {
+			stopButton = new JButton();
+			stopButton.setIcon(new ImageIcon(getClass().getResource(
+					"images/Stop16.gif"))); // Generated
+			stopButton.setActionCommand("Stop");
+			stopButton.setEnabled(false); // Generated
+			stopButton.setToolTipText("Stop");
+			stopButton.setText("Stop");
+			stopButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					// data.setNoteScheduleEvent();
+					synthe.notifyStopPlaying();
+				}
+			});
+		}
+		return stopButton;
 	}
 
 	/**
@@ -943,6 +929,33 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			// viewer.setBounds(new Rectangle(8, 8, 238, 155)); // Generated
 		}
 		return viewer;
+	}
+
+	private void savefile() {
+		try {
+			data.setNoteScheduleEvent();
+			data.writefile();
+			// save screen shot
+			saveScreenShot();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (AWTException e1) {
+			e1.printStackTrace();
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @throws AWTException
+	 * @throws IOException
+	 */
+	private void saveScreenShot() throws AWTException, IOException {
+		Point pos = getViewer().getLocationOnScreen();
+		Dimension size = getViewer().getSize();
+		size.height -= 15;
+		assert data instanceof MXTuneData;
+		((MXTuneData) data).writeScreenShot(pos, size);
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

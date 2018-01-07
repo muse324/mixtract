@@ -1,6 +1,5 @@
 package net.muse.mixtract.command;
 
-import net.muse.data.Group;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.curve.PhraseCurve;
 

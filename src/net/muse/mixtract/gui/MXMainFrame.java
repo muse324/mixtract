@@ -42,6 +42,7 @@ public class MXMainFrame extends MainFrame {
 			pianorollViewerGroup = new ButtonGroup();
 		return pianorollViewerGroup;
 	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#setTarget(net.muse.mixtract.data.MXTuneData)
@@ -51,6 +52,7 @@ public class MXMainFrame extends MainFrame {
 		super.setTarget(target);
 		getAnalyzeButton().setEnabled(true);
 	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#createGroupingPanel()
@@ -59,6 +61,7 @@ public class MXMainFrame extends MainFrame {
 	protected GroupingPanel createGroupingPanel() {
 		return new MXGroupingPanel();
 	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#createPianoRollPane()
