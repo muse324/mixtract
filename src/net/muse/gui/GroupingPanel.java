@@ -315,9 +315,6 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		if (group == null)
 			return;
 		group.setHierarchy(group.hasChild() || group.hasParent());
-		// if (group.getType() == GroupType.NOTE )return;
-		// if(!group.hasChild())
-		// return;
 
 		setMaximumGroupLevel((level > getMaximumGroupLevel()) ? level
 				: getMaximumGroupLevel());
@@ -327,14 +324,6 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		label.setController(main);
 		group.setLevel(level);
 
-		// final Color c = label.getBackground();
-		// if (MixtractCommand.getSelectedObjects().getLayerName() == null
-		// || group.getLayerId().equals(
-		// MixtractCommand.getSelectedObjects().getLayerName()))
-		// label.setBackground(c);
-		// else {
-		// label.setBackground(c.brighter());
-		// }
 		grouplist.add(label);
 		add(label); // 描画
 	}

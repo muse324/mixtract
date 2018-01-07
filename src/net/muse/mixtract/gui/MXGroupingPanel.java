@@ -22,16 +22,25 @@ public class MXGroupingPanel extends GroupingPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	protected void createHierarchicalGroupLabel(MXGroup group, int level) {
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.GroupingPanel#createHierarchicalGroupLabel(net.muse.data.
+	 * Group, int)
+	 */
+	@Override
+	protected void createHierarchicalGroupLabel(Group group, int level) {
 		if (group == null)
 			return;
+		assert group instanceof MXGroup;
+		MXGroup g = (MXGroup) group;
 
 		// create a new group-label
-		if (group.hasChild() || group.hasParent())
-			createGroupLabel(group, level);
+//		if (g.hasChild() || g.hasParent())
+			createGroupLabel(g, level);
 
-		createHierarchicalGroupLabel(group.getChildFormerGroup(), level + 1);
-		createHierarchicalGroupLabel(group.getChildLatterGroup(), level + 1);
+		createHierarchicalGroupLabel(g.getChildFormerGroup(), level + 1);
+		createHierarchicalGroupLabel(g.getChildLatterGroup(), level + 1);
 	}
 
 	protected void createNonHierarchicalGroupLabel() {

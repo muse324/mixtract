@@ -334,12 +334,12 @@ public class Group extends SequenceData {
 
 	private String notelistName(String str, GroupNote note) {
 		if (note == null)
-			return str + ") ";
+			return str;
 		if (str.length() > 1)
 			str += ",";
 		str += " " + note.id() + " ";
 		if (note.hasChild())
-			str += notelistName("(", note.child());
+			str += notelistName("(", note.child()) + ") ";
 		return notelistName(str, note.next());
 	}
 

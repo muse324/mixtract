@@ -268,7 +268,7 @@ public class MXTuneData extends TuneData {
 		final int id = Integer.parseInt(name.substring(1));
 		if (groupInfo.charAt(0) == '[') {
 			String group[] = groupInfo.split(" ");
-			setGroupNotelist(list, group, 1, group.length);
+			parseGroupNotelist(list, group, 1, group.length);
 			g = new MXGroup(id, partNumber, list, GroupType.is(name.charAt(0)));
 			glist.add(g);
 			if (!hasGroupList())
@@ -457,7 +457,7 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	private void setGroupNotelist(GroupNote list, String[] args, int idx,
+	private void parseGroupNotelist(GroupNote list, String[] args, int idx,
 			int size) {
 		if (idx == size)
 			return;
@@ -465,16 +465,16 @@ public class MXTuneData extends TuneData {
 		switch (s.charAt(0)) {
 		case '(':
 			list.setChild(new GroupNote());
-			setGroupNotelist(list.child(), args, ++idx, size);
+			parseGroupNotelist(list.child(), args, ++idx, size);
 			break;
 		case ')':
-			setGroupNotelist(list.parent(), args, ++idx, size);
+			parseGroupNotelist(list.parent(), args, ++idx, size);
 			break;
 		case ',':
 			list.setNext(new GroupNote());
 			if (list.hasParent())
 				list.next().setParent(list.parent(), false);
-			setGroupNotelist(list.next(), args, ++idx, size);
+			parseGroupNotelist(list.next(), args, ++idx, size);
 			break;
 		case 'n':
 			NoteData n = null;
@@ -488,10 +488,10 @@ public class MXTuneData extends TuneData {
 			} catch (NullPointerException e) {
 				e.printStackTrace();
 			}
-			setGroupNotelist(list, args, ++idx, size);
+			parseGroupNotelist(list, args, ++idx, size);
 			break;
 		default:
-			setGroupNotelist(list, args, ++idx, size);
+			parseGroupNotelist(list, args, ++idx, size);
 		}
 	}
 
@@ -545,8 +545,12 @@ public class MXTuneData extends TuneData {
 		fp.createNewFile();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
 				fp)));
+		// hierarchical groups
 		for (int i = 0; i < getRootGroup().size(); i++)
 			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
+		// non-hierarchical groups
+		for (int i = 0; i < getGroupArrayList().size(); i++)
+			writeGroupStructureData(out, (MXGroup) getGroupArrayList().get(i));
 		out.close();
 	}
 
