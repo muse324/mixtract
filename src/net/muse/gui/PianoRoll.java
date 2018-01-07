@@ -845,7 +845,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		setOpaque(true);
 		setLayout(null);
 		setBackground(Color.WHITE);
-		this.setSize(new Dimension(700, 700));
+//		this.setSize(new Dimension(700, 700));
 		setDoubleBuffered(true);
 	}
 
