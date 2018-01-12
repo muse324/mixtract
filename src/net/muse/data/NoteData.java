@@ -88,7 +88,7 @@ public class NoteData extends SequenceData {
 	/**
 	 * @return
 	 */
-	protected static int getDefaultGraseNoteDuration() {
+	protected int getDefaultGraseNoteDuration() {
 		return Math.round(getTicksPerBeat() / (float) 16.);
 	}
 

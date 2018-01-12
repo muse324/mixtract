@@ -9,7 +9,6 @@ import javax.swing.*;
 import javax.xml.transform.TransformerException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
-import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.command.*;
 import net.muse.data.*;
@@ -729,7 +728,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		final int y3 = KeyBoard.getYPositionOfPitch(n2.notenum()) * keyheight;
 		// final int y4 = KeyBoard.getYPositionOfPitch(ed.notenum()) *
 		// keyheight;
-		final int tpb = Mixtract.getTicksPerBeat();
+		final int tpb = main.getTicksPerBeat();
 		// final int x1 = getX(bg.onset(tpb)) + axisX;
 		final int x2 = MainFrame.getXOfNote(n1.offset(tpb)) + axisX;
 		final int x3 = MainFrame.getXOfNote(n2.onset(tpb)) + axisX;
@@ -845,7 +844,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		setOpaque(true);
 		setLayout(null);
 		setBackground(Color.WHITE);
-//		this.setSize(new Dimension(700, 700));
+		// this.setSize(new Dimension(700, 700));
 		setDoubleBuffered(true);
 	}
 

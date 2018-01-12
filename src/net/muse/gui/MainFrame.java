@@ -33,9 +33,8 @@ import net.muse.sound.MIDIEventListener;
 public class MainFrame extends JFrame implements TuneDataListener,
 		MIDIEventListener, ActionListener {
 
-	static int pixelperbeat = 30;
-	protected static final int DEFAULT_WIDTH = 1260;
-	/**  */
+	private static final int DEFAULT_WIDTH = 1260;
+	private static int pixelperbeat = 30;
 	private static final long serialVersionUID = 1L;
 
 	public TuneData data; // @jve:decl-index=0:
@@ -90,7 +89,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public MainFrame(MuseApp app) throws IOException {
 		super();
 		this.main = app;
-		synthe = new MixtractMIDIController(main.getMidiDeviceName(), Mixtract
+		synthe = new MixtractMIDIController(main.getMidiDeviceName(), main
 				.getTicksPerBeat());
 		synthe.addMidiEventListener(this);
 		this.main.addTuneDataListener(this);
@@ -668,7 +667,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private KeyBoard getKeyboard() {
-		KeyBoard keyboard = new KeyBoard();
+		KeyBoard keyboard = new KeyBoard(main.getTicksPerBeat());
 		main.addTuneDataListener(keyboard);
 		return keyboard;
 	}

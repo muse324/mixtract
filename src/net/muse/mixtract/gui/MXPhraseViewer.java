@@ -280,7 +280,7 @@ public class MXPhraseViewer extends PhraseViewer {
 	 */
 	private JPanel getKeyboard() {
 		if (keyboard == null) {
-			keyboard = new KeyBoard();
+			keyboard = new KeyBoard(480);
 			keyboard.setLayout(new GridBagLayout());
 			keyboard.resetKeyRegister();
 			keyboard.setKeyRegister(group().getBeginGroupNote());
