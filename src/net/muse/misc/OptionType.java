@@ -151,7 +151,7 @@ public enum OptionType {
 	TICKSPERBEAT {
 		@Override
 		public void exe(MuseObject app, String property) {
-			MuseObject.setTicksPerBeat(Integer.parseInt(property));
+			app.setTicksPerBeat(Integer.parseInt(property));
 		}
 	};
 

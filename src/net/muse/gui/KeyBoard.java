@@ -43,60 +43,6 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/** 最高音 */
 	private static int topNoteNumber = 108;
 
-	/**
-	 * @return the keyWidth
-	 */
-	public static int getKeyWidth() {
-		return keyWidth;
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		final JFrame frame = new JFrame();
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		final KeyBoard panel = new KeyBoard();
-		frame.setContentPane(panel);
-		frame.setPreferredSize(panel.getPreferredSize());
-		frame.pack();
-		frame.setVisible(true);
-	}
-
-	public static void setKeyWidth(int w) {
-		keyWidth = w;
-	}
-
-	/**
-	 * 白鍵のピッチクラスをインスタンス化します．
-	 */
-	private static ArrayList<Integer> createWhiteMidiKey() {
-		whiteMidiKey = new ArrayList<Integer>();
-		whiteMidiKey.add(0);
-		whiteMidiKey.add(2);
-		whiteMidiKey.add(4);
-		whiteMidiKey.add(5);
-		whiteMidiKey.add(7);
-		whiteMidiKey.add(9);
-		whiteMidiKey.add(11);
-		return whiteMidiKey;
-	}
-
-	/**
-	 * @return
-	 */
-	public static int getKeyboardHeight() {
-		return keyHeight * maximumKeyRegister;
-	}
-
-	/**
-	 * @param notenumber
-	 * @return
-	 */
-	public static int getYPositionOfPitch(int notenumber) {
-		return topNoteNumber - notenumber + 5;
-	}
-
 	/** 最低音 */
 	private int bottomNoteNumber = 20;
 
@@ -113,9 +59,66 @@ public class KeyBoard extends JPanel implements MouseListener,
 
 	private MIDIController synthe; // @jve:decl-index=0:
 
-	public KeyBoard() throws NullPointerException {
+	private int ticksperbeat = 480;
+
+	/**
+	 * @return
+	 */
+	public static int getKeyboardHeight() {
+		return keyHeight * maximumKeyRegister;
+	}
+
+	/**
+	 * @return the keyWidth
+	 */
+	public static int getKeyWidth() {
+		return keyWidth;
+	}
+
+	/**
+	 * @param notenumber
+	 * @return
+	 */
+	public static int getYPositionOfPitch(int notenumber) {
+		return topNoteNumber - notenumber + 5;
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		final JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		final KeyBoard panel = new KeyBoard(480);
+		frame.setContentPane(panel);
+		frame.setPreferredSize(panel.getPreferredSize());
+		frame.pack();
+		frame.setVisible(true);
+	}
+
+	public static void setKeyWidth(int w) {
+		keyWidth = w;
+	}
+	/**
+	 * 白鍵のピッチクラスをインスタンス化します．
+	 */
+	private static ArrayList<Integer> createWhiteMidiKey() {
+		whiteMidiKey = new ArrayList<Integer>();
+		whiteMidiKey.add(0);
+		whiteMidiKey.add(2);
+		whiteMidiKey.add(4);
+		whiteMidiKey.add(5);
+		whiteMidiKey.add(7);
+		whiteMidiKey.add(9);
+		whiteMidiKey.add(11);
+		return whiteMidiKey;
+	}
+
+	public KeyBoard(int tpb) throws NullPointerException {
+		super();
 		keyboardMap = new TreeMap<Integer, Integer>();
 		noteNumberOfPushedKey = new TreeSet<Integer>();
+		ticksperbeat = tpb;
 		initialize();
 	}
 
@@ -257,7 +260,8 @@ public class KeyBoard extends JPanel implements MouseListener,
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override public void paintComponent(final Graphics g) {
+	@Override
+	public void paintComponent(final Graphics g) {
 		/* おまじない */
 		final Graphics2D g2 = (Graphics2D) g;
 		super.paintComponent(g2);
@@ -280,6 +284,14 @@ public class KeyBoard extends JPanel implements MouseListener,
 		repaint();
 	}
 
+	/**
+	 *
+	 */
+	public void resetKeyRegister() {
+		topNoteNumber = 0;
+		bottomNoteNumber = 1000;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see
@@ -287,6 +299,17 @@ public class KeyBoard extends JPanel implements MouseListener,
 	 * .JLabel, boolean)
 	 */
 	public void selectGroup(GroupLabel g, boolean flg) {}
+
+	/**
+	 * @param beginGroupNote
+	 */
+	public void setKeyRegister(GroupNote note) {
+		if (note == null)
+			return;
+		setKeyRegister(note.child());
+		setKeyRegister(note.next());
+		setKeyRegister(note.getNote());
+	}
 
 	/**
 	 * @param synthe the synthe to set
@@ -302,99 +325,6 @@ public class KeyBoard extends JPanel implements MouseListener,
 		setKeyRegister(target.getGroupArrayList());
 		// setKeyRegister(0, target.getRootGroup());
 		keyRegister = topNoteNumber - bottomNoteNumber;
-	}
-
-	/**
-	 * キーボードを描画します．
-	 */
-	private void drawKeyboard(final Graphics2D g) {
-		int curHeight = 0;
-		keyboardMap.clear();
-		for (int i = 0; i < maximumKeyRegister; i++) {
-			final int pitch = getYPositionOfPitch(i);
-			// 鍵盤座標を取得
-			keyboardMap.put(curHeight, pitch);
-			if (whiteMidiKey.contains(pitch % 12)) {
-				// 白鍵
-				g.setColor(Color.black);
-				g.draw3DRect(getX(), curHeight, getKeyWidth(), getKeyHeight(),
-						true);
-			} else {
-				// 黒鍵
-				g.setColor(Color.black);
-				g.fill3DRect(getX(), curHeight, getKeyWidth(), getKeyHeight(),
-						true);
-			}
-			g.setColor(Color.green);
-			g.drawString(String.valueOf(pitch), getKeyWidth() - 20, curHeight
-					+ getKeyHeight());
-			curHeight += getKeyHeight();
-		}
-		// 今なっている音を色づけ
-		g.setColor(Color.yellow);
-		for (final int key : noteNumberOfPushedKey) {
-			g.fillRect(getX(), getYPositionOfPitch(key) * getKeyHeight(),
-					getKeyWidth(), getKeyHeight());
-		}
-	}
-
-	/** 入力Y座標から鍵盤の位置（音高）を取得します） */
-	private int getKeyPosition(int y) {
-		for (final int key : keyboardMap.keySet()) {
-			if (key > y)
-				return keyboardMap.get(key) + 1;
-		}
-		return -1;
-	}
-
-	/**
-	 * @return
-	 */
-	private MIDIController getSynthe() {
-		if (synthe == null) {
-			synthe = MixtractMIDIController.createMIDIController(
-					"Java Sound Synthesizer", Mixtract.getTicksPerBeat());
-		}
-		return synthe;
-	}
-
-	/**
-	 *
-	 */
-	private void initialize() {
-		setLayout(null);
-		setBackground(Color.WHITE);
-		setBorder(BorderFactory.createEtchedBorder());
-		setDoubleBuffered(true);
-		setPreferredSize(new Dimension(keyWidth, (keyHeight
-				* maximumKeyRegister)));
-
-		addMouseListener(this);
-		addMouseMotionListener(this);
-	}
-
-	/**
-	 * @param grouplist
-	 */
-	private void setKeyRegister(final List<Group> grouplist) {
-		for (Group g : grouplist)
-			setKeyRegister(g.getBeginGroupNote());
-	}
-
-	/**
-	 * @param note
-	 */
-	private void setKeyRegister(NoteData note) {
-		if (note == null)
-			return;
-		setKeyRegister(note.child());
-		setKeyRegister(note.next());
-		if (note.rest())
-			return;
-		if (note.noteNumber() > topNoteNumber)
-			topNoteNumber = note.noteNumber();
-		if (note.noteNumber() < bottomNoteNumber)
-			bottomNoteNumber = note.noteNumber();
 	}
 
 	/**
@@ -454,21 +384,95 @@ public class KeyBoard extends JPanel implements MouseListener,
 	}
 
 	/**
-	 *
+	 * キーボードを描画します．
 	 */
-	public void resetKeyRegister() {
-		topNoteNumber = 0;
-		bottomNoteNumber = 1000;
+	private void drawKeyboard(final Graphics2D g) {
+		int curHeight = 0;
+		keyboardMap.clear();
+		for (int i = 0; i < maximumKeyRegister; i++) {
+			final int pitch = getYPositionOfPitch(i);
+			// 鍵盤座標を取得
+			keyboardMap.put(curHeight, pitch);
+			if (whiteMidiKey.contains(pitch % 12)) {
+				// 白鍵
+				g.setColor(Color.black);
+				g.draw3DRect(getX(), curHeight, getKeyWidth(), getKeyHeight(),
+						true);
+			} else {
+				// 黒鍵
+				g.setColor(Color.black);
+				g.fill3DRect(getX(), curHeight, getKeyWidth(), getKeyHeight(),
+						true);
+			}
+			g.setColor(Color.green);
+			g.drawString(String.valueOf(pitch), getKeyWidth() - 20, curHeight
+					+ getKeyHeight());
+			curHeight += getKeyHeight();
+		}
+		// 今なっている音を色づけ
+		g.setColor(Color.yellow);
+		for (final int key : noteNumberOfPushedKey) {
+			g.fillRect(getX(), getYPositionOfPitch(key) * getKeyHeight(),
+					getKeyWidth(), getKeyHeight());
+		}
+	}
+
+	/** 入力Y座標から鍵盤の位置（音高）を取得します） */
+	private int getKeyPosition(int y) {
+		for (final int key : keyboardMap.keySet()) {
+			if (key > y)
+				return keyboardMap.get(key) + 1;
+		}
+		return -1;
 	}
 
 	/**
-	 * @param beginGroupNote
+	 * @return
 	 */
-	public void setKeyRegister(GroupNote note) {
+	private MIDIController getSynthe() {
+		if (synthe == null) {
+			synthe = MixtractMIDIController.createMIDIController(
+					"Java Sound Synthesizer", ticksperbeat);
+		}
+		return synthe;
+	}
+
+	/**
+	 *
+	 */
+	private void initialize() {
+		setLayout(null);
+		setBackground(Color.WHITE);
+		setBorder(BorderFactory.createEtchedBorder());
+		setDoubleBuffered(true);
+		setPreferredSize(new Dimension(keyWidth, (keyHeight
+				* maximumKeyRegister)));
+
+		addMouseListener(this);
+		addMouseMotionListener(this);
+	}
+
+	/**
+	 * @param grouplist
+	 */
+	private void setKeyRegister(final List<Group> grouplist) {
+		for (Group g : grouplist)
+			setKeyRegister(g.getBeginGroupNote());
+	}
+
+	/**
+	 * @param note
+	 */
+	private void setKeyRegister(NoteData note) {
 		if (note == null)
 			return;
 		setKeyRegister(note.child());
 		setKeyRegister(note.next());
-		setKeyRegister(note.getNote());
+		if (note.rest())
+			return;
+		if (note.noteNumber() > topNoteNumber)
+			topNoteNumber = note.noteNumber();
+		if (note.noteNumber() < bottomNoteNumber)
+			bottomNoteNumber = note.noteNumber();
 	}
 }

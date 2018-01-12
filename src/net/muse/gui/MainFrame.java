@@ -35,34 +35,38 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 	private static final int DEFAULT_WIDTH = 1260;
 	private static int pixelperbeat = 30;
-	/**  */
 	private static final long serialVersionUID = 1L;
 
 	/** JFrameおよびDockのアイコン */
 	Image icon;
 
-	protected TuneData data; // @jve:decl-index=0:
-
 	protected MuseApp main;
+	protected TuneData data; // @jve:decl-index=0:
+	private int shortcutKey;
+	private final MixtractMIDIController synthe;
+
+	// GUIパネル
+	private JInternalFrame viewer = null;
+	private GroupingPanel groupingPanel = null; // @jve:decl-index=0:visual-constraint="-16,274"
+	private PianoRoll pianoroll = null;
+	private CurveView dynamicsView = null;
+	private CurveView tempoView = null;
+
+	// GUIパーツ
 	private JTextField bpmValue = null;
 	private JButton dataSetButton = null;
-	private CurveView dynamicsView;
-	private JMenu fileMenu = null;
-	private GroupingPanel groupingPanel = null; // @jve:decl-index=0:visual-constraint="-16,274"
-	private JMenuBar menubar = null;
 	private JButton pauseButton = null;
-	private PianoRoll pianoroll = null;
 	private JButton playButton = null;
-	private JMenuItem saveAsMenu;
-	private JMenuItem saveMenu = null;
-	private int shortcutKey;
 	private JButton stopButton = null;
-	private final MixtractMIDIController synthe;
 	private JPanel tempoSettingPanel = null;
 	private JSlider tempoSlider = null;
 	private JLabel tempoValueLabel = null;
-	private CurveView tempoView;
-	private JInternalFrame viewer = null;
+
+	// メニュー
+	private JMenu fileMenu = null;
+	private JMenuBar menubar = null;
+	private JMenuItem saveAsMenu;
+	private JMenuItem saveMenu = null;
 
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
@@ -90,7 +94,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public MainFrame(MuseApp app) throws IOException {
 		super();
 		this.main = app;
-		synthe = new MixtractMIDIController(main.getMidiDeviceName(), Mixtract
+		synthe = new MixtractMIDIController(main.getMidiDeviceName(), app
 				.getTicksPerBeat());
 		synthe.addMidiEventListener(this);
 		this.main.addTuneDataListener(this);
@@ -258,6 +262,12 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		if (data != null) {
 			getBpmValue().setText(String.valueOf(data.getBPM().get(0)));
 			getTempoSlider().setValue(data.getBPM().get(0));
+			pixelperbeat = (int) (getPianoroll().getSize().width / (data
+					.getRootGroup(0).duration() / data.getBPM().get(0)));
+			GUIUtil.printConsole(String.format("tpb (%d) = %d / %d",
+					pixelperbeat, getPianoroll().getSize().width, data.getBPM()
+							.get(0)));
+			repaint();
 		}
 		if (!getViewer().isVisible()) {
 			try {
@@ -580,7 +590,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private KeyBoard getKeyboard() {
-		KeyBoard keyboard = new KeyBoard();
+		KeyBoard keyboard = new KeyBoard(main.getTicksPerBeat());
 		main.addTuneDataListener(keyboard);
 		return keyboard;
 	}
@@ -809,7 +819,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 	// システムプロパティをダンプする
 	private String getSystemProperties(String lineSep) {
-		ArrayList keys = new ArrayList();
+		ArrayList<String> keys = new ArrayList<String>();
 		StringBuffer buf = new StringBuffer();
 		for (Enumeration<?> enm = System.getProperties().keys(); enm
 				.hasMoreElements();) {
@@ -817,7 +827,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			keys.add(key);
 		}
 		Collections.sort(keys);
-		for (Iterator ite = keys.iterator(); ite.hasNext();) {
+		for (Iterator<String> ite = keys.iterator(); ite.hasNext();) {
 			String key = (String) ite.next();
 			buf.append(key + "=" + System.getProperty(key) + lineSep);
 		}
