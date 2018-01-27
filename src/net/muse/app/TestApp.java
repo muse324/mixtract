@@ -7,6 +7,8 @@ import java.io.IOException;
 import javax.swing.*;
 
 import net.muse.command.MuseAppCommand;
+import net.muse.data.Group;
+import net.muse.data.TuneData;
 import net.muse.gui.GUIUtil;
 import net.muse.gui.MainFrame;
 
@@ -106,6 +108,11 @@ public class TestApp extends MuseApp {
 		if (getFrame() == null)
 			return new MainFrame(this); // 独自クラスを定義したらここでそれを返す。
 		return (MainFrame) getFrame(); // このキャストは MainFrame のままで良い
+	}
+
+	@Override
+	public void analyzeStructure(TuneData data, Group group) {
+		throw new UnsupportedOperationException("実装してください");
 	}
 
 }

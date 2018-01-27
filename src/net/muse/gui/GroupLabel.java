@@ -1,8 +1,7 @@
 package net.muse.gui;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -13,23 +12,27 @@ import net.muse.data.GroupType;
 import net.muse.mixtract.command.MixtractCommand;
 
 public class GroupLabel extends JLabel {
-
 	private static final long serialVersionUID = 1L;
 
 	/* 格納データ */
 	private Group group;
-	private GroupLabel childFormer;
-	private GroupLabel childLatter;
-	private Color currentColor;
+	private GroupLabel child;
 	protected int partNumber;
 
 	/* 描画モード */
-	protected boolean isSelected;
-	private boolean endEdit;
-	private boolean startEdit;
+	private boolean isSelected;
+	private Color currentColor;
 
 	/* イベント制御 */
 	private MouseAdapter mouseActions;
+	private KeyActionListener keyActions;
+	private boolean startEdit;
+	private boolean endEdit;
+
+	protected GroupLabel() {
+		super();
+		initialize();
+	}
 
 	protected GroupLabel(Group group, Rectangle r) {
 		this();
@@ -38,6 +41,17 @@ public class GroupLabel extends JLabel {
 		setLocation(r.x, r.y);
 		setBounds(r);
 		setTypeShape(group.getType());
+	}
+
+	public Group group() {
+		return group;
+	}
+
+	/**
+	 * @return the isSelected
+	 */
+	public boolean isSelected() {
+		return isSelected;
 	}
 
 	/**
@@ -60,46 +74,21 @@ public class GroupLabel extends JLabel {
 		}
 	}
 
-	protected GroupLabel() {
-		super();
-		initialize();
-	}
-
-	@Override public String toString() {
+	@Override
+	public String toString() {
 		return group.name();
 	}
 
-	GroupLabel getChildFormer(ArrayList<GroupLabel> grouplist) {
-		if (childFormer == null) {
+	GroupLabel child(ArrayList<GroupLabel> grouplist) {
+		if (child == null) {
 			for (GroupLabel l : grouplist) {
-				if (group.hasChildFormer() && group.getChildFormerGroup()
-						.equals(l.getGroup())) {
-					childFormer = l;
+				if (group().hasChild() && group().child().equals(l.group())) {
+					child = l;
 					break;
 				}
 			}
 		}
-		return childFormer;
-	}
-
-	GroupLabel getChildLatter(ArrayList<GroupLabel> grouplist) {
-		if (childLatter == null) {
-			for (GroupLabel l : grouplist) {
-				if (group.hasChildLatter() && group.getChildLatterGroup()
-						.equals(l.getGroup())) {
-					childLatter = l;
-					break;
-				}
-			}
-		}
-		return childLatter;
-	}
-
-	/**
-	 * @return gr
-	 */
-	public final Group getGroup() {
-		return group;
+		return child;
 	}
 
 	void setController(MuseApp main) {
@@ -111,7 +100,8 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
 			 * (java.awt.event.MouseEvent)
 			 */
-			@Override public void createPopupMenu(MouseEvent e) {
+			@Override
+			public void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				MixtractCommand.SET_TYPE_CRESC.setGroup((GroupLabel) _owner);
 				MixtractCommand.SET_TYPE_DIM.setGroup((GroupLabel) _owner);
@@ -120,77 +110,16 @@ public class GroupLabel extends JLabel {
 			}
 
 			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mousePressed(MouseEvent e) {
-				super.mousePressed(e);
-				GroupLabel l = (GroupLabel) e.getSource();
-				_main.notifySelectGroup(l, true);
-				if (l.getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
-					// _owner.getPianorollPane().getPianoroll().setDrawNewArea(true);
-					_frame.getGroupingPanel().setGroupEditable(true);
-				}
-				repaint();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mouseReleased(MouseEvent e) {
-				super.mouseReleased(e);
-				_frame.getGroupingPanel().setGroupEditable(false);
-				_frame.getGroupingPanel().setCursor(new Cursor(
-						Cursor.DEFAULT_CURSOR));
-				_frame.getPianoroll().repaint();
-				repaint();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseDragged(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mouseDragged(MouseEvent e) {
-				super.mouseDragged(e);
-				final GroupLabel src = (GroupLabel) e.getSource();
-				if (!_frame.getGroupingPanel().isGroupEditable()) {
-					src.moveLabelVertical(e, getMousePoint(), src.getBounds(),
-							isShiftKeyPressed(), isMousePressed());
-				} else
-					src.moveLabel(e, getMousePoint(), isMousePressed());
-				_frame.getGroupingPanel().repaint();
-				repaint();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
-			 * .event.MouseEvent)
-			 */
-			@Override public void mouseMoved(MouseEvent e) {
-				super.mouseMoved(e);
-				setEditMode(getMousePoint());
-				repaint();
-			}
-
-			/*
 			 * (非 Javadoc)
 			 * @see
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseClicked(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseClicked(MouseEvent e) {
+			@Override
+			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				final GroupLabel l = (GroupLabel) e.getSource();
-				Group gr = l.getGroup();
+				Group gr = l.group();
 				if (gr == null) {
 					_owner.repaint();
 					return;
@@ -208,12 +137,32 @@ public class GroupLabel extends JLabel {
 			}
 
 			/*
+			 * (non-Javadoc)
+			 * @see
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseDragged(java
+			 * .awt.event.MouseEvent)
+			 */
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				super.mouseDragged(e);
+				final GroupLabel src = (GroupLabel) e.getSource();
+				if (!_frame.getGroupingPanel().isGroupEditable()) {
+					src.moveLabelVertical(e, getMousePoint(), src.getBounds(),
+							isShiftKeyPressed(), isMousePressed());
+				} else
+					src.moveLabel(e, getMousePoint(), isMousePressed());
+				_frame.getGroupingPanel().repaint();
+				repaint();
+			}
+
+			/*
 			 * (非 Javadoc)
 			 * @see
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseEntered(MouseEvent e) {
+			@Override
+			public void mouseEntered(MouseEvent e) {
 				super.mouseEntered(e);
 				((GroupLabel) e.getSource()).setMouseOver(true);
 			}
@@ -224,69 +173,90 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseExited(MouseEvent e) {
+			@Override
+			public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
 				((GroupLabel) e.getSource()).setMouseOver(false);
 				((GroupLabel) e.getSource()).setEditMode(getMousePoint());
 			}
 
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
+			 * .event.MouseEvent)
+			 */
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				super.mouseMoved(e);
+				setEditMode(getMousePoint());
+				repaint();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
+			 * .awt.event.MouseEvent)
+			 */
+			@Override
+			public void mousePressed(MouseEvent e) {
+				super.mousePressed(e);
+				GroupLabel l = (GroupLabel) e.getSource();
+				_main.notifySelectGroup(l, true);
+				if (l.getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
+					// _owner.getPianorollPane().getPianoroll().setDrawNewArea(true);
+					_frame.getGroupingPanel().setGroupEditable(true);
+				}
+				repaint();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
+			 * .awt.event.MouseEvent)
+			 */
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				super.mouseReleased(e);
+				_frame.getGroupingPanel().setGroupEditable(false);
+				_frame.getGroupingPanel().setCursor(new Cursor(
+						Cursor.DEFAULT_CURSOR));
+				_frame.getPianoroll().repaint();
+				repaint();
+			}
+
 		};
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
-	}
+		keyActions = new KeyActionListener(main, this) {
 
-	void setMouseOver(boolean b) {
-		if (b) {
-			setBackground(PartColor.MOUSE_OVER_COLOR);
-		} else
-			setBackground(getCurrentColor());
-	}
-
-	/**
-	 * @param hasSelectedNoteList
-	 */
-	public void setSelected(boolean isSelected) {
-		this.isSelected = isSelected;
-		if (isSelected) {
-			setBackground(PartColor.SELECTED_COLOR);
-		} else {
-			setBackground(getCurrentColor());
-		}
-		repaint();
-	}
-
-	/**
-	 * @param e
-	 * @param p
-	 * @param r
-	 * @param shiftKeyPressed TODO
-	 * @param mousePressed TODO
-	 * @param src
-	 */
-	protected void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
-			boolean shiftKeyPressed, boolean mousePressed) {
-		r.y = p.y;
-		setBounds(r);
-		if (shiftKeyPressed) {
-			Point pc;
-			if (hasChildFormer()) {
-				pc = getChildFormer().getLocation();
-				pc.translate(e.getX(), e.getY());
-				getChildFormer().moveLabel(e, pc, mousePressed);
+			/*
+			 * (非 Javadoc)
+			 * @see
+			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
+			 */
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_BACK_SPACE:
+					GUIUtil.printConsole("delete group");
+					MixtractCommand.DELETE_GROUP.execute();
+					break;
+				default:
+					GUIUtil.printConsole("Group: Key pressed ");
+				}
 			}
-			if (hasChildLatter()) {
-				pc = getChildLatter().getLocation();
-				pc.translate(e.getX(), e.getY());
-				getChildLatter().moveLabel(e, pc, mousePressed);
-			}
-		}
-		repaint();
+
+		};
+		addKeyListener(keyActions);
 	}
 
 	/**
 	 * @param mousePosition TODO
 	 */
-	protected void setEditMode(Point mousePosition) {
+	void setEditMode(Point mousePosition) {
 		Rectangle r = getBounds();
 		Rectangle st = new Rectangle(new Point(r.x, r.y), new Dimension(10,
 				r.height));
@@ -310,12 +280,22 @@ public class GroupLabel extends JLabel {
 		}
 	}
 
-	private GroupLabel getChildFormer() {
-		return childFormer;
+	void setMouseOver(boolean b) {
+		if (b) {
+			setBackground(PartColor.MOUSE_OVER_COLOR);
+		} else
+			setBackground(getCurrentColor());
 	}
 
-	private GroupLabel getChildLatter() {
-		return childLatter;
+	/**
+	 * @param hasSelectedNoteList
+	 */
+	protected void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
+		setBackground(isSelected ? PartColor.SELECTED_COLOR
+				: getCurrentColor());
+		setSelectedOption(isSelected);
+		repaint();
 	}
 
 	/**
@@ -326,49 +306,12 @@ public class GroupLabel extends JLabel {
 	}
 
 	/**
-	 * @return
-	 */
-	private boolean hasChildFormer() {
-		return group != null && group.hasChildFormer();
-	}
-
-	/**
-	 * @return
-	 */
-	private boolean hasChildLatter() {
-		return group != null && group.hasChildLatter();
-	}
-
-	/**
-	 *
-	 */
-	private void initialize() {
-		setOpaque(true);
-		setForeground(Color.white);
-	}
-
-	private boolean isEndEdit() {
-		return endEdit;
-	}
-
-	/**
-	 * @return the isSelected
-	 */
-	public boolean isSelected() {
-		return isSelected;
-	}
-
-	private boolean isStartEdit() {
-		return startEdit;
-	}
-
-	/**
 	 * @param e mouse event
 	 * @param p mouse point
 	 * @param mousePressed TODO
 	 * @param src group/note/expression label
 	 */
-	private void moveLabel(MouseEvent e, Point p, boolean mousePressed) {
+	protected void moveLabel(MouseEvent e, Point p, boolean mousePressed) {
 
 		final Rectangle r = getBounds();
 		// if (!getGroupingPanel().isGroupEditable()) {
@@ -392,24 +335,7 @@ public class GroupLabel extends JLabel {
 			}
 		}
 		setBounds(r);
-		if (mousePressed) {
-			Point pc;
-			GroupLabel c = null;
-			if (hasChildFormer()) {
-				c = getChildFormer();
-				c.setStartEdit(true);
-				pc = c.getLocation();
-				pc.translate(e.getX(), e.getY());
-				moveLabel(e, pc, mousePressed);
-			}
-			if (hasChildLatter()) {
-				c = getChildLatter();
-				c.setStartEdit(true);
-				pc = c.getLocation();
-				pc.translate(e.getX(), e.getY());
-				moveLabel(e, pc, mousePressed);
-			}
-		}
+		moveChildLabel(e, mousePressed);
 	}
 
 	/**
@@ -421,25 +347,94 @@ public class GroupLabel extends JLabel {
 		setBackground(currentColor);
 	}
 
-	private void setEndEdit(boolean endEdit) {
-		this.endEdit = endEdit;
+	protected void setGroup(Group group) {
+		this.group = group;
 	}
 
 	/**
 	 * @param partNumber the partNumber to set
 	 */
-	protected void setPartNumber(int partNumber) {
+	public void setPartNumber(int partNumber) {
 		this.partNumber = partNumber;
-		// System.err.println("WARNING: GroupLabel#setPartNumber(int partNumber)
-		// is incompleted.");
-		// if(group.hasChild()){
-		// getChildFormer().setPartNumber(partNumber);
-		// getChildLatter().setPartNumber(partNumber);
-		// }
 	}
 
-	private void setStartEdit(boolean startEdit) {
+	protected void setSelectedOption(boolean isSelected) {
+		setFocusable(isSelected);
+		MixtractCommand.DELETE_GROUP.setGroup(isSelected ? this : null);
+		if (isSelected)
+			requestFocus();
+	}
+
+	protected void setStartEdit(boolean startEdit) {
 		this.startEdit = startEdit;
+	}
+
+	private GroupLabel child() {
+		return child;
+	}
+
+	private PhraseViewer createPhraseViewer(MuseApp app, Group gr) {
+		return new PhraseViewer(app, gr);
+	}
+
+	private boolean hasChild() {
+		return child != null;
+	}
+
+	/**
+	 *
+	 */
+	private void initialize() {
+		setOpaque(true);
+		setForeground(Color.white);
+	}
+
+	private boolean isEndEdit() {
+		return endEdit;
+	}
+
+	private boolean isStartEdit() {
+		return startEdit;
+	}
+
+	private void moveChildLabel(MouseEvent e, boolean mousePressed) {
+		if (mousePressed && hasChild()) {
+			child().setStartEdit(true);
+			Point pc = child().getLocation();
+			pc.translate(e.getX(), e.getY());
+			moveLabel(e, pc, mousePressed);
+		}
+	}
+
+	private void moveLabelVertical(MouseEvent e, boolean mousePressed) {
+		Point pc;
+		if (hasChild()) {
+			pc = child().getLocation();
+			pc.translate(e.getX(), e.getY());
+			child().moveLabel(e, pc, mousePressed);
+		}
+	}
+
+	/**
+	 * @param e
+	 * @param p
+	 * @param r
+	 * @param shiftKeyPressed TODO
+	 * @param mousePressed TODO
+	 * @param src
+	 */
+	private void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
+			boolean shiftKeyPressed, boolean mousePressed) {
+		r.y = p.y;
+		setBounds(r);
+		if (shiftKeyPressed) {
+			moveLabelVertical(e, mousePressed);
+		}
+		repaint();
+	}
+
+	private void setEndEdit(boolean endEdit) {
+		this.endEdit = endEdit;
 	}
 
 	private void showPhraseViewer(MuseApp app, Group gr) {
@@ -449,10 +444,6 @@ public class GroupLabel extends JLabel {
 		pv.pack();
 		pv.setVisible(true);
 		pv.preset();
-	}
-
-	protected PhraseViewer createPhraseViewer(MuseApp app, Group gr) {
-		return new PhraseViewer(app, gr);
 	}
 
 }

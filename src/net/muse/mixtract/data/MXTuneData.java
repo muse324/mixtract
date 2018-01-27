@@ -30,6 +30,8 @@ public class MXTuneData extends TuneData {
 	private static final String SCOREDATA_FILENAME = "score.dat";
 	private static final String STRUCTURE_FILENAME = "structure.dat";
 	private static int durationOffset = 100;
+	/** ユーザにより指定されるプライマリフレーズライン */
+	private PrimaryPhraseSequence groupSequence = null;
 
 	/**
 	 * @param args
@@ -80,8 +82,9 @@ public class MXTuneData extends TuneData {
 	public void setBPM(int idx, int value) {
 		super.setBPM(idx, value);
 		if (getRootGroup() != null) {
-			((MXGroup) getRootGroup(0)).getTempoCurve().apply(this,
-					getRootGroup(0));
+			assert getRootGroup(0) instanceof MXGroup;
+			MXGroup g = (MXGroup) getRootGroup(0);
+			g.getTempoCurve().apply(this, g);
 		}
 	}
 
@@ -259,21 +262,21 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	private MXGroup parseGroupInfo(List<Group> glist, GroupNote list,
+	private MXGroup parseGroupInfo(List<MXGroup> glist, GroupNote list,
 			String name, int partNumber, String groupInfo) {
 		MXGroup g = null;
 		final int id = Integer.parseInt(name.substring(1));
 		if (groupInfo.charAt(0) == '[') {
 			String group[] = groupInfo.split(" ");
-			setGroupNotelist(list, group, 1, group.length);
+			parseGroupNotelist(list, group, 1, group.length);
 			g = new MXGroup(id, partNumber, list, GroupType.is(name.charAt(0)));
 			glist.add(g);
 			if (!hasGroupList())
 				setGrouplist(partNumber, g);
 		} else {
 			String[] group = groupInfo.split(",");
-			Group g1 = null, g2 = null;
-			for (Group root : glist) {
+			MXGroup g1 = null, g2 = null;
+			for (MXGroup root : glist) {
 				if (root.name().equals(group[0])) {
 					g1 = root;
 					continue;
@@ -422,7 +425,7 @@ public class MXTuneData extends TuneData {
 			getRootGroup().clear();
 			BufferedReader in = new BufferedReader(new FileReader(file));
 			String str = null;
-			List<Group> glist = new ArrayList<Group>();
+			List<MXGroup> glist = new ArrayList<MXGroup>();
 			while ((str = in.readLine()) != null) {
 				GroupNote list = new GroupNote();
 				String item[] = str.split(";");
@@ -454,7 +457,7 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	private void setGroupNotelist(GroupNote list, String[] args, int idx,
+	private void parseGroupNotelist(GroupNote list, String[] args, int idx,
 			int size) {
 		if (idx == size)
 			return;
@@ -462,16 +465,16 @@ public class MXTuneData extends TuneData {
 		switch (s.charAt(0)) {
 		case '(':
 			list.setChild(new GroupNote());
-			setGroupNotelist(list.child(), args, ++idx, size);
+			parseGroupNotelist(list.child(), args, ++idx, size);
 			break;
 		case ')':
-			setGroupNotelist(list.parent(), args, ++idx, size);
+			parseGroupNotelist(list.parent(), args, ++idx, size);
 			break;
 		case ',':
 			list.setNext(new GroupNote());
 			if (list.hasParent())
 				list.next().setParent(list.parent(), false);
-			setGroupNotelist(list.next(), args, ++idx, size);
+			parseGroupNotelist(list.next(), args, ++idx, size);
 			break;
 		case 'n':
 			NoteData n = null;
@@ -485,10 +488,10 @@ public class MXTuneData extends TuneData {
 			} catch (NullPointerException e) {
 				e.printStackTrace();
 			}
-			setGroupNotelist(list, args, ++idx, size);
+			parseGroupNotelist(list, args, ++idx, size);
 			break;
 		default:
-			setGroupNotelist(list, args, ++idx, size);
+			parseGroupNotelist(list, args, ++idx, size);
 		}
 	}
 
@@ -542,9 +545,170 @@ public class MXTuneData extends TuneData {
 		fp.createNewFile();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
 				fp)));
+		// hierarchical groups
 		for (int i = 0; i < getRootGroup().size(); i++)
 			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
+		// non-hierarchical groups
+		for (int i = 0; i < getGroupArrayList().size(); i++)
+			writeGroupStructureData(out, (MXGroup) getGroupArrayList().get(i));
 		out.close();
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.TuneData#deleteGroup(net.muse.data.Group)
+	 */
+	@Override
+	protected void deleteGroup(Group target) {
+		if (target == null)
+			return;
+		assert target instanceof MXGroup;
+		MXGroup g = (MXGroup) target;
+		deleteGroup(g.getChildFormerGroup());
+		deleteGroup(g.getChildLatterGroup());
+		g.setScoreNotelist(target.getScoreNotelist());
+		if (g.hasChild()) {
+			g.getChildFormerGroup().getEndGroupNote().setNext(g
+					.getChildLatterGroup().getBeginGroupNote());
+		}
+		g.setChild(null, null);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.TuneData#deleteHierarchicalGroup(net.muse.data.Group,
+	 * net.muse.data.Group)
+	 */
+	@Override
+	protected void deleteHierarchicalGroup(Group target, Group structure) {
+		if (structure == null)
+			return;
+		assert structure instanceof MXGroup;
+		MXGroup str = (MXGroup) structure;
+		deleteHierarchicalGroup(target, str.getChildFormerGroup());
+		deleteHierarchicalGroup(target, str.getChildLatterGroup());
+		if (str.equals(target)) {
+			// 子グループをすべて削除
+			deleteGroup(target);
+			target.setType(GroupType.USER);
+			// 親グループの再分析
+			// analyzeStructure(target);
+			return;
+		}
+	}
+
+	@Override
+	protected void initializeNoteEvents(Group group) {
+		if (group == null)
+			return;
+		assert group instanceof MXGroup;
+		MXGroup g = (MXGroup) group;
+		if (group.hasChild()) {
+			initializeNoteEvents(g.getChildFormerGroup().getBeginGroupNote());
+			initializeNoteEvents(g.getChildLatterGroup().getBeginGroupNote());
+		}
+		initializeNoteEvents(group.getBeginGroupNote());
+	}
+
+	protected void setNoteScheduleEvent(final Group group) {
+		if (group == null)
+			return;
+		assert group instanceof MXGroup;
+		MXGroup g = (MXGroup) group;
+		if (g.hasChild()) {
+			setNoteScheduleEvent(g.getChildFormerGroup());
+			setNoteScheduleEvent(g.getChildLatterGroup());
+		} else {
+			setNoteScheduleEvent(g.getBeginGroupNote(), g.getEndGroupNote()
+					.getNote().offset());
+		}
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.TuneData#getUniqueGroupIndex(net.muse.data.Group,
+	 * java.util.ArrayList)
+	 */
+	protected void getUniqueGroupIndex(Group glist,
+			ArrayList<Integer> idxlist) {
+		if (glist == null)
+			return;
+		assert glist instanceof MXGroup;
+		MXGroup g = (MXGroup) glist;
+		getUniqueGroupIndex(g.getChildFormerGroup(), idxlist);
+		getUniqueGroupIndex(g.getChildLatterGroup(), idxlist);
+		if (!idxlist.contains(g.index()))
+			idxlist.add(g.index());
+	}
+
+	/**
+	 * TODO 未検証
+	 * <p>
+	 * グループ構造の基礎となるプライマリフレーズラインを構成します。
+	 * <ul>
+	 * <li>g1の最終音とg2の開始音は連続しており、重複や入れ子を許さない
+	 * </ul>
+	 *
+	 * @param group
+	 */
+	protected void createPrimaryPhraseSequence(MXGroup group) {
+		final PrimaryPhraseSequence seq = new PrimaryPhraseSequence(group);
+
+		// 新規作成
+		if (getGroupArrayList().size() <= 0) {
+			groupSequence = seq;
+			return;
+		}
+
+		NoteData st = group.getBeginGroupNote().getNote();
+		NoteData ed = group.getEndGroupNote().getNote();
+		// 前後にgroup sequence がある場合
+		if (st.hasPrevious() && st.previous().equals(groupSequence.end()
+				.getGroup().getEndGroupNote().getNote())) {
+			groupSequence.end().setNext(seq);
+			seq.setPrevious(groupSequence);
+		} else if (ed.hasNext() && ed.next().equals(groupSequence.root()
+				.getGroup().getBeginGroupNote().getNote())) {
+			groupSequence.root().setPrevious(seq);
+			seq.setNext(groupSequence);
+		}
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.TuneData#addGroupArrayList(net.muse.data.Group)
+	 */
+	@Override
+	public void addGroupArrayList(Group group) {
+		// 重複するグループがあれば処理中断
+		for (Group g : getGroupArrayList()) {
+			if (g.nearlyEquals(group))
+				return;
+			// TODO 複数声部に未対応
+		}
+		// TODO 未検証
+		assert group instanceof MXGroup;
+		createPrimaryPhraseSequence((MXGroup) group);
+		// ----------------------------------
+		getGroupArrayList().add(group);
+	}
+
+	public PrimaryPhraseSequence getGroupSequence() {
+		return groupSequence;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.TuneData#printGroupList(net.muse.data.Group)
+	 */
+	@Override
+	protected void printGroupList(Group group) {
+		if (group == null)
+			return;
+		assert group instanceof MXGroup;
+		MXGroup g = (MXGroup) group;
+		printGroupList(g.getChildFormerGroup());
+		printGroupList(g.getChildLatterGroup());
+		System.out.println(g);
+	}
 }

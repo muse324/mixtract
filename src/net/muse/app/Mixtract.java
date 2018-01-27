@@ -6,10 +6,11 @@ import java.io.*;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.*;
 
-import net.muse.gui.GUIUtil;
-import net.muse.gui.MainFrame;
+import net.muse.data.Group;
+import net.muse.data.TuneData;
+import net.muse.gui.*;
 import net.muse.mixtract.command.MixtractCommand;
-import net.muse.mixtract.data.MXTuneData;
+import net.muse.mixtract.data.*;
 import net.muse.mixtract.gui.MXMainFrame;
 
 /**
@@ -40,7 +41,7 @@ public class Mixtract extends MuseApp {
 				UIManager.setLookAndFeel(UIManager
 						.getSystemLookAndFeelClassName());
 
-				MixtractCommand.setMainObject(main);
+				MixtractCommand.setMain(main);
 
 				/* sprash screen */
 				main.createSplashScreen(main.getAppImageFile());
@@ -110,5 +111,36 @@ public class Mixtract extends MuseApp {
 		if (getFrame() == null)
 			return new MXMainFrame(this);
 		return (MainFrame) getFrame();
+	}
+
+	protected void deleteGroup(final MXGroup g) {
+		if (g == null)
+			return;
+		deleteGroup(g.getChildFormerGroup());
+		deleteGroup(g.getChildLatterGroup());
+
+		PhraseViewer d = null;
+		for (PhraseViewer pv : getPhraseViewList()) {
+			if (pv.getGroup() == g) {
+				d = pv;
+				break;
+			}
+		}
+		if (d != null) {
+			d.setVisible(false);
+			getPhraseViewList().remove(d);
+		}
+	}
+
+	@Override
+	public void analyzeStructure(TuneData data, Group group) {
+		assert data != null && data instanceof MXTuneData;
+		if (group == null)
+			return;
+		assert group instanceof MXGroup;
+		MXGroupAnalyzer ana = new MXGroupAnalyzer((MXTuneData) data, false);
+		ana.setRootGroup((MXGroup) group);
+		ana.run();
+		analyzer.add(ana);
 	}
 }

@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import net.muse.app.MuseApp;
+import net.muse.command.MuseAppCommand;
 import net.muse.misc.Command;
 import net.muse.mixtract.command.MixtractCommand;
 
@@ -266,7 +267,7 @@ public class MouseActionListener extends MouseAdapter implements
 		popup.add(addMenuItem(MixtractCommand.CLEAR_ALLGROUPS, _main
 				.hasTarget()));
 		popup.addSeparator();
-		popup.add(addMenuItem(MixtractCommand.PRINT_ALLGROUPS, _main
+		popup.add(addMenuItem(MuseAppCommand.PRINT_ALLGROUPS, _main
 				.hasTarget()));
 		// popup.add(addMenuItem(MixtractCommand.PRINT_SUBGROUPS,
 		// _main.hasTarget()));

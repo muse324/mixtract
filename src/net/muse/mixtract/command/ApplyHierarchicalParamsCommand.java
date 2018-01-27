@@ -1,12 +1,13 @@
 package net.muse.mixtract.command;
 
 import net.muse.data.Group;
+import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.curve.PhraseCurve;
 
 public final class ApplyHierarchicalParamsCommand extends MixtractCommand {
 
 	private PhraseCurve cv;
-	private Group group;
+	private MXGroup group;
 
 	public ApplyHierarchicalParamsCommand(String... lang) {
 		super(lang);
@@ -31,7 +32,7 @@ public final class ApplyHierarchicalParamsCommand extends MixtractCommand {
 	 * @param group
 	 * @param cv
 	 */
-	public void setCurve(Group group, PhraseCurve cv) {
+	public void setCurve(MXGroup group, PhraseCurve cv) {
 		this.group = group;
 		this.cv = cv;
 	}

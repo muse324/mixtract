@@ -6,6 +6,8 @@ import javax.swing.*;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.data.*;
+import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.PhraseFeature;
 
 public class MelodyFlagViewer extends JPanel {
 
@@ -26,10 +28,7 @@ public class MelodyFlagViewer extends JPanel {
 		// + group.getCenterNote(Shunji_System.getTicksPerBeat())));
 		textPanel.add(new JLabel("End note   = " + group.getEndGroupNote()));
 		textPanel.add(new JLabel("Reduction Level = " + group.getLevel()));
-		textPanel.add(new JLabel("Former group = " + group
-				.getChildFormerGroup()));
-		textPanel.add(new JLabel("Latter group = " + group
-				.getChildLatterGroup()));
+		addChildGroup(textPanel);
 		textPanel.add(new JLabel("c1 (slope of the fomer)  = " + flag
 				.getCt1()));
 		textPanel.add(new JLabel("c2 (slope of the latter) = " + flag
@@ -46,6 +45,16 @@ public class MelodyFlagViewer extends JPanel {
 		add(textPanel);
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
+	}
+
+	private void addChildGroup(JPanel textPanel) {
+		if (group instanceof MXGroup) {
+			textPanel.add(new JLabel("Former group = " + ((MXGroup) group)
+					.getChildFormerGroup()));
+			textPanel.add(new JLabel("Latter group = " + ((MXGroup) group)
+					.getChildLatterGroup()));
+		} else
+			textPanel.add(new JLabel("Child group = " + group.child()));
 	}
 
 	public static MelodyFlagViewer createNewViewer(Group group) {

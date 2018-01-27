@@ -8,10 +8,12 @@ import java.util.List;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.JFrame;
 
-import net.muse.data.*;
+import net.muse.data.Group;
+import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.misc.OptionType;
 import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public abstract class MuseApp extends MuseGUIObject<JFrame> {
@@ -38,7 +40,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	private List<TuneDataListener> tdListenerList = new ArrayList<TuneDataListener>();
 	private ArrayList<PhraseViewer> phraseViewList;
 	/** 階層的フレーズ構造の分析履歴 */
-	private final ArrayList<GroupAnalyzer> analyzer = new ArrayList<GroupAnalyzer>();
+	protected final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
 
 	/**
 	 * @return projectfileextension
@@ -68,12 +70,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param data2
 	 * @param object
 	 */
-	public void analyzeStructure(TuneData data, Group group) {
-		GroupAnalyzer ana = new GroupAnalyzer(data, false);
-		ana.setRootGroup(group);
-		ana.run();
-		analyzer.add(ana);
-	}
+	public abstract void analyzeStructure(TuneData data, Group group);
 
 	/**
 	 * @return
@@ -172,7 +169,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	public void notifyDeleteGroup(GroupLabel label) {
-		deleteGroup(label.getGroup());
+		deleteGroup(label.group());
 		for (final TuneDataListener l : tdListenerList) {
 			l.deleteGroup(label);
 		}
@@ -196,7 +193,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param b 選択(true)/解除(false)
 	 */
 	public void notifySelectGroup(GroupLabel g, boolean b) {
-		data().setSelectedGroup((b) ? g.getGroup() : null);
+		data().setSelectedGroup((b) ? g.group() : null);
 		for (final TuneDataListener l : tdListenerList) {
 			l.selectGroup(g, b);
 		}
@@ -430,11 +427,10 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	/**
 	 * @param g
 	 */
-	private void deleteGroup(final Group g) {
+	protected void deleteGroup(final Group g) {
 		if (g == null)
 			return;
-		deleteGroup(g.getChildFormerGroup());
-		deleteGroup(g.getChildLatterGroup());
+		deleteGroup(g.child());
 
 		PhraseViewer d = null;
 		for (PhraseViewer pv : getPhraseViewList()) {

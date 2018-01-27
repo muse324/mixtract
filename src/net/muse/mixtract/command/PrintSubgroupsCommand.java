@@ -18,7 +18,7 @@ final class PrintSubgroupsCommand extends MixtractCommand {
 		if (getSelectedObjects() instanceof GroupLabel) {
 			final GroupLabel gl = getGroupLabel();
 			GUIUtil.printConsole(gl.getName() + "'s subgroups:");
-			printSubGroups(gl.getGroup());
+			printSubGroups(gl.group());
 		}
 	}
 

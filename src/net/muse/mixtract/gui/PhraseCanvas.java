@@ -8,11 +8,11 @@ import java.util.LinkedList;
 import javax.swing.*;
 
 import net.muse.app.Mixtract;
-import net.muse.data.Group;
 import net.muse.gui.*;
 import net.muse.gui.RoundedCornerButton.RoundButton;
 import net.muse.mixtract.command.ApplyHierarchicalParamsCommand;
 import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurve;
 
@@ -38,7 +38,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 
 	/* 制御データ */
 	protected Mixtract main; // @jve:decl-index=0:
-	protected Group group; // @jve:decl-index=0:
+	protected MXGroup group; // @jve:decl-index=0:
 
 	private PhraseCurve cv; // @jve:decl-index=0:
 	private int axisX;
@@ -70,7 +70,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 	 * @param group
 	 * @param phraseCurve
 	 */
-	PhraseCanvas(final Group group, PhraseCurve phraseCurve) {
+	PhraseCanvas(final MXGroup group, PhraseCurve phraseCurve) {
 		this();
 		this.group = group;
 		this.cv = phraseCurve;
@@ -619,7 +619,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		}
 	}
 
-	public class CanvasListener extends MXMouseActionListener {
+	public class CanvasListener extends MouseActionListener {
 		CanvasListener(Mixtract main, Container owner) {
 			super(main, owner);
 		}
@@ -653,6 +653,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			super.mouseReleased(e);
+			// ポップアップメニューを表示する
 			if (SwingUtilities.isRightMouseButton(e)) {
 				createPopupMenu(e);
 				repaint();
@@ -661,10 +662,6 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 			System.out.println("==== mouse released at PhraseCanvas =====");
 			System.out.println("group: " + ((group != null) ? group.name()
 					: "null"));
-			// System.out.println("graphic.data: " + cv
-			// .getGraphicRectangleData());
-			// System.out.println("scoretime.data: " + cv.getScoretimeData());
-			// System.out.println("logvalue.data: " + cv.getLogValueData());
 
 			cv.calculate(getHeight());
 			// cv.calculate(getRangeY() / 2.);

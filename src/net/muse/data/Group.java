@@ -3,12 +3,14 @@ package net.muse.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.muse.mixtract.data.PhraseFeature;
+
 /**
  * <h1>Group</h1>
  * <p>
- * Group class describes the information to construct a phrase.
+ * Group class describes information of a phrase.
  * <p>
- * A group is consist of the following definition:
+ * A group consists of the following definition:
  * <ol>
  * <li>A group has <i>childFormerGroup</i> & <i>childLatterGroup</i>, or
  * <li>A group has a note sequence
@@ -22,8 +24,8 @@ import java.util.List;
  * @since 2009/10/23
  */
 public class Group extends SequenceData {
-
-	private static boolean AVOID_LAST_RESTNOTE = true;
+	/** グループ最後尾において、休符をグループに含めるかどうか設定します。 */
+	private static boolean INCLUDE_LAST_RESTNOTE = true;
 
 	/** グループの種類 */
 	private GroupType _type;
@@ -34,33 +36,26 @@ public class Group extends SequenceData {
 	private int level;
 	/** 声部番号（1〜） */
 	private int partNumber;
-	/// 子グループ TODO 第３グループを作る
-	private Group childFormerGroup = null;
-	private Group childLatterGroup = null;
-	/** 親グループ */
-	private Group parent = null;
 	/** このグループに含まれる音符列 */
 	private GroupNote notelist = null;
 
 	/** TODO 具体的にどう使ってるか確認する */
 	protected List<NoteData> scoreNotelist;
 	/** 開始音 */
-	private GroupNote beginGroupNote = null;
+	protected GroupNote beginGroupNote = null;
 	/** 終了音 */
-	private GroupNote endGroupNote = null;
+	protected GroupNote endGroupNote = null;
 
 	/** 頂点音 TODO Mixtract用にプッシュダウンする */
 	private GroupNote topGroupNote = null;
-	/** グループ中央付近にある音符。TODO Mixtract用にプッシュダウンする */
-	private GroupNote centerNote;
 	/** フレーズ（グループ）の詳細情報を格納します。 */
 	private PhraseFeature detail;
 
 	/**
-	 * @param aVOID_LAST_RESTNOTE セットする aVOID_LAST_RESTNOTE
+	 * @param INCLUDE_LAST_RESTNOTE セットする INCLUDE_LAST_RESTNOTE
 	 */
 	public static void setAvoidLastRestsFromGroup(boolean aVOID_LAST_RESTNOTE) {
-		AVOID_LAST_RESTNOTE = aVOID_LAST_RESTNOTE;
+		INCLUDE_LAST_RESTNOTE = aVOID_LAST_RESTNOTE;
 	}
 
 	/**
@@ -72,23 +67,6 @@ public class Group extends SequenceData {
 		this.partNumber = groupNoteList.getNote().partNumber();
 		this.beginGroupNote = groupNoteList;
 		this.endGroupNote = endNote;
-	}
-
-	/**
-	 * プロジェクトファイルから読み込んだグループを生成します．
-	 *
-	 * @param g1
-	 * @param g2
-	 * @param name
-	 * @param partNumber
-	 */
-	protected Group(Group g1, Group g2, String name, int partNumber) {
-		this(GroupType.is(name.charAt(0)));
-		index = Integer.parseInt(name.substring(1));
-		this.partNumber = partNumber;
-		beginGroupNote = g1.getBeginGroupNote();
-		endGroupNote = g2.getEndGroupNote();
-		setChild(g1, g2);
 	}
 
 	/**
@@ -125,10 +103,10 @@ public class Group extends SequenceData {
 		this.partNumber = partIndex;
 		setNotelist(notelist.child(), this.notelist);
 		setNotelist(notelist.next(), this.notelist);
-		avoidLastRestnotesFromGroup();
+		comfirmLastRestnotesFromGroup();
 	}
 
-	private Group(GroupType type) {
+	protected Group(GroupType type) {
 		_type = type;
 		initialize();
 	}
@@ -164,27 +142,6 @@ public class Group extends SequenceData {
 		return beginGroupNote;
 	}
 
-	public GroupNote getCenterGroupNote() {
-		if (centerNote == null) {
-			// onset length
-			int len = getEndGroupNote().getNote().onset() - onsetInTicks();
-			int targetTime = len / 2;
-			searchCenterGroupNote(targetTime, getBeginGroupNote());
-			if (hasChild())
-				searchCenterGroupNote(targetTime, getChildLatterGroup()
-						.getBeginGroupNote());
-		}
-		return centerNote;
-	}
-
-	public Group getChildFormerGroup() {
-		return childFormerGroup;
-	}
-
-	public Group getChildLatterGroup() {
-		return childLatterGroup;
-	}
-
 	/**
 	 * @return endGroupNote
 	 */
@@ -203,20 +160,24 @@ public class Group extends SequenceData {
 	/**
 	 * @return the parent
 	 */
-	public final Group getParent() {
-		return parent;
+	public Group getParent() {
+		return (Group) super.parent();
+	}
+
+	@Override
+	public Group child() {
+		return (Group) super.child();
 	}
 
 	/**
 	 * @return cur
 	 */
 	public List<? extends NoteData> getScoreNotelist() {
-		if(scoreNotelist==null)
+		if (scoreNotelist == null)
 			createScoreNoteList();
 		if (hasChild()) {
 			scoreNotelist.clear();
-			addScoreNoteList(getChildFormerGroup().getScoreNotelist());
-			addScoreNoteList(getChildLatterGroup().getScoreNotelist());
+			addScoreNoteList(child().getScoreNotelist());
 		} else if (scoreNotelist.size() <= 1)
 			makeScoreNotelist(getBeginGroupNote().getNote());
 		return scoreNotelist;
@@ -241,23 +202,6 @@ public class Group extends SequenceData {
 	 */
 	public final GroupType getType() {
 		return _type;
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.data.SequenceData#hasChild()
-	 */
-	@Override
-	public boolean hasChild() {
-		return childFormerGroup != null && childLatterGroup != null;
-	}
-
-	public final boolean hasChildFormer() {
-		return childFormerGroup != null;
-	}
-
-	public final boolean hasChildLatter() {
-		return childLatterGroup != null;
 	}
 
 	public final boolean hasTopNote() {
@@ -301,11 +245,6 @@ public class Group extends SequenceData {
 		return getBeginGroupNote().getNote().realOnset();
 	}
 
-	public void setChild(Group g1, Group g2) {
-		setChildFormer(g1);
-		setChildLatter(g2);
-	}
-
 	/**
 	 * @param b
 	 */
@@ -337,8 +276,7 @@ public class Group extends SequenceData {
 	public int timeValue() {
 		int len = 0;
 		if (hasChild()) {
-			len += timevalue(getChildFormerGroup().getBeginGroupNote());
-			len += timevalue(getChildLatterGroup().getBeginGroupNote());
+			len += timevalue(child().getBeginGroupNote());
 		} else
 			len += timevalue(getBeginGroupNote());
 
@@ -354,9 +292,7 @@ public class Group extends SequenceData {
 		String str = name() + ";" + partNumber + ";";
 		if (!hasChild())
 			return str + notelistToString();
-		str += (hasChildFormer()) ? getChildFormerGroup().name() : "null";
-		str += ",";
-		str += (hasChildLatter()) ? getChildLatterGroup().name() : "null";
+		str += (hasChild()) ? child().name() : "null";
 		return str;
 	}
 
@@ -384,10 +320,11 @@ public class Group extends SequenceData {
 	}
 
 	/**
-	 *
+	 * グループ最後尾において、休符がグループに含まれているかをチェックします。
+	 * INCLUDE_LAST_RESTNOTE が false の場合にのみ実行されます。
 	 */
-	private void avoidLastRestnotesFromGroup() {
-		if (!AVOID_LAST_RESTNOTE)
+	private void comfirmLastRestnotesFromGroup() {
+		if (INCLUDE_LAST_RESTNOTE)
 			return;
 		while (endGroupNote.getNote().rest()) {
 			endGroupNote = endGroupNote.previous();
@@ -397,19 +334,19 @@ public class Group extends SequenceData {
 
 	private String notelistName(String str, GroupNote note) {
 		if (note == null)
-			return str + ") ";
+			return str;
 		if (str.length() > 1)
 			str += ",";
 		str += " " + note.id() + " ";
 		if (note.hasChild())
-			str += notelistName("(", note.child());
+			str += notelistName("(", note.child()) + ") ";
 		return notelistName(str, note.next());
 	}
 
 	/**
 	 * @return
 	 */
-	private String notelistToString() {
+	protected String notelistToString() {
 		return notelistName("[", beginGroupNote) + "]";
 	}
 
@@ -417,48 +354,17 @@ public class Group extends SequenceData {
 		return getEndGroupNote().getNote().realOffset();
 	}
 
-	private void searchCenterGroupNote(int targetTime, GroupNote note) {
-		if (note == null)
-			return;
-		if (note.getNote().onset() >= targetTime)
-			return;
-		centerNote = note;
-		searchCenterGroupNote(targetTime, note.next());
-	}
-
 	/**
 	 * @param beginGroupNote セットする beginGroupNote
 	 */
-	private void setBeginGroupNote(GroupNote beginGroupNote) {
+	protected void setBeginGroupNote(GroupNote beginGroupNote) {
 		this.beginGroupNote = beginGroupNote;
-	}
-
-	/**
-	 * @param g
-	 */
-	private void setChildFormer(Group g) {
-		childFormerGroup = g;
-		if (g != null) {
-			childFormerGroup.setParent(this);
-			setBeginGroupNote(g.getBeginGroupNote());
-		}
-	}
-
-	/**
-	 * @param g
-	 */
-	private void setChildLatter(Group g) {
-		childLatterGroup = g;
-		if (g != null) {
-			childLatterGroup.setParent(this);
-			setEndGroupNote(g.getEndGroupNote());
-		}
 	}
 
 	/**
 	 * @param endGroupNote セットする endGroupNote
 	 */
-	private void setEndGroupNote(GroupNote endGroupNote) {
+	protected void setEndGroupNote(GroupNote endGroupNote) {
 		this.endGroupNote = endGroupNote;
 	}
 
@@ -479,11 +385,7 @@ public class Group extends SequenceData {
 		setNotelist(note.next(), notelist);
 	}
 
-	private void setParent(Group g) {
-		parent = g;
-	}
-
-	private int timevalue(GroupNote gnote) {
+	protected int timevalue(GroupNote gnote) {
 		if (gnote == null)
 			return 0;
 		int len = 0;
@@ -492,5 +394,17 @@ public class Group extends SequenceData {
 			gnote = gnote.next();
 		}
 		return len;
+	}
+
+	public int getPartNumber() {
+		return partNumber;
+	}
+
+	public void setPartNumber(int partNumber) {
+		this.partNumber = partNumber;
+	}
+
+	public String printInfo() {
+		return String.format("Group %s\n", name());
 	}
 }

@@ -3,6 +3,7 @@ package net.muse.mixtract.data.curve;
 import java.util.LinkedList;
 
 import net.muse.data.*;
+import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXTuneData;
 
 public class DynamicsCurve extends PhraseCurve {
@@ -24,13 +25,13 @@ public class DynamicsCurve extends PhraseCurve {
 	 * .data.TuneData)
 	 */
 	@Override
-	public void apply(MXTuneData target, Group gr) {
+	public void apply(MXTuneData target, MXGroup gr) {
 		dynamicsList = target.getDynamicsList();
 		lastNote = target.getLastNote(0);
 		volume = target.getVolume();
 		for (Group g : target.getRootGroup()) {
-			// target.applyDynamicsEvent(g);
-			applyDynamicsEvent(g);
+			assert g instanceof MXGroup;
+			applyDynamicsEvent((MXGroup) g);
 		}
 	}
 
@@ -39,7 +40,7 @@ public class DynamicsCurve extends PhraseCurve {
 		return 0.;
 	}
 
-	private void applyDynamicsEvent(Group group) {
+	private void applyDynamicsEvent(MXGroup group) {
 		if (group == null)
 			return;
 		applyDynamicsEvent(group.getChildFormerGroup());

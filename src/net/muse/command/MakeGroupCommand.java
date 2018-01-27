@@ -30,8 +30,8 @@ public class MakeGroupCommand extends MuseAppCommand {
 		Group g = createUserGroup(notes.get(0), notes.get(notes.size() - 1));
 		g.setIndex(target().getUniqueGroupIndex());
 		target().addGroupArrayList(g);
-		main().notifyAddGroup(g);
 		main().analyzeStructure(target(), null);
+		main().notifyAddGroup(g);
 		main().notifySetTarget();
 		// // ArrayList<Group> newlist = createUserGroup();
 		// _target.addUserGroup(g);

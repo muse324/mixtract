@@ -5,13 +5,14 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import net.muse.app.Mixtract;
-import net.muse.app.MuseApp;
 import net.muse.command.*;
-import net.muse.data.*;
+import net.muse.data.Group;
+import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
 import net.muse.misc.Command;
-import net.muse.mixtract.data.MXTuneData;
+import net.muse.mixtract.data.*;
+import net.muse.mixtract.gui.MXGroupLabel;
 import net.muse.mixtract.gui.MXMainFrame;
 
 /**
@@ -21,8 +22,8 @@ import net.muse.mixtract.gui.MXMainFrame;
  * @since 2008/04/21
  */
 public class MixtractCommand extends MuseAppCommand {
-	private GroupLabel _groupLabel;
-	private Group _group;
+	private MXGroupLabel _groupLabel;
+	private MXGroup _group;
 
 	public static Mixtract main() {
 		return (Mixtract) _main;
@@ -68,9 +69,6 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MixtractCommand PRINT_ALL_SIMILAR_GROUPS = new PrintAllSimilarGroupsCommand(
 			"Show all similar groups", "Show all similar groups");
 
-	public static final MixtractCommand PRINT_ALLGROUPS = new PrintAllGroupsCommand(
-			"Print all groups", "全グループを出力");
-
 	public static final MixtractCommand PRINT_SIMILAR_GROUPS = new PrintSimilarGroupsCommand(
 			"Show similar groups");
 
@@ -99,23 +97,23 @@ public class MixtractCommand extends MuseAppCommand {
 			"調を変更");
 	public static final MuseAppCommand SET_KEYMODE = new SetKeyModeCommand(
 			"Change key mode", "長調/短調");
-	public static final SetCrescendoCommand SET_TYPE_CRESC = new SetCrescendoCommand(
+	public static final MixtractCommand SET_TYPE_CRESC = new SetCrescendoCommand(
 			"< (cresc.)");
-	public static final SetDiminuendoCommand SET_TYPE_DIM = new SetDiminuendoCommand(
+	public static final MixtractCommand SET_TYPE_DIM = new SetDiminuendoCommand(
 			"> (dim.)");
-	public static final PrintGroupInfoCommand PRINT_GROUP_INFO = new PrintGroupInfoCommand(
+	public static final MuseAppCommand PRINT_GROUP_INFO = new PrintGroupInfoCommand(
 			"Print group info.", "グループ情報");
 
-	private static GroupAnalyzer ana;
+	private static MXGroupAnalyzer ana;
 	private static MuseAppCommand commandLists[] = new MuseAppCommand[] {
-			ADD_GROUP, ANALYZE_STRUCTURE, DELETE_GROUP, DETAIL, EDIT_GROUP,
+			 ANALYZE_STRUCTURE, DELETE_GROUP, DETAIL, EDIT_GROUP,
 			MOUSE_DISPLAY, OPEN_RULEPANEL, PRINT_ALL_SIMILAR_GROUPS,
-			PRINT_ALLGROUPS, PRINT_SIMILAR_GROUPS, PRINT_SUBGROUPS,
-			OPEN_MUSICXML, OPEN_RULEMAP, REDRAW, REFRESH, SELECT_GROUP,
-			SHOW_SIMILAR_GROUPS, APPLY_PULSES_CHOPINS, APPLY_PULSES_MOZARTS,
-			APPLY_TOPONOTE, MAKE_GROUP, CHANGE_PART, EXPR_LINE_DISPLAY,
-			EXPR_VIEW_DISPLAY, RESET_PRAMETERS, SEARCH, RENDER,
-			ANALYZE_GTTM_STRUCTURE, APPLY_HIERARCHICAL_PARAMS,
+			MuseAppCommand.PRINT_ALLGROUPS, PRINT_SIMILAR_GROUPS,
+			PRINT_SUBGROUPS, OPEN_MUSICXML, OPEN_RULEMAP, REDRAW, REFRESH,
+			SELECT_GROUP, SHOW_SIMILAR_GROUPS, APPLY_PULSES_CHOPINS,
+			APPLY_PULSES_MOZARTS, APPLY_TOPONOTE, MAKE_GROUP, CHANGE_PART,
+			EXPR_LINE_DISPLAY, EXPR_VIEW_DISPLAY, RESET_PRAMETERS, SEARCH,
+			RENDER, ANALYZE_GTTM_STRUCTURE, APPLY_HIERARCHICAL_PARAMS,
 			OPEN_STRUCTURE_DATA, CLEAR_ALLGROUPS, SET_CHORD, SET_KEY,
 			SET_TYPE_CRESC, SET_TYPE_DIM, PRINT_GROUP_INFO };
 
@@ -168,13 +166,6 @@ public class MixtractCommand extends MuseAppCommand {
 	 */
 	public static void setJFrame(JFrame owner) {
 		setMainFrame((MainFrame) owner);
-	}
-
-	/**
-	 * @param main2
-	 */
-	public static void setMainObject(MuseApp main) {
-		setMain(main);
 	}
 
 	public static void setTarget(TuneData target) {
@@ -237,7 +228,8 @@ public class MixtractCommand extends MuseAppCommand {
 	@Override
 	public void setGroup(GroupLabel groupLabel) {
 		setGroupLabel(groupLabel);
-		_group = groupLabel.getGroup();
+		assert groupLabel instanceof MXGroupLabel;
+		_group = (MXGroup) groupLabel.group();
 	}
 
 	/**
@@ -251,7 +243,8 @@ public class MixtractCommand extends MuseAppCommand {
 	 * @param _groupLabel セットする _groupLabel
 	 */
 	public void setGroupLabel(GroupLabel _groupLabel) {
-		this._groupLabel = _groupLabel;
+		assert _groupLabel instanceof MXGroupLabel;
+		this._groupLabel = (MXGroupLabel) _groupLabel;
 	}
 
 	/**
