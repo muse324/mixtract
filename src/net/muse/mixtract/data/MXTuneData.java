@@ -89,7 +89,7 @@ public class MXTuneData extends TuneData {
 	}
 
 	@Override
-	public void writefile() throws IOException, InvalidMidiDataException {
+	public void writefile() throws IOException {
 		// 出力ファイル (またはフォルダ）の所在を確認する
 		confirmOutputFileLocation();
 
@@ -117,6 +117,7 @@ public class MXTuneData extends TuneData {
 	 */
 	@Override
 	public void writeScoreData() throws IOException {
+		if(xml==null)return;
 		File fp = new File(out(), SCOREDATA_FILENAME);
 		fp.createNewFile();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(

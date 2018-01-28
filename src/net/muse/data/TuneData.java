@@ -7,12 +7,19 @@ import java.util.*;
 import javax.sound.midi.*;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.apache.commons.io.FileUtils;
+import org.xml.sax.SAXException;
 
 import jp.crestmuse.cmx.filewrappers.*;
+import jp.crestmuse.cmx.processing.CMXController;
 import net.muse.app.Mixtract;
 import net.muse.gui.GUIUtil;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.curve.PhraseCurve;
 
 public class TuneData extends MuseObject implements TuneDataController {
@@ -56,6 +63,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	private double tempoListEndtime;
 	/** MIDI出力用イベントリスト */
 	private LinkedList<NoteScheduleEvent> noteScheduleEventList = new LinkedList<NoteScheduleEvent>();
+	private SCCXMLWrapper scc;
 
 	public static void setMaximumMIDIChannel(int num) {
 		MAXIMUM_MIDICHANNEL = num;
@@ -214,7 +222,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneDataController#readfile()
 	 */
-	public void readfile() throws IOException, InvalidMidiDataException {
+	public void readfile() throws IOException {
 		// システム独自形式の読込
 		if (isOriginalFileFormat()) {
 			readOriginalFile();
@@ -223,13 +231,34 @@ public class TuneData extends MuseObject implements TuneDataController {
 			// CMX 形式からインポート
 			readCMXFile(inputFile.getAbsolutePath());
 			parseMusicXMLFile();
+			parseSCCXMLFile();
 			writefile();
 		}
 		calculateHierarchicalParameters();
 	}
 
+	private void parseSCCXMLFile() {
+		if (scc == null)
+			return;
+		try {
+			SCCXMLWrapper.Part[] partlist = scc.getPartList();
+			int partIndex = 0;
+			for (SCCXMLWrapper.Part part : partlist) {
+				GUIUtil.printConsole(String.format("Part %d", partIndex + 1));
+				SCCXMLWrapper.Note[] notelist = part.getNoteOnlyList();
+				for (SCCXMLWrapper.Note note : notelist) {
+					GUIUtil.printConsole("onset=" + note.onset() + ", offset="
+							+ note.offset() + ", notenum=" + note.notenum()
+							+ ", vel=" + note.velocity());
+				}
+			}
+		} catch (TransformerException e) {
+		}
+	}
+
 	public void setBPM(int idx, int value) {
-		getBPM().set(idx, value);
+		if (idx < getBPM().size())
+			getBPM().set(idx, value);
 		setDefaultBPM(value);
 	}
 
@@ -269,7 +298,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	}
 
 	@Override
-	public void writefile() throws IOException, InvalidMidiDataException {
+	public void writefile() throws IOException {
 		// 出力ファイル (またはフォルダ）の所在を確認する
 		confirmOutputFileLocation();
 
@@ -297,42 +326,61 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneDataController#writeSMF()
 	 */
-	public void writeSMF() throws IOException, InvalidMidiDataException {
-		// SequenceとTrackの作成
-		// 24tick=四分音符
-		// TODO ticksperbeatの設定の仕方がよくわからん。2011.8.31
-		// すべて480 でいいと思うのだけど、SMF出力すると0.5倍速になる。。
-		Sequence sequence = new Sequence(Sequence.PPQ, getTicksPerBeat() * 2);
-		Track track = sequence.createTrack();
-		int offset = 100;
-		/*
-		 * テンポの設定 四分音符の長さをμsecで指定し3バイトに分解する
-		 * 戻る
-		 */
-		MetaMessage mmsg = new MetaMessage();
-		int tempo = getBPM().get(0);
-		int l = 60 * 1000000 / tempo;
-		mmsg.setMessage(0x51, new byte[] { (byte) (l / 65536), (byte) (l % 65536
-				/ 256), (byte) (l % 256) }, 3);
-		track.add(new MidiEvent(mmsg, 0));
-
-		// set instrument
-		for (int i = 0; i < midiProgram.length; i++) {
-			ShortMessage message = new ShortMessage();
-			message.setMessage(ShortMessage.PROGRAM_CHANGE, i, midiProgram[i],
-					0);
-			track.add(new MidiEvent(message, 0));
-		}
-		// MIDI イベントを書き込んでいく
-		for (NoteScheduleEvent ev : noteScheduleEventList) {
-			track.add(new MidiEvent((ShortMessage) ev.getMidiMessage(), ev
-					.onset() + offset));
+	public void writeSMF() throws IOException {
+		if (scc != null) {
+			File fp = new File(inputDirectory(), scc.getFileName());
+			if (fp.exists())
+				FileUtils.copyFileToDirectory(fp, out(), true);
 		}
 
-		// write to file
-		File fp = new File(outputFile, "express.mid");
-		fp.createNewFile();
-		MidiSystem.write(sequence, 0, fp);
+		try {
+			// SequenceとTrackの作成
+			// 24tick=四分音符
+			// TODO ticksperbeatの設定の仕方がよくわからん。2011.8.31
+			// すべて480 でいいと思うのだけど、SMF出力すると0.5倍速になる。。
+			Sequence sequence = new Sequence(Sequence.PPQ, getTicksPerBeat()
+					* 2);
+			Track track = sequence.createTrack();
+			int offset = 100;
+			/*
+			 * テンポの設定 四分音符の長さをμsecで指定し3バイトに分解する
+			 * 戻る
+			 */
+			MetaMessage mmsg = new MetaMessage();
+			int tempo = getBeginningBPM();
+			int l = 60 * 1000000 / tempo;
+			mmsg.setMessage(0x51, new byte[] { (byte) (l / 65536), (byte) (l
+					% 65536 / 256), (byte) (l % 256) }, 3);
+			track.add(new MidiEvent(mmsg, 0));
+
+			// set instrument
+			for (int i = 0; i < midiProgram.length; i++) {
+				ShortMessage message = new ShortMessage();
+				message.setMessage(ShortMessage.PROGRAM_CHANGE, i,
+						midiProgram[i], 0);
+				track.add(new MidiEvent(message, 0));
+			}
+			// MIDI イベントを書き込んでいく
+			for (NoteScheduleEvent ev : noteScheduleEventList) {
+				track.add(new MidiEvent((ShortMessage) ev.getMidiMessage(), ev
+						.onset() + offset));
+			}
+
+			// write to file
+			File fp = new File(outputFile, "express.mid");
+			fp.createNewFile();
+			MidiSystem.write(sequence, 0, fp);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private int getBeginningBPM() {
+		try {
+			return getBPM().get(0);
+		} catch (IndexOutOfBoundsException e) {
+			return 120;
+		}
 	}
 
 	/**
@@ -409,19 +457,37 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 */
 	protected void readCMXFile(CMXFileWrapper cmx) {}
 
-	protected void readCMXFile(String xmlFilename) {
+	protected void readCMXFile(String xmlFilename) throws IOException {
 		testPrintln("import CMX file");
 		try {
-			CMXFileWrapper cmx = CMXFileWrapper.readfile(xmlFilename);
+			CMXFileWrapper cmx = CMXController.readfile(xmlFilename);
 			if (cmx instanceof DeviationInstanceWrapper) {
 				dev = ((DeviationInstanceWrapper) cmx);
 				xml = dev.getTargetMusicXML();
 				// TODO deviation データを読み込む処理
 			} else if (cmx instanceof MusicXMLWrapper) {
 				xml = (MusicXMLWrapper) cmx;
+			} else if (cmx instanceof SCCXMLWrapper) {
+				scc = (SCCXMLWrapper) cmx;
 			} else
 				readCMXFile(cmx);
-		} catch (IOException e) {
+		} catch (NoClassDefFoundError e) {
+			// SMFをSCCXMLに変換する
+			readMIDIFile(xmlFilename);
+		}
+	}
+
+	private void readMIDIFile(String filename) {
+		try {
+			String outfile = inputDirectory().getAbsolutePath()
+					+ "/mixtractscc.xml";
+			String[] Command = { "sh", "-c", "cmx smf2scc " + filename + " -o "
+					+ outfile };
+			GUIUtil.printConsole("reading SMF to SCC as " + outfile);
+			Process p = Runtime.getRuntime().exec(Command);
+			p.waitFor();
+		} catch (IOException | InterruptedException e) {
+			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 	}
@@ -591,8 +657,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 		if (nd == null)
 			return;
 
-		nd.setRealOnset(nd.onsetInMsec(getBPM().get(0)));
-		nd.setRealOffset(nd.offsetInMsec(getBPM().get(0)));
+		nd.setRealOnset(nd.onsetInMsec(getBeginningBPM()));
+		nd.setRealOffset(nd.offsetInMsec(getBeginningBPM()));
 
 		initializeNoteEvents(nd.child());
 		initializeNoteEvents(nd.next());

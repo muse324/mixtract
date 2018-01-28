@@ -36,7 +36,7 @@ public interface TuneDataController {
 	 * @throws IOException
 	 * @throws InvalidMidiDataException
 	 */
-	public void readfile() throws IOException, InvalidMidiDataException;
+	public void readfile() throws IOException;
 
 	/**
 	 * プロジェクト用ファイルを出力するメソッドです。
@@ -48,7 +48,7 @@ public interface TuneDataController {
 	 * @throws IOException
 	 * @throws InvalidMidiDataException
 	 */
-	public void writefile() throws IOException, InvalidMidiDataException;
+	public void writefile() throws IOException;
 
 	/**
 	 * アプリケーションの独自ファイルを出力するメソッドです。具体的な処理については下層の各アプリケーションクラスにて実装してください。
@@ -64,5 +64,5 @@ public interface TuneDataController {
 	 * @throws IOException
 	 * @throws InvalidMidiDataException
 	 */
-	void writeSMF() throws IOException, InvalidMidiDataException;
+	void writeSMF() throws IOException;
 }
