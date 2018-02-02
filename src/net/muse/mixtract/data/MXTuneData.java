@@ -534,7 +534,8 @@ public class MXTuneData extends TuneData {
 		writeNoteData(out, note.child());
 		out.format("n%s:%s:%s\n", note.index(), note, (note
 				.getXMLNote() != null) ? note.getXMLNote().getXPathExpression()
-						: "null");
+						: (note.getSCCNote() != null) ? note.getSCCNote()
+								.getXPathExpression() : "null");
 		writeNoteData(out, note.next());
 	}
 

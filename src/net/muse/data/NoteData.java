@@ -14,9 +14,15 @@ public class NoteData extends SequenceData {
 	private static final int minimumDuration = 50;
 
 	/**
-	 * MusicXML.Note クラスでの音符情報。改めてCMXからの情報を取得したい時に getXMLNote() を通じて呼び出してください。
+	 * MusicXMLWrapeer.Note クラスでの音符情報。改めてCMXからの情報を取得したい時に getXMLNote()
+	 * を通じて呼び出してください。
 	 */
-	private Note note;
+	private MusicXMLWrapper.Note xmlNote;
+	/**
+	 * SCCXMLWrapper.Note クラスでの音符情報。改めてCMXからの情報を取得したい時に getSCCNote()
+	 * を通じて呼び出してください。
+	 */
+	private SCCXMLWrapper.Note sccNote;
 	/** 当該音符に割り当てられる調号 */
 	private int fifths = 0;
 	/** 当該音符に割り当てられる調性 [長調 or 単調]。 */
@@ -79,8 +85,6 @@ public class NoteData extends SequenceData {
 	/** タイであるかどうかを判別します。 */
 	private boolean tied;
 
-	private jp.crestmuse.cmx.filewrappers.SCCXMLWrapper.Note scc;
-
 	/**
 	 * @return
 	 */
@@ -96,7 +100,7 @@ public class NoteData extends SequenceData {
 			int bpm, int vel) {
 		// 基本情報
 		this(idx);
-		this.note = note;
+		setXMLNote(note);
 		initialize(partNumber, note.noteName(), (note.rest()) ? -1
 				: note.notenum(), note.voice(), note.grace(), note
 						.tiedTo() != null, note.rest(), note.beat(), Harmony.I);
@@ -113,10 +117,14 @@ public class NoteData extends SequenceData {
 		createMIDINoteEvent(bpm, vel);
 	}
 
+	protected void setXMLNote(MusicXMLWrapper.Note note) {
+		this.xmlNote = note;
+	}
+
 	protected NoteData(SCCXMLWrapper.Note note, int partNumber, int idx,
 			int bpm, int vel) {
 		this(idx);
-		this.scc = note;
+		this.setSCCNote(note);
 		initialize(partNumber, Util.getNoteName(note.notenum()), note.notenum(),
 				note.part().channel(), false, false, false, note.onset(),
 				Harmony.I);
@@ -183,10 +191,10 @@ public class NoteData extends SequenceData {
 	}
 
 	/**
-	 * @return note
+	 * @return xmlNote
 	 */
 	public Note getXMLNote() {
-		return note;
+		return xmlNote;
 	}
 
 	public String id() {
@@ -387,7 +395,7 @@ public class NoteData extends SequenceData {
 
 	/**
 	 * 楽譜上の音価をdivisionで表します。
-	 * MusicXML形式の＜note＞-＜duration＞タグに相当します。作曲モードの場合にのみ値の更新が可能です。
+	 * MusicXML形式の＜xmlNote＞-＜duration＞タグに相当します。作曲モードの場合にのみ値の更新が可能です。
 	 * 表情付けモードにおいては，<code>duration()</code>の初期値として参照されるよう，値を固定しておく必要があります。
 	 *
 	 * @return 楽譜上の音価
@@ -462,6 +470,14 @@ public class NoteData extends SequenceData {
 				return;
 			}
 		}
+	}
+
+	public SCCXMLWrapper.Note getSCCNote() {
+		return sccNote;
+	}
+
+	protected void setSCCNote(SCCXMLWrapper.Note sccNote) {
+		this.sccNote = sccNote;
 	}
 
 }
