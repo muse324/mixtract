@@ -30,12 +30,17 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/** 出力ファイル */
 	private File outputFile;
 
-	/** 声部ごとのフレーズ構造(二分木) */
-	private List<Group> rootGroup = new ArrayList<Group>();
 	/** MusicXML */
 	private MusicXMLWrapper xml;
 	/** DeviationInstanceXML */
 	private DeviationInstanceWrapper dev;
+	/** SCCXMLWrapper */
+	private SCCXMLWrapper scc;
+
+	/** 声部ごとのフレーズ構造(二分木) */
+	private List<Group> rootGroup = new ArrayList<Group>();
+	/** 楽曲に含まれる非階層グループを格納するリスト */
+	private final List<Group> groupArrayList;
 
 	/** テンポ情報 */
 	private ArrayList<Integer> bpmlist = new ArrayList<Integer>();
@@ -44,15 +49,13 @@ public class TuneData extends MuseObject implements TuneDataController {
 	private ArrayList<NoteData> notelist = new ArrayList<NoteData>();
 	int[] midiProgram = new int[MAXIMUM_MIDICHANNEL];
 	double[] volume = new double[MAXIMUM_MIDICHANNEL];
+
 	/** 楽曲全体のダイナミクスカーブ */
 	private final LinkedList<Double> dynamicsList;
 	/** 楽曲全体のテンポカーブ */
 	private final LinkedList<Double> tempoList;
 	/** 楽曲全体のアーティキュレーションカーブ */
 	private final LinkedList<Double> articulationList;
-
-	/** 楽曲に含まれる非階層グループを格納するリスト */
-	private final List<Group> groupArrayList;
 
 	/** GUI等で選択されたグループ */
 	private Group selectedGroup = null;
@@ -61,7 +64,6 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 	/** MIDI出力用イベントリスト */
 	private LinkedList<NoteScheduleEvent> noteScheduleEventList = new LinkedList<NoteScheduleEvent>();
-	private SCCXMLWrapper scc;
 
 	public static void setMaximumMIDIChannel(int num) {
 		MAXIMUM_MIDICHANNEL = num;
@@ -367,10 +369,12 @@ public class TuneData extends MuseObject implements TuneDataController {
 		}
 	}
 
-	protected void calculateExpressionParameters(final Group root) {
-		JOptionPane.showMessageDialog(null,
-				"TuneDataのサブクラスにて、calculateExpressionParameters()をオーバーライド実装してください。");
-	}
+	/**
+	 * TuneDataのサブクラスにて、calculateExpressionParameters()をオーバーライド実装してください。
+	 *
+	 * @param Group root
+	 */
+	protected void calculateExpressionParameters(final Group root) {}
 
 	/**
 	 * 出力先を確認します。

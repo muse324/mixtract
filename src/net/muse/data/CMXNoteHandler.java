@@ -1,8 +1,11 @@
 package net.muse.data;
 
+import javax.sound.midi.ShortMessage;
+
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
+import net.muse.gui.GUIUtil;
 
 public class CMXNoteHandler extends AbstractCMXNoteHandler {
 
@@ -120,7 +123,16 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	@Override
 	public void processNote(SCCXMLWrapper.Note note, SCCXMLWrapper arg1) {
 		if (note.getNodeName().equals("control")) {
-			System.out.println(note.toString());
+			switch (note.notenum()) {
+			case 64:
+				GUIUtil.printConsole(String.format("%d: Sustain %d", note
+						.onset(), note.velocity()));
+				break;
+			default:
+				GUIUtil.printConsole(String.format("%d: control %d %d", note
+						.onset(), note.notenum(), note.velocity()));
+			}
+			return;
 		}
 		if (note.getNodeName().equals("note")) {
 			NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
