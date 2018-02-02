@@ -31,11 +31,16 @@ public abstract class AbstractCMXNoteHandler extends MuseObject implements
 	 */
 	@Override
 	public void beginHeader(SCCXMLWrapper arg0) {
-		data().getBPM().add(Integer.valueOf(arg0.getHeaderElementList()[1]
-				.content()));
+		for (SCCXMLWrapper.HeaderElement h : arg0.getHeaderElementList()) {
+			if (h.name().equals("TEMPO"))
+				data().getBPM().add(Integer.valueOf(h.content()));
+		}
 		HeaderElement key = arg0.getFirstKey();
-		String[] str = key.content().split(" ");
-		setKeys(str[1], Integer.valueOf(str[0]));
+		if (key != null) {
+			String[] str = key.content().split(" ");
+			setKeys(str[1], Integer.valueOf(str[0]));
+		} else
+			setKeys(KeyMode.major.name(), 0);
 	}
 
 	public void beginMeasure(Measure measure, MusicXMLWrapper wrapper) {}
