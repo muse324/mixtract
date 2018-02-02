@@ -119,18 +119,22 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 */
 	@Override
 	public void processNote(SCCXMLWrapper.Note note, SCCXMLWrapper arg1) {
-		// readNoteData((MusicXMLWrapper.Note) note.getMusicXMLWrapperNote());
-		NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
-				.getBPM().get(0), currentDefaultVelocity);
-		nd.setKeyMode(keyMode, fifths);
-		testPrintln(nd.toString());
-		if (cur == null) {
-			// 冒頭音
-			cur = nd;
-			data().setNotelist(partIndex, nd);
-		} else {
-			cur.setNext(nd);
-			cur = nd;
+		if (note.getNodeName().equals("control")) {
+			System.out.println(note.toString());
+		}
+		if (note.getNodeName().equals("note")) {
+			NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
+					.getBPM().get(0), note.velocity());
+			nd.setKeyMode(keyMode, fifths);
+			testPrintln(nd.toString());
+			if (cur == null) {
+				// 冒頭音
+				cur = nd;
+				data().setNotelist(partIndex, nd);
+			} else {
+				cur.setNext(nd);
+				cur = nd;
+			}
 		}
 	}
 
