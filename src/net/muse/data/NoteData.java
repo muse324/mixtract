@@ -4,7 +4,9 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.ShortMessage;
 import javax.swing.JOptionPane;
 
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
+import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.misc.Util;
 
 public class NoteData extends SequenceData {
@@ -88,7 +90,8 @@ public class NoteData extends SequenceData {
 		this.index = index;
 	}
 
-	protected NoteData(Note note, int partNumber, int idx, int bpm, int vel) {
+	protected NoteData(MusicXMLWrapper.Note note, int partNumber, int idx,
+			int bpm, int vel) {
 		// 基本情報
 		this(idx);
 		this.note = note;
@@ -106,6 +109,11 @@ public class NoteData extends SequenceData {
 
 		// ノートイベント
 		createMIDINoteEvent(bpm, vel);
+	}
+
+	protected NoteData(SCCXMLWrapper.Note note2, int partNumber2, int idx,
+			int bpm, int vel) {
+		this(idx);
 	}
 
 	public double beat() {

@@ -117,7 +117,8 @@ public class MXTuneData extends TuneData {
 	 */
 	@Override
 	public void writeScoreData() throws IOException {
-		if(xml==null)return;
+		if (xml == null)
+			return;
 		File fp = new File(out(), SCOREDATA_FILENAME);
 		fp.createNewFile();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
@@ -186,13 +187,6 @@ public class MXTuneData extends TuneData {
 	@Override
 	protected boolean isOriginalFileFormat() {
 		return in().isDirectory();
-	}
-
-	@Override
-	protected void parseMusicXMLFile() {
-		if (xml == null)
-			return;
-		xml.processNotePartwise(createCMXNoteHandler());
 	}
 
 	@Override

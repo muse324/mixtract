@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import javax.activation.FileTypeMap;
 import javax.sound.midi.*;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -228,31 +229,31 @@ public class TuneData extends MuseObject implements TuneDataController {
 			readOriginalFile();
 			outputFile = inputFile;
 		} else {
-			// CMX 形式からインポート
-			readCMXFile(inputFile.getAbsolutePath());
-			parseMusicXMLFile();
-			parseSCCXMLFile();
-			writefile();
+			// ファイルの種類を判定する
+			FileTypeMap filetypeMap = FileTypeMap.getDefaultFileTypeMap();
+			String mimetype = filetypeMap.getContentType(in());
+			if (mimetype.equals("audio/midi") || mimetype.equals(
+					"application/octet-stream")) {
+				// MIDIファイルを読み込む
+				readMIDIFile();
+				parseSCCXMLFile();
+			} else if (mimetype.equals("application/xml")) {
+				// CMX 形式からインポート
+				readCMXFile(inputFile.getAbsolutePath());
+				parseMusicXMLFile();
+				writefile();
+			}
 		}
 		calculateHierarchicalParameters();
 	}
 
-	private void parseSCCXMLFile() {
+	protected void parseSCCXMLFile() {
 		if (scc == null)
 			return;
 		try {
-			SCCXMLWrapper.Part[] partlist = scc.getPartList();
-			int partIndex = 0;
-			for (SCCXMLWrapper.Part part : partlist) {
-				GUIUtil.printConsole(String.format("Part %d", partIndex + 1));
-				SCCXMLWrapper.Note[] notelist = part.getNoteOnlyList();
-				for (SCCXMLWrapper.Note note : notelist) {
-					GUIUtil.printConsole("onset=" + note.onset() + ", offset="
-							+ note.offset() + ", notenum=" + note.notenum()
-							+ ", vel=" + note.velocity());
-				}
-			}
+			scc.processNotes(createCMXNoteHandler());
 		} catch (TransformerException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -459,35 +460,26 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 	protected void readCMXFile(String xmlFilename) throws IOException {
 		testPrintln("import CMX file");
-		try {
-			CMXFileWrapper cmx = CMXController.readfile(xmlFilename);
-			if (cmx instanceof DeviationInstanceWrapper) {
-				dev = ((DeviationInstanceWrapper) cmx);
-				xml = dev.getTargetMusicXML();
-				// TODO deviation データを読み込む処理
-			} else if (cmx instanceof MusicXMLWrapper) {
-				xml = (MusicXMLWrapper) cmx;
-			} else if (cmx instanceof SCCXMLWrapper) {
-				scc = (SCCXMLWrapper) cmx;
-			} else
-				readCMXFile(cmx);
-		} catch (NoClassDefFoundError e) {
-			// SMFをSCCXMLに変換する
-			readMIDIFile(xmlFilename);
-		}
+		CMXFileWrapper cmx = CMXController.readfile(xmlFilename);
+		if (cmx instanceof DeviationInstanceWrapper) {
+			dev = ((DeviationInstanceWrapper) cmx);
+			xml = dev.getTargetMusicXML();
+			// TODO deviation データを読み込む処理
+		} else if (cmx instanceof MusicXMLWrapper) {
+			xml = (MusicXMLWrapper) cmx;
+		} else if (cmx instanceof SCCXMLWrapper) {
+			scc = (SCCXMLWrapper) cmx;
+		} else
+			readCMXFile(cmx);
 	}
 
-	private void readMIDIFile(String filename) {
+	private void readMIDIFile() {
 		try {
-			String outfile = inputDirectory().getAbsolutePath()
-					+ "/mixtractscc.xml";
-			String[] Command = { "sh", "-c", "cmx smf2scc " + filename + " -o "
-					+ outfile };
-			GUIUtil.printConsole("reading SMF to SCC as " + outfile);
-			Process p = Runtime.getRuntime().exec(Command);
-			p.waitFor();
-		} catch (IOException | InterruptedException e) {
-			// TODO 自動生成された catch ブロック
+			MIDIXMLWrapper mid = CMXController.readSMFAsMIDIXML(in()
+					.getAbsolutePath());
+			scc = mid.toSCCXML();
+		} catch (TransformerException | IOException
+				| ParserConfigurationException | SAXException e) {
 			e.printStackTrace();
 		}
 	}
