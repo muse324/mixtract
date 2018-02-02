@@ -4,7 +4,9 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.ShortMessage;
 import javax.swing.JOptionPane;
 
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
+import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.misc.Util;
 
 public class NoteData extends SequenceData {
@@ -77,6 +79,8 @@ public class NoteData extends SequenceData {
 	/** タイであるかどうかを判別します。 */
 	private boolean tied;
 
+	private jp.crestmuse.cmx.filewrappers.SCCXMLWrapper.Note scc;
+
 	/**
 	 * @return
 	 */
@@ -88,7 +92,8 @@ public class NoteData extends SequenceData {
 		this.index = index;
 	}
 
-	protected NoteData(Note note, int partNumber, int idx, int bpm, int vel) {
+	protected NoteData(MusicXMLWrapper.Note note, int partNumber, int idx,
+			int bpm, int vel) {
 		// 基本情報
 		this(idx);
 		this.note = note;
@@ -96,7 +101,7 @@ public class NoteData extends SequenceData {
 				: note.notenum(), note.voice(), note.grace(), note
 						.tiedTo() != null, note.rest(), note.beat(), Harmony.I);
 
-		measureNumber = note.measure().number();
+		setMeasureNumber(note.measure().number());
 		setOnset(note.onset(getTicksPerBeat()));
 		setOffset(note.offset(getTicksPerBeat()));
 		setRealOnset(onsetInMsec(bpm));
@@ -104,6 +109,23 @@ public class NoteData extends SequenceData {
 		setTimeValue((note.grace()) ? getDefaultGraseNoteDuration()
 				: note.tiedDuration(getTicksPerBeat()));
 
+		// ノートイベント
+		createMIDINoteEvent(bpm, vel);
+	}
+
+	protected NoteData(SCCXMLWrapper.Note note, int partNumber, int idx,
+			int bpm, int vel) {
+		this(idx);
+		this.scc = note;
+		initialize(partNumber, Util.getNoteName(note.notenum()), note.notenum(),
+				note.part().channel(), false, false, false, note.onset(),
+				Harmony.I);
+
+		setOnset(note.onset(getTicksPerBeat()));
+		setOffset(note.offset(getTicksPerBeat()));
+		setRealOnset(onsetInMsec(bpm));
+		setRealOffset(offsetInMsec(bpm));
+		setTimeValue(note.duration(getTicksPerBeat()));
 		// ノートイベント
 		createMIDINoteEvent(bpm, vel);
 	}

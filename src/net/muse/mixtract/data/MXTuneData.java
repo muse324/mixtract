@@ -11,7 +11,8 @@ import javax.sound.midi.InvalidMidiDataException;
 
 import org.apache.commons.io.FileUtils;
 
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
+import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.app.Mixtract;
 import net.muse.data.*;
 import net.muse.mixtract.data.curve.*;
@@ -117,7 +118,8 @@ public class MXTuneData extends TuneData {
 	 */
 	@Override
 	public void writeScoreData() throws IOException {
-		if(xml==null)return;
+		if (xml == null)
+			return;
 		File fp = new File(out(), SCOREDATA_FILENAME);
 		fp.createNewFile();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
@@ -172,8 +174,13 @@ public class MXTuneData extends TuneData {
 				return new MXGroup(n, i, type);
 			}
 
-			protected NoteData createNoteData(Note note, int partNumber,
-					int idx, Integer bpm, int vel) {
+			protected NoteData createNoteData(MusicXMLWrapper.Note note,
+					int partNumber, int idx, Integer bpm, int vel) {
+				return new MXNoteData(note, partNumber, idx, bpm, vel);
+			}
+
+			protected NoteData createNoteData(SCCXMLWrapper.Note note,
+					int partNumber, int idx, Integer bpm, int vel) {
 				return new MXNoteData(note, partNumber, idx, bpm, vel);
 			}
 
@@ -186,13 +193,6 @@ public class MXTuneData extends TuneData {
 	@Override
 	protected boolean isOriginalFileFormat() {
 		return in().isDirectory();
-	}
-
-	@Override
-	protected void parseMusicXMLFile() {
-		if (xml == null)
-			return;
-		xml.processNotePartwise(createCMXNoteHandler());
 	}
 
 	@Override
