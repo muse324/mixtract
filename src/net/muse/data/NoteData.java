@@ -79,6 +79,8 @@ public class NoteData extends SequenceData {
 	/** タイであるかどうかを判別します。 */
 	private boolean tied;
 
+	private jp.crestmuse.cmx.filewrappers.SCCXMLWrapper.Note scc;
+
 	/**
 	 * @return
 	 */
@@ -99,7 +101,7 @@ public class NoteData extends SequenceData {
 				: note.notenum(), note.voice(), note.grace(), note
 						.tiedTo() != null, note.rest(), note.beat(), Harmony.I);
 
-		measureNumber = note.measure().number();
+		setMeasureNumber(note.measure().number());
 		setOnset(note.onset(getTicksPerBeat()));
 		setOffset(note.offset(getTicksPerBeat()));
 		setRealOnset(onsetInMsec(bpm));
@@ -111,9 +113,21 @@ public class NoteData extends SequenceData {
 		createMIDINoteEvent(bpm, vel);
 	}
 
-	protected NoteData(SCCXMLWrapper.Note note2, int partNumber2, int idx,
+	protected NoteData(SCCXMLWrapper.Note note, int partNumber, int idx,
 			int bpm, int vel) {
 		this(idx);
+		this.scc = note;
+		initialize(partNumber, Util.getNoteName(note.notenum()), note.notenum(),
+				note.part().channel(), false, false, false, note.onset(),
+				Harmony.I);
+
+		setOnset(note.onset(getTicksPerBeat()));
+		setOffset(note.offset(getTicksPerBeat()));
+		setRealOnset(onsetInMsec(bpm));
+		setRealOffset(offsetInMsec(bpm));
+		setTimeValue(note.duration(getTicksPerBeat()));
+		// ノートイベント
+		createMIDINoteEvent(bpm, vel);
 	}
 
 	public double beat() {
