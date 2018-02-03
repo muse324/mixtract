@@ -278,8 +278,14 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		getPlayButton().setEnabled(true);
 
 		if (data != null) {
-			getBpmValue().setText(String.valueOf(data.getBPM().get(0)));
-			getTempoSlider().setValue(data.getBPM().get(0));
+			try {
+				getBpmValue().setText(String.valueOf(data.getBPM().get(0)));
+				getTempoSlider().setValue(data.getBPM().get(0));
+			} catch (IndexOutOfBoundsException e) {
+				getBpmValue().setText("120");
+				getTempoSlider().setValue(120);
+			}
+
 		}
 		if (!getViewer().isVisible()) {
 			try {
@@ -487,8 +493,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			e1.printStackTrace();
 		} catch (AWTException e1) {
 			e1.printStackTrace();
-		} catch (InvalidMidiDataException e) {
-			e.printStackTrace();
 		}
 	}
 

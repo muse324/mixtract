@@ -2,7 +2,8 @@ package net.muse.mixtract.data;
 
 import java.util.ArrayList;
 
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
+import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.data.NoteData;
 import net.muse.misc.Util;
 
@@ -41,8 +42,14 @@ public class MXNoteData extends NoteData {
 		createMIDINoteEvent(getDefaultBPM(), getDefaultVelocity());
 	}
 
-	public MXNoteData(Note note, int partNumber, int idx, int bpm, int vel) {
+	public MXNoteData(MusicXMLWrapper.Note note, int partNumber, int idx,
+			int bpm, int vel) {
 		super(note, partNumber, idx, bpm, vel);
+	}
+
+	public MXNoteData(SCCXMLWrapper.Note note, int partNumber, int idx, int bpm,
+			int beat, int vel) {
+		super(note, partNumber, idx, bpm, beat, vel);
 	}
 
 	/*

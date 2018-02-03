@@ -4,37 +4,54 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import javax.activation.FileTypeMap;
 import javax.sound.midi.*;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.apache.commons.io.FileUtils;
+import org.xml.sax.SAXException;
 
 import jp.crestmuse.cmx.filewrappers.*;
+import jp.crestmuse.cmx.processing.CMXController;
 import net.muse.app.Mixtract;
 import net.muse.gui.GUIUtil;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.data.*;
-import net.muse.mixtract.data.curve.PhraseCurve;
+import net.muse.mixtract.data.MXGroupAnalyzer;
 
 public class TuneData extends MuseObject implements TuneDataController {
 	private static int MAXIMUM_MIDICHANNEL = 16;
-	public static boolean segmentGroupnoteLine = false;
+	static boolean segmentGroupnoteLine = false;
 
 	/** 入力ファイル */
 	private File inputFile;
 	/** 出力ファイル */
 	private File outputFile;
 
+	/** MusicXML */
+	private MusicXMLWrapper xml;
+	/** DeviationInstanceXML */
+	private DeviationInstanceWrapper dev;
+	/** SCCXMLWrapper */
+	private SCCXMLWrapper scc;
+
+	/** 拍子記号のリスト（変拍子対応） */
+	private ArrayList<BeatInfo> beatInfoList = new ArrayList<BeatInfo>();
 	/** 声部ごとのフレーズ構造(二分木) */
 	private List<Group> rootGroup = new ArrayList<Group>();
-	/** MusicXML */
-	protected MusicXMLWrapper xml;
+	/** 楽曲に含まれる非階層グループを格納するリスト */
+	private final List<Group> groupArrayList;
+
 	/** テンポ情報 */
 	private ArrayList<Integer> bpmlist = new ArrayList<Integer>();
-
+	private double tempoListEndtime;
 	/** 声部ごとの音符情報 */
 	private ArrayList<NoteData> notelist = new ArrayList<NoteData>();
-	public int[] midiProgram = new int[MAXIMUM_MIDICHANNEL];
-	public double[] volume = new double[MAXIMUM_MIDICHANNEL];
+	int[] midiProgram = new int[MAXIMUM_MIDICHANNEL];
+	double[] volume = new double[MAXIMUM_MIDICHANNEL];
+
 	/** 楽曲全体のダイナミクスカーブ */
 	private final LinkedList<Double> dynamicsList;
 	/** 楽曲全体のテンポカーブ */
@@ -42,18 +59,11 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/** 楽曲全体のアーティキュレーションカーブ */
 	private final LinkedList<Double> articulationList;
 
-	/** 楽曲に含まれる非階層グループを格納するリスト */
-	private final List<Group> groupArrayList;
-
 	/** GUI等で選択されたグループ */
 	private Group selectedGroup = null;
 
-	/** DeviationInstanceXML */
-	protected DeviationInstanceWrapper dev;
-
 	protected int hierarchicalGroupCount;
 
-	private double tempoListEndtime;
 	/** MIDI出力用イベントリスト */
 	private LinkedList<NoteScheduleEvent> noteScheduleEventList = new LinkedList<NoteScheduleEvent>();
 
@@ -93,21 +103,20 @@ public class TuneData extends MuseObject implements TuneDataController {
 		getGroupArrayList().add(group);
 	}
 
-	public void calculateHierarchicalParameters() {
+	public void calculateExpressionParameters() {
 		initializeParameters();
 		for (final Group root : getRootGroup()) {
 			// tempo
 			tempoListEndtime = root.getTimeValue();
-			if (((MXGroup) root).getTempoCurve().getParamlist().size() > 0)
-				calculateHierarchicalParameters((MXGroup) root);
+			calculateExpressionParameters(root);
 
 			if (isDebug()) {
 				System.out.println("------ parameter lists calculation ------");
-				for (int i = 0; i < tempoList.size(); i++) {
+				for (int i = 0; i < getTempoList().size(); i++) {
 					System.out.println(String.format(
 							"%d: dyn2: %f, tempo2: %f, artc: %f", i,
-							dynamicsList.get(i), tempoList.get(i),
-							articulationList.get(i)));
+							getDynamicsList().get(i), getTempoList().get(i),
+							getArticulationList().get(i)));
 				}
 				System.out.println("---------------------------");
 			}
@@ -170,14 +179,6 @@ public class TuneData extends MuseObject implements TuneDataController {
 		return midiProgram;
 	}
 
-	public ArrayList<NoteData> getNotelist() {
-		return notelist;
-	}
-
-	public NoteData getNoteList(int partIndex) {
-		return notelist.get(partIndex);
-	}
-
 	public LinkedList<NoteScheduleEvent> getNoteScheduleEventList() {
 		return noteScheduleEventList;
 	}
@@ -190,15 +191,31 @@ public class TuneData extends MuseObject implements TuneDataController {
 		return rootGroup;
 	}
 
-	public MXGroup getRootGroup(int partIndex) {
+	public Group getRootGroup(int partIndex) {
 		Group g = getRootGroup().get(partIndex);
-		assert g instanceof MXGroup;
-		return (MXGroup) g;
+		return g;
 	}
 
 	/** @return tempoList2 */
 	public LinkedList<Double> getTempoList() {
 		return tempoList;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getUniqueGroupIndex() {
+		ArrayList<Integer> idxlist = new ArrayList<Integer>();
+		for (Group g : getGroupArrayList()) {
+			if (!idxlist.contains(g.index()))
+				idxlist.add(g.index());
+		}
+		getUniqueGroupIndex(getRootGroup(0), idxlist);
+		for (int i = 0; i < idxlist.size(); i++) {
+			if (!idxlist.contains(i))
+				return i;
+		}
+		return idxlist.size();
 	}
 
 	public double[] getVolume() {
@@ -210,41 +227,49 @@ public class TuneData extends MuseObject implements TuneDataController {
 			initializeNoteEvents(getRootGroup(i));
 	}
 
+	public void printAllGroups() {
+		GUIUtil.printConsole("Hierarchical group list:");
+		for (Group g : getRootGroup()) {
+			printGroupList(g);
+		}
+		GUIUtil.printConsole("Non hierarchical group list:");
+		for (Group g : getGroupArrayList()) {
+			printGroupList(g);
+		}
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneDataController#readfile()
 	 */
-	public void readfile() throws IOException, InvalidMidiDataException {
+	public void readfile() throws IOException {
 		// システム独自形式の読込
 		if (isOriginalFileFormat()) {
 			readOriginalFile();
 			outputFile = inputFile;
 		} else {
-			// CMX 形式からインポート
-			readCMXFile(inputFile.getAbsolutePath());
-			parseMusicXMLFile();
-			writefile();
+			// ファイルの種類を判定する
+			FileTypeMap filetypeMap = FileTypeMap.getDefaultFileTypeMap();
+			String mimetype = filetypeMap.getContentType(in());
+			if (mimetype.equals("audio/midi") || mimetype.equals(
+					"application/octet-stream")) {
+				// MIDIファイルを読み込む
+				readMIDIFile();
+				parseSCCXMLFile();
+			} else if (mimetype.equals("application/xml")) {
+				// CMX 形式からインポート
+				readCMXFile(inputFile.getAbsolutePath());
+				parseMusicXMLFile();
+				writefile();
+			}
 		}
-		calculateHierarchicalParameters();
+		calculateExpressionParameters();
 	}
 
 	public void setBPM(int idx, int value) {
-		getBPM().set(idx, value);
+		if (idx < getBPM().size())
+			getBPM().set(idx, value);
 		setDefaultBPM(value);
-	}
-
-	public void setGrouplist(int partIndex, Group rootGroup) {
-		if (partIndex >= this.getRootGroup().size())
-			this.getRootGroup().add(rootGroup);
-		else
-			this.getRootGroup().set(partIndex, rootGroup);
-	}
-
-	public void setNotelist(int partIndex, NoteData root) {
-		if (partIndex >= this.notelist.size())
-			notelist.add(root);
-		else
-			notelist.set(partIndex, root);
 	}
 
 	public void setNoteScheduleEvent() {
@@ -269,7 +294,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	}
 
 	@Override
-	public void writefile() throws IOException, InvalidMidiDataException {
+	public void writefile() throws IOException {
 		// 出力ファイル (またはフォルダ）の所在を確認する
 		confirmOutputFileLocation();
 
@@ -297,43 +322,61 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneDataController#writeSMF()
 	 */
-	public void writeSMF() throws IOException, InvalidMidiDataException {
-		// SequenceとTrackの作成
-		// 24tick=四分音符
-		// TODO ticksperbeatの設定の仕方がよくわからん。2011.8.31
-		// すべて480 でいいと思うのだけど、SMF出力すると0.5倍速になる。。
-		Sequence sequence = new Sequence(Sequence.PPQ, getTicksPerBeat() * 2);
-		Track track = sequence.createTrack();
-		int offset = 100;
-		/*
-		 * テンポの設定 四分音符の長さをμsecで指定し3バイトに分解する
-		 * 戻る
-		 */
-		MetaMessage mmsg = new MetaMessage();
-		int tempo = getBPM().get(0);
-		int l = 60 * 1000000 / tempo;
-		mmsg.setMessage(0x51, new byte[] { (byte) (l / 65536), (byte) (l % 65536
-				/ 256), (byte) (l % 256) }, 3);
-		track.add(new MidiEvent(mmsg, 0));
-
-		// set instrument
-		for (int i = 0; i < midiProgram.length; i++) {
-			ShortMessage message = new ShortMessage();
-			message.setMessage(ShortMessage.PROGRAM_CHANGE, i, midiProgram[i],
-					0);
-			track.add(new MidiEvent(message, 0));
-		}
-		// MIDI イベントを書き込んでいく
-		for (NoteScheduleEvent ev : noteScheduleEventList) {
-			track.add(new MidiEvent((ShortMessage) ev.getMidiMessage(), ev
-					.onset() + offset));
+	public void writeSMF() throws IOException {
+		if (scc != null) {
+			File fp = new File(inputDirectory(), scc.getFileName());
+			if (fp.exists())
+				FileUtils.copyFileToDirectory(fp, out(), true);
 		}
 
-		// write to file
-		File fp = new File(outputFile, "express.mid");
-		fp.createNewFile();
-		MidiSystem.write(sequence, 0, fp);
+		try {
+			// SequenceとTrackの作成
+			// 24tick=四分音符
+			// TODO ticksperbeatの設定の仕方がよくわからん。2011.8.31
+			// すべて480 でいいと思うのだけど、SMF出力すると0.5倍速になる。。
+			Sequence sequence = new Sequence(Sequence.PPQ, getTicksPerBeat()
+					* 2);
+			Track track = sequence.createTrack();
+			int offset = 100;
+			/*
+			 * テンポの設定 四分音符の長さをμsecで指定し3バイトに分解する
+			 * 戻る
+			 */
+			MetaMessage mmsg = new MetaMessage();
+			int tempo = getBeginningBPM();
+			int l = 60 * 1000000 / tempo;
+			mmsg.setMessage(0x51, new byte[] { (byte) (l / 65536), (byte) (l
+					% 65536 / 256), (byte) (l % 256) }, 3);
+			track.add(new MidiEvent(mmsg, 0));
+
+			// set instrument
+			for (int i = 0; i < midiProgram.length; i++) {
+				ShortMessage message = new ShortMessage();
+				message.setMessage(ShortMessage.PROGRAM_CHANGE, i,
+						midiProgram[i], 0);
+				track.add(new MidiEvent(message, 0));
+			}
+			// MIDI イベントを書き込んでいく
+			for (NoteScheduleEvent ev : noteScheduleEventList) {
+				track.add(new MidiEvent((ShortMessage) ev.getMidiMessage(), ev
+						.onset() + offset));
+			}
+
+			// write to file
+			File fp = new File(outputFile, "express.mid");
+			fp.createNewFile();
+			MidiSystem.write(sequence, 0, fp);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
 	}
+
+	/**
+	 * TuneDataのサブクラスにて、calculateExpressionParameters()をオーバーライド実装してください。
+	 *
+	 * @param Group root
+	 */
+	protected void calculateExpressionParameters(final Group root) {}
 
 	/**
 	 * 出力先を確認します。
@@ -348,191 +391,6 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 	protected CMXNoteHandler createCMXNoteHandler() {
 		return new CMXNoteHandler(this);
-	}
-
-	/** 出力先をダイアログ形式でユーザに指定させます。 */
-	protected void dialogOutputLocation() {
-		int res = JOptionPane.showConfirmDialog(null, outputFile
-				.getAbsolutePath() + "\n is exist. Override?",
-				"Project path confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
-		switch (res) {
-		case JOptionPane.CANCEL_OPTION:
-			testPrintln("cancelled.");
-			return;
-		case JOptionPane.NO_OPTION:
-			JFileChooser fc = new JFileChooser(outputFile.getParentFile());
-			res = fc.showSaveDialog(null);
-			if (res == JOptionPane.NO_OPTION) {
-				testPrintln("cancelled.");
-				return;
-			}
-			// 出力ファイル(orフォルダ)を作成する
-			createNewOutputFile(fc);
-			break;
-		}
-	}
-
-	/** @return inputFile */
-	protected File in() {
-		return inputFile;
-	}
-
-	/** @return */
-	protected File inputDirectory() {
-		return inputFile.getParentFile();
-	}
-
-	protected boolean isOriginalFileFormat() {
-		return inputFile.isDirectory();
-	}
-
-	/** @return outputFile */
-	protected File out() {
-		return outputFile;
-	}
-
-	protected void parseMusicXMLFile() {
-		if (xml == null)
-			return;
-		xml.processNotePartwise(createCMXNoteHandler());
-	}
-
-	/**
-	 * CrestMuseXML(CMX)形式のデータから読込処理を行います。
-	 * MusicXML、DeviationIncetanceWrapper形式についてはreadCMLFile(String)メソッドにてすでに格納されています。
-	 * このメソッドでは、それ以外の形式についての処理を実装してください。
-	 *
-	 * @param cmx
-	 * @see TuneData.readCMXFile(String)
-	 * @see {@link CrestMuseXML:<a href=
-	 *      "http://cmx.osdn.jp/">http://cmx.osdn.jp/</a>}
-	 */
-	protected void readCMXFile(CMXFileWrapper cmx) {}
-
-	protected void readCMXFile(String xmlFilename) {
-		testPrintln("import CMX file");
-		try {
-			CMXFileWrapper cmx = CMXFileWrapper.readfile(xmlFilename);
-			if (cmx instanceof DeviationInstanceWrapper) {
-				dev = ((DeviationInstanceWrapper) cmx);
-				xml = dev.getTargetMusicXML();
-				// TODO deviation データを読み込む処理
-			} else if (cmx instanceof MusicXMLWrapper) {
-				xml = (MusicXMLWrapper) cmx;
-			} else
-				readCMXFile(cmx);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	protected void readOriginalFile() throws IOException {
-		testPrintln("reading original format...(dummy)");
-	}
-
-	/** @param inputFile セットする inputFile */
-	protected void setInputFile(File inputFile) {
-		this.inputFile = inputFile;
-	}
-
-	/** @param outputFile セットする outputFile */
-	protected void setOutputFile(File outputFile) {
-		this.outputFile = outputFile;
-	}
-
-	/** @param note TODO */
-	private void addNoteScheduleEventList(NoteData note) {
-		if (note == null)
-			return;
-		if (!noteScheduleEventList.contains(note.getNoteOn())) {
-			addNoteScheduleEventList(note.getNoteOn());
-			addNoteScheduleEventList(note.getNoteOff());
-		}
-		addNoteScheduleEventList(note.child());
-	}
-
-	private void addNoteScheduleEventList(NoteScheduleEvent note) {
-		if (noteScheduleEventList.size() == 0) {
-			noteScheduleEventList.add(note);
-			return;
-		}
-		int idx = 0;
-		for (NoteScheduleEvent ev : noteScheduleEventList) {
-			if (note.onset() >= ev.onset()) {
-				idx++;
-			}
-		}
-		noteScheduleEventList.add(idx, note);
-	}
-
-	/**
-	 * @param st
-	 * @param ed
-	 * @param curve
-	 * @param list
-	 */
-	private void calculateHierarchicalParameters(final int st, final int ed,
-			final PhraseCurve curve, final LinkedList<Double> list) {
-		final double div = curve.getDivision();
-		for (int i = st; i < ed; i++) {
-			final int idx = (int) Math.round(div * (i - st) / (ed - st));
-			if (idx < curve.getParamlist().size()) {
-				final double noteT2 = curve.getParamlist().get(idx);
-				final double logValue;
-				switch (curve.getType()) {
-				case ARTICULATION:
-					logValue = list.get(i) * noteT2;
-					break;
-				default:
-					logValue = list.get(i) + noteT2;
-				}
-				list.set(i, logValue);
-			}
-		}
-	}
-
-	private void calculateHierarchicalParameters(MXGroup group) {
-		if (group == null)
-			return;
-
-		final double startTime = group.getBeginGroupNote().getNote().onset();
-		final double endTime = group.getEndGroupNote().getNote().offset();
-		final int st = (int) Math.round(MXGroupAnalyzer.rootDiv * startTime
-				/ tempoListEndtime);
-		final int ed = (int) Math.round(MXGroupAnalyzer.rootDiv * endTime
-				/ tempoListEndtime);
-
-		System.out.println(String.format("-- %s (st=%d - ed=%d)", group.name(),
-				st, ed));
-
-		calculateHierarchicalParameters(st, ed, group.getDynamicsCurve(),
-				dynamicsList);
-		calculateHierarchicalParameters(st, ed, group.getTempoCurve(),
-				tempoList);
-		calculateHierarchicalParameters(st, ed, group.getArticulationCurve(),
-				articulationList);
-
-		// final TempoCurve tempoCurve = group.getTempoCurve();
-		// final int divT = tempoCurve.getDivision();// groupの分割数
-		// final DynamicsCurve dynamicsCurve = group.getDynamicsCurve();
-		// final int divD = dynamicsCurve.getDivision();// groupの分割数
-		// for (int i = st; i < ed; i++) {
-		// final int idxT = divT * (i - st) / (ed - st);
-		// final int idxD = divD * (i - st) / (ed - st);
-		// if (idxT < tempoCurve.getLogValueData().size()) {
-		// final double noteT2 = tempoCurve.getLogValueData().get(idxT);
-		// final double tempoLogValue = getTempoList().get(i) + noteT2;
-		// getTempoList().set(i, tempoLogValue);
-		// }
-		// if (idxD < dynamicsCurve.getLogValueData().size()) {
-		// final double noteD2 = dynamicsCurve.getLogValueData().get(idxD);
-		// final double dynamicsLogValue = getDynamicsList().get(i) + noteD2;
-		// getDynamicsList().set(i, dynamicsLogValue);
-		// }
-		// }
-
-		calculateHierarchicalParameters((MXGroup) group.getChildFormerGroup());
-		calculateHierarchicalParameters((MXGroup) group.getChildLatterGroup());
 	}
 
 	/**
@@ -572,6 +430,45 @@ public class TuneData extends MuseObject implements TuneDataController {
 		}
 	}
 
+	/** 出力先をダイアログ形式でユーザに指定させます。 */
+	protected void dialogOutputLocation() {
+		int res = JOptionPane.showConfirmDialog(null, outputFile
+				.getAbsolutePath() + "\n is exist. Override?",
+				"Project path confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
+		switch (res) {
+		case JOptionPane.CANCEL_OPTION:
+			testPrintln("cancelled.");
+			return;
+		case JOptionPane.NO_OPTION:
+			JFileChooser fc = new JFileChooser(outputFile.getParentFile());
+			res = fc.showSaveDialog(null);
+			if (res == JOptionPane.NO_OPTION) {
+				testPrintln("cancelled.");
+				return;
+			}
+			// 出力ファイル(orフォルダ)を作成する
+			createNewOutputFile(fc);
+			break;
+		}
+	}
+
+	protected ArrayList<NoteData> getNotelist() {
+		return notelist;
+	}
+
+	protected NoteData getNoteList(int partIndex) {
+		return notelist.get(partIndex);
+	}
+
+	protected double getTempoListEndtime() {
+		return tempoListEndtime;
+	}
+
+	/** @return inputFile */
+	protected File in() {
+		return inputFile;
+	}
+
 	protected void initializeNoteEvents(Group group) {
 		if (group == null)
 			return;
@@ -587,12 +484,129 @@ public class TuneData extends MuseObject implements TuneDataController {
 		initializeNoteEvents(gnote.getNote());
 	}
 
+	/** @return */
+	protected File inputDirectory() {
+		return inputFile.getParentFile();
+	}
+
+	protected boolean isOriginalFileFormat() {
+		return inputFile.isDirectory();
+	}
+
+	/** @return outputFile */
+	protected File out() {
+		return outputFile;
+	}
+
+	/**
+	 * 登録されているすべてのグループ情報を出力します。
+	 *
+	 * @param g 各声部のトップグループ
+	 */
+	protected void printGroupList(Group g) {
+		if (g == null)
+			return;
+		printGroupList(g.child());
+		System.out.println(g);
+	}
+
+	protected void readCMXFile(String xmlFilename) throws IOException {
+		testPrintln("import CMX file");
+		CMXFileWrapper cmx = CMXController.readfile(xmlFilename);
+		if (cmx instanceof DeviationInstanceWrapper) {
+			dev = ((DeviationInstanceWrapper) cmx);
+			xml = dev.getTargetMusicXML();
+			// TODO deviation データを読み込む処理
+		} else if (cmx instanceof MusicXMLWrapper) {
+			xml = (MusicXMLWrapper) cmx;
+		} else if (cmx instanceof SCCXMLWrapper) {
+			scc = (SCCXMLWrapper) cmx;
+		} else
+			readCMXFile(cmx);
+	}
+
+	protected void readOriginalFile() throws IOException {
+		testPrintln("reading original format...(dummy)");
+	}
+
+	protected void setGrouplist(int partIndex, Group rootGroup) {
+		if (partIndex >= this.getRootGroup().size())
+			this.getRootGroup().add(rootGroup);
+		else
+			this.getRootGroup().set(partIndex, rootGroup);
+	}
+
+	protected void setNotelist(int partIndex, NoteData root) {
+		if (partIndex >= this.notelist.size())
+			notelist.add(root);
+		else
+			notelist.set(partIndex, root);
+	}
+
+	protected void setNoteScheduleEvent(GroupNote note, int endOffset) {
+		if (note == null)
+			return;
+		if (note.getNote() == null)
+			return;
+		if (!note.getNote().rest()) {
+			addNoteScheduleEventList(note.getNote());
+		}
+		setNoteScheduleEvent(note.child(), endOffset);
+		setNoteScheduleEvent(note.next(), endOffset);
+	}
+
+	/** @param note TODO */
+	private void addNoteScheduleEventList(NoteData note) {
+		if (note == null)
+			return;
+		if (!noteScheduleEventList.contains(note.getNoteOn())) {
+			addNoteScheduleEventList(note.getNoteOn());
+			addNoteScheduleEventList(note.getNoteOff());
+		}
+		addNoteScheduleEventList(note.child());
+	}
+
+	private void addNoteScheduleEventList(NoteScheduleEvent note) {
+		if (noteScheduleEventList.size() == 0) {
+			noteScheduleEventList.add(note);
+			return;
+		}
+		int idx = 0;
+		for (NoteScheduleEvent ev : noteScheduleEventList) {
+			if (note.onset() >= ev.onset()) {
+				idx++;
+			}
+		}
+		noteScheduleEventList.add(idx, note);
+	}
+
+	private int getBeginningBPM() {
+		try {
+			return getBPM().get(0);
+		} catch (IndexOutOfBoundsException e) {
+			return 120;
+		}
+	}
+
+	/**
+	 * @param rootGroup2
+	 * @param idxlist
+	 */
+	protected void getUniqueGroupIndex(Group glist,
+			ArrayList<Integer> idxlist) {
+		if (glist == null)
+			return;
+		getUniqueGroupIndex(glist.child(), idxlist);
+		if (!idxlist.contains(glist.index()))
+			idxlist.add(glist.index());
+	}
+
 	private void initializeNoteEvents(NoteData nd) {
 		if (nd == null)
 			return;
 
-		nd.setRealOnset(nd.onsetInMsec(getBPM().get(0)));
-		nd.setRealOffset(nd.offsetInMsec(getBPM().get(0)));
+		nd.setRealOnset(nd.onsetInMsec(getBeginningBPM()));
+		nd.setRealOffset(nd.offsetInMsec(getBeginningBPM()));
 
 		initializeNoteEvents(nd.child());
 		initializeNoteEvents(nd.next());
@@ -611,6 +625,50 @@ public class TuneData extends MuseObject implements TuneDataController {
 		}
 	}
 
+	private void parseMusicXMLFile() {
+		if (xml == null)
+			return;
+		xml.processNotePartwise(createCMXNoteHandler());
+	}
+
+	private void parseSCCXMLFile() {
+		if (scc == null)
+			return;
+		try {
+			scc.processNotes(createCMXNoteHandler());
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * CrestMuseXML(CMX)形式のデータから読込処理を行います。
+	 * MusicXML、DeviationIncetanceWrapper形式についてはreadCMLFile(String)メソッドにてすでに格納されています。
+	 * このメソッドでは、それ以外の形式についての処理を実装してください。
+	 *
+	 * @param cmx
+	 * @see TuneData.readCMXFile(String)
+	 * @see {@link CrestMuseXML:<a href=
+	 *      "http://cmx.osdn.jp/">http://cmx.osdn.jp/</a>}
+	 */
+	private void readCMXFile(CMXFileWrapper cmx) {}
+
+	private void readMIDIFile() {
+		try {
+			MIDIXMLWrapper mid = CMXController.readSMFAsMIDIXML(in()
+					.getAbsolutePath());
+			scc = mid.toSCCXML();
+		} catch (TransformerException | IOException
+				| ParserConfigurationException | SAXException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/** @param inputFile セットする inputFile */
+	private void setInputFile(File inputFile) {
+		this.inputFile = inputFile;
+	}
+
 	protected void setNoteScheduleEvent(final Group g) {
 		if (g == null)
 			return;
@@ -619,68 +677,45 @@ public class TuneData extends MuseObject implements TuneDataController {
 				.getNote().offset());
 	}
 
-	protected void setNoteScheduleEvent(GroupNote note, int endOffset) {
-		if (note == null)
-			return;
-		if (note.getNote() == null)
-			return;
-		if (!note.getNote().rest()) {
-			addNoteScheduleEventList(note.getNote());
-		}
-		setNoteScheduleEvent(note.child(), endOffset);
-		setNoteScheduleEvent(note.next(), endOffset);
+	/** @param outputFile セットする outputFile */
+	private void setOutputFile(File outputFile) {
+		this.outputFile = outputFile;
 	}
 
-	/**
-	 * @return
-	 */
-	public int getUniqueGroupIndex() {
-		ArrayList<Integer> idxlist = new ArrayList<Integer>();
-		for (Group g : getGroupArrayList()) {
-			if (!idxlist.contains(g.index()))
-				idxlist.add(g.index());
-		}
-		getUniqueGroupIndex(getRootGroup(0), idxlist);
-		for (int i = 0; i < idxlist.size(); i++) {
-			if (!idxlist.contains(i))
-				return i;
-		}
-		return idxlist.size();
+	private void setTempoListEndtime(double tempoListEndtime) {
+		this.tempoListEndtime = tempoListEndtime;
 	}
 
-	/**
-	 * @param rootGroup2
-	 * @param idxlist
-	 */
-	protected void getUniqueGroupIndex(Group glist,
-			ArrayList<Integer> idxlist) {
-		if (glist == null)
-			return;
-		getUniqueGroupIndex(glist.child(), idxlist);
-		if (!idxlist.contains(glist.index()))
-			idxlist.add(glist.index());
+	protected MusicXMLWrapper xml() {
+		return xml;
 	}
 
-	public void printAllGroups() {
-		GUIUtil.printConsole("Hierarchical group list:");
-		for (Group g : getRootGroup()) {
-			printGroupList(g);
-		}
-		GUIUtil.printConsole("Non hierarchical group list:");
-		for (Group g : getGroupArrayList()) {
-			printGroupList(g);
-		}
+	protected void setXml(MusicXMLWrapper xml) {
+		this.xml = xml;
 	}
 
-	/**
-	 * 登録されているすべてのグループ情報を出力します。
-	 *
-	 * @param g 各声部のトップグループ
-	 */
-	protected void printGroupList(Group g) {
-		if (g == null)
-			return;
-		printGroupList(g.child());
-		System.out.println(g);
+	protected DeviationInstanceWrapper dev() {
+		return dev;
 	}
+
+	protected void setDev(DeviationInstanceWrapper dev) {
+		this.dev = dev;
+	}
+
+	public BeatInfo getBeatInfoList(int measure) {
+		for (BeatInfo b : beatInfoList) {
+			if (b.measure() == measure)
+				return b;
+		}
+		return null;
+	}
+
+	public void setBeatInfo(int measure, int beats, int beatType) {
+		for (BeatInfo b : beatInfoList) {
+			if (b.measure() == measure)
+				return;
+		}
+		beatInfoList.add(new BeatInfo(measure, beats, beatType));
+	}
+
 }
