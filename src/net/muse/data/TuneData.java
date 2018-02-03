@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import javax.activation.FileTypeMap;
 import javax.sound.midi.*;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -14,6 +13,8 @@ import javax.xml.transform.TransformerException;
 import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
 
+import eu.medsea.mimeutil.MimeType;
+import eu.medsea.mimeutil.MimeUtil;
 import jp.crestmuse.cmx.filewrappers.*;
 import jp.crestmuse.cmx.processing.CMXController;
 import net.muse.app.Mixtract;
@@ -246,23 +247,34 @@ public class TuneData extends MuseObject implements TuneDataController {
 		if (isOriginalFileFormat()) {
 			readOriginalFile();
 			outputFile = inputFile;
-		} else {
-			// ファイルの種類を判定する
-			FileTypeMap filetypeMap = FileTypeMap.getDefaultFileTypeMap();
-			String mimetype = filetypeMap.getContentType(in());
-			if (mimetype.equals("audio/midi") || mimetype.equals(
-					"application/octet-stream")) {
-				// MIDIファイルを読み込む
-				readMIDIFile();
-				parseSCCXMLFile();
-			} else if (mimetype.equals("application/xml")) {
-				// CMX 形式からインポート
-				readCMXFile(inputFile.getAbsolutePath());
-				parseMusicXMLFile();
-				writefile();
-			}
+			return;
 		}
-		calculateExpressionParameters();
+
+		// ファイルの種類を判定する cf.) https://hacknote.jp/archives/5320/
+		MimeUtil.registerMimeDetector(
+				"eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
+		Collection<?> mimeTypes = MimeUtil.getMimeTypes(in());
+		if (mimeTypes.isEmpty())
+			return;
+
+		Iterator<?> iterator = mimeTypes.iterator();
+		MimeType mimeType = (MimeType) iterator.next();
+
+		// XMLならCMX形式でインポート
+		if (mimeType.getSubType().equals("xml")) {
+			readCMXFile(inputFile.getAbsolutePath());
+			parseMusicXMLFile();
+			writefile();
+			calculateExpressionParameters();
+			return;
+		}
+		// MIDIファイル
+		if (mimeType.equals("audio/midi") || mimeType.equals("audio/x-midi")) {
+			readMIDIFile();
+			parseSCCXMLFile();
+			calculateExpressionParameters();
+			return;
+		}
 	}
 
 	public void setBPM(int idx, int value) {
