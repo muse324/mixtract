@@ -103,9 +103,8 @@ public class MXTuneData extends TuneData {
 	}
 
 	public MXGroup getRootGroup(int partIndex) {
-		Group g = super.getRootGroup(partIndex);
-		assert g instanceof MXGroup;
-		return (MXGroup) g;
+		assert super.getRootGroup(partIndex) instanceof MXGroup;
+		return (MXGroup) super.getRootGroup(partIndex);
 	}
 
 	public void setBPM(int idx, int value) {

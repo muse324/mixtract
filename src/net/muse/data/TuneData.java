@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import javax.activation.FileTypeMap;
 import javax.sound.midi.*;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -14,12 +13,13 @@ import javax.xml.transform.TransformerException;
 import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
 
+import eu.medsea.mimeutil.MimeType;
+import eu.medsea.mimeutil.MimeUtil;
 import jp.crestmuse.cmx.filewrappers.*;
 import jp.crestmuse.cmx.processing.CMXController;
 import net.muse.app.Mixtract;
 import net.muse.gui.GUIUtil;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.data.MXGroupAnalyzer;
 
 public class TuneData extends MuseObject implements TuneDataController {
 	private static int MAXIMUM_MIDICHANNEL = 16;
@@ -37,7 +37,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/** SCCXMLWrapper */
 	private SCCXMLWrapper scc;
 
-	/** 拍子記号のリスト（変拍子対応） */
+	/** 拍子記号のリスト（変拍子対応，のつもり） */
 	private ArrayList<BeatInfo> beatInfoList = new ArrayList<BeatInfo>();
 	/** 声部ごとのフレーズ構造(二分木) */
 	private List<Group> rootGroup = new ArrayList<Group>();
@@ -107,7 +107,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 		initializeParameters();
 		for (final Group root : getRootGroup()) {
 			// tempo
-			tempoListEndtime = root.getTimeValue();
+//			setTempoListEndtime(root.getTimeValue());
 			calculateExpressionParameters(root);
 
 			if (isDebug()) {
@@ -247,23 +247,47 @@ public class TuneData extends MuseObject implements TuneDataController {
 		if (isOriginalFileFormat()) {
 			readOriginalFile();
 			outputFile = inputFile;
-		} else {
-			// ファイルの種類を判定する
-			FileTypeMap filetypeMap = FileTypeMap.getDefaultFileTypeMap();
-			String mimetype = filetypeMap.getContentType(in());
-			if (mimetype.equals("audio/midi") || mimetype.equals(
-					"application/octet-stream")) {
-				// MIDIファイルを読み込む
-				readMIDIFile();
-				parseSCCXMLFile();
-			} else if (mimetype.equals("application/xml")) {
-				// CMX 形式からインポート
-				readCMXFile(inputFile.getAbsolutePath());
-				parseMusicXMLFile();
-				writefile();
-			}
+			return;
 		}
-		calculateExpressionParameters();
+
+		// ファイルの種類を調べる
+		String fileType = getInputFileType();
+		if (fileType == null)
+			return;
+
+		// XMLならCMX形式でインポート
+		if (fileType.equals("xml")) {
+			readCMXFile(inputFile.getAbsolutePath());
+			parseMusicXMLFile();
+			writefile();
+			calculateExpressionParameters();
+			return;
+		}
+		// MIDIファイル
+		if (fileType.equals("midi") || fileType.equals("x-midi")) {
+			readMIDIFile();
+			parseSCCXMLFile();
+			calculateExpressionParameters();
+			return;
+		}
+	}
+
+	/**
+	 * 入力ファイルのファイルタイプを調べます．
+	 *
+	 * @see {@link https://hacknote.jp/archives/5320/}
+	 * @return (String) ファイルの種類
+	 */
+	private String getInputFileType() {
+		MimeUtil.registerMimeDetector(
+				"eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
+		Collection<?> mimeTypes = MimeUtil.getMimeTypes(in());
+		if (mimeTypes.isEmpty())
+			return null;
+		Iterator<?> iterator = mimeTypes.iterator();
+		MimeType mimeType = (MimeType) iterator.next();
+		String fileType = mimeType.getSubType();
+		return fileType;
 	}
 
 	public void setBPM(int idx, int value) {
@@ -618,7 +642,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 		tempoList.clear();
 		dynamicsList.clear();
 		articulationList.clear();
-		for (int i = 0; i < MXGroupAnalyzer.rootDiv; i++) {
+		for (int i = 0; i < getTicksPerBeat(); i++) {
 			tempoList.add(0.);
 			dynamicsList.add(0.);
 			articulationList.add(1.);
@@ -682,10 +706,6 @@ public class TuneData extends MuseObject implements TuneDataController {
 		this.outputFile = outputFile;
 	}
 
-	private void setTempoListEndtime(double tempoListEndtime) {
-		this.tempoListEndtime = tempoListEndtime;
-	}
-
 	protected MusicXMLWrapper xml() {
 		return xml;
 	}
@@ -716,6 +736,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 				return;
 		}
 		beatInfoList.add(new BeatInfo(measure, beats, beatType));
+	}
+
+	void setTempoListEndtime(double tempoListEndtime) {
+		this.tempoListEndtime = tempoListEndtime;
 	}
 
 }
