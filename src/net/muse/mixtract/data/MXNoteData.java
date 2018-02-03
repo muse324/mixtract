@@ -48,8 +48,8 @@ public class MXNoteData extends NoteData {
 	}
 
 	public MXNoteData(SCCXMLWrapper.Note note, int partNumber, int idx, int bpm,
-			int vel) {
-		super(note, partNumber, idx, bpm, vel);
+			int beat, int vel) {
+		super(note, partNumber, idx, bpm, beat, vel);
 	}
 
 	/*
