@@ -37,7 +37,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/** SCCXMLWrapper */
 	private SCCXMLWrapper scc;
 
-	/** 拍子記号のリスト（変拍子対応） */
+	/** 拍子記号のリスト（変拍子対応，のつもり） */
 	private ArrayList<BeatInfo> beatInfoList = new ArrayList<BeatInfo>();
 	/** 声部ごとのフレーズ構造(二分木) */
 	private List<Group> rootGroup = new ArrayList<Group>();
@@ -250,18 +250,13 @@ public class TuneData extends MuseObject implements TuneDataController {
 			return;
 		}
 
-		// ファイルの種類を判定する cf.) https://hacknote.jp/archives/5320/
-		MimeUtil.registerMimeDetector(
-				"eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
-		Collection<?> mimeTypes = MimeUtil.getMimeTypes(in());
-		if (mimeTypes.isEmpty())
+		// ファイルの種類を調べる
+		String fileType = getInputFileType();
+		if (fileType == null)
 			return;
 
-		Iterator<?> iterator = mimeTypes.iterator();
-		MimeType mimeType = (MimeType) iterator.next();
-
 		// XMLならCMX形式でインポート
-		if (mimeType.getSubType().equals("xml")) {
+		if (fileType.equals("xml")) {
 			readCMXFile(inputFile.getAbsolutePath());
 			parseMusicXMLFile();
 			writefile();
@@ -269,12 +264,30 @@ public class TuneData extends MuseObject implements TuneDataController {
 			return;
 		}
 		// MIDIファイル
-		if (mimeType.equals("audio/midi") || mimeType.equals("audio/x-midi")) {
+		if (fileType.equals("midi") || fileType.equals("x-midi")) {
 			readMIDIFile();
 			parseSCCXMLFile();
 			calculateExpressionParameters();
 			return;
 		}
+	}
+
+	/**
+	 * 入力ファイルのファイルタイプを調べます．
+	 *
+	 * @see {@link https://hacknote.jp/archives/5320/}
+	 * @return (String) ファイルの種類
+	 */
+	private String getInputFileType() {
+		MimeUtil.registerMimeDetector(
+				"eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
+		Collection<?> mimeTypes = MimeUtil.getMimeTypes(in());
+		if (mimeTypes.isEmpty())
+			return null;
+		Iterator<?> iterator = mimeTypes.iterator();
+		MimeType mimeType = (MimeType) iterator.next();
+		String fileType = mimeType.getSubType();
+		return fileType;
 	}
 
 	public void setBPM(int idx, int value) {

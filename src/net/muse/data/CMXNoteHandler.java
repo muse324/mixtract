@@ -171,10 +171,10 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 
 	private int getBeat(SCCXMLWrapper.Note note) {
 		BeatInfo b = data().getBeatInfoList(currentMeasureNumber);
-		int beat = note.onset() / getTicksPerBeat() % ((b != null) ? b
-				.beat() : 4) + 1;
-		currentMeasureNumber = note.onset() / getTicksPerBeat()
-				/ ((b != null) ? b.beat() : 4) + 1;
+		int beat = note.onset() / getTicksPerBeat() % ((b != null) ? b.beat()
+				: 4) + 1;
+		currentMeasureNumber = note.onset() / getTicksPerBeat() / ((b != null)
+				? b.beat() : 4) + 1;
 		return beat;
 	}
 
