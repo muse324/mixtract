@@ -19,7 +19,6 @@ import jp.crestmuse.cmx.processing.CMXController;
 import net.muse.app.Mixtract;
 import net.muse.gui.GUIUtil;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.data.MXGroupAnalyzer;
 
 public class TuneData extends MuseObject implements TuneDataController {
 	private static int MAXIMUM_MIDICHANNEL = 16;
@@ -618,7 +617,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 		tempoList.clear();
 		dynamicsList.clear();
 		articulationList.clear();
-		for (int i = 0; i < MXGroupAnalyzer.rootDiv; i++) {
+		for (int i = 0; i < getTicksPerBeat(); i++) {
 			tempoList.add(0.);
 			dynamicsList.add(0.);
 			articulationList.add(1.);
