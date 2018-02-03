@@ -1,7 +1,5 @@
 package net.muse.data;
 
-import java.util.ArrayList;
-
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
