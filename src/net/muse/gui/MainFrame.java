@@ -33,10 +33,34 @@ import net.muse.sound.MIDIEventListener;
 public class MainFrame extends JFrame implements TuneDataListener,
 		MIDIEventListener, ActionListener {
 
-	/**  */
+	private static int pixelperbeat = 30;
 	private static final long serialVersionUID = 1L;
-	private static final int DEFAULT_WIDTH = 1260;
-	static int pixelperbeat = 30;
+
+	public TuneData data; // @jve:decl-index=0:
+
+	/** JFrameおよびDockのアイコン */
+	protected Image icon;
+
+	protected MuseApp main;
+	protected PianoRoll pianoroll = null;
+	protected JLabel tempoValueLabel = null;
+	private JTextField bpmValue = null;
+	private JButton dataSetButton = null;
+	private CurveView dynamicsView;
+	private JMenu fileMenu = null;
+	private GroupingPanel groupingPanel = null; // @jve:decl-index=0:visual-constraint="-16,274"
+	private JMenuBar menubar = null;
+	private JButton pauseButton = null;
+	private JButton playButton = null;
+	private JMenuItem saveAsMenu;
+	private JMenuItem saveMenu = null;
+	private int shortcutKey;
+	private JButton stopButton = null;
+	private final MixtractMIDIController synthe;
+	private JPanel tempoSettingPanel = null;
+	private JSlider tempoSlider = null;
+	private CurveView tempoView;
+	private JInternalFrame viewer = null;
 
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
@@ -54,54 +78,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public static void main(String[] args) {
 		Mixtract.main(args);
 	}
-
-	private final MixtractMIDIController synthe;
-	private JMenuBar menubar = null;
-	private JMenu fileMenu = null;
-	private JMenuItem openProjectMenu = null;
-	private JMenuItem importXMLMenu = null;
-	private JMenuItem quitMenu = null;
-	protected MuseApp main;
-	public TuneData data; // @jve:decl-index=0:
-	private JDesktopPane desktop = null;
-	private JInternalFrame viewer = null;
-	private JPanel tuneViewPanel = null;
-	protected PianoRoll pianoroll = null;
-	private KeyBoard keyboard = null; // @jve:decl-index=0:visual-constraint="15,847"
-	private JScrollPane pianorollPane = null;
-	private JButton playButton = null;
-	private JButton stopButton = null;
-	private JButton pauseButton = null;
-	private JButton dataSetButton = null;
-	private JPanel mainPanel = null;
-	private GroupingPanel groupingPanel = null; // @jve:decl-index=0:visual-constraint="-16,274"
-	private CurveView tempoView;
-	private CurveView dynamicsView;
-	private PartSelectorPanel partSelectorPanel = null; // @jve:decl-index=0:visual-constraint="13,752"
-	private JCheckBox p1selector = null;
-	private JSplitPane curveSplitPane = null;
-	private JPanel jPanel4 = null;
-	private JPanel jPanel5 = null;
-	private JLabel jLabel = null;
-	private JLabel jLabel1 = null;
-	private JPanel jPanel6 = null;
-	private JPanel jPanel7 = null;
-	private JMenuItem saveMenu = null;
-	private JPanel phraseView = null; // @jve:decl-index=0:visual-constraint="303,697"
-	private JPanel jPanel = null;
-	protected JToolBar jToolBar = null;
-	private JTextField bpmValue = null;
-	private JLabel jLabel2 = null;
-	private JScrollPane structurePane = null;
-	private JSlider tempoSlider = null;
-	protected JLabel tempoValueLabel = null;
-	private JPanel tempoSettingPanel = null;
-	// JFrameおよびDockのアイコン
-	protected Image icon;
-
-	private int shortcutKey;
-
-	private JMenuItem saveAsMenu;
 
 	/**
 	 * This method initializes
@@ -219,14 +195,20 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		if (pianoroll == null) {
 			pianoroll = createPianoRoll();
 			pianoroll.setController(main);
-			pianoroll.setPreferredSize(new Dimension(DEFAULT_WIDTH, KeyBoard
-					.getKeyboardHeight() / 3 * 2));
+			// pianoroll.setPreferredSize(new Dimension(DEFAULT_WIDTH, KeyBoard
+			// .getKeyboardHeight() / 3 * 2));
 		}
 		return pianoroll;
 	}
+
+	protected PianoRoll createPianoRollPane() {
+		return new PianoRoll();
+	}
+
 	protected PianoRoll createPianoRoll() {
 		return new PianoRoll();
 	}
+
 	/**
 	 * @return
 	 */
@@ -347,16 +329,14 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	protected JToolBar getJToolBar() {
-		if (jToolBar == null) {
-			tempoValueLabel = new JLabel();
-			tempoValueLabel.setText("   BPM:");
-			jToolBar = new JToolBar();
-			jToolBar.add(getDataSetButton()); // Generated
-			jToolBar.add(getPlayButton()); // Generated
-			jToolBar.add(getPauseButton()); // Generated
-			jToolBar.add(getStopButton()); // Generated
-			jToolBar.add(getTempoSettingPanel());
-		}
+		tempoValueLabel = new JLabel();
+		tempoValueLabel.setText("   BPM:");
+		JToolBar jToolBar = new JToolBar();
+		jToolBar.add(getDataSetButton()); // Generated
+		jToolBar.add(getPlayButton()); // Generated
+		jToolBar.add(getPauseButton()); // Generated
+		jToolBar.add(getStopButton()); // Generated
+		jToolBar.add(getTempoSettingPanel());
 		return jToolBar;
 	}
 
@@ -437,20 +417,11 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	protected JPanel getTempoSettingPanel() {
 		if (tempoSettingPanel == null) {
-			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
-			gridBagConstraints2.gridy = 0;
-			gridBagConstraints2.gridx = 2;
-			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-			gridBagConstraints1.gridx = 1;
-			gridBagConstraints1.gridy = 0;
-			GridBagConstraints gridBagConstraints = new GridBagConstraints();
-			gridBagConstraints.gridy = 0;
-			gridBagConstraints.gridx = 0;
 			tempoSettingPanel = new JPanel();
 			tempoSettingPanel.setLayout(new GridBagLayout());
-			tempoSettingPanel.add(tempoValueLabel, gridBagConstraints);
-			tempoSettingPanel.add(getBpmValue(), gridBagConstraints1);
-			tempoSettingPanel.add(getTempoSlider(), gridBagConstraints2);
+			tempoSettingPanel.add(tempoValueLabel);
+			tempoSettingPanel.add(getBpmValue());
+			tempoSettingPanel.add(getTempoSlider());
 		}
 		return tempoSettingPanel;
 	}
@@ -459,7 +430,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	protected void initialize() {
 		this.setTitle("Mixtract"); // ウィンドウのタイトル
 		this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize()); // ウィンドウサイズ
-		this.setContentPane(getDesktop()); // メインの描画領域(詳細)
+		this.setContentPane(createDesktop()); // メインの描画領域(詳細)
 		this.setJMenuBar(getMenubar()); // メニューバー
 	}
 
@@ -504,10 +475,25 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	protected void saveScreenShot() throws AWTException, IOException {
 		Point pos = getViewer().getLocationOnScreen();
-		Dimension size = getViewer().getPreferredSize();
+		Dimension size = getViewer().getSize();
 		size.height -= 15;
 		assert data instanceof MXTuneData;
 		((MXTuneData) data).writeScreenShot(pos, size);
+	}
+
+	/**
+	 * This method initializes desktop
+	 *
+	 * @return javax.swing.JDesktopPane
+	 */
+	private JDesktopPane createDesktop() {
+		JDesktopPane desktop = new JDesktopPane();
+		desktop.setLayout(new BorderLayout()); // Generated
+		desktop.setBackground(Color.GRAY);
+		// desktop.setPreferredSize(new Dimension(1024, 600)); // Generated
+		desktop.add(getViewer(), BorderLayout.CENTER); // Generated
+		desktop.add(getToolBarPanel(), BorderLayout.NORTH); // Generated
+		return desktop;
 	}
 
 	/**
@@ -541,33 +527,41 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JSplitPane
 	 */
 	private JSplitPane getCurveSplitPane() {
-		if (curveSplitPane == null) {
-			curveSplitPane = new JSplitPane();
-			curveSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT); // Generated
-			curveSplitPane.setPreferredSize(new Dimension(20, 200)); // Generated
-			curveSplitPane.setResizeWeight(0.5D); // Generated
-			curveSplitPane.setOneTouchExpandable(true); // Generated
-			curveSplitPane.setTopComponent(getJPanel4()); // Generated
-			curveSplitPane.setBottomComponent(getJPanel5()); // Generated
-			curveSplitPane.setDividerSize(10); // Generated
-		}
-		return curveSplitPane;
+		JSplitPane p = new JSplitPane();
+		p.setOrientation(JSplitPane.VERTICAL_SPLIT); // Generated
+		p.setPreferredSize(new Dimension(20, 200)); // Generated
+		p.setResizeWeight(0.5D); // Generated
+		p.setOneTouchExpandable(true); // Generated
+		p.setTopComponent(getDynamicsCurvePane()); // Generated
+		p.setBottomComponent(getTempoCurvePane()); // Generated
+		p.setDividerSize(10); // Generated
+		return p;
 	}
 
 	/**
-	 * This method initializes desktop
+	 * This method initializes jPanel4
 	 *
-	 * @return javax.swing.JDesktopPane
+	 * @return javax.swing.JPanel
 	 */
-	private JDesktopPane getDesktop() {
-		if (desktop == null) {
-			desktop = new JDesktopPane();
-			desktop.setLayout(new BorderLayout()); // Generated
-			desktop.setPreferredSize(new Dimension(1024, 600)); // Generated
-			desktop.add(getMainPanel(), BorderLayout.CENTER); // Generated
-			desktop.add(getToolBarPanel(), BorderLayout.NORTH); // Generated
-		}
-		return desktop;
+	private JPanel getDynamicsCurvePane() {
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout()); // Generated
+		p.add(getDynamicsView(), BorderLayout.CENTER); // Generated
+		p.add(getDynamicsHeaderView(), BorderLayout.WEST); // Generated
+		return p;
+	}
+
+	/**
+	 * This method initializes jPanel7
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getDynamicsHeaderView() {
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout()); // Generated
+		p.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(), 16)); // Generated
+		p.add(new JLabel("dynamics"), BorderLayout.NORTH); // Generated
+		return p;
 	}
 
 	/**
@@ -601,9 +595,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 				});
 				fileMenu.add(quitMenu);
 
-				JMenu helpMenu = new JMenu("ヘルプ(H)");
-				helpMenu.setMnemonic(KeyEvent.VK_H);
-				getMenubar().add(helpMenu);
+				getMenubar().add(getHelpMenu());
 
 				JMenuItem menuPreference = new JMenuItem("環境設定(E)");
 				menuPreference.setMnemonic(KeyEvent.VK_E);
@@ -616,7 +608,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 						onPreference();
 					}
 				});
-				helpMenu.add(menuPreference);
+				getHelpMenu().add(menuPreference);
 
 				JMenuItem menuAbout = new JMenuItem("バージョン情報(V)");
 				menuAbout.setMnemonic(KeyEvent.VK_V);
@@ -627,11 +619,16 @@ public class MainFrame extends JFrame implements TuneDataListener,
 						onAbout();
 					}
 				});
-				helpMenu.add(menuAbout);
+				getHelpMenu().add(menuAbout);
 			}
-
 		}
 		return fileMenu;
+	}
+
+	private JMenu getHelpMenu() {
+		JMenu helpMenu = new JMenu("ヘルプ(H)");
+		helpMenu.setMnemonic(KeyEvent.VK_H);
+		return helpMenu;
 	}
 
 	/**
@@ -640,108 +637,31 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JMenuItem
 	 */
 	private JMenuItem getImportXMLMenu() {
-		if (importXMLMenu == null) {
-			importXMLMenu = new JMenuItem();
-			importXMLMenu.setText("Import MusicXML File...");
-			importXMLMenu.setMnemonic('M');
-			importXMLMenu.setAccelerator(KeyStroke.getKeyStroke('M',
-					shortcutKey));
-			importXMLMenu.addActionListener(
-					new java.awt.event.ActionListener() {
-						public void actionPerformed(
-								java.awt.event.ActionEvent e) {
-							try {
-								JFileChooser fc = (main != null)
-										? new JFileChooser(main
-												.getMusicXMLDirectory())
-										: new JFileChooser();
-								int res = fc.showOpenDialog(null);
-								if (res == JFileChooser.APPROVE_OPTION) {
-									main.readfile(fc.getSelectedFile(),
-											new File(main.getProjectDirectory(),
-													fc.getSelectedFile()
-															.getName()
-															+ Mixtract
-																	.getProjectFileExtension()));
-								}
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							} catch (InvalidMidiDataException e1) {
-								// TODO 自動生成された catch ブロック
-								e1.printStackTrace();
-							}
-						}
-					});
-		}
-		return importXMLMenu;
-	}
-
-	/**
-	 * This method initializes jPanel4
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanel4() {
-		if (jPanel4 == null) {
-			jLabel = new JLabel();
-			jLabel.setText("dynamics"); // Generated
-			jPanel4 = new JPanel();
-			jPanel4.setLayout(new BorderLayout()); // Generated
-			jPanel4.add(getDynamicsView(), BorderLayout.CENTER); // Generated
-			jPanel4.add(getJPanel7(), BorderLayout.WEST); // Generated
-		}
-		return jPanel4;
-	}
-
-	/**
-	 * This method initializes jPanel5
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanel5() {
-		if (jPanel5 == null) {
-			jLabel1 = new JLabel();
-			jLabel1.setText("tempo"); // Generated
-			jPanel5 = new JPanel();
-			jPanel5.setLayout(new BorderLayout()); // Generated
-			jPanel5.add(getTempoView(), BorderLayout.CENTER); // Generated
-			jPanel5.add(getJPanel6(), BorderLayout.WEST); // Generated
-		}
-		return jPanel5;
-	}
-
-	/**
-	 * This method initializes jPanel6
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanel6() {
-		if (jPanel6 == null) {
-			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
-			gridBagConstraints3.gridx = -1; // Generated
-			gridBagConstraints3.ipady = 80; // Generated
-			gridBagConstraints3.gridy = -1; // Generated
-			jPanel6 = new JPanel();
-			jPanel6.setLayout(new BorderLayout()); // Generated
-			jPanel6.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(), 10)); // Generated
-			jPanel6.add(jLabel1, BorderLayout.NORTH); // Generated
-		}
-		return jPanel6;
-	}
-
-	/**
-	 * This method initializes jPanel7
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanel7() {
-		if (jPanel7 == null) {
-			jPanel7 = new JPanel();
-			jPanel7.setLayout(new BorderLayout()); // Generated
-			jPanel7.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(), 16)); // Generated
-			jPanel7.add(jLabel, BorderLayout.NORTH); // Generated
-		}
-		return jPanel7;
+		JMenuItem m = new JMenuItem();
+		m.setText("Import MusicXML File...");
+		m.setMnemonic('M');
+		m.setAccelerator(KeyStroke.getKeyStroke('M', shortcutKey));
+		m.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				try {
+					JFileChooser fc = (main != null) ? new JFileChooser(main
+							.getMusicXMLDirectory()) : new JFileChooser();
+					int res = fc.showOpenDialog(null);
+					if (res == JFileChooser.APPROVE_OPTION) {
+						main.readfile(fc.getSelectedFile(), new File(main
+								.getProjectDirectory(), fc.getSelectedFile()
+										.getName() + Mixtract
+												.getProjectFileExtension()));
+					}
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (InvalidMidiDataException e1) {
+					// TODO 自動生成された catch ブロック
+					e1.printStackTrace();
+				}
+			}
+		});
+		return m;
 	}
 
 	/**
@@ -750,25 +670,9 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private KeyBoard getKeyboard() {
-		if (keyboard == null) {
-			keyboard = new KeyBoard(main.getTicksPerBeat());
-			main.addTuneDataListener(keyboard);
-		}
+		KeyBoard keyboard = new KeyBoard(main.getTicksPerBeat());
+		main.addTuneDataListener(keyboard);
 		return keyboard;
-	}
-
-	/**
-	 * This method initializes mainPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getMainPanel() {
-		if (mainPanel == null) {
-			mainPanel = new JPanel();
-			mainPanel.setLayout(null); // Generated
-			mainPanel.add(getViewer(), null); // Generated
-		}
-		return mainPanel;
 	}
 
 	/**
@@ -788,37 +692,29 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JMenuItem
 	 */
 	private JMenuItem getOpenProjectMenu() {
-		if (openProjectMenu == null) {
-			openProjectMenu = new JMenuItem();
-			openProjectMenu.setText("Open Project File...");
-			openProjectMenu.setMnemonic('O');
-			openProjectMenu.setAccelerator(KeyStroke.getKeyStroke('O',
-					shortcutKey));
-			openProjectMenu.addActionListener(
-					new java.awt.event.ActionListener() {
-						public void actionPerformed(
-								java.awt.event.ActionEvent e) {
-							try {
-								JFileChooser fc = (main != null)
-										? new JFileChooser(main
-												.getProjectDirectory())
-										: new JFileChooser();
-								fc.setFileSelectionMode(
-										JFileChooser.DIRECTORIES_ONLY);
-								int res = fc.showOpenDialog(null);
-								if (res == JFileChooser.APPROVE_OPTION) {
-									main.readfile(fc.getSelectedFile(), main
-											.getProjectDirectory());
-								}
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							} catch (InvalidMidiDataException e1) {
-								e1.printStackTrace();
-							}
-						}
-					});
-		}
-		return openProjectMenu;
+		JMenuItem m = new JMenuItem();
+		m.setText("Open Project File...");
+		m.setMnemonic('O');
+		m.setAccelerator(KeyStroke.getKeyStroke('O', shortcutKey));
+		m.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				try {
+					JFileChooser fc = (main != null) ? new JFileChooser(main
+							.getProjectDirectory()) : new JFileChooser();
+					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					int res = fc.showOpenDialog(null);
+					if (res == JFileChooser.APPROVE_OPTION) {
+						main.readfile(fc.getSelectedFile(), main
+								.getProjectDirectory());
+					}
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				} catch (InvalidMidiDataException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		return m;
 	}
 
 	/**
@@ -827,13 +723,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getPartSelectorPanel() {
-		if (partSelectorPanel == null) {
-			partSelectorPanel = new PartSelectorPanel();
-			partSelectorPanel.setPreferredSize(new Dimension(KeyBoard
-					.getKeyWidth(), 24)); // Generated
-			main.addTuneDataListener(partSelectorPanel);
-		}
-		return partSelectorPanel;
+		PartSelectorPanel p = new PartSelectorPanel();
+		p.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(), 24)); // Generated
+		main.addTuneDataListener(p);
+		return p;
 	}
 
 	/**
@@ -842,16 +735,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getPianorollPane() {
-		if (pianorollPane == null) {
-			pianorollPane = new JScrollPane();
-			pianorollPane.setRowHeaderView(getKeyboard());
-			pianorollPane.setViewportView(getPianoroll()); // Generated
-			pianorollPane.setHorizontalScrollBarPolicy(
-					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-			pianorollPane.setVerticalScrollBarPolicy(
-					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		}
-		return pianorollPane;
+		JScrollPane p = new JScrollPane();
+		p.setRowHeaderView(getKeyboard());
+		p.setViewportView(getPianoroll()); // Generated
+		p.setHorizontalScrollBarPolicy(
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		p.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		return p;
 	}
 
 	/**
@@ -860,18 +750,16 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JMenuItem
 	 */
 	private JMenuItem getQuitMenu() {
-		if (quitMenu == null) {
-			quitMenu = new JMenuItem();
-			quitMenu.setMnemonic('Q');
-			quitMenu.setText("Quit");
-			quitMenu.setAccelerator(KeyStroke.getKeyStroke('Q', shortcutKey));
+		JMenuItem quitMenu = new JMenuItem();
+		quitMenu.setMnemonic('Q');
+		quitMenu.setText("Quit");
+		quitMenu.setAccelerator(KeyStroke.getKeyStroke('Q', shortcutKey));
 
-			quitMenu.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					quit();
-				}
-			});
-		}
+		quitMenu.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				quit();
+			}
+		});
 		return quitMenu;
 	}
 
@@ -930,14 +818,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getStructurePane() {
-		if (structurePane == null) {
-			structurePane = new JScrollPane();
-			structurePane.setRowHeaderView(getPartSelectorPanel());
-			structurePane.setViewportView(getGroupingPanel());
-			structurePane.setHorizontalScrollBarPolicy(
-					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		}
-		return structurePane;
+		JScrollPane p = new JScrollPane();
+		p.setRowHeaderView(getPartSelectorPanel());
+		p.setViewportView(getGroupingPanel());
+		p.setHorizontalScrollBarPolicy(
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		p.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		return p;
 	}
 
 	// システムプロパティをダンプする
@@ -956,6 +843,22 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		}
 		buf.append("*EOF*");
 		return buf.toString();
+	}
+
+	private JPanel getTempoCurvePane() {
+		JPanel jPanel5 = new JPanel();
+		jPanel5.setLayout(new BorderLayout()); // Generated
+		jPanel5.add(getTempoView(), BorderLayout.CENTER); // Generated
+		jPanel5.add(getTempoHeaderView(), BorderLayout.WEST); // Generated
+		return jPanel5;
+	}
+
+	private JPanel getTempoHeaderView() {
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout()); // Generated
+		p.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(), 10)); // Generated
+		p.add(new JLabel("tempo"), BorderLayout.NORTH); // Generated
+		return p;
 	}
 
 	/**
@@ -995,18 +898,15 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getToolBarPanel() {
-		if (jPanel == null) {
-			GridBagConstraints gridBagConstraints21 = new GridBagConstraints();
-			gridBagConstraints21.fill = GridBagConstraints.VERTICAL; // Generated
-			gridBagConstraints21.gridy = 0; // Generated
-			gridBagConstraints21.weightx = 1.0; // Generated
-			gridBagConstraints21.anchor = GridBagConstraints.WEST; // Generated
-			gridBagConstraints21.gridx = 4; // Generated
-			jPanel = new JPanel();
-			jPanel.setLayout(new GridBagLayout()); // Generated
-			jPanel.add(getJToolBar(), gridBagConstraints21); // Generated
-		}
-		return jPanel;
+		GridBagConstraints g = new GridBagConstraints();
+		g.fill = GridBagConstraints.VERTICAL; // Generated
+		g.gridy = 0; // Generated
+		g.weightx = 1.0; // Generated
+		g.anchor = GridBagConstraints.NORTHWEST; // Generated
+		JPanel p = new JPanel();
+		p.setLayout(new GridBagLayout()); // Generated
+		p.add(getJToolBar(), g); // Generated
+		return p;
 	}
 
 	/**
@@ -1015,14 +915,12 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getTuneViewPane() {
-		if (tuneViewPanel == null) {
-			tuneViewPanel = new JPanel();
-			tuneViewPanel.setLayout(new BorderLayout()); // Generated
-			tuneViewPanel.add(getStructurePane(), java.awt.BorderLayout.NORTH);
-			tuneViewPanel.add(getPianorollPane(), BorderLayout.CENTER); // Generated
-			tuneViewPanel.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
-		}
-		return tuneViewPanel;
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout()); // Generated
+		p.add(getStructurePane(), java.awt.BorderLayout.NORTH);
+		p.add(getPianorollPane(), BorderLayout.CENTER); // Generated
+		p.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
+		return p;
 	}
 
 	/**
@@ -1037,7 +935,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			viewer.setResizable(true);
 			viewer.setMaximizable(true);
 			viewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-			viewer.setBounds(new Rectangle(0, 0, 540, 390));
+			// viewer.setBounds(new Rectangle(0, 0, 540, 390));
 			viewer.setContentPane(getTuneViewPane()); // Generated
 			// viewer.setBounds(new Rectangle(8, 8, 238, 155)); // Generated
 		}
