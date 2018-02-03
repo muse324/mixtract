@@ -16,6 +16,7 @@ public abstract class AbstractCMXNoteHandler extends MuseObject implements
 	protected TuneData data;
 	protected KeyMode keyMode;
 	protected int fifths;
+	protected int currentMeasureNumber;
 
 	/**
 	 * @param tuneData
@@ -43,7 +44,9 @@ public abstract class AbstractCMXNoteHandler extends MuseObject implements
 			setKeys(KeyMode.major.name(), 0);
 	}
 
-	public void beginMeasure(Measure measure, MusicXMLWrapper wrapper) {}
+	public void beginMeasure(Measure measure, MusicXMLWrapper wrapper) {
+		currentMeasureNumber = measure.number();
+	}
 
 	/*
 	 * (非 Javadoc)
@@ -98,6 +101,13 @@ public abstract class AbstractCMXNoteHandler extends MuseObject implements
 	public void processHeaderElement(int arg0, String arg1, String arg2,
 			SCCXMLWrapper arg3) {}
 
+	/*
+	 * (非 Javadoc)
+	 * @see jp.crestmuse.cmx.handlers.NoteHandlerPartwise#processMusicData(jp.
+	 * crestmuse.cmx.filewrappers.MusicXMLWrapper.MusicData,
+	 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
+	 */
+	@Override
 	public void processMusicData(MusicData md, MusicXMLWrapper wrapper) {}
 
 	/*

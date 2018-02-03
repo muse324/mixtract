@@ -122,12 +122,11 @@ public class NoteData extends SequenceData {
 	}
 
 	protected NoteData(SCCXMLWrapper.Note note, int partNumber, int idx,
-			int bpm, int vel) {
+			int bpm, int beat, int vel) {
 		this(idx);
 		this.setSCCNote(note);
 		initialize(partNumber, Util.getNoteName(note.notenum()), note.notenum(),
-				note.part().channel(), false, false, false, note.onset(),
-				Harmony.I);
+				note.part().channel(), false, false, false, beat, Harmony.I);
 
 		setOnset(note.onset(getTicksPerBeat()));
 		setOffset(note.offset(getTicksPerBeat()));
