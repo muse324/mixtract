@@ -11,19 +11,17 @@ public class SMFPlayer implements MusicPlayer {
 
 	private Sequencer sequencer = null;
 
-	private long currnetTickPositon;
-
-	private  int byteLength;
-
-	private  int type;
-
-	private  long microsecondLength;
+	private long currnetTickPositon = 0;
+	private int byteLength = 0;
+	private int type = 0;
+	private long microsecondLength = 0;
 
 	public SMFPlayer() throws MidiUnavailableException {
 		sequencer = MidiSystem.getSequencer();
 		sequencer.open();
 		/*
-		 * If sequencer and synthesizer is not combied, we have to make connection
+		 * If sequencer and synthesizer is not combied, we have to make
+		 * connection
 		 * between them.
 		 */
 		if (!(sequencer instanceof Synthesizer)) {
@@ -34,19 +32,14 @@ public class SMFPlayer implements MusicPlayer {
 			transmitterSeqToSynthe.setReceiver(receiverSyntheFromSeq);
 		}
 		System.err.println("(SMFPlayer) Sequencer ---> Synthesizer");
-
-		currnetTickPositon = 0;
-
-		byteLength = 0;
-		type = 0;
-		microsecondLength = 0;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * @see net.muse.sound.MusicPlayer#readSMF(java.io.File)
 	 */
-	public void readSMF(File file) throws InvalidMidiDataException, IOException {
+	public void readSMF(File file) throws InvalidMidiDataException,
+			IOException {
 
 		stopPlay();
 		sequence = MidiSystem.getSequence(file);

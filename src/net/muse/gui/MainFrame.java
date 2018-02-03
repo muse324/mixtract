@@ -35,7 +35,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 	/**  */
 	private static final long serialVersionUID = 1L;
-	protected static final int DEFAULT_WIDTH = 1260;
+	private static final int DEFAULT_WIDTH = 1260;
 	static int pixelperbeat = 30;
 
 	/**
@@ -112,7 +112,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public MainFrame(MuseApp app) throws IOException {
 		super();
 		this.main = app;
-		synthe = new MixtractMIDIController(main.getMidiDeviceName(), Mixtract
+		synthe = new MixtractMIDIController(main.getMidiDeviceName(), main
 				.getTicksPerBeat());
 		synthe.addMidiEventListener(this);
 		this.main.addTuneDataListener(this);
@@ -217,14 +217,16 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	public PianoRoll getPianoroll() {
 		if (pianoroll == null) {
-			pianoroll = new PianoRoll();
+			pianoroll = createPianoRoll();
 			pianoroll.setController(main);
 			pianoroll.setPreferredSize(new Dimension(DEFAULT_WIDTH, KeyBoard
 					.getKeyboardHeight() / 3 * 2));
 		}
 		return pianoroll;
 	}
-
+	protected PianoRoll createPianoRoll() {
+		return new PianoRoll();
+	}
 	/**
 	 * @return
 	 */
@@ -749,7 +751,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	private KeyBoard getKeyboard() {
 		if (keyboard == null) {
-			keyboard = new KeyBoard();
+			keyboard = new KeyBoard(main.getTicksPerBeat());
 			main.addTuneDataListener(keyboard);
 		}
 		return keyboard;

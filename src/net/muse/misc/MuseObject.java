@@ -17,7 +17,7 @@ public abstract class MuseObject {
 	protected final Properties config = new Properties();
 
 	/** MIDI分解能 */
-	private static int _ticksPerBeat = 480;
+	private int _ticksPerBeat = 480;
 
 	/** 標準のMIDIヴェロシティ値 （64） */
 	private static int _defaultVelocity = 64;
@@ -57,7 +57,7 @@ public abstract class MuseObject {
 	/**
 	 * 設定されているMIDI分解能を取得します．
 	 */
-	public static int getTicksPerBeat() {
+	public int getTicksPerBeat() {
 		return _ticksPerBeat;
 	}
 
@@ -119,7 +119,7 @@ public abstract class MuseObject {
 	 *
 	 * @param tpb 設定するMIDI分解能（整数）
 	 */
-	public static void setTicksPerBeat(int tpb) {
+	public void setTicksPerBeat(int tpb) {
 		if (isAssertion()) {
 			assert tpb >= 0 : "Invalid ticks per beat:" + tpb;
 		}
@@ -225,7 +225,7 @@ public abstract class MuseObject {
 
 	protected void setOption(String str) throws IllegalArgumentException {
 		OptionType _cmd = OptionType.valueOf(str);
-		_cmd.exe( this,config.getProperty(str));
+		_cmd.exe(this, config.getProperty(str));
 		testPrint("done.");
 	}
 
