@@ -1,6 +1,6 @@
 package net.muse.data;
 
-import javax.sound.midi.ShortMessage;
+import java.util.ArrayList;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
@@ -76,21 +76,6 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		super.endPart(part, wrapper);
 	}
 
-	private void createGroup() {
-		Group g = createGroup(data().getNoteList(partIndex), partIndex + 1,
-				GroupType.NOTE);
-
-		if (primaryGrouplist == null) {
-			primaryGrouplist = g;
-			data().setGrouplist(partIndex, g);
-		} else if (TuneData.segmentGroupnoteLine) {
-			linkToPrimaryGroup(g.getBeginGroupNote(), primaryGrouplist
-					.getBeginGroupNote());
-		} else {
-			data().setGrouplist(partIndex, g);
-		}
-	}
-
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.data.AbstractCMXNoteHandler#endPart(jp.crestmuse.cmx.
@@ -110,6 +95,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		else if (md instanceof Attributes) {
 			Attributes a = (Attributes) md;
 			setKeys(a.mode(), a.fifths());
+			data().setBeatInfo(a.measure().number(), a.beats(), a.beatType());
 		} else if (md instanceof Direction)
 			readDirections((Direction) md);
 	}
@@ -135,9 +121,11 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			return;
 		}
 		if (note.getNodeName().equals("note")) {
+			int beat = getBeat(note);
 			NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
-					.getBPM().get(0), note.velocity());
+					.getBPM().get(0), beat, note.velocity());
 			nd.setKeyMode(keyMode, fifths);
+			nd.setMeasureNumber(currentMeasureNumber);
 			testPrintln(nd.toString());
 			if (cur == null) {
 				// 冒頭音
@@ -160,12 +148,36 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	}
 
 	protected NoteData createNoteData(SCCXMLWrapper.Note note, int partNumber,
-			int idx, Integer bpm, int vel) {
-		return new NoteData(note, partNumber, idx, bpm, vel);
+			int idx, Integer bpm, int beat, int vel) {
+		return new NoteData(note, partNumber, idx, bpm, beat, vel);
 	}
 
 	protected TuneData data() {
 		return data;
+	}
+
+	private void createGroup() {
+		Group g = createGroup(data().getNoteList(partIndex), partIndex + 1,
+				GroupType.NOTE);
+
+		if (primaryGrouplist == null) {
+			primaryGrouplist = g;
+			data().setGrouplist(partIndex, g);
+		} else if (TuneData.segmentGroupnoteLine) {
+			linkToPrimaryGroup(g.getBeginGroupNote(), primaryGrouplist
+					.getBeginGroupNote());
+		} else {
+			data().setGrouplist(partIndex, g);
+		}
+	}
+
+	private int getBeat(SCCXMLWrapper.Note note) {
+		BeatInfo b = data().getBeatInfoList(currentMeasureNumber);
+		int beat = note.onset() / getTicksPerBeat() % ((b != null) ? b
+				.beat() : 4) + 1;
+		currentMeasureNumber = note.onset() / getTicksPerBeat()
+				/ ((b != null) ? b.beat() : 4) + 1;
+		return beat;
 	}
 
 	private void linkToPrimaryGroup(GroupNote note,

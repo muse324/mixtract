@@ -37,6 +37,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/** SCCXMLWrapper */
 	private SCCXMLWrapper scc;
 
+	/** 拍子記号のリスト（変拍子対応） */
+	private ArrayList<BeatInfo> beatInfoList = new ArrayList<BeatInfo>();
 	/** 声部ごとのフレーズ構造(二分木) */
 	private List<Group> rootGroup = new ArrayList<Group>();
 	/** 楽曲に含まれる非階層グループを格納するリスト */
@@ -698,6 +700,22 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 	protected void setDev(DeviationInstanceWrapper dev) {
 		this.dev = dev;
+	}
+
+	public BeatInfo getBeatInfoList(int measure) {
+		for (BeatInfo b : beatInfoList) {
+			if (b.measure() == measure)
+				return b;
+		}
+		return null;
+	}
+
+	public void setBeatInfo(int measure, int beats, int beatType) {
+		for (BeatInfo b : beatInfoList) {
+			if (b.measure() == measure)
+				return;
+		}
+		beatInfoList.add(new BeatInfo(measure, beats, beatType));
 	}
 
 }

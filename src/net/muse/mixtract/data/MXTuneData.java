@@ -225,8 +225,8 @@ public class MXTuneData extends TuneData {
 			}
 
 			protected NoteData createNoteData(SCCXMLWrapper.Note note,
-					int partNumber, int idx, Integer bpm, int vel) {
-				return new MXNoteData(note, partNumber, idx, bpm, vel);
+					int partNumber, int idx, Integer bpm, int beat, int vel) {
+				return new MXNoteData(note, partNumber, idx, bpm, beat, vel);
 			}
 
 			protected MXTuneData data() {
