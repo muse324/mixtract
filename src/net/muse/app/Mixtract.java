@@ -12,6 +12,7 @@ import net.muse.gui.*;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.gui.MXMainFrame;
+import net.muse.mixtract.gui.PhraseViewer;
 
 /**
  * <h1>Mixtract</h1>

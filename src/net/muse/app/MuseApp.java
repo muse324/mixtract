@@ -15,6 +15,7 @@ import net.muse.misc.OptionType;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.curve.PhraseCurveType;
+import net.muse.mixtract.gui.PhraseViewer;
 
 public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	protected static String PROPERTY_FILENAME = "Mixtract.properties";

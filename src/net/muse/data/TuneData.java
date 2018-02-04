@@ -107,7 +107,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 		initializeParameters();
 		for (final Group root : getRootGroup()) {
 			// tempo
-//			setTempoListEndtime(root.getTimeValue());
+			// setTempoListEndtime(root.getTimeValue());
 			calculateExpressionParameters(root);
 
 			if (isDebug()) {
@@ -738,8 +738,13 @@ public class TuneData extends MuseObject implements TuneDataController {
 		beatInfoList.add(new BeatInfo(measure, beats, beatType));
 	}
 
-	void setTempoListEndtime(double tempoListEndtime) {
-		this.tempoListEndtime = tempoListEndtime;
+	void setTempoListEndtime(double onset, boolean isEndCheck) {
+		if (!isEndCheck) {
+			this.tempoListEndtime = onset;
+			return;
+		}
+		if (onset > tempoListEndtime)
+			tempoListEndtime = onset;
 	}
 
 }

@@ -10,6 +10,7 @@ import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.gui.PhraseViewer;
 
 public class GroupLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
@@ -373,7 +374,7 @@ public class GroupLabel extends JLabel {
 		return child;
 	}
 
-	private PhraseViewer createPhraseViewer(MuseApp app, Group gr) {
+	protected PhraseViewer createPhraseViewer(MuseApp app, Group gr) {
 		return new PhraseViewer(app, gr);
 	}
 

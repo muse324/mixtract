@@ -1,7 +1,6 @@
 package net.muse.mixtract.gui;
 
 import java.awt.Dimension;
-import java.awt.LayoutManager;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -26,73 +25,31 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 		initialize();
 	}
 
-	public PartSelectorPanel(boolean isDoubleBuffered) {
-		super(isDoubleBuffered);
-		initialize();
-		// TODO 自動生成されたコンストラクター・スタブ
-	}
-
-	public PartSelectorPanel(LayoutManager layout) {
-		super(layout);
-		initialize();
-		// TODO 自動生成されたコンストラクター・スタブ
-	}
-
-	public PartSelectorPanel(LayoutManager layout, boolean isDoubleBuffered) {
-		super(layout, isDoubleBuffered);
-		initialize();
-		// TODO 自動生成されたコンストラクター・スタブ
-	}
-
-	public void addGroup(Group g) {
-		// TODO 自動生成されたメソッド・スタブ
-	}
-
-	public void changeExpression(PhraseCurveType type) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
-	public void deleteGroup(GroupLabel g) {
-		// TODO 自動生成されたメソッド・スタブ
-	}
-
-	public void deselect(GroupLabel g) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
-	public void editGroup(GroupLabel g) {
-		// TODO 自動生成されたメソッド・スタブ
-	}
-
-	public void selectGroup(GroupLabel g, boolean flg) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
 	public void setTarget(TuneData target) {
-		if (data != target) {
-			data = target;
-			removeAll();
-			checkBoxList.clear();
-			if (data == null)
-				return;
-			for (int i = 0; i < data.getRootGroup().size(); i++) {
-				// 表示リストに追加
-				JRadioButton cbox = new JRadioButton();
-				cbox.setText(String.format("P%d", i + 1));
-				cbox.setSelected(true);
-				editGroup.add(cbox);
-				checkBoxList.add(cbox);
-				add(cbox, null);
-				cbox.addItemListener(new ItemListener() {
-					public void itemStateChanged(ItemEvent e) {
-						int idx = checkBoxList.indexOf(e.getItem());
-						// TODO 選択パートを変更する →同期処理が要る
-					}
-				});
-			}
+		// 画面リセット
+		removeAll();
+		checkBoxList.clear();
+
+		// 楽曲データ代入
+		if (data == target || data == null)
+			return;
+
+		data = target;
+		for (int i = 0; i < data.getRootGroup().size(); i++) {
+			// 表示リストにラジオボタンを追加
+			int partNumber = data.getRootGroup(i).getPartNumber();
+			JRadioButton cbox = new JRadioButton();
+			cbox.setText(String.format("Part %d", partNumber));
+			cbox.setSelected(i == 0);
+			editGroup.add(cbox);
+			checkBoxList.add(cbox);
+			add(cbox, null);
+			cbox.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					((JRadioButton) e.getItem()).setSelected(true);
+					// TODO パートの選択状態を変更して表示を更新する処理
+				}
+			});
 		}
 	}
 
@@ -103,5 +60,23 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		this.setSize(new Dimension(58, 89));
 	}
+
+	@Override
+	public void addGroup(Group g) {}
+
+	@Override
+	public void deleteGroup(GroupLabel g) {}
+
+	@Override
+	public void editGroup(GroupLabel g) {}
+
+	@Override
+	public void selectGroup(GroupLabel g, boolean flg) {}
+
+	@Override
+	public void deselect(GroupLabel g) {}
+
+	@Override
+	public void changeExpression(PhraseCurveType type) {}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

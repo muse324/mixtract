@@ -1,4 +1,4 @@
-package net.muse.gui;
+package net.muse.mixtract.gui;
 
 import java.awt.BorderLayout;
 
@@ -7,6 +7,7 @@ import javax.swing.*;
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
+import net.muse.gui.*;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -14,7 +15,7 @@ import net.muse.data.Group;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/03/23
  */
-public class PhraseViewer extends JDialog implements CanvasMouseListener {
+public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -34,7 +35,7 @@ public class PhraseViewer extends JDialog implements CanvasMouseListener {
 	 * @param main.getFrame()
 	 * @param group
 	 */
-	protected PhraseViewer(MuseApp app, Group group) {
+	public PhraseViewer(MuseApp app, Group group) {
 		super(app.getFrame());
 		this.main = app;
 		setOwner(app.getFrame());

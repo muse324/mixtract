@@ -106,7 +106,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 */
 	@Override
 	public void processNote(SCCXMLWrapper.Note note, SCCXMLWrapper arg1) {
-		data().setTempoListEndtime(note.onset(getTicksPerBeat()));
+		data().setTempoListEndtime(note.offset(getTicksPerBeat()),true);
 		if (note.getNodeName().equals("control")) {
 			switch (note.notenum()) {
 			case 64:
