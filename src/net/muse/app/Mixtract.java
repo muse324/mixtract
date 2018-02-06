@@ -12,7 +12,6 @@ import net.muse.gui.*;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.*;
 import net.muse.mixtract.gui.MXMainFrame;
-import net.muse.mixtract.gui.PhraseViewer;
 
 /**
  * <h1>Mixtract</h1>
@@ -120,16 +119,16 @@ public class Mixtract extends MuseApp {
 		deleteGroup(g.getChildFormerGroup());
 		deleteGroup(g.getChildLatterGroup());
 
-		PhraseViewer d = null;
-		for (PhraseViewer pv : getPhraseViewList()) {
-			if (pv.getGroup() == g) {
+		InfoViewer d = null;
+		for (InfoViewer pv : getInfoViewList()) {
+			if (pv.group() == g) {
 				d = pv;
 				break;
 			}
 		}
 		if (d != null) {
 			d.setVisible(false);
-			getPhraseViewList().remove(d);
+			getInfoViewList().remove(d);
 		}
 	}
 

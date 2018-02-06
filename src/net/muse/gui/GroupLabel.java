@@ -10,7 +10,6 @@ import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.mixtract.command.MixtractCommand;
-import net.muse.mixtract.gui.PhraseViewer;
 
 public class GroupLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
@@ -126,7 +125,7 @@ public class GroupLabel extends JLabel {
 					return;
 				}
 				if (e.getClickCount() == 2) {
-					for (PhraseViewer r : _main.getPhraseViewList()) {
+					for (InfoViewer r : _main.getInfoViewList()) {
 						if (r.contains(gr)) {
 							r.setVisible(true);
 							return;
@@ -374,8 +373,8 @@ public class GroupLabel extends JLabel {
 		return child;
 	}
 
-	protected PhraseViewer createPhraseViewer(MuseApp app, Group gr) {
-		return new PhraseViewer(app, gr);
+	protected InfoViewer createPhraseViewer(MuseApp app, Group gr) {
+		return new InfoViewer(app, gr);
 	}
 
 	private boolean hasChild() {
@@ -439,9 +438,9 @@ public class GroupLabel extends JLabel {
 	}
 
 	private void showPhraseViewer(MuseApp app, Group gr) {
-		PhraseViewer pv = createPhraseViewer(app, gr);
+		InfoViewer pv = InfoViewer.create(app, gr);
 		pv.setTitle(gr.name());
-		app.addPhraseViewerList(pv);
+		app.addInfoViewerList(pv);
 		pv.pack();
 		pv.setVisible(true);
 		pv.preset();

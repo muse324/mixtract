@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import javax.swing.*;
 
 import net.muse.app.Mixtract;
+import net.muse.data.Group;
 import net.muse.gui.*;
 import net.muse.gui.RoundedCornerButton.RoundButton;
 import net.muse.mixtract.command.ApplyHierarchicalParamsCommand;

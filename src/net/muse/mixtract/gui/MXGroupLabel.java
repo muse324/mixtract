@@ -43,10 +43,6 @@ public class MXGroupLabel extends GroupLabel {
 		return childLatter;
 	}
 
-	protected MXPhraseViewer createPhraseViewer(MuseApp _main, Group gr) {
-		return new MXPhraseViewer((Mixtract) _main, gr);
-	}
-
 	protected GroupLabel getChildFormer(ArrayList<MXGroupLabel> grouplist) {
 		if (childFormer == null) {
 			for (MXGroupLabel l : grouplist) {

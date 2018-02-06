@@ -969,4 +969,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		return _notelist;
 	}
 
+	public boolean contains(Group gr) {
+		return false;
+	}
+
 } // @jve:decl-index=0:visual-constraint="10,10"
