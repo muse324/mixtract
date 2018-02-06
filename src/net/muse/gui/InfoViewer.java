@@ -14,28 +14,29 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 	private static final long serialVersionUID = 1L;
 
 	/* 制御データ */
-	protected MuseApp main;
-	protected Group group;
-	protected MainFrame owner;
-
-	private JPanel jContentPane = null;
+	protected final MuseApp main;
+	protected final Group group;
+	protected final MainFrame owner;
 
 	public static InfoViewer create(MuseApp app, Group gr) {
 		if (app instanceof Mixtract && gr instanceof MXGroup)
-			return new PhraseViewer(app, (MXGroup) gr);
+			return new PhraseViewer(app, gr);
 		return new InfoViewer(app, gr);
 	}
 
-	protected InfoViewer(JFrame frame) {
-		super(frame);
-	}
-
-	private InfoViewer(MuseApp app, Group group) {
-		this(app.getFrame());
+	protected InfoViewer(MuseApp app, Group group) {
+		super(app.getFrame());
 		this.main = app;
-		setOwner(app.getFrame());
+		this.owner = (MainFrame) app.getFrame();
 		this.group = group;
 		initialize();
+	}
+
+	/**
+	 * @return group
+	 */
+	public Group group() {
+		return group;
 	}
 
 	@Override
@@ -43,6 +44,26 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 
 	boolean contains(Group gr) {
 		return gr.equals(group());
+	}
+
+	/**
+	 * This method initializes jContentPane
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	protected JPanel getJContentPane() {
+		JPanel jContentPane = new JPanel(new BorderLayout());
+		return jContentPane;
+	}
+
+	/**
+	 * This method initializes this
+	 *
+	 * @return void
+	 */
+	protected void initialize() {
+		this.setContentPane(getJContentPane());
+		this.setTitle("group name");
 	}
 
 	/**
@@ -56,42 +77,5 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 		return owner;
 	}
 
-	/**
-	 * @return group
-	 */
-	public Group group() {
-		return group;
-	}
-
-	/**
-	 * This method initializes this
-	 *
-	 * @return void
-	 */
-	protected void initialize() {
-		this.setContentPane(getJContentPane());
-		this.setTitle("group name");
-	}
-
 	protected void preset() {}
-
-	/**
-	 * This method initializes jContentPane
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	protected JPanel getJContentPane() {
-		if (jContentPane == null) {
-			jContentPane = new JPanel();
-			jContentPane.setLayout(new BorderLayout());
-		}
-		return jContentPane;
-	}
-
-	/**
-	 * @param owner セットする owner
-	 */
-	private void setOwner(JFrame owner) {
-		this.owner = (MainFrame) owner;
-	}
 }

@@ -131,7 +131,7 @@ public class GroupLabel extends JLabel {
 							return;
 						}
 					}
-					showPhraseViewer(_main, gr);
+					showInfoViewer(_main, gr);
 				}
 				repaint();
 			}
@@ -433,7 +433,7 @@ public class GroupLabel extends JLabel {
 		this.endEdit = endEdit;
 	}
 
-	private void showPhraseViewer(MuseApp app, Group gr) {
+	private void showInfoViewer(MuseApp app, Group gr) {
 		InfoViewer pv = InfoViewer.create(app, gr);
 		pv.setTitle(gr.name());
 		app.addInfoViewerList(pv);

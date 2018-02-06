@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
+import net.muse.data.Group;
 import net.muse.gui.*;
 import net.muse.mixtract.data.MXGroup;
 
@@ -28,16 +29,8 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 
 	private ButtonGroup viewSelectionGroup = new ButtonGroup();
 
-	/**
-	 * @param main.getFrame()
-	 * @param group
-	 */
-	public PhraseViewer(MuseApp app, MXGroup group) {
-		super(app.getFrame());
-		this.main = app;
-		setOwner(app.getFrame());
-		this.group = group;
-		initialize();
+	public PhraseViewer(MuseApp app, Group gr) {
+		super(app, gr);
 	}
 
 	@Override
@@ -60,7 +53,7 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 */
 	@Override
 	protected JPanel getJContentPane() {
-		JPanel p = super.getJContentPane();
+		JPanel p = new JPanel(new BorderLayout());
 		p.add(getCommandPanel(), BorderLayout.SOUTH); // Generated
 		p.add(getJSplitPane(), BorderLayout.CENTER);
 		return p;
@@ -244,14 +237,14 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 * @return javax.swing.JSplitPane
 	 */
 	private JSplitPane getJSplitPane() {
-		JSplitPane jSplitPane = new JSplitPane();
-		jSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		jSplitPane.setResizeWeight(0.5D);
-		jSplitPane.setOneTouchExpandable(true); // Generated
-		jSplitPane.setDividerLocation(150); // Generated
-		jSplitPane.setBottomComponent(getJPanel());
-		jSplitPane.setTopComponent(getJPanel1());
-		return jSplitPane;
+		JSplitPane p = new JSplitPane();
+		p.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		p.setResizeWeight(0.5D);
+		p.setOneTouchExpandable(true); // Generated
+		p.setDividerLocation(150); // Generated
+		p.setBottomComponent(getJPanel());
+		p.setTopComponent(getJPanel1());
+		return p;
 	}
 
 	/**
@@ -260,11 +253,11 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getKeyboard() {
-		KeyBoard keyboard = new KeyBoard(480);
-		keyboard.setLayout(new GridBagLayout());
-		keyboard.resetKeyRegister();
-		keyboard.setKeyRegister(group().getBeginGroupNote());
-		return keyboard;
+		KeyBoard k = new KeyBoard(480);
+		k.setLayout(new GridBagLayout());
+		k.resetKeyRegister();
+		k.setKeyRegister(group().getBeginGroupNote());
+		return k;
 	}
 
 	/**
@@ -381,9 +374,5 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 		if (viewSelectionGroup == null)
 			viewSelectionGroup = new ButtonGroup();
 		return viewSelectionGroup;
-	}
-
-	private void setOwner(JFrame owner) {
-		this.owner = (MXMainFrame) owner;
 	}
 } // @jve:decl-index=0:visual-constraint="26,7"
