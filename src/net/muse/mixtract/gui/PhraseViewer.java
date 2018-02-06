@@ -6,7 +6,6 @@ import javax.swing.*;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
-import net.muse.data.Group;
 import net.muse.gui.*;
 import net.muse.mixtract.data.MXGroup;
 
@@ -20,42 +19,14 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 
 	private static final long serialVersionUID = 1L;
 
-	/* 描画モード */
-	private boolean isEdited;
-
 	private CurveViewPanel curveViewerPanel = null;
-
-	private JRadioButton selArtButton = null;
-
-	private JRadioButton selTmpButton = null;
-
-	private JToggleButton showArticulation = null;
-
-	private JToggleButton showDynamics = null;
-
-	private JToggleButton showTempo = null;
-
-	private ButtonGroup viewSelectionGroup = new ButtonGroup();
-
-	private JRadioButton selDynButton = null;
-
-	private JPanel commandPanel = null;
-
 	private PianoRollSmall groupPianoRoll = null;
 
-	private JLabel jLabel = null;
+	private JToggleButton showDynamics = null;
+	private JToggleButton showTempo = null;
+	private JToggleButton showArticulation = null;
 
-	private JPanel jPanel = null;
-
-	private JPanel jPanel1 = null;
-
-	private JSplitPane jSplitPane = null;
-
-	private KeyBoard keyboard = null;
-
-	private JButton resetButton = null;
-
-	private JPanel viewerTogglePanel = null;
+	private ButtonGroup viewSelectionGroup = new ButtonGroup();
 
 	/**
 	 * @param main.getFrame()
@@ -69,59 +40,9 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 		initialize();
 	}
 
-	/**
-	 * @return the group
-	 */
-	public Group getGroup() {
-		return group();
-	}
-
-	/**
-	 * @return viewSelectionGroup
-	 */
-	public ButtonGroup getViewSelectionGroup() {
-		if (viewSelectionGroup == null)
-			viewSelectionGroup = new ButtonGroup();
-		return viewSelectionGroup;
-	}
-
 	@Override
 	public MXGroup group() {
-		return (MXGroup) super.group();
-	}
-
-	/**
-	 * @return main
-	 */
-	public MuseApp main() {
-		return main;
-	}
-
-	public MXMainFrame owner() {
-		return (MXMainFrame) owner;
-	}
-
-	public void preset() {
-		getDynamicsRadioButton().setSelected(true); // Generated
-	}
-
-	/**
-	 * @param group セットする group
-	 */
-	public void setGroup(MXGroup group) {
-		this.group = group;
-	}
-
-	/**
-	 * @param main セットする main
-	 */
-	public void setMain(Mixtract main) {
-		this.main = main;
-	}
-
-	@Override
-	public void setOwner(JFrame owner) {
-		this.owner = (MXMainFrame) owner;
+		return (MXGroup) group;
 	}
 
 	public void setShowCurrentX(boolean showCurrentX, int x) {
@@ -129,20 +50,35 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 		getCurveViewerPanel().setShowCurrentX(showCurrentX, x);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.Dialog#setTitle(java.lang.String)
-	 */
-	@Override
 	public void setTitle(String title) {
 		super.setTitle(title + " - " + this.getClass().getSimpleName());
 	}
 
-	/**
-	 * @return the isEdited
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.InfoViewer#getJContentPane()
 	 */
-	boolean isEdited() {
-		return isEdited;
+	@Override
+	protected JPanel getJContentPane() {
+		JPanel p = super.getJContentPane();
+		p.add(getCommandPanel(), BorderLayout.SOUTH); // Generated
+		p.add(getJSplitPane(), BorderLayout.CENTER);
+		return p;
+	}
+
+	/**
+	 * @return main
+	 */
+	protected Mixtract main() {
+		return (Mixtract) main;
+	}
+
+	protected MXMainFrame owner() {
+		return (MXMainFrame) owner;
+	}
+
+	protected void preset() {
+		getDynamicsRadioButton().setSelected(true); // Generated
 	}
 
 	/**
@@ -150,19 +86,16 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JRadioButton
 	 */
-	protected JRadioButton getArticulationRadioButton() {
-		if (selArtButton == null) {
-			selArtButton = new JRadioButton();
-			selArtButton.addItemListener(new java.awt.event.ItemListener() {
-				public void itemStateChanged(java.awt.event.ItemEvent e) {
-					System.out.println("Edit: articulation");
-					getCurveViewerPanel().setCurve(group()
-							.getArticulationCurve());
-					repaint();
-				}
-			});
-			getViewSelectionGroup().add(selArtButton);
-		}
+	private JRadioButton getArticulationRadioButton() {
+		JRadioButton selArtButton = new JRadioButton();
+		selArtButton.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent e) {
+				System.out.println("Edit: articulation");
+				getCurveViewerPanel().setCurve(group().getArticulationCurve());
+				repaint();
+			}
+		});
+		getViewSelectionGroup().add(selArtButton);
 		return selArtButton;
 	}
 
@@ -171,7 +104,7 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JToggleButton
 	 */
-	protected JToggleButton getArticulationToggleButton() {
+	private JToggleButton getArticulationToggleButton() {
 		if (showArticulation == null) {
 			showArticulation = new JToggleButton();
 			showArticulation.setText("A"); // Generated
@@ -194,12 +127,10 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	protected JPanel getCommandPanel() {
-		if (commandPanel == null) {
-			commandPanel = new JPanel();
-			commandPanel.setLayout(new FlowLayout());
-			commandPanel.add(getResetButton(), null); // Generated
-		}
+	private JPanel getCommandPanel() {
+		JPanel commandPanel = new JPanel();
+		commandPanel.setLayout(new FlowLayout());
+		commandPanel.add(getResetButton(), null); // Generated
 		return commandPanel;
 	}
 
@@ -208,7 +139,7 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	protected CurveViewPanel getCurveViewerPanel() {
+	private CurveViewPanel getCurveViewerPanel() {
 		if (curveViewerPanel == null) {
 			curveViewerPanel = new CurveViewPanel(group());
 			curveViewerPanel.showDynamicsCurve(getDynamicsToggleButton()
@@ -227,18 +158,16 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JRadioButton
 	 */
-	protected JRadioButton getDynamicsRadioButton() {
-		if (selDynButton == null) {
-			selDynButton = new JRadioButton();
-			selDynButton.addItemListener(new java.awt.event.ItemListener() {
-				public void itemStateChanged(java.awt.event.ItemEvent e) {
-					System.out.println("Edit: dynamics");
-					getCurveViewerPanel().setCurve(group().getDynamicsCurve());
-					repaint();
-				}
-			});
-			getViewSelectionGroup().add(selDynButton);
-		}
+	private JRadioButton getDynamicsRadioButton() {
+		JRadioButton selDynButton = new JRadioButton();
+		selDynButton.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent e) {
+				System.out.println("Edit: dynamics");
+				getCurveViewerPanel().setCurve(group().getDynamicsCurve());
+				repaint();
+			}
+		});
+		getViewSelectionGroup().add(selDynButton);
 		return selDynButton;
 	}
 
@@ -247,7 +176,7 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JToggleButton
 	 */
-	protected JToggleButton getDynamicsToggleButton() {
+	private JToggleButton getDynamicsToggleButton() {
 		if (showDynamics == null) {
 			showDynamics = new JToggleButton();
 			showDynamics.setText("D"); // Generated
@@ -271,7 +200,7 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	protected PianoRollSmall getGroupPianoRoll() {
+	private PianoRollSmall getGroupPianoRoll() {
 		if (groupPianoRoll == null) {
 			groupPianoRoll = new PianoRollSmall();
 			groupPianoRoll.setController(main());
@@ -282,11 +211,31 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 		return groupPianoRoll;
 	}
 
-	protected JPanel getJContentPane() {
-		JPanel p = super.getJContentPane();
-		p.add(getCommandPanel(), BorderLayout.SOUTH); // Generated
-		p.add(getJSplitPane(), BorderLayout.CENTER);
-		return p;
+	/**
+	 * This method initializes jPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getJPanel() {
+		JPanel jPanel = new JPanel();
+		jPanel.setLayout(new BorderLayout());
+		jPanel.add(getViewerTogglePanel(), BorderLayout.WEST); // Generated
+		jPanel.add(getCurveViewerPanel(), BorderLayout.CENTER); // Generated
+		return jPanel;
+	}
+
+	/**
+	 * This method initializes jPanel1
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getJPanel1() {
+		JPanel jPanel1 = new JPanel();
+		jPanel1.setLayout(new BorderLayout());
+		jPanel1.setPreferredSize(new Dimension(400, 200));
+		jPanel1.add(getKeyboard(), BorderLayout.WEST);
+		jPanel1.add(getGroupPianoRoll(), BorderLayout.CENTER);
+		return jPanel1;
 	}
 
 	/**
@@ -294,17 +243,45 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JSplitPane
 	 */
-	protected JSplitPane getJSplitPane() {
-		if (jSplitPane == null) {
-			jSplitPane = new JSplitPane();
-			jSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-			jSplitPane.setResizeWeight(0.5D);
-			jSplitPane.setOneTouchExpandable(true); // Generated
-			jSplitPane.setDividerLocation(150); // Generated
-			jSplitPane.setBottomComponent(getJPanel());
-			jSplitPane.setTopComponent(getJPanel1());
-		}
+	private JSplitPane getJSplitPane() {
+		JSplitPane jSplitPane = new JSplitPane();
+		jSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		jSplitPane.setResizeWeight(0.5D);
+		jSplitPane.setOneTouchExpandable(true); // Generated
+		jSplitPane.setDividerLocation(150); // Generated
+		jSplitPane.setBottomComponent(getJPanel());
+		jSplitPane.setTopComponent(getJPanel1());
 		return jSplitPane;
+	}
+
+	/**
+	 * This method initializes keyboard
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getKeyboard() {
+		KeyBoard keyboard = new KeyBoard(480);
+		keyboard.setLayout(new GridBagLayout());
+		keyboard.resetKeyRegister();
+		keyboard.setKeyRegister(group().getBeginGroupNote());
+		return keyboard;
+	}
+
+	/**
+	 * This method initializes resetButton
+	 *
+	 * @return javax.swing.JButton
+	 */
+	private JButton getResetButton() {
+		JButton resetButton = new JButton();
+		resetButton.setText("Reflesh"); // Generated
+		resetButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				getCurveViewerPanel().reset();
+				repaint();
+			}
+		});
+		return resetButton;
 	}
 
 	/**
@@ -312,18 +289,16 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JRadioButton
 	 */
-	protected JRadioButton getTempoRadioButton() {
-		if (selTmpButton == null) {
-			selTmpButton = new JRadioButton();
-			selTmpButton.addItemListener(new java.awt.event.ItemListener() {
-				public void itemStateChanged(java.awt.event.ItemEvent e) {
-					System.out.println("Edit: tempo");
-					getCurveViewerPanel().setCurve(group().getTempoCurve());
-					repaint();
-				}
-			});
-			getViewSelectionGroup().add(selTmpButton);
-		}
+	private JRadioButton getTempoRadioButton() {
+		JRadioButton selTmpButton = new JRadioButton();
+		selTmpButton.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent e) {
+				System.out.println("Edit: tempo");
+				getCurveViewerPanel().setCurve(group().getTempoCurve());
+				repaint();
+			}
+		});
+		getViewSelectionGroup().add(selTmpButton);
 		return selTmpButton;
 	}
 
@@ -332,7 +307,7 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JToggleButton
 	 */
-	protected JToggleButton getTempoToggleButton() {
+	private JToggleButton getTempoToggleButton() {
 		if (showTempo == null) {
 			showTempo = new JToggleButton();
 			showTempo.setText("T"); // Generated
@@ -350,131 +325,65 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 		return showTempo;
 	}
 
-	protected void setController(Mixtract main) {
-		getCurveViewerPanel().setController(main);
-	}
-
-	/**
-	 * @param isEdited the isEdited to set
-	 */
-	protected void setEdited(boolean isEdited) {
-		this.isEdited = isEdited;
-	}
-
-	/**
-	 * This method initializes jPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanel() {
-		if (jPanel == null) {
-			jPanel = new JPanel();
-			jPanel.setLayout(new BorderLayout());
-			jPanel.add(getViewerTogglePanel(), BorderLayout.WEST); // Generated
-			jPanel.add(getCurveViewerPanel(), BorderLayout.CENTER); // Generated
-		}
-		return jPanel;
-	}
-
-	/**
-	 * This method initializes jPanel1
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getJPanel1() {
-		if (jPanel1 == null) {
-			jPanel1 = new JPanel();
-			jPanel1.setLayout(new BorderLayout());
-			jPanel1.setPreferredSize(new Dimension(400, 200));
-			jPanel1.add(getKeyboard(), BorderLayout.WEST);
-			jPanel1.add(getGroupPianoRoll(), BorderLayout.CENTER);
-		}
-		return jPanel1;
-	}
-
-	/**
-	 * This method initializes keyboard
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	private JPanel getKeyboard() {
-		if (keyboard == null) {
-			keyboard = new KeyBoard(480);
-			keyboard.setLayout(new GridBagLayout());
-			keyboard.resetKeyRegister();
-			keyboard.setKeyRegister(group().getBeginGroupNote());
-		}
-		return keyboard;
-	}
-
-	/**
-	 * This method initializes resetButton
-	 *
-	 * @return javax.swing.JButton
-	 */
-	private JButton getResetButton() {
-		if (resetButton == null) {
-			resetButton = new JButton();
-			resetButton.setText("Reflesh"); // Generated
-			resetButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					getCurveViewerPanel().reset();
-					repaint();
-				}
-			});
-		}
-		return resetButton;
-	}
-
 	/**
 	 * This method initializes viewerTogglePanel
 	 *
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getViewerTogglePanel() {
-		if (viewerTogglePanel == null) {
-			GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
-			gridBagConstraints6.gridx = 1; // Generated
-			gridBagConstraints6.gridy = 3; // Generated
-			GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
-			gridBagConstraints5.gridx = 1; // Generated
-			gridBagConstraints5.gridy = 2; // Generated
-			GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
-			gridBagConstraints4.gridx = 1; // Generated
-			gridBagConstraints4.gridy = 1; // Generated
-			GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
-			gridBagConstraints3.gridy = 1; // Generated
-			gridBagConstraints3.anchor = GridBagConstraints.EAST; // Generated
-			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
-			gridBagConstraints2.gridx = 0; // Generated
-			gridBagConstraints2.insets = new Insets(0, 5, 0, 0); // Generated
-			gridBagConstraints2.gridwidth = 1; // Generated
-			gridBagConstraints2.anchor = GridBagConstraints.WEST; // Generated
-			gridBagConstraints2.gridy = 0; // Generated
-			jLabel = new JLabel();
-			jLabel.setText("Edit"); // Generated
-			GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
-			gridBagConstraints1.gridx = 0; // Generated
-			gridBagConstraints1.anchor = GridBagConstraints.EAST; // Generated
-			gridBagConstraints1.gridy = 3; // Generated
-			GridBagConstraints gridBagConstraints = new GridBagConstraints();
-			gridBagConstraints.gridx = 0; // Generated
-			gridBagConstraints.anchor = GridBagConstraints.EAST; // Generated
-			gridBagConstraints.gridy = 2; // Generated
-			viewerTogglePanel = new JPanel();
-			viewerTogglePanel.setLayout(new GridBagLayout()); // Generated
-			viewerTogglePanel.add(getDynamicsRadioButton(),
-					gridBagConstraints3); // Generated
-			viewerTogglePanel.add(getTempoRadioButton(), gridBagConstraints); // Generated
-			viewerTogglePanel.add(getArticulationRadioButton(),
-					gridBagConstraints1); // Generated
-			viewerTogglePanel.add(jLabel, gridBagConstraints2); // Generated
-			viewerTogglePanel.add(getDynamicsToggleButton(),
-					gridBagConstraints4); // Generated
-			viewerTogglePanel.add(getTempoToggleButton(), gridBagConstraints5); // Generated
-			viewerTogglePanel.add(getArticulationToggleButton(),
-					gridBagConstraints6); // Generated
-		}
+		GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
+		gridBagConstraints6.gridx = 1; // Generated
+		gridBagConstraints6.gridy = 3; // Generated
+		GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
+		gridBagConstraints5.gridx = 1; // Generated
+		gridBagConstraints5.gridy = 2; // Generated
+		GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
+		gridBagConstraints4.gridx = 1; // Generated
+		gridBagConstraints4.gridy = 1; // Generated
+		GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
+		gridBagConstraints3.gridy = 1; // Generated
+		gridBagConstraints3.anchor = GridBagConstraints.EAST; // Generated
+		GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+		gridBagConstraints2.gridx = 0; // Generated
+		gridBagConstraints2.insets = new Insets(0, 5, 0, 0); // Generated
+		gridBagConstraints2.gridwidth = 1; // Generated
+		gridBagConstraints2.anchor = GridBagConstraints.WEST; // Generated
+		gridBagConstraints2.gridy = 0; // Generated
+		JLabel jLabel = new JLabel();
+		jLabel.setText("Edit"); // Generated
+		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+		gridBagConstraints1.gridx = 0; // Generated
+		gridBagConstraints1.anchor = GridBagConstraints.EAST; // Generated
+		gridBagConstraints1.gridy = 3; // Generated
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0; // Generated
+		gridBagConstraints.anchor = GridBagConstraints.EAST; // Generated
+		gridBagConstraints.gridy = 2; // Generated
+
+		JPanel viewerTogglePanel = new JPanel();
+		viewerTogglePanel.setLayout(new GridBagLayout()); // Generated
+		viewerTogglePanel.add(getDynamicsRadioButton(), gridBagConstraints3); // Generated
+		viewerTogglePanel.add(getTempoRadioButton(), gridBagConstraints); // Generated
+		viewerTogglePanel.add(getArticulationRadioButton(),
+				gridBagConstraints1); // Generated
+		viewerTogglePanel.add(jLabel, gridBagConstraints2); // Generated
+		viewerTogglePanel.add(getDynamicsToggleButton(), gridBagConstraints4); // Generated
+		viewerTogglePanel.add(getTempoToggleButton(), gridBagConstraints5); // Generated
+		viewerTogglePanel.add(getArticulationToggleButton(),
+				gridBagConstraints6); // Generated
 		return viewerTogglePanel;
+	}
+
+	/**
+	 * @return viewSelectionGroup
+	 */
+	private ButtonGroup getViewSelectionGroup() {
+		if (viewSelectionGroup == null)
+			viewSelectionGroup = new ButtonGroup();
+		return viewSelectionGroup;
+	}
+
+	private void setOwner(JFrame owner) {
+		this.owner = (MXMainFrame) owner;
 	}
 } // @jve:decl-index=0:visual-constraint="26,7"

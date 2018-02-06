@@ -373,10 +373,6 @@ public class GroupLabel extends JLabel {
 		return child;
 	}
 
-	protected InfoViewer createPhraseViewer(MuseApp app, Group gr) {
-		return new InfoViewer(app, gr);
-	}
-
 	private boolean hasChild() {
 		return child != null;
 	}

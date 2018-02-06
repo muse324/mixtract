@@ -11,23 +11,49 @@ import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.gui.PhraseViewer;
 
 public class InfoViewer extends JDialog implements CanvasMouseListener {
+	private static final long serialVersionUID = 1L;
+
 	/* 制御データ */
 	protected MuseApp main;
-
 	protected Group group;
 	protected MainFrame owner;
+
 	private JPanel jContentPane = null;
 
-	public InfoViewer(JFrame frame) {
+	public static InfoViewer create(MuseApp app, Group gr) {
+		if (app instanceof Mixtract && gr instanceof MXGroup)
+			return new PhraseViewer(app, (MXGroup) gr);
+		return new InfoViewer(app, gr);
+	}
+
+	protected InfoViewer(JFrame frame) {
 		super(frame);
 	}
 
-	private static final long serialVersionUID = 1L;
+	private InfoViewer(MuseApp app, Group group) {
+		this(app.getFrame());
+		this.main = app;
+		setOwner(app.getFrame());
+		this.group = group;
+		initialize();
+	}
 
-	public void preset() {}
+	@Override
+	public void setShowCurrentX(boolean showCurrentX, int x) {}
 
-	public boolean contains(Group gr) {
+	boolean contains(Group gr) {
 		return gr.equals(group());
+	}
+
+	/**
+	 * @return main
+	 */
+	protected MuseApp main() {
+		return main;
+	}
+
+	protected MainFrame owner() {
+		return owner;
 	}
 
 	/**
@@ -35,21 +61,6 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 	 */
 	public Group group() {
 		return group;
-	}
-
-	/**
-	 * @param owner セットする owner
-	 */
-	public void setOwner(JFrame owner) {
-		this.owner = (MainFrame) owner;
-	}
-
-	public InfoViewer(MuseApp app, Group group) {
-		this(app.getFrame());
-		this.main = app;
-		setOwner(app.getFrame());
-		this.group = group;
-		initialize();
 	}
 
 	/**
@@ -62,11 +73,7 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 		this.setTitle("group name");
 	}
 
-	public static InfoViewer create(MuseApp app, Group gr) {
-		if (app instanceof Mixtract && gr instanceof MXGroup)
-			return new PhraseViewer(app, (MXGroup) gr);
-		return new InfoViewer(app, gr);
-	}
+	protected void preset() {}
 
 	/**
 	 * This method initializes jContentPane
@@ -81,6 +88,10 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 		return jContentPane;
 	}
 
-	@Override
-	public void setShowCurrentX(boolean showCurrentX, int x) {}
+	/**
+	 * @param owner セットする owner
+	 */
+	private void setOwner(JFrame owner) {
+		this.owner = (MainFrame) owner;
+	}
 }
