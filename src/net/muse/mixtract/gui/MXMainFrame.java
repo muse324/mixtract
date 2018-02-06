@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.swing.*;
 
 import net.muse.app.Mixtract;
+import net.muse.app.MuseApp;
 import net.muse.data.TuneData;
 import net.muse.gui.*;
 import net.muse.mixtract.data.MXTuneData;
@@ -67,8 +68,9 @@ public class MXMainFrame extends MainFrame {
 	 * @see net.muse.gui.MainFrame#createPianoRollPane()
 	 */
 	@Override
-	protected PianoRoll createPianoRoll() {
-		return new MXPianoroll();
+	protected PianoRoll createPianoRoll(MuseApp main) {
+		assert main instanceof Mixtract;
+		return new MXPianoroll((Mixtract) main);
 	}
 
 	@Override

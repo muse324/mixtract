@@ -1,50 +1,22 @@
 package net.muse.mixtract.gui;
 
 import java.awt.*;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
 
 import net.muse.app.Mixtract;
-import net.muse.data.Group;
 import net.muse.data.NoteData;
 import net.muse.gui.*;
 
 class PianoRollSmall extends MXPianoroll {
 	private static final long serialVersionUID = 1L;
 	/* 制御データ */
-	private Group group; // @jve:decl-index=0:
 	private int currentMousePositionX;
 
 	/* 描画モード */
 	private boolean showCurrentX;
 	private int endX;
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			Mixtract main = new Mixtract(args);
-			PianoRollSmall p = new PianoRollSmall();
-			p.setController(main);
-			JFrame frame = new JFrame();
-			frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-			frame.setContentPane(p);
-			frame.pack();
-			frame.setVisible(true);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	PianoRollSmall() {
-		super();
+	PianoRollSmall(Mixtract main) {
+		super(main);
 		initialize();
 		setViewMode(ViewerMode.SCORE_VIEW);
 	}
@@ -78,7 +50,7 @@ class PianoRollSmall extends MXPianoroll {
 	public void makeNoteLabel() {
 		removeAll();
 		setNotelist(null);
-		makeNoteLabel(group);
+		makeNoteLabel(group());
 		validate();
 		repaint();
 	}
@@ -124,13 +96,6 @@ class PianoRollSmall extends MXPianoroll {
 		super.setViewMode(ViewerMode.SCORE_VIEW); // 常に
 	}
 
-	/**
-	 * @param group
-	 */
-	void setGroup(Group group) {
-		this.group = group;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see
@@ -171,9 +136,9 @@ class PianoRollSmall extends MXPianoroll {
 			break;
 		default:
 			double len = endX - getAxisX();
-			x = getAxisX() + ((nd.onset() - group.getBeginGroupNote().getNote()
-					.onset()) / (double) group.timeValue()) * len;
-			w = (nd.timeValue() / (double) group.timeValue()) * len - offset;
+			x = getAxisX() + ((nd.onset() - group().getBeginGroupNote()
+					.getNote().onset()) / (double) group().timeValue()) * len;
+			w = (nd.timeValue() / (double) group().timeValue()) * len - offset;
 			break;
 		}
 		return new Rectangle((int) x, y, (int) w, h);

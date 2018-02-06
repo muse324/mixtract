@@ -21,7 +21,7 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	private static final long serialVersionUID = 1L;
 
 	private CurveViewPanel curveViewerPanel = null;
-	private PianoRollSmall groupPianoRoll = null;
+	private PianoRollSmall pianoRoll = null;
 
 	private JToggleButton showDynamics = null;
 	private JToggleButton showTempo = null;
@@ -54,8 +54,8 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	@Override
 	protected JPanel getJContentPane() {
 		JPanel p = new JPanel(new BorderLayout());
-		p.add(getCommandPanel(), BorderLayout.SOUTH); // Generated
 		p.add(getJSplitPane(), BorderLayout.CENTER);
+		p.add(getCommandPanel(), BorderLayout.SOUTH); // Generated
 		return p;
 	}
 
@@ -67,7 +67,8 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	}
 
 	protected MXMainFrame owner() {
-		return (MXMainFrame) owner;
+		assert getOwner() instanceof MXMainFrame;
+		return (MXMainFrame) getOwner();
 	}
 
 	protected void preset() {
@@ -189,19 +190,17 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	}
 
 	/**
-	 * This method initializes groupPianoRoll
+	 * This method initializes pianoRoll
 	 *
 	 * @return javax.swing.JPanel
 	 */
 	private PianoRollSmall getGroupPianoRoll() {
-		if (groupPianoRoll == null) {
-			groupPianoRoll = new PianoRollSmall();
-			groupPianoRoll.setController(main());
-			groupPianoRoll.setGroup(group());
-			groupPianoRoll.setTarget(owner().getTarget());
-			groupPianoRoll.selectGroup(group());
+		if (pianoRoll == null) {
+			pianoRoll = new PianoRollSmall(main());
+			pianoRoll.setTarget(owner().getTarget());
+			pianoRoll.selectGroup(group());
 		}
-		return groupPianoRoll;
+		return pianoRoll;
 	}
 
 	/**
@@ -222,13 +221,13 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	private JPanel getJPanel1() {
-		JPanel jPanel1 = new JPanel();
-		jPanel1.setLayout(new BorderLayout());
-		jPanel1.setPreferredSize(new Dimension(400, 200));
-		jPanel1.add(getKeyboard(), BorderLayout.WEST);
-		jPanel1.add(getGroupPianoRoll(), BorderLayout.CENTER);
-		return jPanel1;
+	private JPanel getScorePanel() {
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout());
+		p.setPreferredSize(new Dimension(400, 200));
+		p.add(getKeyboard(), BorderLayout.WEST);
+		p.add(getGroupPianoRoll(), BorderLayout.CENTER);
+		return p;
 	}
 
 	/**
@@ -242,8 +241,8 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 		p.setResizeWeight(0.5D);
 		p.setOneTouchExpandable(true); // Generated
 		p.setDividerLocation(150); // Generated
+		p.setTopComponent(getScorePanel());
 		p.setBottomComponent(getJPanel());
-		p.setTopComponent(getJPanel1());
 		return p;
 	}
 

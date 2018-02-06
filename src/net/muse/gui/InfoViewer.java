@@ -16,7 +16,6 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 	/* 制御データ */
 	protected final MuseApp main;
 	protected final Group group;
-	protected final MainFrame owner;
 
 	public static InfoViewer create(MuseApp app, Group gr) {
 		if (app instanceof Mixtract && gr instanceof MXGroup)
@@ -27,7 +26,6 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 	protected InfoViewer(MuseApp app, Group group) {
 		super(app.getFrame());
 		this.main = app;
-		this.owner = (MainFrame) app.getFrame();
 		this.group = group;
 		initialize();
 	}
@@ -74,7 +72,8 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 	}
 
 	protected MainFrame owner() {
-		return owner;
+		assert getOwner() instanceof MainFrame;
+		return (MainFrame) getOwner();
 	}
 
 	protected void preset() {}

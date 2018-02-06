@@ -237,7 +237,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	protected int axisX = 10;
 
-	private MuseApp main; // @jve:decl-index=0:
+	private final MuseApp main; // @jve:decl-index=0:
 	/** 楽曲データ */
 	private TuneData data; // @jve:decl-index=0:
 	/* 各種描画モード */
@@ -264,8 +264,9 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	private Group selectedGroup;
 	private KeyActionListener keyActions;
 
-	protected PianoRoll() {
+	protected PianoRoll(MuseApp main) {
 		super();
+		this.main = main;
 		selectedNoteLabels = new LinkedList<NoteLabel>();
 		selectedVoice = -1;
 		viewerMode = ViewerMode.REALTIME_VIEW;
@@ -440,20 +441,16 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	public void selectGroup(Group group) {
 		clearSelection();
-		selectedGroup = group;
+		setSelectedGroup(group);
 		selectNote(notelist, group.getScoreNotelist());
 	}
 
-	/**
-	 * @param app
-	 */
-	public void setController(MuseApp app) {
-		this.main = app;
-		app.addTuneDataListener(this);
-		mouseActions = createPianoRollMouseAction(app);
+	public void setController() {
+		main.addTuneDataListener(this);
+		mouseActions = createPianoRollMouseAction(main);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
-		keyActions = createKeyActions(app);
+		keyActions = createKeyActions(main);
 		addKeyListener(keyActions);
 	}
 
@@ -656,7 +653,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	private void clearSelection() {
 		selectedNoteLabels.clear();
 		selectedVoice = -1;
-		selectedGroup = null;
+		setSelectedGroup(null);
 	}
 
 	/**
@@ -706,8 +703,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	private void drawMelodyFlagmentOfSelectedGroup(Graphics2D g2) {
 
-		final Group group = selectedGroup;
-		if (group == null || selectedNoteLabels.size() < 1)
+		if (group() == null || selectedNoteLabels.size() < 1)
 			return;
 
 		int x1 = selectedNoteLabels.get(0).getX();
@@ -718,8 +714,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		int y4 = n4.getY() + n4.getHeight() / 2;
 
 		// final Note bg = group.getBeginningNote();
-		Note n1 = group.getMelodyFlagment().getFormerLastNote();
-		final Note n2 = group.getMelodyFlagment().getLatterFirstNote();
+		Note n1 = group().getMelodyFlagment().getFormerLastNote();
+		final Note n2 = group().getMelodyFlagment().getLatterFirstNote();
 		// final Note ed = group.getEndNote();
 		final int keyheight = KeyBoard.keyHeight;
 		// final int y1 = KeyBoard.getYPositionOfPitch(bg.notenum()) *
@@ -971,6 +967,20 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	public boolean contains(Group gr) {
 		return false;
+	}
+
+	/**
+	 * @return selectedGroup
+	 */
+	protected Group group() {
+		return selectedGroup;
+	}
+
+	/**
+	 * @param selectedGroup セットする selectedGroup
+	 */
+	public void setSelectedGroup(Group selectedGroup) {
+		this.selectedGroup = selectedGroup;
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

@@ -193,20 +193,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	public PianoRoll getPianoroll() {
 		if (pianoroll == null) {
-			pianoroll = createPianoRoll();
-			pianoroll.setController(main);
-			// pianoroll.setPreferredSize(new Dimension(DEFAULT_WIDTH, KeyBoard
-			// .getKeyboardHeight() / 3 * 2));
+			pianoroll = createPianoRoll(main);
 		}
 		return pianoroll;
 	}
 
-	protected PianoRoll createPianoRollPane() {
-		return new PianoRoll();
-	}
-
-	protected PianoRoll createPianoRoll() {
-		return new PianoRoll();
+	protected PianoRoll createPianoRoll(MuseApp main) {
+		return new PianoRoll(main);
 	}
 
 	/**

@@ -2,6 +2,7 @@ package net.muse.mixtract.gui;
 
 import java.awt.Rectangle;
 
+import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.GroupNote;
@@ -14,8 +15,8 @@ public class MXPianoroll extends PianoRoll {
 
 	boolean displayApex = false;
 
-	MXPianoroll() {
-		super();
+	MXPianoroll(Mixtract main) {
+		super(main);
 	}
 
 	/*
@@ -35,6 +36,7 @@ public class MXPianoroll extends PianoRoll {
 	@Override
 	public void selectGroup(Group group) {
 		setDisplayApex(true);
+		assert group instanceof MXGroup;
 		((MXGroup) group).extractApex();
 		super.selectGroup(group);
 	}
@@ -69,6 +71,15 @@ public class MXPianoroll extends PianoRoll {
 		return new PianoRollAction(app, this) {
 
 		};
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#group()
+	 */
+	@Override
+	protected MXGroup group() {
+		return (MXGroup) super.group();
 	}
 
 }
