@@ -271,6 +271,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		selectedVoice = -1;
 		viewerMode = ViewerMode.REALTIME_VIEW;
 		initialize();
+		setController();
 	}
 
 	/*
@@ -427,12 +428,12 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	public void makeNoteLabel() {
 		removeAll();
 		setNotelist(null);
-		if (data() != null) {
-			for (Group g : data().getRootGroup()) {
-				makeNoteLabel(g);
-			}
-			validate();
+		if (data() == null)
+			return;
+		for (Group g : data().getRootGroup()) {
+			makeNoteLabel(g);
 		}
+		validate();
 		repaint();
 	}
 
@@ -445,7 +446,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		selectNote(notelist, group.getScoreNotelist());
 	}
 
-	public void setController() {
+	protected void setController() {
 		main.addTuneDataListener(this);
 		mouseActions = createPianoRollMouseAction(main);
 		addMouseListener(mouseActions);
