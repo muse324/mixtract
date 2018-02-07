@@ -42,7 +42,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/** 声部ごとのフレーズ構造(二分木) */
 	private List<Group> rootGroup = new ArrayList<Group>();
 	/** 楽曲に含まれる非階層グループを格納するリスト */
-	private final List<Group> groupArrayList;
+	private final List<Group> miscGroup = new ArrayList<Group>();
 
 	/** テンポ情報 */
 	private ArrayList<Integer> bpmlist = new ArrayList<Integer>();
@@ -78,7 +78,6 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 	public TuneData(File in, File out) throws IOException,
 			InvalidMidiDataException {
-		groupArrayList = new ArrayList<Group>();
 		dynamicsList = new LinkedList<Double>();
 		tempoList = new LinkedList<Double>();
 		articulationList = new LinkedList<Double>();
@@ -94,13 +93,13 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 */
 	public void addGroupArrayList(Group group) {
 		// 重複するグループがあれば処理中断
-		for (Group g : getGroupArrayList()) {
+		for (Group g : getMiscGroup()) {
 			if (g.nearlyEquals(group))
 				return;
 			// TODO 複数声部に未対応
 		}
 		// ----------------------------------
-		getGroupArrayList().add(group);
+		getMiscGroup().add(group);
 	}
 
 	public void calculateExpressionParameters() {
@@ -133,8 +132,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 	public void deleteGroupFromData(Group group) {
 		// 非階層グループから削除
-		if (getGroupArrayList().contains(group)) {
-			getGroupArrayList().remove(group);
+		if (getMiscGroup().contains(group)) {
+			getMiscGroup().remove(group);
 			return;
 		}
 		// 階層グループから削除
@@ -165,9 +164,9 @@ public class TuneData extends MuseObject implements TuneDataController {
 		return dynamicsList;
 	}
 
-	/** @return group list 楽曲に含まれるすべてのグループリスト */
-	public List<Group> getGroupArrayList() {
-		return groupArrayList;
+	/** @return group list 楽曲に含まれる非階層グループリスト */
+	public List<Group> getMiscGroup() {
+		return miscGroup;
 	}
 
 	/** @return inputFilename */
@@ -206,7 +205,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 */
 	public int getUniqueGroupIndex() {
 		ArrayList<Integer> idxlist = new ArrayList<Integer>();
-		for (Group g : getGroupArrayList()) {
+		for (Group g : getMiscGroup()) {
 			if (!idxlist.contains(g.index()))
 				idxlist.add(g.index());
 		}
@@ -233,7 +232,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 			printGroupList(g);
 		}
 		GUIUtil.printConsole("Non hierarchical group list:");
-		for (Group g : getGroupArrayList()) {
+		for (Group g : getMiscGroup()) {
 			printGroupList(g);
 		}
 	}

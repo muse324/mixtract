@@ -322,7 +322,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 		resetKeyRegister();
 
 		setKeyRegister(target.getRootGroup());
-		setKeyRegister(target.getGroupArrayList());
+		setKeyRegister(target.getMiscGroup());
 		// setKeyRegister(0, target.getRootGroup());
 		keyRegister = topNoteNumber - bottomNoteNumber;
 	}

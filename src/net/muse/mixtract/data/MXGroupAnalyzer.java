@@ -96,10 +96,10 @@ public class MXGroupAnalyzer extends MuseObject implements Runnable {
 			parent = reachedHierarchy(parent, data.getRootGroup(0));
 			parent.setChild(g1, g2);
 			// 非階層グループリストからg1, g2を削除
-			if (data.getGroupArrayList().contains(g1))
-				data.getGroupArrayList().remove(g1);
-			if (data.getGroupArrayList().contains(g2))
-				data.getGroupArrayList().remove(g2);
+			if (data.getMiscGroup().contains(g1))
+				data.getMiscGroup().remove(g1);
+			if (data.getMiscGroup().contains(g2))
+				data.getMiscGroup().remove(g2);
 			if (_completeHierarcy) // 終了
 				return;
 

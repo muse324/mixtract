@@ -364,7 +364,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 */
 	protected void createNonHierarchicalGroupLabel() {
 		int level = getMaximumGroupLevel() + 1;
-		for (Group g : data.getGroupArrayList()) {
+		for (Group g : data.getMiscGroup()) {
 			if (level < g.getLevel())
 				level = g.getLevel() + 1;
 			createGroupLabel(g, level);

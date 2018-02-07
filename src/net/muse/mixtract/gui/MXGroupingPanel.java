@@ -45,7 +45,7 @@ public class MXGroupingPanel extends GroupingPanel {
 
 	protected void createNonHierarchicalGroupLabel() {
 		int level = getMaximumGroupLevel() + 1;
-		for (Group group : data().getGroupArrayList()) {
+		for (Group group : data().getMiscGroup()) {
 			assert group instanceof MXGroup;
 			MXGroup g = (MXGroup) group;
 			if (level < g.getLevel())

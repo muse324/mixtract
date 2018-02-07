@@ -86,7 +86,7 @@ public class MXTuneData extends TuneData {
 	@Override
 	public void addGroupArrayList(Group group) {
 		// 重複するグループがあれば処理中断
-		for (Group g : getGroupArrayList()) {
+		for (Group g : getMiscGroup()) {
 			if (g.nearlyEquals(group))
 				return;
 			// TODO 複数声部に未対応
@@ -95,7 +95,7 @@ public class MXTuneData extends TuneData {
 		assert group instanceof MXGroup;
 		createPrimaryPhraseSequence((MXGroup) group);
 		// ----------------------------------
-		getGroupArrayList().add(group);
+		getMiscGroup().add(group);
 	}
 
 	public NoteData getLastNote(int partIndex) {
@@ -423,7 +423,7 @@ public class MXTuneData extends TuneData {
 		final PrimaryPhraseSequence seq = new PrimaryPhraseSequence(group);
 
 		// 新規作成
-		if (getGroupArrayList().size() <= 0) {
+		if (getMiscGroup().size() <= 0) {
 			groupSequence = seq;
 			return;
 		}
@@ -801,8 +801,8 @@ public class MXTuneData extends TuneData {
 		for (int i = 0; i < getRootGroup().size(); i++)
 			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
 		// non-hierarchical groups
-		for (int i = 0; i < getGroupArrayList().size(); i++)
-			writeGroupStructureData(out, (MXGroup) getGroupArrayList().get(i));
+		for (int i = 0; i < getMiscGroup().size(); i++)
+			writeGroupStructureData(out, (MXGroup) getMiscGroup().get(i));
 		out.close();
 	}
 }
