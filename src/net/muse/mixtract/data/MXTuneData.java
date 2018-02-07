@@ -541,14 +541,14 @@ public class MXTuneData extends TuneData {
 		final String s = args[idx];
 		switch (s.charAt(0)) {
 		case '(':
-			list.setChild(new GroupNote());
+			list.setChild(new NoteData(idx));
 			parseGroupNotelist(list.child(), args, ++idx, size);
 			break;
 		case ')':
 			parseGroupNotelist(list.parent(), args, ++idx, size);
 			break;
 		case ',':
-			list.setNext(new GroupNote());
+			list.setNext(new NoteData(idx));
 			if (list.hasParent())
 				list.next().setParent(list.parent(), false);
 			parseGroupNotelist(list.next(), args, ++idx, size);

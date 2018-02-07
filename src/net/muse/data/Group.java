@@ -372,12 +372,11 @@ public class Group extends SequenceData {
 			endGroupNote = notelist;
 			return;
 		}
-		GroupNote n = new GroupNote(note);
 		if (note.hasParent()) {
-			notelist.setChild(n);
+			notelist.setChild(note);
 			notelist = notelist.child();
 		} else {
-			notelist.setNext(n);
+			notelist.setNext(note);
 			notelist = notelist.next();
 		}
 		setNotelist(note.child(), notelist);

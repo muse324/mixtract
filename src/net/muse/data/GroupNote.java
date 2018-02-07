@@ -7,14 +7,17 @@ package net.muse.data;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/08/31
  */
+@Deprecated
 public class GroupNote extends SequenceData {
 	private NoteData note = null;
 
+	@Deprecated
 	public GroupNote(NoteData note) {
 		super();
 		this.note = note;
 	}
 
+	@Deprecated
 	public GroupNote() {
 		super();
 	}
@@ -22,7 +25,9 @@ public class GroupNote extends SequenceData {
 	/**
 	 * @return child
 	 */
-	@Override public GroupNote child() {
+	@Override
+	@Deprecated
+	public GroupNote child() {
 		return (GroupNote) super.child();
 	}
 
@@ -30,13 +35,15 @@ public class GroupNote extends SequenceData {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override public boolean equals(Object obj) {
+	@Override
+	public boolean equals(Object obj) {
 		return note.equals(((GroupNote) obj).getNote());
 	}
 
 	/**
 	 * @return note
 	 */
+	@Deprecated
 	public NoteData getNote() {
 		return note;
 	}
@@ -45,26 +52,35 @@ public class GroupNote extends SequenceData {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-	@Override public int hashCode() {
+	@Override
+	public int hashCode() {
 		return 1;
 	}
 
+	@Deprecated
 	public String id() {
 		return (note != null) ? note.id() : "null";
 	}
 
-	@Override public GroupNote next() {
+	@Override
+	@Deprecated
+	public GroupNote next() {
 		return (GroupNote) super.next();
 	}
 
-	@Override public GroupNote parent() {
+	@Override
+	@Deprecated
+	public GroupNote parent() {
 		return (GroupNote) super.parent();
 	}
 
-	@Override public GroupNote previous() {
+	@Override
+	@Deprecated
+	public GroupNote previous() {
 		return (GroupNote) super.previous();
 	}
 
+	@Deprecated
 	public void setNote(NoteData note) {
 		this.note = note;
 	}
@@ -73,7 +89,8 @@ public class GroupNote extends SequenceData {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override public String toString() {
+	@Override
+	public String toString() {
 		if (note == null)
 			return "null";
 		return String.format("%s -> (%s) %s (%s) -> %s", (hasPrevious())
