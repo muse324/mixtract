@@ -106,35 +106,45 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 */
 	@Override
 	public void processNote(SCCXMLWrapper.Note note, SCCXMLWrapper arg1) {
-		data().setTempoListEndtime(note.offset(getTicksPerBeat()),true);
-		if (note.getNodeName().equals("control")) {
-			switch (note.notenum()) {
-			case 64:
-				GUIUtil.printConsole(String.format("%d: Sustain %d", note
-						.onset(), note.velocity()));
-				break;
-			default:
-				GUIUtil.printConsole(String.format("%d: control %d %d", note
-						.onset(), note.notenum(), note.velocity()));
-			}
+		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
+		parseMIDIControlMessage(note, note.getNodeName().equals("control"));
+		parseMIDINoteMessage(note, note.getNodeName().equals("note"));
+	}
+
+	protected void parseMIDINoteMessage(SCCXMLWrapper.Note note,
+			boolean condition) {
+		if (!condition)
 			return;
+		int beat = getBeat(note);
+		NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
+				.getBPM().get(0), beat, note.velocity());
+		nd.setKeyMode(keyMode, fifths);
+		nd.setMeasureNumber(currentMeasureNumber);
+		testPrintln(nd.toString());
+		if (cur == null) {
+			// 冒頭音
+			cur = nd;
+			data().setNotelist(partIndex, nd);
+		} else {
+			cur.setNext(nd);
+			cur = nd;
 		}
-		if (note.getNodeName().equals("note")) {
-			int beat = getBeat(note);
-			NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
-					.getBPM().get(0), beat, note.velocity());
-			nd.setKeyMode(keyMode, fifths);
-			nd.setMeasureNumber(currentMeasureNumber);
-			testPrintln(nd.toString());
-			if (cur == null) {
-				// 冒頭音
-				cur = nd;
-				data().setNotelist(partIndex, nd);
-			} else {
-				cur.setNext(nd);
-				cur = nd;
-			}
+	}
+
+	protected void parseMIDIControlMessage(SCCXMLWrapper.Note note,
+			boolean condition) {
+		if (!condition)
+			return;
+		switch (note.notenum()) {
+		case 64:
+			GUIUtil.printConsole(String.format("%d: Sustain %d", note.onset(),
+					note.velocity()));
+			break;
+		default:
+			GUIUtil.printConsole(String.format("%d: control %d %d", note
+					.onset(), note.notenum(), note.velocity()));
 		}
+		return;
 	}
 
 	protected Group createGroup(NoteData n, int i, GroupType type) {
