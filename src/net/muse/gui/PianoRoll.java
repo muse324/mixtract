@@ -845,11 +845,11 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		setDoubleBuffered(true);
 	}
 
-	protected void makeNoteLabel(GroupNote note, boolean isChild) {
+	protected void makeNoteLabel(NoteData note, boolean isChild) {
 		if (note == null)
 			return;
-		int offset = (note.hasNext() && note.next().getNote() != null && note
-				.next().getNote().noteNumber() == note.getNote().noteNumber())
+		int offset = (note.hasNext() && note.next() != null && note
+				.next().noteNumber() == note.noteNumber())
 						? 5 : 0;
 		makeNoteLabel(note, offset, isChild);
 		makeNoteLabel(note.child(), true);
@@ -861,7 +861,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @param offset
 	 *            同音打鍵が続いた場合の描画間隔ピクセル
 	 */
-	private void makeNoteLabel(final GroupNote note, int offset,
+	private void makeNoteLabel(final NoteData note, int offset,
 			boolean isChild) {
 		if (note == null)
 			return;
@@ -869,10 +869,10 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		// nd
 		// .noteNumber()) ? 5 : 0;
 
-		if (note.getNote() == null)
+		if (note == null)
 			return;
 
-		final Rectangle r = getLabelBounds(note.getNote(), offset);
+		final Rectangle r = getLabelBounds(note, offset);
 		final NoteLabel n = createNoteLabel(note, r);
 		n.setController(main);
 		n.setSelected(selectedNoteLabels.contains(n));
@@ -906,7 +906,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		}
 	}
 
-	protected NoteLabel createNoteLabel(final GroupNote note,
+	protected NoteLabel createNoteLabel(final NoteData note,
 			final Rectangle r) {
 		return new NoteLabel(note, r);
 	}

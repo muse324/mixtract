@@ -87,8 +87,7 @@ abstract class ApexInfo extends MuseObject {
 		 */
 		@Override
 		public void apply(Group group) {
-			((MXNoteData) group.getBeginGroupNote().getNote()).addApexScore(
-					this);
+			((MXNoteData) group.getBeginGroupNote()).addApexScore(this);
 		}
 	}
 
@@ -223,9 +222,8 @@ abstract class ApexInfo extends MuseObject {
 		 */
 		@Override
 		public void apply(Group group) {
-			((MXNoteData) group.getEndGroupNote().getNote()).addApexScore(this);
+			((MXNoteData) group.getEndGroupNote()).addApexScore(this);
 		}
-
 	}
 
 	/**
@@ -688,7 +686,8 @@ abstract class ApexInfo extends MuseObject {
 		@Override
 		public void apply(List<? extends NoteData> notelist, int idx,
 				int size) {
-			if(idx>=size)return;
+			if (idx >= size)
+				return;
 			NoteData n1 = notelist.get(idx);
 			assert n1 instanceof MXNoteData;
 			((MXNoteData) n1).addApexScore(apply(n1.chord()));

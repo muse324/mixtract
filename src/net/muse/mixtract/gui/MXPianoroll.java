@@ -5,7 +5,7 @@ import java.awt.Rectangle;
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
-import net.muse.data.GroupNote;
+import net.muse.data.NoteData;
 import net.muse.gui.*;
 import net.muse.mixtract.data.MXGroup;
 
@@ -41,7 +41,7 @@ public class MXPianoroll extends PianoRoll {
 		super.selectGroup(group);
 	}
 
-	protected NoteLabel createNoteLabel(final GroupNote note,
+	protected NoteLabel createNoteLabel(final NoteData note,
 			final Rectangle r) {
 		return new MXNoteLabel(note, r);
 	}

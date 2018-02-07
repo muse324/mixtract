@@ -17,7 +17,7 @@ public class MXGroup extends Group {
 	private TempoCurve tempoCurve;
 	private ArticulationCurve articulationCurve;
 	/** グループ中央付近にある音符。 */
-	private GroupNote centerNote;
+	private NoteData centerNote;
 	private MXGroup childFormerGroup = null;
 	private MXGroup childLatterGroup = null;
 
@@ -26,7 +26,7 @@ public class MXGroup extends Group {
 	 * @param endNote
 	 * @param type
 	 */
-	public MXGroup(GroupNote groupNoteList, GroupNote endNote, GroupType type) {
+	public MXGroup(NoteData groupNoteList, NoteData endNote, GroupType type) {
 		super(groupNoteList, endNote, type);
 	}
 
@@ -62,7 +62,7 @@ public class MXGroup extends Group {
 	 * @param list
 	 * @param type
 	 */
-	MXGroup(int id, int partNumber, GroupNote list, GroupType type) {
+	MXGroup(int id, int partNumber, NoteData list, GroupType type) {
 		super(id, partNumber, list, type);
 	}
 
@@ -167,10 +167,10 @@ public class MXGroup extends Group {
 				PhraseCurveType.ARTICULATION);
 	}
 
-	public GroupNote getCenterGroupNote() {
+	public NoteData getCenterGroupNote() {
 		if (centerNote == null) {
 			// onset length
-			int len = getEndGroupNote().getNote().onset() - onsetInTicks();
+			int len = getEndGroupNote().onset() - onsetInTicks();
 			int targetTime = len / 2;
 			searchCenterGroupNote(targetTime, getBeginGroupNote());
 			if (hasChild())
@@ -180,10 +180,10 @@ public class MXGroup extends Group {
 		return centerNote;
 	}
 
-	private void searchCenterGroupNote(int targetTime, GroupNote note) {
+	private void searchCenterGroupNote(int targetTime, NoteData note) {
 		if (note == null)
 			return;
-		if (note.getNote().onset() >= targetTime)
+		if (note.onset() >= targetTime)
 			return;
 		centerNote = note;
 		searchCenterGroupNote(targetTime, note.next());
@@ -210,7 +210,7 @@ public class MXGroup extends Group {
 			addScoreNoteList(getChildFormerGroup().getScoreNotelist());
 			addScoreNoteList(getChildLatterGroup().getScoreNotelist());
 		} else if (scoreNotelist.size() <= 1)
-			makeScoreNotelist(getBeginGroupNote().getNote());
+			makeScoreNotelist(getBeginGroupNote());
 		return scoreNotelist;
 	}
 

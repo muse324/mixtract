@@ -99,7 +99,7 @@ public class MXTuneData extends TuneData {
 	}
 
 	public NoteData getLastNote(int partIndex) {
-		return getRootGroup(partIndex).getEndGroupNote().getNote();
+		return getRootGroup(partIndex).getEndGroupNote();
 	}
 
 	public MXGroup getRootGroup(int partIndex) {
@@ -358,8 +358,8 @@ public class MXTuneData extends TuneData {
 		if (group == null)
 			return;
 
-		final double startTime = group.getBeginGroupNote().getNote().onset();
-		final double endTime = group.getEndGroupNote().getNote().offset();
+		final double startTime = group.getBeginGroupNote().onset();
+		final double endTime = group.getEndGroupNote().offset();
 		final int st = (int) Math.round(MXGroupAnalyzer.rootDiv * startTime
 				/ getTempoListEndtime());
 		final int ed = (int) Math.round(MXGroupAnalyzer.rootDiv * endTime
@@ -428,15 +428,15 @@ public class MXTuneData extends TuneData {
 			return;
 		}
 
-		NoteData st = group.getBeginGroupNote().getNote();
-		NoteData ed = group.getEndGroupNote().getNote();
+		NoteData st = group.getBeginGroupNote();
+		NoteData ed = group.getEndGroupNote();
 		// 前後にgroup sequence がある場合
 		if (st.hasPrevious() && st.previous().equals(groupSequence.end()
-				.getGroup().getEndGroupNote().getNote())) {
+				.getGroup().getEndGroupNote())) {
 			groupSequence.end().setNext(seq);
 			seq.setPrevious(groupSequence);
 		} else if (ed.hasNext() && ed.next().equals(groupSequence.root()
-				.getGroup().getBeginGroupNote().getNote())) {
+				.getGroup().getBeginGroupNote())) {
 			groupSequence.root().setPrevious(seq);
 			seq.setNext(groupSequence);
 		}
@@ -498,7 +498,7 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	private MXGroup parseGroupInfo(List<MXGroup> glist, GroupNote list,
+	private MXGroup parseGroupInfo(List<MXGroup> glist, NoteData list,
 			String name, int partNumber, String groupInfo) {
 		MXGroup g = null;
 		final int id = Integer.parseInt(name.substring(1));
@@ -534,7 +534,7 @@ public class MXTuneData extends TuneData {
 		return g;
 	}
 
-	private void parseGroupNotelist(GroupNote list, String[] args, int idx,
+	private void parseGroupNotelist(NoteData list, String[] args, int idx,
 			int size) {
 		if (idx == size)
 			return;
@@ -560,11 +560,7 @@ public class MXTuneData extends TuneData {
 				if (n != null)
 					break;
 			}
-			try {
-				list.setNote(n);
-			} catch (NullPointerException e) {
-				e.printStackTrace();
-			}
+			list = n;
 			parseGroupNotelist(list, args, ++idx, size);
 			break;
 		default:
@@ -701,12 +697,12 @@ public class MXTuneData extends TuneData {
 			String str = null;
 			List<MXGroup> glist = new ArrayList<MXGroup>();
 			while ((str = in.readLine()) != null) {
-				GroupNote list = new GroupNote();
 				String item[] = str.split(";");
 				String name = item[0]; // group name
 				int partNumber = Integer.parseInt(item[1]);
 				if (partNumber <= 0)
 					partNumber = 1;
+				NoteData list = new NoteData(partNumber - 1);
 				String groupInfo = item[2];
 				String topNoteName = item[3];
 				String[] dynCurveInfo = item[4].split(",");
@@ -742,7 +738,7 @@ public class MXTuneData extends TuneData {
 			setNoteScheduleEvent(g.getChildLatterGroup());
 		} else {
 			setNoteScheduleEvent(g.getBeginGroupNote(), g.getEndGroupNote()
-					.getNote().offset());
+					.offset());
 		}
 	}
 
@@ -774,8 +770,7 @@ public class MXTuneData extends TuneData {
 		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
 		writeGroupStructureData(out, (MXGroup) group.getChildLatterGroup());
 		out.format("%s;%s;%s\n", group, (group.hasTopNote()) ? group
-				.getTopGroupNote().getNote().id() : "null", writeCurveParam(
-						group));
+				.getTopGroupNote().id() : "null", writeCurveParam(group));
 	}
 
 	private void writeNoteData(PrintWriter out, MXNoteData note) {

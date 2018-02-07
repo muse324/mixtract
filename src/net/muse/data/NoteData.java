@@ -92,7 +92,7 @@ public class NoteData extends SequenceData {
 		return Math.round(getTicksPerBeat() / (float) 16.);
 	}
 
-	protected NoteData(int index) {
+	public NoteData(int index) {
 		this.index = index;
 	}
 

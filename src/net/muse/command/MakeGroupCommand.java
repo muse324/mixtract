@@ -61,11 +61,11 @@ public class MakeGroupCommand extends MuseAppCommand {
 		while (begin.prev() != null && begin.prev().isSelected())
 			begin = begin.prev();
 		// ユーザグループを構成する音符列を生成する
-		GroupNote groupNoteList = createUserGroupNotelist(begin, end, null,
-				null, false);
+		NoteData groupNoteList = createUserGroupNotelist(begin, end, null, null,
+				false);
 		while (groupNoteList.hasParent())
 			groupNoteList = groupNoteList.parent();
-		GroupNote endNote = groupNoteList;
+		NoteData endNote = groupNoteList;
 		// 巻き戻し
 		while (groupNoteList.hasPrevious()) {
 			groupNoteList = groupNoteList.previous();
@@ -85,12 +85,12 @@ public class MakeGroupCommand extends MuseAppCommand {
 	 * @param isChild
 	 * @return
 	 */
-	private GroupNote createUserGroupNotelist(NoteLabel l, NoteLabel le,
-			GroupNote list, GroupNote glist, boolean isChild) {
+	private NoteData createUserGroupNotelist(NoteLabel l, NoteLabel le,
+			NoteData list, NoteData glist, boolean isChild) {
 		if (l == null)
 			return list;
 		if (glist == null) {
-			glist = new GroupNote(l.getScoreNote());
+			glist = l.getScoreNote();
 		}
 		if (list != null) {
 			if (isChild) {
@@ -99,8 +99,7 @@ public class MakeGroupCommand extends MuseAppCommand {
 				list = list.child();
 			} else {
 				while (list.hasParent()) {
-					if (glist.getNote().hasPrevious() && glist.getNote()
-							.previous().equals(list.getNote()))
+					if (glist.hasPrevious() && glist.previous().equals(list))
 						break;
 					list = list.parent();
 				}

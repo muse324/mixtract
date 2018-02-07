@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 
 import net.muse.app.MuseApp;
-import net.muse.data.GroupNote;
 import net.muse.data.NoteData;
 
 public class NoteLabel extends GroupLabel {
@@ -14,7 +13,7 @@ public class NoteLabel extends GroupLabel {
 	private static final long serialVersionUID = 1L;
 
 	/* 格納データ */
-	private final GroupNote note;
+	private final NoteData note;
 	private NoteLabel next = null;
 	private NoteLabel prev = null;
 	private NoteLabel parent = null;
@@ -64,15 +63,15 @@ public class NoteLabel extends GroupLabel {
 			l.setNext(this);
 	}
 
-	protected NoteLabel(GroupNote note, Rectangle r) {
+	protected NoteLabel(NoteData note, Rectangle r) {
 		super();
 		this.note = note;
-		setPartNumber(note.getNote().partNumber());
-		setCurrentColor(new PartColor(note.getNote().partNumber()).getColor());
+		setPartNumber(note.partNumber());
+		setCurrentColor(new PartColor(note.partNumber()).getColor());
 		setOpaque(true);
 		setLocation(r.x, r.y);
 		setBounds(r);
-		setMeasureBeginning(note.getNote().beat() == 1.0);
+		setMeasureBeginning(note.beat() == 1.0);
 		setDoubleBuffered(true);
 	}
 
@@ -84,19 +83,19 @@ public class NoteLabel extends GroupLabel {
 	public void setPartNumber(int partNumber) {
 		super.setPartNumber(partNumber);
 		setCurrentColor(new PartColor(partNumber).getColor());
-		note.getNote().setPartNumber(partNumber);
+		note.setPartNumber(partNumber);
 	}
 
 	private void setMeasureBeginning(boolean b) {
 		measureBeginning = b;
 	}
 
-	public GroupNote getGroupNote() {
+	public NoteData getGroupNote() {
 		return note;
 	}
 
 	public NoteData getScoreNote() {
-		return note.getNote();
+		return note;
 	}
 
 	public boolean isMeasureBeginning() {
@@ -195,9 +194,9 @@ public class NoteLabel extends GroupLabel {
 	@Override
 	public String toString() {
 		return String.format("(%s) %s (%s) -> %s", (parent != null) ? parent
-				.getGroupNote().getNote().noteName() : "null", note.getNote()
-						.noteName(), (child != null) ? child.getGroupNote()
-								.getNote().noteName() : "null", next());
+				.getGroupNote().noteName() : "null", note.noteName(),
+				(child != null) ? child.getGroupNote().noteName() : "null",
+				next());
 	}
 
 	boolean hasNext() {

@@ -37,17 +37,16 @@ public class Group extends SequenceData {
 	/** 声部番号（1〜） */
 	private int partNumber;
 	/** このグループに含まれる音符列 */
-	private GroupNote notelist = null;
+	private NoteData notelist = null;
 
 	/** TODO 具体的にどう使ってるか確認する */
 	protected List<NoteData> scoreNotelist;
 	/** 開始音 */
-	protected GroupNote beginGroupNote = null;
+	protected NoteData beginGroupNote = null;
 	/** 終了音 */
-	protected GroupNote endGroupNote = null;
-
+	protected NoteData endGroupNote = null;
 	/** 頂点音 TODO Mixtract用にプッシュダウンする */
-	private GroupNote topGroupNote = null;
+	private NoteData topGroupNote = null;
 	/** フレーズ（グループ）の詳細情報を格納します。 */
 	private PhraseFeature detail;
 
@@ -62,9 +61,9 @@ public class Group extends SequenceData {
 	 * @param groupNoteList
 	 * @param endNote
 	 */
-	public Group(GroupNote groupNoteList, GroupNote endNote, GroupType type) {
+	public Group(NoteData groupNoteList, NoteData endNote, GroupType type) {
 		this(type);
-		this.partNumber = groupNoteList.getNote().partNumber();
+		this.partNumber = groupNoteList.partNumber();
 		this.beginGroupNote = groupNoteList;
 		this.endGroupNote = endNote;
 	}
@@ -77,7 +76,7 @@ public class Group extends SequenceData {
 	 * @param list
 	 * @param type
 	 */
-	protected Group(int id, int partNumber, GroupNote list, GroupType type) {
+	protected Group(int id, int partNumber, NoteData list, GroupType type) {
 		this(type);
 		index = id;
 		this.partNumber = partNumber;
@@ -98,11 +97,11 @@ public class Group extends SequenceData {
 	 */
 	protected Group(NoteData notelist, int partIndex, GroupType type) {
 		this(type);
-		this.notelist = new GroupNote(notelist);
-		this.beginGroupNote = this.notelist;
+//		this.notelist = new GroupNote(notelist);
+		this.beginGroupNote = notelist;
 		this.partNumber = partIndex;
-		setNotelist(notelist.child(), this.notelist);
-		setNotelist(notelist.next(), this.notelist);
+//		setNotelist(notelist.child(), this.notelist);
+//		setNotelist(notelist.next(), this.notelist);
 		comfirmLastRestnotesFromGroup();
 	}
 
@@ -138,14 +137,14 @@ public class Group extends SequenceData {
 	/**
 	 * @return beginGroupNote
 	 */
-	public GroupNote getBeginGroupNote() {
+	public NoteData getBeginGroupNote() {
 		return beginGroupNote;
 	}
 
 	/**
 	 * @return endGroupNote
 	 */
-	public GroupNote getEndGroupNote() {
+	public NoteData getEndGroupNote() {
 		return endGroupNote;
 	}
 
@@ -179,7 +178,7 @@ public class Group extends SequenceData {
 			scoreNotelist.clear();
 			addScoreNoteList(child().getScoreNotelist());
 		} else if (scoreNotelist.size() <= 1)
-			makeScoreNotelist(getBeginGroupNote().getNote());
+			makeScoreNotelist(getBeginGroupNote());
 		return scoreNotelist;
 	}
 
@@ -193,7 +192,7 @@ public class Group extends SequenceData {
 	/**
 	 * @return topGroupNote
 	 */
-	public GroupNote getTopGroupNote() {
+	public NoteData getTopGroupNote() {
 		return topGroupNote;
 	}
 
@@ -231,18 +230,18 @@ public class Group extends SequenceData {
 	}
 
 	public int offsetInTicks() {
-		return endGroupNote.getNote().offset();
+		return endGroupNote.offset();
 	}
 
 	public int onsetInTicks() {
-		return beginGroupNote.getNote().onset();
+		return beginGroupNote.onset();
 	}
 
 	/**
 	 * @return
 	 */
 	public double realOnset() {
-		return getBeginGroupNote().getNote().realOnset();
+		return getBeginGroupNote().realOnset();
 	}
 
 	/**
@@ -312,9 +311,9 @@ public class Group extends SequenceData {
 	protected void makeScoreNotelist(NoteData root) {
 		if (root == null)
 			return;
-		if (root.onset() > getEndGroupNote().getNote().onset())
+		if (root.onset() > getEndGroupNote().onset())
 			return;
-		if (root.onset() >= getBeginGroupNote().getNote().onset())
+		if (root.onset() >= getBeginGroupNote().onset())
 			scoreNotelist.add(root);
 		makeScoreNotelist(root.next());
 	}
@@ -326,13 +325,13 @@ public class Group extends SequenceData {
 	private void comfirmLastRestnotesFromGroup() {
 		if (INCLUDE_LAST_RESTNOTE)
 			return;
-		while (endGroupNote.getNote().rest()) {
+		while (endGroupNote.rest()) {
 			endGroupNote = endGroupNote.previous();
 			endGroupNote.setNext(null);
 		}
 	}
 
-	private String notelistName(String str, GroupNote note) {
+	private String notelistName(String str, NoteData note) {
 		if (note == null)
 			return str;
 		if (str.length() > 1)
@@ -351,24 +350,24 @@ public class Group extends SequenceData {
 	}
 
 	private double realOffset() {
-		return getEndGroupNote().getNote().realOffset();
+		return getEndGroupNote().realOffset();
 	}
 
 	/**
 	 * @param beginGroupNote セットする beginGroupNote
 	 */
-	protected void setBeginGroupNote(GroupNote beginGroupNote) {
+	protected void setBeginGroupNote(NoteData beginGroupNote) {
 		this.beginGroupNote = beginGroupNote;
 	}
 
 	/**
 	 * @param endGroupNote セットする endGroupNote
 	 */
-	protected void setEndGroupNote(GroupNote endGroupNote) {
+	protected void setEndGroupNote(NoteData endGroupNote) {
 		this.endGroupNote = endGroupNote;
 	}
 
-	private void setNotelist(NoteData note, GroupNote notelist) {
+	private void setNotelist(NoteData note, NoteData notelist) {
 		if (note == null) {
 			endGroupNote = notelist;
 			return;
@@ -385,12 +384,12 @@ public class Group extends SequenceData {
 		setNotelist(note.next(), notelist);
 	}
 
-	protected int timevalue(GroupNote gnote) {
+	protected int timevalue(NoteData gnote) {
 		if (gnote == null)
 			return 0;
 		int len = 0;
 		while (gnote != null) {
-			len += gnote.getNote().timeValue();
+			len += gnote.timeValue();
 			gnote = gnote.next();
 		}
 		return len;

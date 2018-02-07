@@ -37,7 +37,7 @@ public class GroupLabel extends JLabel {
 	protected GroupLabel(Group group, Rectangle r) {
 		this();
 		this.group = group;
-		this.setPartNumber(group.getBeginGroupNote().getNote().partNumber());
+		this.setPartNumber(group.getBeginGroupNote().partNumber());
 		setLocation(r.x, r.y);
 		setBounds(r);
 		setTypeShape(group.getType());

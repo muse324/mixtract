@@ -72,8 +72,8 @@ public class MXGroupAnalyzer extends MuseObject implements Runnable {
 	private void addPendingSequence(PrimaryPhraseSequence sequence) {
 		if (_pendingSequence == null)
 			_pendingSequence = sequence;
-		else if (_pendingSequence.getGroup().getEndGroupNote().getNote().next()
-				.equals(sequence.getGroup().getBeginGroupNote().getNote())) {
+		else if (_pendingSequence.getGroup().getEndGroupNote().next().equals(
+				sequence.getGroup().getBeginGroupNote())) {
 			_pendingSequence.setNext(sequence);
 		}
 	}
@@ -88,9 +88,8 @@ public class MXGroupAnalyzer extends MuseObject implements Runnable {
 		MXGroup g2 = sequence.next().getGroup();
 		// g1とg2の長さがほぼ等価（GPR5:symmetry）なら親グループを生成
 		if (symmetryRate(g1.getTimeValue(), g2.getTimeValue()) <= 0.3) {
-			MXGroup parent = new MXGroup(new GroupNote(g1.getBeginGroupNote()
-					.getNote()), new GroupNote(g2.getEndGroupNote().getNote()),
-					GroupType.PARENT);
+			MXGroup parent = new MXGroup(g1.getBeginGroupNote(), g2
+					.getEndGroupNote(), GroupType.PARENT);
 			parent.setIndex(data.getUniqueGroupIndex());
 			_completeHierarcy = false;
 			parent = reachedHierarchy(parent, data.getRootGroup(0));

@@ -25,9 +25,8 @@ public class ArticulationCurve extends PhraseCurve {
 	public void apply(MXTuneData target, MXGroup gr) {
 		assert target.getRootGroup(0) instanceof MXGroup;
 		MXGroup g = (MXGroup) target.getRootGroup(0);
-		double bt = g.getBeginGroupNote().getNote().onsetInMsec(
-				getDefaultBPM());
-		double et = g.getEndGroupNote().getNote().offsetInMsec(getDefaultBPM());
+		double bt = g.getBeginGroupNote().onsetInMsec(getDefaultBPM());
+		double et = g.getEndGroupNote().offsetInMsec(getDefaultBPM());
 		articulationList = target.getArticulationList();
 		applyArticulationEvent(g, bt, et);
 	}
@@ -57,10 +56,9 @@ public class ArticulationCurve extends PhraseCurve {
 		}
 	}
 
-	private void applyArticulationEvent(GroupNote gnote, double bt, double et) {
-		if (gnote == null)
+	private void applyArticulationEvent(NoteData nd, double bt, double et) {
+		if (nd == null)
 			return;
-		NoteData nd = (NoteData) gnote.getNote();
 		double on = nd.onsetInMsec(getDefaultBPM());
 		double tv = nd.timeValueInMsec(getDefaultBPM());
 		double t = on + tv; // current note の楽譜上のオフセット
@@ -71,7 +69,7 @@ public class ArticulationCurve extends PhraseCurve {
 				: idx - 1);
 		double newRealOffset = on + tv * artc;
 		nd.setRealOffset(newRealOffset);
-		applyArticulationEvent(gnote.child(), bt, et);
-		applyArticulationEvent(gnote.next(), bt, et);
+		applyArticulationEvent(nd.child(), bt, et);
+		applyArticulationEvent(nd.next(), bt, et);
 	}
 }

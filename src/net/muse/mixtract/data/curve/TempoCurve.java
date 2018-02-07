@@ -23,7 +23,8 @@ public class TempoCurve extends PhraseCurve {
 	 * jp.crestmuse.mixtract.data.PhraseCurve#apply(jp.crestmuse.mixtract
 	 * .data.TuneData)
 	 */
-	@Override public void apply(MXTuneData target, MXGroup gr) {
+	@Override
+	public void apply(MXTuneData target, MXGroup gr) {
 		if (tempolist != target.getTempoList())
 			tempolist = target.getTempoList();
 		if (lastNote != target.getLastNote(0))
@@ -31,11 +32,13 @@ public class TempoCurve extends PhraseCurve {
 		applyTempoEvent(target.getRootGroup(), target.getBPM().get(0));
 	}
 
-	@Override public double initialValue() {
+	@Override
+	public double initialValue() {
 		return 0.;
 	}
 
-	private void applyTempoEvent(MXGroup group, ArrayList<Double> realtimeList) {
+	private void applyTempoEvent(MXGroup group,
+			ArrayList<Double> realtimeList) {
 		if (group == null)
 			return;
 		applyTempoEvent(group.getChildFormerGroup(), realtimeList);
@@ -43,21 +46,20 @@ public class TempoCurve extends PhraseCurve {
 		applyTempoEvent(group.getBeginGroupNote(), realtimeList);
 	}
 
-	private void applyTempoEvent(GroupNote note,
+	private void applyTempoEvent(NoteData note,
 			ArrayList<Double> realtimeList) {
 		if (note == null)
 			return;
-		NoteData n = note.getNote();
-		if (n != null && !n.rest()) {
+		if (note != null && !note.rest()) {
 			final int size = realtimeList.size();
-			int idxOn = (int) getCurrentIndex(n, size, n.onset());
-			int idxOff = (int) getCurrentIndex(n, size, n.offset());
+			int idxOn = (int) getCurrentIndex(note, size, note.onset());
+			int idxOff = (int) getCurrentIndex(note, size, note.offset());
 			if (idxOn >= size)
 				idxOn = size - 1;
-			n.setRealOnset(realtimeList.get(idxOn));
+			note.setRealOnset(realtimeList.get(idxOn));
 			if (idxOff >= size)
 				idxOff = size - 1;
-			n.setRealOffset(realtimeList.get(idxOff));
+			note.setRealOffset(realtimeList.get(idxOff));
 		}
 		applyTempoEvent(note.child(), realtimeList);
 		applyTempoEvent(note.next(), realtimeList);

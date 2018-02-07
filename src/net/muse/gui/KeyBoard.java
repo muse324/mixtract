@@ -463,7 +463,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/**
 	 * @param note
 	 */
-	private void setKeyRegister(NoteData note) {
+	public void setKeyRegister(NoteData note) {
 		if (note == null)
 			return;
 		setKeyRegister(note.child());

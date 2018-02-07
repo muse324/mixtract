@@ -566,13 +566,11 @@ public class TuneData extends MuseObject implements TuneDataController {
 			notelist.set(partIndex, root);
 	}
 
-	protected void setNoteScheduleEvent(GroupNote note, int endOffset) {
+	protected void setNoteScheduleEvent(NoteData note, int endOffset) {
 		if (note == null)
 			return;
-		if (note.getNote() == null)
-			return;
-		if (!note.getNote().rest()) {
-			addNoteScheduleEventList(note.getNote());
+		if (!note.rest()) {
+			addNoteScheduleEventList(note);
 		}
 		setNoteScheduleEvent(note.child(), endOffset);
 		setNoteScheduleEvent(note.next(), endOffset);
@@ -624,7 +622,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 			idxlist.add(glist.index());
 	}
 
-	private void initializeNoteEvents(NoteData nd) {
+	protected void initializeNoteEvents(NoteData nd) {
 		if (nd == null)
 			return;
 
@@ -697,7 +695,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 			return;
 		setNoteScheduleEvent(g.child());
 		setNoteScheduleEvent(g.getBeginGroupNote(), g.getEndGroupNote()
-				.getNote().offset());
+				.offset());
 	}
 
 	/** @param outputFile セットする outputFile */

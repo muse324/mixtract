@@ -189,15 +189,15 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		return beat;
 	}
 
-	private void linkToPrimaryGroup(GroupNote note,
-			GroupNote currentPrimaryNote) {
+	private void linkToPrimaryGroup(NoteData note,
+			NoteData currentPrimaryNote) {
 		if (note == null)
 			return;
-		while (currentPrimaryNote.hasNext() && note.getNote()
-				.onset() >= currentPrimaryNote.next().getNote().onset()) {
+		while (currentPrimaryNote.hasNext() && note
+				.onset() >= currentPrimaryNote.next().onset()) {
 			currentPrimaryNote = currentPrimaryNote.next();
 		}
-		if (note.getNote().onset() == currentPrimaryNote.getNote().onset()) {
+		if (note.onset() == currentPrimaryNote.onset()) {
 			setChild(currentPrimaryNote, note);
 			if (TuneData.segmentGroupnoteLine) {
 				if (note.hasPrevious())
@@ -247,7 +247,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		}
 	}
 
-	private void setChild(GroupNote parent, GroupNote note) {
+	private void setChild(NoteData parent, NoteData note) {
 		if (!parent.hasChild()) {
 			parent.setChild(note);
 			return;

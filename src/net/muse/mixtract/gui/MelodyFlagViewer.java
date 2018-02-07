@@ -83,10 +83,10 @@ public class MelodyFlagViewer extends JPanel {
 
 			// 旋律外形の音域を求める．
 			// 開始音，頂点音（もしくは中央音），その次の音，終了音の音高を比較する．
-			NoteData bg = group.getBeginGroupNote().getNote();
+			NoteData bg = group.getBeginGroupNote();
 			Note n1 = flag.getFormerLastNote();
 			Note n2 = flag.getLatterFirstNote();
-			NoteData ed = group.getEndGroupNote().getNote();
+			NoteData ed = group.getEndGroupNote();
 
 			if (bg.noteNumber() < n1.notenum()) {
 				minNoteNumber = bg.noteNumber();
@@ -126,13 +126,13 @@ public class MelodyFlagViewer extends JPanel {
 
 			// 旋律概形
 			double ylen = maxNoteNumber - minNoteNumber;
-			int y0 = (int) (h - (group.getBeginGroupNote().getNote()
-					.noteNumber() - minNoteNumber) / ylen * h);
+			int y0 = (int) (h - (group.getBeginGroupNote().noteNumber()
+					- minNoteNumber) / ylen * h);
 			int y1 = (int) (h - (flag.getFormerLastNote().notenum()
 					- minNoteNumber) / ylen * h);
 			int y2 = (int) (h - (flag.getLatterFirstNote().notenum()
 					- minNoteNumber) / ylen * h);
-			int y3 = (int) (h - (group.getEndGroupNote().getNote().noteNumber()
+			int y3 = (int) (h - (group.getEndGroupNote().noteNumber()
 					- minNoteNumber) / ylen * h);
 			int formerLength = (int) (width * flag.getCt3());
 			g2.setColor(Color.red);
