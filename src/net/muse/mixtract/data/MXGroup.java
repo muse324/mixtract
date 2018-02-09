@@ -153,9 +153,9 @@ public class MXGroup extends Group {
 	 * @see net.muse.mixtract.data.Group#addScoreNoteList(java.util.List)
 	 */
 	@Override
-	protected void addScoreNoteList(List<? extends NoteData> list) {
+	protected void addScoreNoteList(List<NoteData> list) {
 		for (NoteData n : list)
-			scoreNotelist.add((MXNoteData) n);
+			getScoreNotelist().add((MXNoteData) n);
 	}
 
 	protected void initialize() {
@@ -199,19 +199,12 @@ public class MXGroup extends Group {
 
 	/*
 	 * (非 Javadoc)
-	 * @see net.muse.data.Group#getScoreNotelist()
+	 * @see net.muse.data.Group#addScoreNoteList()
 	 */
 	@Override
-	public List<? extends NoteData> getScoreNotelist() {
-		if (scoreNotelist == null)
-			createScoreNoteList();
-		if (hasChild()) {
-			scoreNotelist.clear();
-			addScoreNoteList(getChildFormerGroup().getScoreNotelist());
-			addScoreNoteList(getChildLatterGroup().getScoreNotelist());
-		} else if (scoreNotelist.size() <= 1)
-			makeScoreNotelist(getBeginNote());
-		return scoreNotelist;
+	protected void addScoreNoteList() {
+		addScoreNoteList(getChildFormerGroup().getScoreNotelist());
+		addScoreNoteList(getChildLatterGroup().getScoreNotelist());
 	}
 
 	@Override

@@ -504,9 +504,9 @@ public class MXTuneData extends TuneData {
 		final int id = Integer.parseInt(name.substring(1));
 		if (groupInfo.charAt(0) == '[') {
 			String group[] = groupInfo.split(" ");
-		note=	parseNotelist(note, group, 1, group.length);
-		while(note.hasPrevious())
-			note=note.previous();
+			note = parseNotelist(note, group, 1, group.length);
+			while (note.hasPrevious())
+				note = note.previous();
 			g = new MXGroup(id, partNumber, note, GroupType.is(name.charAt(0)));
 			glist.add(g);
 			if (!hasGroupList())
@@ -544,16 +544,16 @@ public class MXTuneData extends TuneData {
 		switch (s.charAt(0)) {
 		case '(':
 			note.setChild(new MXNoteData(++idx));
-			note=parseNotelist(note.child(), args, idx, size);
+			note = parseNotelist(note.child(), args, idx, size);
 			break;
 		case ')':
-			note=parseNotelist(note.parent(), args, ++idx, size);
+			note = parseNotelist(note.parent(), args, ++idx, size);
 			break;
 		case ',':
-//			note.setNext(new MXNoteData(++idx));
+			// note.setNext(new MXNoteData(++idx));
 			if (note.hasParent())
 				note.next().setParent(note.parent(), false);
-			note=parseNotelist(note.next(), args, ++idx, size);
+			note = parseNotelist(note.next(), args, ++idx, size);
 			break;
 		case 'n':
 			MXNoteData n = null;
@@ -564,10 +564,10 @@ public class MXTuneData extends TuneData {
 			}
 			if (note == null)
 				note = n;
-			note=parseNotelist(note, args, ++idx, size);
+			note = parseNotelist(note, args, ++idx, size);
 			break;
 		default:
-			note=parseNotelist(note, args, ++idx, size);
+			note = parseNotelist(note, args, ++idx, size);
 		}
 		return note;
 	}

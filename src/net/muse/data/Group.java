@@ -36,11 +36,8 @@ public class Group extends SequenceData {
 	private int level;
 	/** 声部番号（1〜） */
 	private int partNumber;
-	/** このグループに含まれる音符列 */
-	@Deprecated private NoteData notelist = null;
-
 	/** TODO 具体的にどう使ってるか確認する */
-	protected List<NoteData> scoreNotelist;
+	protected final ArrayList<NoteData> scoreNotelist = new ArrayList<NoteData>();
 	/** 開始音 */
 	private NoteData beginNote = null;
 	/** 終了音 */
@@ -81,7 +78,6 @@ public class Group extends SequenceData {
 		this(type);
 		index = id;
 		this.partNumber = partNumber;
-		notelist = beginNote;
 		setBeginNote(beginNote);
 		while (beginNote.hasNext()) {
 			setEndNote(beginNote.next());
@@ -98,7 +94,6 @@ public class Group extends SequenceData {
 	 */
 	protected Group(NoteData note, int partIndex, GroupType type) {
 		this(type);
-		// this.notelist = new GroupNote(notelist);
 		this.setBeginNote(note);
 		this.partNumber = partIndex;
 		setNotelist(note.child(), note);
@@ -171,15 +166,17 @@ public class Group extends SequenceData {
 	/**
 	 * @return cur
 	 */
-	public List<? extends NoteData> getScoreNotelist() {
-		if (scoreNotelist == null)
-			createScoreNoteList();
+	public List<NoteData> getScoreNotelist() {
 		if (hasChild()) {
 			scoreNotelist.clear();
-			addScoreNoteList(child().getScoreNotelist());
+			addScoreNoteList();
 		} else if (scoreNotelist.size() <= 1)
 			makeScoreNotelist(getBeginNote());
 		return scoreNotelist;
+	}
+
+	protected void addScoreNoteList() {
+		addScoreNoteList(child().getScoreNotelist());
 	}
 
 	/**
@@ -260,8 +257,8 @@ public class Group extends SequenceData {
 		this.level = level;
 	}
 
-	public void setScoreNotelist(List<? extends NoteData> list) {
-		scoreNotelist.clear();
+	public void setScoreNotelist(List<NoteData> list) {
+		getScoreNotelist().clear();
 		addScoreNoteList(list);
 	}
 
@@ -295,13 +292,13 @@ public class Group extends SequenceData {
 		return str;
 	}
 
-	protected void addScoreNoteList(List<? extends NoteData> list) {
+	protected void addScoreNoteList(List<NoteData> list) {
 		for (NoteData n : list)
-			scoreNotelist.add(n);
+			getScoreNotelist().add(n);
 	}
 
 	protected void createScoreNoteList() {
-		this.scoreNotelist = new ArrayList<NoteData>();
+		this.setScoreNotelist(new ArrayList<NoteData>());
 	}
 
 	protected void initialize() {
@@ -405,4 +402,5 @@ public class Group extends SequenceData {
 	public String printInfo() {
 		return String.format("Group %s\n", name());
 	}
+
 }
