@@ -58,7 +58,7 @@ public class MXPianoroll extends PianoRoll {
 			makeNoteLabel(group.getChildFormerGroup());
 			makeNoteLabel(group.getChildLatterGroup());
 		} else
-			makeNoteLabel(group.getBeginGroupNote(), false);
+			makeNoteLabel(group.getBeginNote(), false);
 	}
 
 	/*

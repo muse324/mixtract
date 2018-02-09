@@ -8,7 +8,7 @@ import net.muse.mixtract.data.*;
 public class TempoCurve extends PhraseCurve {
 
 	private LinkedList<Double> tempolist;
-	private NoteData lastNote;
+	private MXNoteData lastNote;
 	private double musicLengthInRealtimeMsec;
 
 	TempoCurve() {
@@ -43,7 +43,7 @@ public class TempoCurve extends PhraseCurve {
 			return;
 		applyTempoEvent(group.getChildFormerGroup(), realtimeList);
 		applyTempoEvent(group.getChildLatterGroup(), realtimeList);
-		applyTempoEvent(group.getBeginGroupNote(), realtimeList);
+		applyTempoEvent(group.getBeginNote(), realtimeList);
 	}
 
 	private void applyTempoEvent(NoteData note,

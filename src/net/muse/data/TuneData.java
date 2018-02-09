@@ -47,8 +47,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/** テンポ情報 */
 	private ArrayList<Integer> bpmlist = new ArrayList<Integer>();
 	private double tempoListEndtime;
-	/** 声部ごとの音符情報 */
-	private ArrayList<NoteData> notelist = new ArrayList<NoteData>();
+	/** 声部ごとの音符情報（楽譜情報の読込順） */
+	private ArrayList<NoteData> partwiseNoteList = new ArrayList<NoteData>();
 	int[] midiProgram = new int[MAXIMUM_MIDICHANNEL];
 	double[] volume = new double[MAXIMUM_MIDICHANNEL];
 
@@ -475,12 +475,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 		}
 	}
 
-	protected ArrayList<NoteData> getNotelist() {
-		return notelist;
-	}
-
-	protected NoteData getNoteList(int partIndex) {
-		return notelist.get(partIndex);
+	protected ArrayList<NoteData> getPartwiseNotelist() {
+		return partwiseNoteList;
 	}
 
 	protected double getTempoListEndtime() {
@@ -495,8 +491,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 	protected void initializeNoteEvents(Group group) {
 		if (group == null)
 			return;
-		initializeNoteEvents(group.child().getBeginGroupNote());
-		initializeNoteEvents(group.getBeginGroupNote());
+		initializeNoteEvents(group.child().getBeginNote());
+		initializeNoteEvents(group.getBeginNote());
 	}
 
 	protected void initializeNoteEvents(GroupNote gnote) {
@@ -559,11 +555,11 @@ public class TuneData extends MuseObject implements TuneDataController {
 			this.getRootGroup().set(partIndex, rootGroup);
 	}
 
-	protected void setNotelist(int partIndex, NoteData root) {
-		if (partIndex >= this.notelist.size())
-			notelist.add(root);
+	protected void setPartwiseNotelist(int partIndex, NoteData root) {
+		if (partIndex >= this.partwiseNoteList.size())
+			partwiseNoteList.add(root);
 		else
-			notelist.set(partIndex, root);
+			partwiseNoteList.set(partIndex, root);
 	}
 
 	protected void setNoteScheduleEvent(NoteData note, int endOffset) {
@@ -694,8 +690,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 		if (g == null)
 			return;
 		setNoteScheduleEvent(g.child());
-		setNoteScheduleEvent(g.getBeginGroupNote(), g.getEndGroupNote()
-				.offset());
+		setNoteScheduleEvent(g.getBeginNote(), g.getEndNote().offset());
 	}
 
 	/** @param outputFile セットする outputFile */

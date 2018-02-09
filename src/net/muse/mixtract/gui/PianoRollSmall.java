@@ -136,7 +136,7 @@ class PianoRollSmall extends MXPianoroll {
 			break;
 		default:
 			double len = endX - getAxisX();
-			x = getAxisX() + ((nd.onset() - group().getBeginGroupNote().onset())
+			x = getAxisX() + ((nd.onset() - group().getBeginNote().onset())
 					/ (double) group().timeValue()) * len;
 			w = (nd.timeValue() / (double) group().timeValue()) * len - offset;
 			break;

@@ -301,7 +301,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	public void selectGroup(GroupLabel g, boolean flg) {}
 
 	/**
-	 * @param beginGroupNote
+	 * @param beginNote
 	 */
 	public void setKeyRegister(GroupNote note) {
 		if (note == null)
@@ -457,7 +457,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	 */
 	private void setKeyRegister(final List<Group> grouplist) {
 		for (Group g : grouplist)
-			setKeyRegister(g.getBeginGroupNote());
+			setKeyRegister(g.getBeginNote());
 	}
 
 	/**

@@ -596,7 +596,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		if (group.hasChild()) {
 			makeNoteLabel(group.child());
 		} else
-			makeNoteLabel(group.getBeginGroupNote(), false);
+			makeNoteLabel(group.getBeginNote(), false);
 	}
 
 	protected void rescaleNoteLabels() {}

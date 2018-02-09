@@ -51,19 +51,19 @@ public class MXGroup extends Group {
 		super(GroupType.is(name.charAt(0)));
 		setIndex(Integer.parseInt(name.substring(1)));
 		setPartNumber(partNumber);
-		beginGroupNote = g1.getBeginGroupNote();
-		endGroupNote = g2.getEndGroupNote();
+		setBeginNote(g1.getBeginNote());
+		setEndNote(g2.getEndNote());
 		setChild(g1, g2);
 	}
 
 	/**
 	 * @param id
 	 * @param partNumber
-	 * @param list
+	 * @param note
 	 * @param type
 	 */
-	MXGroup(int id, int partNumber, NoteData list, GroupType type) {
-		super(id, partNumber, list, type);
+	MXGroup(int id, int partNumber, NoteData note, GroupType type) {
+		super(id, partNumber, note, type);
 	}
 
 	/**
@@ -170,12 +170,12 @@ public class MXGroup extends Group {
 	public NoteData getCenterGroupNote() {
 		if (centerNote == null) {
 			// onset length
-			int len = getEndGroupNote().onset() - onsetInTicks();
+			int len = getEndNote().onset() - onsetInTicks();
 			int targetTime = len / 2;
-			searchCenterGroupNote(targetTime, getBeginGroupNote());
+			searchCenterGroupNote(targetTime, getBeginNote());
 			if (hasChild())
 				searchCenterGroupNote(targetTime, getChildLatterGroup()
-						.getBeginGroupNote());
+						.getBeginNote());
 		}
 		return centerNote;
 	}
@@ -210,7 +210,7 @@ public class MXGroup extends Group {
 			addScoreNoteList(getChildFormerGroup().getScoreNotelist());
 			addScoreNoteList(getChildLatterGroup().getScoreNotelist());
 		} else if (scoreNotelist.size() <= 1)
-			makeScoreNotelist(getBeginGroupNote());
+			makeScoreNotelist(getBeginNote());
 		return scoreNotelist;
 	}
 
@@ -234,7 +234,7 @@ public class MXGroup extends Group {
 		childFormerGroup = g;
 		if (g != null) {
 			childFormerGroup.setParent(this);
-			setBeginGroupNote(g.getBeginGroupNote());
+			setBeginNote(g.getBeginNote());
 		}
 	}
 
@@ -245,7 +245,7 @@ public class MXGroup extends Group {
 		childLatterGroup = g;
 		if (g != null) {
 			childLatterGroup.setParent(this);
-			setEndGroupNote(g.getEndGroupNote());
+			setEndNote(g.getEndNote());
 		}
 	}
 
@@ -267,10 +267,10 @@ public class MXGroup extends Group {
 	public int timeValue() {
 		int len = 0;
 		if (hasChild()) {
-			len += timevalue(getChildFormerGroup().getBeginGroupNote());
-			len += timevalue(getChildLatterGroup().getBeginGroupNote());
+			len += timevalue(getChildFormerGroup().getBeginNote());
+			len += timevalue(getChildLatterGroup().getBeginNote());
 		} else
-			len += timevalue(getBeginGroupNote());
+			len += timevalue(getBeginNote());
 
 		return len;
 	}

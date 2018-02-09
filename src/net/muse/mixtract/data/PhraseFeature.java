@@ -206,7 +206,7 @@ public class PhraseFeature extends AbstractPhraseFeature {
 		 * 後半最初の音符を取得する。グループがもし頂点音を保有している場合は頂点音を、
 		 * そうでなければ時間長の半分の位置にある音符を格納する。
 		 */
-		latterFirstNoteData = (group().hasTopNote()) ? group().getTopGroupNote()
+		latterFirstNoteData = (group().hasTopNote()) ? group().getTopNote()
 				 : group().getCenterGroupNote();
 
 		// 前半最後の音符を取得
@@ -215,12 +215,12 @@ public class PhraseFeature extends AbstractPhraseFeature {
 		double st = group().onsetInTicks();
 		double tp = formerLastNoteData.offset();
 		double formarLength = (tp - st) / getTicksPerBeat();
-		slopeA = (formerLastNoteData.noteNumber() - group().getBeginGroupNote()
+		slopeA = (formerLastNoteData.noteNumber() - group().getBeginNote()
 				.noteNumber()) / formarLength;
-		double ed = group().getEndGroupNote().offset();
+		double ed = group().getEndNote().offset();
 		double latterLength = ed - latterFirstNoteData.onset()
 				/ getTicksPerBeat();
-		slopeB = (group().getEndGroupNote().noteNumber()
+		slopeB = (group().getEndNote().noteNumber()
 				- latterFirstNoteData.noteNumber()) / latterLength;
 		timeValue = (ed - st) / getTicksPerBeat();
 		ratioOfMalodyA = formarLength / timeValue;

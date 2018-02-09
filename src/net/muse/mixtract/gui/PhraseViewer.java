@@ -255,7 +255,7 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 		KeyBoard k = new KeyBoard(480);
 		k.setLayout(new GridBagLayout());
 		k.resetKeyRegister();
-		k.setKeyRegister(group().getBeginGroupNote());
+		k.setKeyRegister(group().getBeginNote());
 		return k;
 	}
 

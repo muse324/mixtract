@@ -124,7 +124,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		if (cur == null) {
 			// 冒頭音
 			cur = nd;
-			data().setNotelist(partIndex, nd);
+			data().setPartwiseNotelist(partIndex, nd);
 		} else {
 			cur.setNext(nd);
 			cur = nd;
@@ -166,15 +166,15 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	}
 
 	private void createGroup() {
-		Group g = createGroup(data().getNoteList(partIndex), partIndex + 1,
+		Group g = createGroup(data().getPartwiseNotelist().get(partIndex), partIndex + 1,
 				GroupType.NOTE);
 
 		if (primaryGrouplist == null) {
 			primaryGrouplist = g;
 			data().setGrouplist(partIndex, g);
 		} else if (TuneData.segmentGroupnoteLine) {
-			linkToPrimaryGroup(g.getBeginGroupNote(), primaryGrouplist
-					.getBeginGroupNote());
+			linkToPrimaryGroup(g.getBeginNote(), primaryGrouplist
+					.getBeginNote());
 		} else {
 			data().setGrouplist(partIndex, g);
 		}
@@ -227,7 +227,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		if (cur == null) {
 			// 冒頭音
 			cur = nd;
-			data().setNotelist(partIndex, nd);
+			data().setPartwiseNotelist(partIndex, nd);
 		} else if (note.chord()) {
 			// 和音
 			// 最高音へ移動
@@ -235,8 +235,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				cur = cur.parent();
 			cur.setParent(nd);
 			nd.setPrevious(cur.previous());
-			if (cur.equals(data().getNoteList(partIndex)))
-				data().setNotelist(partIndex, nd);
+			if (cur.equals(data().getPartwiseNotelist().get(partIndex)))
+				data().setPartwiseNotelist(partIndex, nd);
 			cur = nd;
 		} else if (note.containsTieType("stop")) {
 			// タイ

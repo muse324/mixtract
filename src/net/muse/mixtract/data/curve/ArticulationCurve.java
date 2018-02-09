@@ -25,8 +25,8 @@ public class ArticulationCurve extends PhraseCurve {
 	public void apply(MXTuneData target, MXGroup gr) {
 		assert target.getRootGroup(0) instanceof MXGroup;
 		MXGroup g = (MXGroup) target.getRootGroup(0);
-		double bt = g.getBeginGroupNote().onsetInMsec(getDefaultBPM());
-		double et = g.getEndGroupNote().offsetInMsec(getDefaultBPM());
+		double bt = g.getBeginNote().onsetInMsec(getDefaultBPM());
+		double et = g.getEndNote().offsetInMsec(getDefaultBPM());
 		articulationList = target.getArticulationList();
 		applyArticulationEvent(g, bt, et);
 	}
@@ -52,7 +52,7 @@ public class ArticulationCurve extends PhraseCurve {
 		} else {
 			// target.applyArticulationEvent(this, gr.getBeginGroupNote(), bt,
 			// et);
-			applyArticulationEvent(gr.getBeginGroupNote(), bt, et);
+			applyArticulationEvent(gr.getBeginNote(), bt, et);
 		}
 	}
 

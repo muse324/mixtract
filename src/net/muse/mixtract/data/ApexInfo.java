@@ -87,7 +87,7 @@ abstract class ApexInfo extends MuseObject {
 		 */
 		@Override
 		public void apply(Group group) {
-			((MXNoteData) group.getBeginGroupNote()).addApexScore(this);
+			((MXNoteData) group.getBeginNote()).addApexScore(this);
 		}
 	}
 
@@ -222,7 +222,7 @@ abstract class ApexInfo extends MuseObject {
 		 */
 		@Override
 		public void apply(Group group) {
-			((MXNoteData) group.getEndGroupNote()).addApexScore(this);
+			((MXNoteData) group.getEndNote()).addApexScore(this);
 		}
 	}
 
