@@ -91,13 +91,6 @@ public enum GroupType {
 		public Color getColor() {
 			return Color.black;
 		}
-	},
-	/** 和音 */
-	CHORD {
-		@Override
-		public Color getColor() {
-			return Color.CYAN;
-		}
 	};
 
 	public static GroupType is(char c) {
