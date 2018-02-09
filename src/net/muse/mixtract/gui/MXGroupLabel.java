@@ -5,8 +5,6 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import net.muse.app.Mixtract;
-import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
 import net.muse.mixtract.data.MXGroup;

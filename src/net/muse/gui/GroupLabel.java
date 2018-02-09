@@ -103,8 +103,8 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
-				MixtractCommand.SET_TYPE_CRESC.setGroup((GroupLabel) _owner);
-				MixtractCommand.SET_TYPE_DIM.setGroup((GroupLabel) _owner);
+				MixtractCommand.SET_TYPE_CRESC.setGroup(self());
+				MixtractCommand.SET_TYPE_DIM.setGroup(self());
 				addMenuItemOnGroupingPanel();
 				getPopup().show((Component) e.getSource(), e.getX(), e.getY());
 			}
@@ -118,10 +118,9 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
-				final GroupLabel l = (GroupLabel) e.getSource();
-				Group gr = l.group();
+				Group gr = self().group();
 				if (gr == null) {
-					_owner.repaint();
+					self().repaint();
 					return;
 				}
 				if (e.getClickCount() == 2) {
@@ -145,13 +144,13 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
-				final GroupLabel src = (GroupLabel) e.getSource();
-				if (!_frame.getGroupingPanel().isGroupEditable()) {
-					src.moveLabelVertical(e, getMousePoint(), src.getBounds(),
-							isShiftKeyPressed(), isMousePressed());
+				if (!frame().getGroupingPanel().isGroupEditable()) {
+					self().moveLabelVertical(e, getMousePoint(), self()
+							.getBounds(), isShiftKeyPressed(),
+							isMousePressed());
 				} else
-					src.moveLabel(e, getMousePoint(), isMousePressed());
-				_frame.getGroupingPanel().repaint();
+					self().moveLabel(e, getMousePoint(), isMousePressed());
+				frame().getGroupingPanel().repaint();
 				repaint();
 			}
 
@@ -164,7 +163,7 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				super.mouseEntered(e);
-				((GroupLabel) e.getSource()).setMouseOver(true);
+				self().setMouseOver(true);
 			}
 
 			/*
@@ -176,8 +175,8 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
-				((GroupLabel) e.getSource()).setMouseOver(false);
-				((GroupLabel) e.getSource()).setEditMode(getMousePoint());
+				self().setMouseOver(false);
+				self().setEditMode(getMousePoint());
 			}
 
 			/*
@@ -202,11 +201,9 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
-				GroupLabel l = (GroupLabel) e.getSource();
-				_main.notifySelectGroup(l, true);
-				if (l.getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
-					// _owner.getPianorollPane().getPianoroll().setDrawNewArea(true);
-					_frame.getGroupingPanel().setGroupEditable(true);
+				_main.notifySelectGroup(self(), true);
+				if (self().getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
+					frame().getGroupingPanel().setGroupEditable(true);
 				}
 				repaint();
 			}
@@ -220,11 +217,20 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
-				_frame.getGroupingPanel().setGroupEditable(false);
-				_frame.getGroupingPanel().setCursor(new Cursor(
+				frame().getGroupingPanel().setGroupEditable(false);
+				frame().getGroupingPanel().setCursor(new Cursor(
 						Cursor.DEFAULT_CURSOR));
-				_frame.getPianoroll().repaint();
+				frame().getPianoroll().repaint();
 				repaint();
+			}
+
+			/*
+			 * (非 Javadoc)
+			 * @see net.muse.gui.MouseActionListener#owner()
+			 */
+			@Override
+			public GroupLabel self() {
+				return (GroupLabel) super.self();
 			}
 
 		};
