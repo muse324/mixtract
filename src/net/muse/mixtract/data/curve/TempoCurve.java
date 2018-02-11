@@ -1,9 +1,14 @@
 package net.muse.mixtract.data.curve;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-import net.muse.data.*;
-import net.muse.mixtract.data.*;
+import net.muse.data.Group;
+import net.muse.data.NoteData;
+import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.MXNoteData;
+import net.muse.mixtract.data.MXTuneData;
 
 public class TempoCurve extends PhraseCurve {
 
@@ -23,8 +28,7 @@ public class TempoCurve extends PhraseCurve {
 	 * jp.crestmuse.mixtract.data.PhraseCurve#apply(jp.crestmuse.mixtract
 	 * .data.TuneData)
 	 */
-	@Override
-	public void apply(MXTuneData target, MXGroup gr) {
+	@Override public void apply(MXTuneData target, MXGroup gr) {
 		if (tempolist != target.getTempoList())
 			tempolist = target.getTempoList();
 		if (lastNote != target.getLastNote(0))
@@ -32,8 +36,7 @@ public class TempoCurve extends PhraseCurve {
 		applyTempoEvent(target.getRootGroup(), target.getBPM().get(0));
 	}
 
-	@Override
-	public double initialValue() {
+	@Override public double initialValue() {
 		return 0.;
 	}
 
@@ -43,7 +46,8 @@ public class TempoCurve extends PhraseCurve {
 			return;
 		applyTempoEvent(group.getChildFormerGroup(), realtimeList);
 		applyTempoEvent(group.getChildLatterGroup(), realtimeList);
-		applyTempoEvent(group.getBeginNote(), realtimeList);
+		if (!group.hasChild())
+			applyTempoEvent(group.getBeginNote(), realtimeList);
 	}
 
 	private void applyTempoEvent(NoteData note,
@@ -61,7 +65,7 @@ public class TempoCurve extends PhraseCurve {
 				idxOff = size - 1;
 			note.setRealOffset(realtimeList.get(idxOff));
 		}
-		applyTempoEvent(note.child(), realtimeList);
+//		applyTempoEvent(note.child(), realtimeList);
 		applyTempoEvent(note.next(), realtimeList);
 	}
 

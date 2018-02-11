@@ -333,7 +333,6 @@ public class MXTuneData extends TuneData {
 			if (files[i].getName().equals(strfile))
 				readStructureData(files[i]);
 		}
-
 	}
 
 	/**

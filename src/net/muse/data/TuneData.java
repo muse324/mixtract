@@ -104,6 +104,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 		this.inputFile = in;
 		this.outputFile = out;
 		readfile();
+		calculateExpressionParameters();
 	}
 
 	/**
@@ -278,15 +279,12 @@ public class TuneData extends MuseObject implements TuneDataController {
 		if (fileType.equals("xml")) {
 			readCMXFile(inputFile.getAbsolutePath());
 			parseMusicXMLFile();
-			writefile();
-			calculateExpressionParameters();
 			return;
 		}
 		// MIDIファイル
 		if (fileType.equals("midi") || fileType.equals("x-midi")) {
 			readMIDIFile();
 			parseSCCXMLFile();
-			calculateExpressionParameters();
 			return;
 		}
 	}
