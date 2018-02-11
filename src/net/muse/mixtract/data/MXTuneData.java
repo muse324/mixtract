@@ -152,9 +152,21 @@ public class MXTuneData extends TuneData {
 		out.format("str=%s\n", STRUCTURE_FILENAME);
 		out.format("bpm=%s\n", getBPM().toString().subSequence(1, getBPM()
 				.toString().length() - 1));
-		for (int i = 0; i < getPartwiseNotelist().size(); i++)
-			writeNoteData(out, (MXNoteData) getPartwiseNotelist().get(i));
+		for (Group g : getRootGroup()) {
+			writeNoteData(out, (MXGroup) g);
+		}
+		// for (int i = 0; i < getPartwiseNotelist().size(); i++)
+		// writeNoteData(out, (MXNoteData) getPartwiseNotelist().get(i));
 		out.close();
+	}
+
+	private void writeNoteData(PrintWriter out, MXGroup g) {
+		if (g == null)
+			return;
+		if (!g.hasChild())
+			writeNoteData(out, (MXNoteData) g.getBeginNote());
+		writeNoteData(out, g.getChildFormerGroup());
+		writeNoteData(out, g.getChildLatterGroup());
 	}
 
 	private String getCMXFilename() throws IOException {
@@ -246,7 +258,7 @@ public class MXTuneData extends TuneData {
 		deleteGroup(g.getChildFormerGroup());
 		deleteGroup(g.getChildLatterGroup());
 		target.getScoreNotelist().clear();
-//		g.setScoreNotelist(target.getScoreNotelist());
+		// g.setScoreNotelist(target.getScoreNotelist());
 		if (g.hasChild()) {
 			g.getChildFormerGroup().getEndNote().setNext(g.getChildLatterGroup()
 					.getBeginNote());
@@ -804,7 +816,7 @@ public class MXTuneData extends TuneData {
 		assert rootGroup instanceof MXGroup;
 		MXGroup root = (MXGroup) rootGroup;
 		analyze(root.getChildFormerGroup());
-		analyze(root.getChildFormerGroup());
+		analyze(root.getChildLatterGroup());
 
 		MXGroup g = null;
 		for (Group group : getMiscGroup()) {
