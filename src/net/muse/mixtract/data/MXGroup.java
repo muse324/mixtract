@@ -263,7 +263,7 @@ public class MXGroup extends Group {
 			getChildLatterGroup().extractNotes(nlist);
 	}
 
-	private NoteData getCenterGroupNote() {
+	NoteData getCenterGroupNote() {
 		if (centerNote == null) {
 			// onset length
 			int len = getEndNote().onset() - onsetInTicks();
