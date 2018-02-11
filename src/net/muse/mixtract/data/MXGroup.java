@@ -77,7 +77,7 @@ public class MXGroup extends Group {
 	 * 頂点らしさを算出します。
 	 */
 	public void extractApex() {
-		List<? extends NoteData> nlist = getScoreNotelist();
+		List<NoteData> nlist = getScoreNotelist();
 		// score clear
 		for (NoteData n : nlist) {
 			assert n instanceof MXNoteData;
@@ -205,12 +205,20 @@ public class MXGroup extends Group {
 	 * (非 Javadoc)
 	 * @see net.muse.data.Group#addScoreNoteList()
 	 */
-	@Override protected void addScoreNoteList() {
-		if (hasChild()) {
-			addScoreNoteList((MXNoteData) getChildFormerGroup().getBeginNote());
-			addScoreNoteList((MXNoteData) getChildLatterGroup().getBeginNote());
+	@Override public void addScoreNoteList() {
+		if (!hasChild()) {
+			getScoreNotelist().clear();
+			addScoreNoteList((MXNoteData) getBeginNote());
+			return;
 		}
-		addScoreNoteList((MXNoteData) getBeginNote());
+		if (hasChildFormer()) {
+			getChildFormerGroup().getScoreNotelist().clear();
+			getChildFormerGroup().addScoreNoteList();
+		}
+		if (hasChildLatter()) {
+			getChildLatterGroup().getScoreNotelist().clear();
+			getChildLatterGroup().addScoreNoteList();
+		}
 	}
 
 	@Override public boolean hasChild() {

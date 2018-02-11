@@ -1,17 +1,38 @@
 package net.muse.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.LinkedList;
-import java.util.List;
 
-import javax.swing.*;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
 import javax.xml.transform.TransformerException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.app.MuseApp;
-import net.muse.command.*;
-import net.muse.data.*;
+import net.muse.command.ChangePartCommand;
+import net.muse.command.MuseAppCommand;
+import net.muse.command.SetKeyCommand;
+import net.muse.command.SetKeyModeCommand;
+import net.muse.data.Group;
+import net.muse.data.Harmony;
+import net.muse.data.KeyMode;
+import net.muse.data.NoteData;
+import net.muse.data.TuneData;
 import net.muse.misc.Util;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.command.SetChordCommand;
@@ -39,8 +60,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 * jp.crestmuse.mixtract.gui.MouseActionListener#actionPerformed
 		 * (java .awt.event.ActionEvent)
 		 */
-		@Override
-		public void actionPerformed(ActionEvent e) {
+		@Override public void actionPerformed(ActionEvent e) {
 			JMenuItem src = (JMenuItem) e.getSource();
 			String cmd = src.getActionCommand();
 			if (cmd.equals(MixtractCommand.CHANGE_PART.name())) {
@@ -65,8 +85,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
 		 * (java .awt.event.MouseEvent)
 		 */
-		@Override
-		public void createPopupMenu(MouseEvent e) {
+		@Override public void createPopupMenu(MouseEvent e) {
 			super.createPopupMenu(e);
 			boolean enabled = selectedNoteLabels.size() > 0;
 			getPopup().add(addMenuItem(MuseAppCommand.MAKE_GROUP, enabled));
@@ -118,8 +137,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 * java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.
 		 * MouseEvent )
 		 */
-		@Override
-		public void mouseDragged(MouseEvent e) {
+		@Override public void mouseDragged(MouseEvent e) {
 			super.mouseDragged(e);
 			if (e.isAltDown()) {
 				Point cp = e.getPoint();
@@ -141,8 +159,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 * java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.
 		 * MouseEvent )
 		 */
-		@Override
-		public void mouseMoved(MouseEvent e) {
+		@Override public void mouseMoved(MouseEvent e) {
 			super.mouseMoved(e);
 			setMouseOveredNoteLabel(null);
 			repaint();
@@ -155,8 +172,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 * MouseEvent
 		 * )
 		 */
-		@Override
-		public void mousePressed(MouseEvent e) {
+		@Override public void mousePressed(MouseEvent e) {
 			super.mousePressed(e);
 			if (SwingUtilities.isLeftMouseButton(e)) {
 				if (e.isAltDown()) {
@@ -178,8 +194,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 * MouseEvent
 		 * )
 		 */
-		@Override
-		public void mouseReleased(MouseEvent e) {
+		@Override public void mouseReleased(MouseEvent e) {
 			super.mouseReleased(e);
 			if (e.isAltDown()) {
 				setCursor(defCursor);
@@ -332,8 +347,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override
-	public void paintComponent(final Graphics g) {
+	@Override public void paintComponent(final Graphics g) {
 		/* おまじない */
 		final Graphics2D g2 = (Graphics2D) g;
 		super.paintComponent(g2);
@@ -406,6 +420,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * .swing.JLabel, boolean)
 	 */
 	public void selectGroup(GroupLabel g, boolean flg) {
+		clearSelection();
+		setSelectedGroup(g.group());
 		selectGroup(g.group());
 		repaint();
 	}
@@ -441,9 +457,13 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @param group
 	 */
 	public void selectGroup(Group group) {
-		clearSelection();
-		setSelectedGroup(group);
-		selectNote(notelist, group.getScoreNotelist());
+		if (group == null)
+			return;
+		selectGroup(group.child());
+		for (Component c : getComponents()) {
+			NoteLabel l = (NoteLabel) c;
+			selectNote(l, group.getBeginNote());
+		}
 	}
 
 	protected void setController() {
@@ -463,8 +483,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			 * @see
 			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
 			 */
-			@Override
-			public void keyPressed(KeyEvent e) {
+			@Override public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_G:
 					GUIUtil.printConsole("make group");
@@ -848,9 +867,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	protected void makeNoteLabel(NoteData note, boolean isChild) {
 		if (note == null)
 			return;
-		int offset = (note.hasNext() && note.next() != null && note
-				.next().noteNumber() == note.noteNumber())
-						? 5 : 0;
+		int offset = (note.hasNext() && note.next() != null && note.next()
+				.noteNumber() == note.noteNumber()) ? 5 : 0;
 		makeNoteLabel(note, offset, isChild);
 		makeNoteLabel(note.child(), true);
 		makeNoteLabel(note.next(), false);
@@ -913,16 +931,17 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	/**
 	 * @param notelist2
-	 * @param list
+	 * @param note
 	 */
-	private void selectNote(NoteLabel l, List<? extends NoteData> list) {
-		if (l == null)
+	public void selectNote(NoteLabel l, NoteData note) {
+		if (note == null)
 			return;
-		if (list.contains(l.getScoreNote())) {
+		if (l.getScoreNote().equals(note)) {
 			l.setSelected(true);
 			selectedNoteLabels.add(l);
 		}
-		selectNote(l.next(), list);
+		selectNote(l, note.child());
+		selectNote(l, note.next());
 	}
 
 	private void setMouseEndPoint(MouseEvent e) {

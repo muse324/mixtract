@@ -165,12 +165,12 @@ public class Group extends SequenceData {
 	 * @return cur
 	 */
 	public List<NoteData> getScoreNotelist() {
-		scoreNotelist.clear();
-		addScoreNoteList();
+//		scoreNotelist.clear();
+//		addScoreNoteList();
 		return scoreNotelist;
 	}
 
-	protected void addScoreNoteList() {
+	public void addScoreNoteList() {
 		if (hasChild())
 			addScoreNoteList(child().getBeginNote());
 		else
