@@ -3,8 +3,15 @@ package net.muse.mixtract.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.muse.data.*;
-import net.muse.mixtract.data.curve.*;
+import net.muse.data.Group;
+import net.muse.data.GroupType;
+import net.muse.data.Harmony;
+import net.muse.data.NoteData;
+import net.muse.mixtract.data.curve.ArticulationCurve;
+import net.muse.mixtract.data.curve.DynamicsCurve;
+import net.muse.mixtract.data.curve.PhraseCurve;
+import net.muse.mixtract.data.curve.PhraseCurveType;
+import net.muse.mixtract.data.curve.TempoCurve;
 
 /**
  * 演奏デザイン支援ツールMixtractに必要なグループ情報を定義します。
@@ -22,12 +29,12 @@ public class MXGroup extends Group {
 	private MXGroup childLatterGroup = null;
 
 	/**
-	 * @param groupNoteList
+	 * @param beginNote
 	 * @param endNote
 	 * @param type
 	 */
-	public MXGroup(NoteData groupNoteList, NoteData endNote, GroupType type) {
-		super(groupNoteList, endNote, type);
+	public MXGroup(NoteData beginNote, NoteData endNote, GroupType type) {
+		super(beginNote, endNote, type);
 	}
 
 	/**
@@ -152,8 +159,7 @@ public class MXGroup extends Group {
 	 * (非 Javadoc)
 	 * @see net.muse.mixtract.data.Group#addScoreNoteList(java.util.List)
 	 */
-	@Override
-	protected void addScoreNoteList(List<NoteData> list) {
+	@Override protected void addScoreNoteList(List<NoteData> list) {
 		for (NoteData n : list)
 			getScoreNotelist().add((MXNoteData) n);
 	}
@@ -201,14 +207,12 @@ public class MXGroup extends Group {
 	 * (非 Javadoc)
 	 * @see net.muse.data.Group#addScoreNoteList()
 	 */
-	@Override
-	protected void addScoreNoteList() {
+	@Override protected void addScoreNoteList() {
 		addScoreNoteList(getChildFormerGroup().getScoreNotelist());
 		addScoreNoteList(getChildLatterGroup().getScoreNotelist());
 	}
 
-	@Override
-	public boolean hasChild() {
+	@Override public boolean hasChild() {
 		return childFormerGroup != null && childLatterGroup != null;
 	}
 
@@ -246,8 +250,7 @@ public class MXGroup extends Group {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
-	public String toString() {
+	@Override public String toString() {
 		String str = name() + ";" + getPartNumber() + ";";
 		if (!hasChild())
 			return str + notelistToString();
@@ -271,14 +274,15 @@ public class MXGroup extends Group {
 	public void setChild(MXGroup g1, MXGroup g2) {
 		setChildFormer(g1);
 		setChildLatter(g2);
+		g1.getEndNote().setNext(null);
+		g2.getBeginNote().setPrevious(null);
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.data.Group#getParent()
 	 */
-	@Override
-	public MXGroup getParent() {
+	@Override public MXGroup getParent() {
 		return (MXGroup) super.getParent();
 	}
 
@@ -286,8 +290,7 @@ public class MXGroup extends Group {
 	 * (非 Javadoc)
 	 * @see net.muse.data.Group#printInfo()
 	 */
-	@Override
-	public String printInfo() {
+	@Override public String printInfo() {
 		return String.format("Group %s\n\t%s\n\t%s\n\t%s\n", name(),
 				getDynamicsCurve(), getTempoCurve(), getArticulationCurve());
 	}

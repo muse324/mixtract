@@ -1,16 +1,24 @@
 package net.muse.app;
 
 import java.awt.EventQueue;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.sound.midi.InvalidMidiDataException;
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 import net.muse.data.Group;
 import net.muse.data.TuneData;
-import net.muse.gui.*;
+import net.muse.gui.GUIUtil;
+import net.muse.gui.InfoViewer;
+import net.muse.gui.MainFrame;
 import net.muse.mixtract.command.MixtractCommand;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.MXGroupAnalyzer;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;
 
 /**

@@ -111,7 +111,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 *
 	 * @param group
 	 */
-	public void addGroupArrayList(Group group) {
+	public void addMiscGroupList(Group group) {
 		// 重複するグループがあれば処理中断
 		for (Group g : getMiscGroup()) {
 			if (g.nearlyEquals(group))
@@ -788,6 +788,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 	public ArrayList<NoteData> getTempralNotelist() {
 		return tempralNotelist;
+	}
+
+	public void analyze(Group g) {
+		throw new NotImplementedException();
 	}
 
 }

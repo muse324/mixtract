@@ -6,7 +6,9 @@ import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.NoteData;
-import net.muse.gui.*;
+import net.muse.gui.GroupLabel;
+import net.muse.gui.NoteLabel;
+import net.muse.gui.PianoRoll;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXPianoroll extends PianoRoll {
@@ -23,8 +25,7 @@ public class MXPianoroll extends PianoRoll {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#deselect(net.muse.gui.GroupLabel)
 	 */
-	@Override
-	public void deselect(GroupLabel g) {
+	@Override public void deselect(GroupLabel g) {
 		setDisplayApex(false);
 		super.deselect(g);
 	}
@@ -33,8 +34,7 @@ public class MXPianoroll extends PianoRoll {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#selectGroup(net.muse.mixtract.data.Group)
 	 */
-	@Override
-	public void selectGroup(Group group) {
+	@Override public void selectGroup(Group group) {
 		setDisplayApex(true);
 		assert group instanceof MXGroup;
 		((MXGroup) group).extractApex();
@@ -53,21 +53,21 @@ public class MXPianoroll extends PianoRoll {
 		displayApex = flg;
 	}
 
-	protected void makeNoteLabel(MXGroup group) {
-		if (group.hasChild()) {
-			makeNoteLabel(group.getChildFormerGroup());
-			makeNoteLabel(group.getChildLatterGroup());
-		} else
-			makeNoteLabel(group.getBeginNote(), false);
-	}
+//	protected void makeNoteLabel(MXGroup group) {
+//		if (group.hasChild()) {
+//			makeNoteLabel(group.getChildFormerGroup());
+//			makeNoteLabel(group.getChildLatterGroup());
+//		} else
+//			makeNoteLabel(group.getBeginNote(), false);
+//	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see
 	 * net.muse.gui.PianoRoll#createPianoRollMouseAction(net.muse.app.MuseApp)
 	 */
-	@Override
-	protected PianoRollAction createPianoRollMouseAction(MuseApp app) {
+	@Override protected PianoRollAction createPianoRollMouseAction(
+			MuseApp app) {
 		return new PianoRollAction(app, this) {
 
 		};
@@ -77,9 +77,18 @@ public class MXPianoroll extends PianoRoll {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#group()
 	 */
-	@Override
-	protected MXGroup group() {
+	@Override protected MXGroup group() {
 		return (MXGroup) super.group();
+	}
+
+	@Override protected void makeNoteLabel(Group group) {
+		if (group == null)
+			return;
+		MXGroup g = (MXGroup) group;
+		makeNoteLabel(g.getChildFormerGroup());
+		makeNoteLabel(g.getChildLatterGroup());
+
+		makeNoteLabel(g.getBeginNote(), false);
 	}
 
 }

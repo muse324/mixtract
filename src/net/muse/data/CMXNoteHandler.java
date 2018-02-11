@@ -1,7 +1,10 @@
 package net.muse.data;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Attributes;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Direction;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Measure;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.MusicData;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.gui.GUIUtil;
 
@@ -23,8 +26,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		super(tuneData);
 	}
 
-	@Override
-	public void beginMeasure(Measure measure, MusicXMLWrapper wrapper) {
+	@Override public void beginMeasure(Measure measure,
+			MusicXMLWrapper wrapper) {
 		super.beginMeasure(measure, wrapper);
 		if (currentPartNumber == 1) {
 			try {
@@ -48,8 +51,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 * .cmx.filewrappers.MusicXMLWrapper.Part,
 	 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
 	 */
-	@Override
-	public void beginPart(MusicXMLWrapper.Part part, MusicXMLWrapper wrapper) {
+	@Override public void beginPart(MusicXMLWrapper.Part part,
+			MusicXMLWrapper wrapper) {
 		super.beginPart(part, wrapper);
 		int ch = part.midiChannel() - 1;
 		data().midiProgram[ch] = part.midiProgram();
@@ -68,8 +71,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 * cmx.filewrappers.MusicXMLWrapper.Part,
 	 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
 	 */
-	@Override
-	public void endPart(MusicXMLWrapper.Part part, MusicXMLWrapper wrapper) {
+	@Override public void endPart(MusicXMLWrapper.Part part,
+			MusicXMLWrapper wrapper) {
 		createGroup();
 		super.endPart(part, wrapper);
 	}
@@ -80,14 +83,13 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 * filewrappers.SCCXMLWrapper.Part,
 	 * jp.crestmuse.cmx.filewrappers.SCCXMLWrapper)
 	 */
-	@Override
-	public void endPart(SCCXMLWrapper.Part arg0, SCCXMLWrapper arg1) {
+	@Override public void endPart(SCCXMLWrapper.Part arg0, SCCXMLWrapper arg1) {
 		createGroup();
 		super.endPart(arg0, arg1);
 	}
 
-	@Override
-	public void processMusicData(MusicData md, MusicXMLWrapper wrapper) {
+	@Override public void processMusicData(MusicData md,
+			MusicXMLWrapper wrapper) {
 		if (md instanceof MusicXMLWrapper.Note)
 			readNoteData((MusicXMLWrapper.Note) md);
 		else if (md instanceof Attributes) {
@@ -104,8 +106,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 * filewrappers.SCCXMLWrapper.Note,
 	 * jp.crestmuse.cmx.filewrappers.SCCXMLWrapper)
 	 */
-	@Override
-	public void processNote(SCCXMLWrapper.Note note, SCCXMLWrapper arg1) {
+	@Override public void processNote(SCCXMLWrapper.Note note,
+			SCCXMLWrapper arg1) {
 		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
 		parseMIDIControlMessage(note, note.getNodeName().equals("control"));
 		parseMIDINoteMessage(note, note.getNodeName().equals("note"));
@@ -166,9 +168,9 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	}
 
 	private void createGroup() {
-		Group g = createGroup(data().getPartwiseNotelist().get(partIndex), partIndex + 1,
-				GroupType.NOTE);
-
+		Group g = createGroup(data().getPartwiseNotelist().get(partIndex),
+				partIndex + 1, GroupType.NOTE);
+//		data().getPartwiseNotelist().add(g.getBeginNote());
 		if (primaryGrouplist == null) {
 			primaryGrouplist = g;
 			data().setGrouplist(partIndex, g);

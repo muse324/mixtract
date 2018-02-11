@@ -91,7 +91,7 @@ public class MXTuneData extends TuneData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneData#addGroupArrayList(net.muse.data.Group)
 	 */
-	@Override public void addGroupArrayList(Group group) {
+	@Override public void addMiscGroupList(Group group) {
 		// 重複するグループがあれば処理中断
 		for (Group g : getMiscGroup()) {
 			if (g.nearlyEquals(group))
@@ -99,8 +99,8 @@ public class MXTuneData extends TuneData {
 			// TODO 複数声部に未対応
 		}
 		// TODO 未検証
-		assert group instanceof MXGroup;
-		createPrimaryPhraseSequence((MXGroup) group);
+		if (group instanceof MXGroup)
+			createPrimaryPhraseSequence((MXGroup) group);
 		// ----------------------------------
 		getMiscGroup().add(group);
 	}
@@ -189,7 +189,7 @@ public class MXTuneData extends TuneData {
 
 	}
 
-	PrimaryPhraseSequence getGroupSequence() {
+	@Deprecated PrimaryPhraseSequence getGroupSequence() {
 		return groupSequence;
 	}
 
@@ -403,7 +403,7 @@ public class MXTuneData extends TuneData {
 	 *
 	 * @param group
 	 */
-	private void createPrimaryPhraseSequence(MXGroup group) {
+	@Deprecated private void createPrimaryPhraseSequence(MXGroup group) {
 		final PrimaryPhraseSequence seq = new PrimaryPhraseSequence(group);
 
 		// 新規作成
@@ -795,5 +795,25 @@ public class MXTuneData extends TuneData {
 		for (int i = 0; i < getMiscGroup().size(); i++)
 			writeGroupStructureData(out, (MXGroup) getMiscGroup().get(i));
 		out.close();
+	}
+
+	@Override public void analyze(Group rootGroup) {
+		if (rootGroup == null)
+			return;
+		assert rootGroup instanceof MXGroup;
+		MXGroup root = (MXGroup) rootGroup;
+		analyze(root.getChildFormerGroup());
+		analyze(root.getChildFormerGroup());
+
+		MXGroup g = null;
+		for (Group group : getMiscGroup()) {
+			if (root.nearlyEquals(group)) {
+				g = (MXGroup) group;
+				break;
+			}
+		}
+		if (g != null)
+			root.setChild(g.getChildFormerGroup(), g.getChildLatterGroup());
+		getMiscGroup().remove(g);
 	}
 }

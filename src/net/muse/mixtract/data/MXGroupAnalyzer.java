@@ -1,6 +1,7 @@
 package net.muse.mixtract.data;
 
-import net.muse.data.*;
+import net.muse.data.Group;
+import net.muse.data.GroupType;
 import net.muse.misc.MuseObject;
 
 /**
@@ -51,12 +52,25 @@ public class MXGroupAnalyzer extends MuseObject implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		if (root == null) {
-			_pendingSequence = null;
-			_completeHierarcy = false;
-			createUpperLevelStructure(data.getGroupSequence().root());
+		if (root == null)
 			return;
+		MXGroup g = null;
+		for (Group group : data.getMiscGroup()) {
+			if (root.nearlyEquals(group)) {
+				g = (MXGroup) group;
+				break;
+			}
 		}
+		if (g != null)
+			root.setChild(g.getChildFormerGroup(), g.getChildLatterGroup());
+		data.getMiscGroup().remove(g);
+
+		// if (root == null) {
+		// _pendingSequence = null;
+		// _completeHierarcy = false;
+		// createUpperLevelStructure(data.getGroupSequence().root());
+		// return;
+		// }
 	}
 
 	/**
@@ -72,8 +86,8 @@ public class MXGroupAnalyzer extends MuseObject implements Runnable {
 	private void addPendingSequence(PrimaryPhraseSequence sequence) {
 		if (_pendingSequence == null)
 			_pendingSequence = sequence;
-		else if (_pendingSequence.getGroup().getEndNote().next().equals(
-				sequence.getGroup().getBeginNote())) {
+		else if (_pendingSequence.getGroup().getEndNote().next().equals(sequence
+				.getGroup().getBeginNote())) {
 			_pendingSequence.setNext(sequence);
 		}
 	}
@@ -88,8 +102,8 @@ public class MXGroupAnalyzer extends MuseObject implements Runnable {
 		MXGroup g2 = sequence.next().getGroup();
 		// g1とg2の長さがほぼ等価（GPR5:symmetry）なら親グループを生成
 		if (symmetryRate(g1.getTimeValue(), g2.getTimeValue()) <= 0.3) {
-			MXGroup parent = new MXGroup(g1.getBeginNote(), g2
-					.getEndNote(), GroupType.PARENT);
+			MXGroup parent = new MXGroup(g1.getBeginNote(), g2.getEndNote(),
+					GroupType.PARENT);
 			parent.setIndex(data.getUniqueGroupIndex());
 			_completeHierarcy = false;
 			parent = reachedHierarchy(parent, data.getRootGroup(0));
@@ -109,13 +123,13 @@ public class MXGroupAnalyzer extends MuseObject implements Runnable {
 			else {
 				// 曲の最後まで探索したのでペンディングを再度探索
 				addPendingSequence(parentseq);
-				data.addGroupArrayList(parent);
+				data.addMiscGroupList(parent);
 				createUpperLevelStructure(_pendingSequence.root());
 			}
 		} else {
 			// sequence.setNext(null);
 			addPendingSequence(sequence);
-			data.addGroupArrayList(g1);
+			data.addMiscGroupList(g1);
 			createUpperLevelStructure(sequence.next());
 		}
 	}
