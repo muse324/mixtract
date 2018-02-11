@@ -245,7 +245,8 @@ public class MXTuneData extends TuneData {
 		MXGroup g = (MXGroup) target;
 		deleteGroup(g.getChildFormerGroup());
 		deleteGroup(g.getChildLatterGroup());
-		g.setScoreNotelist(target.getScoreNotelist());
+		target.getScoreNotelist().clear();
+//		g.setScoreNotelist(target.getScoreNotelist());
 		if (g.hasChild()) {
 			g.getChildFormerGroup().getEndNote().setNext(g.getChildLatterGroup()
 					.getBeginNote());

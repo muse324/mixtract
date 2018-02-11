@@ -117,8 +117,7 @@ public class Group extends SequenceData {
 	 * (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override
-	public boolean equals(Object obj) {
+	@Override public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
 		Group g = (Group) obj;
@@ -158,8 +157,7 @@ public class Group extends SequenceData {
 		return (Group) super.parent();
 	}
 
-	@Override
-	public Group child() {
+	@Override public Group child() {
 		return (Group) super.child();
 	}
 
@@ -167,16 +165,16 @@ public class Group extends SequenceData {
 	 * @return cur
 	 */
 	public List<NoteData> getScoreNotelist() {
-		if (hasChild()) {
-			scoreNotelist.clear();
-			addScoreNoteList();
-		} else if (scoreNotelist.size() <= 1)
-			makeScoreNotelist(getBeginNote());
+		scoreNotelist.clear();
+		addScoreNoteList();
 		return scoreNotelist;
 	}
 
 	protected void addScoreNoteList() {
-		addScoreNoteList(child().getScoreNotelist());
+		if (hasChild())
+			addScoreNoteList(child().getBeginNote());
+		else
+			addScoreNoteList(getBeginNote());
 	}
 
 	/**
@@ -257,11 +255,6 @@ public class Group extends SequenceData {
 		this.level = level;
 	}
 
-	public void setScoreNotelist(List<NoteData> list) {
-		getScoreNotelist().clear();
-		addScoreNoteList(list);
-	}
-
 	/**
 	 * @param note
 	 */
@@ -283,8 +276,7 @@ public class Group extends SequenceData {
 	 * (非 Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
-	public String toString() {
+	@Override public String toString() {
 		String str = name() + ";" + partNumber + ";";
 		if (!hasChild())
 			return str + notelistToString();
@@ -292,17 +284,15 @@ public class Group extends SequenceData {
 		return str;
 	}
 
-	protected void addScoreNoteList(List<NoteData> list) {
-		for (NoteData n : list)
-			getScoreNotelist().add(n);
-	}
-
-	protected void createScoreNoteList() {
-		this.setScoreNotelist(new ArrayList<NoteData>());
+	protected void addScoreNoteList(NoteData list) {
+		if (list == null)
+			return;
+		scoreNotelist.add(list);
+		addScoreNoteList(list.next());
 	}
 
 	protected void initialize() {
-		createScoreNoteList();
+		this.getScoreNotelist().clear();
 	}
 
 	protected void makeScoreNotelist(NoteData root) {

@@ -155,13 +155,11 @@ public class MXGroup extends Group {
 				&& articulationCurve != null;
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.mixtract.data.Group#addScoreNoteList(java.util.List)
-	 */
-	@Override protected void addScoreNoteList(List<NoteData> list) {
-		for (NoteData n : list)
-			getScoreNotelist().add((MXNoteData) n);
+	protected void addScoreNoteList(MXNoteData n) {
+		if (n == null)
+			return;
+		scoreNotelist.add(n);
+		addScoreNoteList(n.next());
 	}
 
 	protected void initialize() {
@@ -208,8 +206,11 @@ public class MXGroup extends Group {
 	 * @see net.muse.data.Group#addScoreNoteList()
 	 */
 	@Override protected void addScoreNoteList() {
-		addScoreNoteList(getChildFormerGroup().getScoreNotelist());
-		addScoreNoteList(getChildLatterGroup().getScoreNotelist());
+		if (hasChild()) {
+			addScoreNoteList((MXNoteData) getChildFormerGroup().getBeginNote());
+			addScoreNoteList((MXNoteData) getChildLatterGroup().getBeginNote());
+		}
+		addScoreNoteList((MXNoteData) getBeginNote());
 	}
 
 	@Override public boolean hasChild() {

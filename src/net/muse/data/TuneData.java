@@ -455,7 +455,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 		if (target == null)
 			return;
 		deleteGroup(target.child());
-		target.setScoreNotelist(target.getScoreNotelist());
+		target.getScoreNotelist().clear();
 		target.setChild(null);
 	}
 
