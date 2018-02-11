@@ -378,9 +378,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 */
 	public void writeSMF() throws IOException {
 		if (scc != null) {
-			File fp = new File(inputDirectory(), scc.getFileName());
+			File fp = new File(inputDirectory(), getInputFilename());
 			if (fp.exists())
 				FileUtils.copyFileToDirectory(fp, out(), true);
+			return;
 		}
 
 		try {
@@ -537,11 +538,11 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 	/** @return */
 	protected File inputDirectory() {
-		return inputFile.getParentFile();
+		return in().getParentFile();
 	}
 
 	protected boolean isOriginalFileFormat() {
-		return inputFile.isDirectory();
+		return in().isDirectory();
 	}
 
 	/** @return outputFile */
@@ -742,6 +743,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 
 	protected MusicXMLWrapper xml() {
 		return xml;
+	}
+
+	protected SCCXMLWrapper scc() {
+		return scc;
 	}
 
 	protected void setXml(MusicXMLWrapper xml) {

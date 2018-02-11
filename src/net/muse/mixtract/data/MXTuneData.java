@@ -16,6 +16,7 @@ import java.util.List;
 import javax.sound.midi.InvalidMidiDataException;
 
 import org.apache.commons.io.FileUtils;
+import org.xml.sax.SAXException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
@@ -140,20 +141,36 @@ public class MXTuneData extends TuneData {
 		// -------- import cmx files --------------------------
 		importCMXFilesToProjectDirectory();
 
-		if (xml() == null)
-			return;
+		// if (xml() == null)
+		// return;
 		File fp = new File(out(), SCOREDATA_FILENAME);
 		fp.createNewFile();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
 				fp)));
 		// out.format("cmx=%s\n", inputFile.getName());
-		out.format("cmx=%s\n", xml().getFileName());
+		out.format("cmx=%s\n", getCMXFilename());
 		out.format("str=%s\n", STRUCTURE_FILENAME);
 		out.format("bpm=%s\n", getBPM().toString().subSequence(1, getBPM()
 				.toString().length() - 1));
 		for (int i = 0; i < getPartwiseNotelist().size(); i++)
 			writeNoteData(out, (MXNoteData) getPartwiseNotelist().get(i));
 		out.close();
+	}
+
+	private String getCMXFilename() throws IOException {
+		if (xml() != null)
+			return xml().getFileName();
+		if (scc() != null) {
+			if (scc().getFileName() != null)
+				return scc().getFileName();
+			try {
+				scc().writefile(new File(out(), "scc.xml"));
+				return "scc.xml";
+			} catch (SAXException e) {
+				e.printStackTrace();
+			}
+		}
+		return "";
 	}
 
 	/**
@@ -457,7 +474,7 @@ public class MXTuneData extends TuneData {
 	private void importCMXFilesToProjectDirectory() throws IOException {
 		File fp = null;
 		if (dev() != null || xml() != null) {
-			fp = new File(inputDirectory(), xml().getFileName());
+			fp = new File(inputDirectory(), getCMXFilename());
 			if (fp.exists())
 				FileUtils.copyFileToDirectory(fp, out(), true);
 			if (dev() != null) {
@@ -532,11 +549,11 @@ public class MXTuneData extends TuneData {
 				if (n.id().equals(s))
 					break;
 			}
-			if (!fromPrevious&&n!=null)
+			if (!fromPrevious && n != null)
 				note = n;
 			else {
 				note.setNext(n);
-				fromPrevious=false;
+				fromPrevious = false;
 			}
 			note = parseNotelist(n, args, ++idx, size, fromPrevious);
 			break;
