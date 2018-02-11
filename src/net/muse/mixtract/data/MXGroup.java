@@ -1,7 +1,6 @@
 package net.muse.mixtract.data;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import net.muse.data.Group;
 import net.muse.data.GroupType;
@@ -77,11 +76,11 @@ public class MXGroup extends Group {
 	 * 頂点らしさを算出します。
 	 */
 	public void extractApex() {
-		List<NoteData> nlist = getScoreNotelist();
+		ArrayList<MXNoteData> nlist = new ArrayList<MXNoteData>();
+		extractNotes(nlist);
 		// score clear
-		for (NoteData n : nlist) {
-			assert n instanceof MXNoteData;
-			((MXNoteData) n).clearApexScore();
+		for (MXNoteData n : nlist) {
+			n.clearApexScore();
 		}
 
 		final int sz = nlist.size();
@@ -127,6 +126,24 @@ public class MXGroup extends Group {
 			((MXNoteData) nlist.get(i)).setApexScore((scoreList.get(i) - min)
 					/ range);
 		}
+	}
+
+	private void extractNotes(ArrayList<MXNoteData> nlist) {
+		if (!hasChild()) {
+			addNote(nlist, (MXNoteData) getBeginNote());
+			return;
+		}
+		if (hasChildFormer())
+			getChildFormerGroup().extractNotes(nlist);
+		if (hasChildLatter())
+			getChildLatterGroup().extractNotes(nlist);
+	}
+
+	private void addNote(ArrayList<MXNoteData> nlist, MXNoteData n) {
+		if (n == null)
+			return;
+		nlist.add(n);
+		addNote(nlist, n.next());
 	}
 
 	/**
