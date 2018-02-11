@@ -1,10 +1,19 @@
 package net.muse.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
@@ -79,7 +88,7 @@ public class GroupLabel extends JLabel {
 		return group.name();
 	}
 
-	GroupLabel child(ArrayList<GroupLabel> grouplist) {
+	protected GroupLabel child(ArrayList<GroupLabel> grouplist) {
 		if (child == null) {
 			for (GroupLabel l : grouplist) {
 				if (group().hasChild() && group().child().equals(l.group())) {

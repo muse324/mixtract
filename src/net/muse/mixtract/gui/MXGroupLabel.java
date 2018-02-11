@@ -23,17 +23,16 @@ public class MXGroupLabel extends GroupLabel {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.GroupLabel#group()
 	 */
-	@Override
-	public MXGroup group() {
+	@Override public MXGroup group() {
 		return (MXGroup) super.group();
 	}
 
-	GroupLabel getChildLatter(ArrayList<MXGroupLabel> grouplist) {
+	GroupLabel getChildLatter(ArrayList<GroupLabel> grouplist) {
 		if (childLatter == null) {
-			for (MXGroupLabel l : grouplist) {
+			for (GroupLabel l : grouplist) {
 				if (group().hasChildLatter() && group().getChildLatterGroup()
 						.equals(l.group())) {
-					childLatter = l;
+					childLatter = (MXGroupLabel) l;
 					break;
 				}
 			}
@@ -41,12 +40,12 @@ public class MXGroupLabel extends GroupLabel {
 		return childLatter;
 	}
 
-	protected GroupLabel getChildFormer(ArrayList<MXGroupLabel> grouplist) {
+	protected GroupLabel getChildFormer(ArrayList<GroupLabel> grouplist) {
 		if (childFormer == null) {
-			for (MXGroupLabel l : grouplist) {
+			for (GroupLabel l : grouplist) {
 				if (group().hasChildFormer() && group().getChildFormerGroup()
 						.equals(l.group())) {
-					childFormer = l;
+					childFormer = (MXGroupLabel) l;
 					break;
 				}
 			}
@@ -129,6 +128,10 @@ public class MXGroupLabel extends GroupLabel {
 	 */
 	private boolean hasChildLatter() {
 		return childLatter != null;
+	}
+
+	protected GroupLabel child(ArrayList<GroupLabel> grouplist) {
+		throw new NoClassDefFoundError("MXGroupLabelでは使用できません．");
 	}
 
 }
