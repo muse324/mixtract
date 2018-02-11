@@ -2,9 +2,19 @@ package net.muse.data;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import javax.sound.midi.*;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiEvent;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.ShortMessage;
+import javax.sound.midi.Track;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
@@ -15,11 +25,16 @@ import org.xml.sax.SAXException;
 
 import eu.medsea.mimeutil.MimeType;
 import eu.medsea.mimeutil.MimeUtil;
-import jp.crestmuse.cmx.filewrappers.*;
+import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
+import jp.crestmuse.cmx.filewrappers.DeviationInstanceWrapper;
+import jp.crestmuse.cmx.filewrappers.MIDIXMLWrapper;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
+import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import jp.crestmuse.cmx.processing.CMXController;
 import net.muse.app.Mixtract;
 import net.muse.gui.GUIUtil;
 import net.muse.misc.MuseObject;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class TuneData extends MuseObject implements TuneDataController {
 	private static int MAXIMUM_MIDICHANNEL = 16;
@@ -71,7 +86,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 		MAXIMUM_MIDICHANNEL = num;
 	}
 
-	/** @param segmentGroupnoteLine セットする segmentGroupnoteLine */
+	/**
+	 * @param segmentGroupnoteLine
+	 *            セットする segmentGroupnoteLine
+	 */
 	public static void setSegmentGroupnoteLine(boolean segmentGroupnoteLine) {
 		TuneData.segmentGroupnoteLine = segmentGroupnoteLine;
 	}
@@ -311,32 +329,42 @@ public class TuneData extends MuseObject implements TuneDataController {
 		Mixtract.log.println("----------------------------");
 	}
 
-	/** @param group */
+	/**
+	 * @param group
+	 */
 	public void setSelectedGroup(Group group) {
 		selectedGroup = group;
 	}
 
-	@Override
-	public void writefile() throws IOException {
+	@Override public void writefile() throws IOException {
 		// 出力ファイル (またはフォルダ）の所在を確認する
 		confirmOutputFileLocation();
 
 		// -------- create score data -------------------------
 		writeScoreData();
 
-		// -------- create expressed SMF ---------------------
-		writeSMF();
+		// -------- create structure data ---------------------
+		writeOriginalData();
 
 		System.out.println("tempo curve list:");
 		System.out.println(getTempoList());
+	}
+
+	/* (非 Javadoc)
+	 * @see net.muse.data.TuneDataController#writeOriginalData()
+	 */
+	public void writeOriginalData() throws IOException {
+		// -------- create expressed SMF ---------------------
+		writeSMF();
+
+		throw new NotImplementedException();
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneDataController#writeScoreData()
 	 */
-	@Override
-	public void writeScoreData() throws IOException {
+	@Override public void writeScoreData() throws IOException {
 		JOptionPane.showMessageDialog(null,
 				"TuneDataのサブクラスにて、writeScoreData()をオーバーライド実装してください。");
 	}
@@ -362,8 +390,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 			Track track = sequence.createTrack();
 			int offset = 100;
 			/*
-			 * テンポの設定 四分音符の長さをμsecで指定し3バイトに分解する
-			 * 戻る
+			 * テンポの設定 四分音符の長さをμsecで指定し3バイトに分解する 戻る
 			 */
 			MetaMessage mmsg = new MetaMessage();
 			int tempo = getBeginningBPM();
@@ -397,7 +424,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/**
 	 * TuneDataのサブクラスにて、calculateExpressionParameters()をオーバーライド実装してください。
 	 *
-	 * @param Group root
+	 * @param Group
+	 *            root
 	 */
 	protected void calculateExpressionParameters(final Group root) {}
 
@@ -428,15 +456,16 @@ public class TuneData extends MuseObject implements TuneDataController {
 	}
 
 	/**
-	 * 階層フレーズ中のグループを削除します。
-	 * もし target が子階層を持っている場合，以下の処理を行います。
+	 * 階層フレーズ中のグループを削除します。 もし target が子階層を持っている場合，以下の処理を行います。
 	 * <ol>
 	 * <li>子グループをすべて削除
 	 * <li>親グループを起点にし，再分析をかける
 	 * </ol>
 	 *
-	 * @param target 削除するフレーズ
-	 * @param structure 階層フレーズ
+	 * @param target
+	 *            削除するフレーズ
+	 * @param structure
+	 *            階層フレーズ
 	 */
 	protected void deleteHierarchicalGroup(Group target, Group structure) {
 		if (structure == null)
@@ -520,7 +549,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 	/**
 	 * 登録されているすべてのグループ情報を出力します。
 	 *
-	 * @param g 各声部のトップグループ
+	 * @param g
+	 *            各声部のトップグループ
 	 */
 	protected void printGroupList(Group g) {
 		if (g == null)
@@ -572,7 +602,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 		setNoteScheduleEvent(note.next(), endOffset);
 	}
 
-	/** @param note TODO */
+	/**
+	 * @param note
+	 *            TODO
+	 */
 	private void addNoteScheduleEventList(NoteData note) {
 		if (note == null)
 			return;
@@ -681,7 +714,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 		}
 	}
 
-	/** @param inputFile セットする inputFile */
+	/**
+	 * @param inputFile
+	 *            セットする inputFile
+	 */
 	private void setInputFile(File inputFile) {
 		this.inputFile = inputFile;
 	}
@@ -693,7 +729,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 		setNoteScheduleEvent(g.getBeginNote(), g.getEndNote().offset());
 	}
 
-	/** @param outputFile セットする outputFile */
+	/**
+	 * @param outputFile
+	 *            セットする outputFile
+	 */
 	private void setOutputFile(File outputFile) {
 		this.outputFile = outputFile;
 	}

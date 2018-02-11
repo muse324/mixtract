@@ -1,13 +1,18 @@
 package net.muse.mixtract.data;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.sound.midi.InvalidMidiDataException;
 
 import org.apache.commons.io.FileUtils;
@@ -15,15 +20,22 @@ import org.apache.commons.io.FileUtils;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.app.Mixtract;
-import net.muse.data.*;
-import net.muse.mixtract.data.curve.*;
+import net.muse.data.CMXNoteHandler;
+import net.muse.data.Group;
+import net.muse.data.GroupType;
+import net.muse.data.Harmony;
+import net.muse.data.NoteData;
+import net.muse.data.TuneData;
+import net.muse.mixtract.data.curve.ArticulationCurve;
+import net.muse.mixtract.data.curve.DynamicsCurve;
+import net.muse.mixtract.data.curve.PhraseCurve;
+import net.muse.mixtract.data.curve.TempoCurve;
 
 /**
  * <h1>MXTuneData</h1>
  *
- * @author Mitsuyo Hashida & Haruhiro Katayose
- *         <address>@ CrestMuse Project, JST</address>
- *         <address><a href="http://mixtract.m-use.net/"
+ * @author Mitsuyo Hashida & Haruhiro Katayose <address>@ CrestMuse Project,
+ *         JST</address> <address><a href="http://mixtract.m-use.net/"
  *         >http://mixtract.m-use.net</a></address>
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/09/20
@@ -59,7 +71,8 @@ public class MXTuneData extends TuneData {
 	}
 
 	/**
-	 * @param val the durationOffset to set
+	 * @param val
+	 *            the durationOffset to set
 	 */
 	public static final void setDurationOffset(int val) {
 		MXTuneData.durationOffset = val;
@@ -67,11 +80,7 @@ public class MXTuneData extends TuneData {
 		System.out.printf("duration offset = %d\n", val);
 	}
 
-	private static void save(BufferedImage img, File f) throws IOException {
-		if (!ImageIO.write(img, "PNG", f)) {
-			throw new IOException("フォーマットが対象外");
-		}
-	}
+
 
 	public MXTuneData(File in, File out) throws IOException,
 			InvalidMidiDataException {
@@ -83,8 +92,7 @@ public class MXTuneData extends TuneData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneData#addGroupArrayList(net.muse.data.Group)
 	 */
-	@Override
-	public void addGroupArrayList(Group group) {
+	@Override public void addGroupArrayList(Group group) {
 		// 重複するグループがあれば処理中断
 		for (Group g : getMiscGroup()) {
 			if (g.nearlyEquals(group))
@@ -116,35 +124,20 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	@Override
-	public void writefile() throws IOException {
-		// 出力ファイル (またはフォルダ）の所在を確認する
-		confirmOutputFileLocation();
-
-		// -------- import cmx files --------------------------
-		importCMXFilesToProjectDirectory();
-
-		// -------- create score data -------------------------
-		writeScoreData();
-
+	public void writeOriginalData() throws IOException {
 		// -------- create structure data ---------------------
 		writeStructureData();
-
 		// -------- create expressed SMF ---------------------
 		writeSMF();
-
-		// -------- create screen shot ---------------------
-		// writeScreenShot();
-
-		System.out.println("tempo curve list:");
-		System.out.println(getTempoList());
 	}
 
 	/**
 	 * @throws IOException
 	 */
-	@Override
-	public void writeScoreData() throws IOException {
+	@Override public void writeScoreData() throws IOException {
+		// -------- import cmx files --------------------------
+		importCMXFilesToProjectDirectory();
+
 		if (xml() == null)
 			return;
 		File fp = new File(out(), SCOREDATA_FILENAME);
@@ -161,14 +154,7 @@ public class MXTuneData extends TuneData {
 		out.close();
 	}
 
-	public void writeScreenShot(Point position, Dimension size)
-			throws AWTException, IOException {
-		Robot robot = new Robot();
-		Image img = robot.createScreenCapture(new Rectangle(position.x,
-				position.y, size.width, size.height));
-		File fp = new File(out(), "screenshot.png");
-		save(createBufferedImage(img), fp);
-	}
+
 
 	/**
 	 * create structure data
@@ -195,24 +181,21 @@ public class MXTuneData extends TuneData {
 	 * @see
 	 * net.muse.data.TuneData#calculateExpressionParameters(net.muse.data.Group)
 	 */
-	@Override
-	protected void calculateExpressionParameters(Group root) {
+	@Override protected void calculateExpressionParameters(Group root) {
 		assert root instanceof MXGroup;
 		MXGroup g = (MXGroup) root;
 		if (g.getTempoCurve().getParamlist().size() > 0)
 			calculateHierarchicalParameters(g);
 	}
 
-	@Override
-	protected void confirmOutputFileLocation() {
+	@Override protected void confirmOutputFileLocation() {
 		if (!out().exists())
 			out().mkdir();
 		else
 			dialogOutputLocation();
 	}
 
-	@Override
-	protected CMXNoteHandler createCMXNoteHandler() {
+	@Override protected CMXNoteHandler createCMXNoteHandler() {
 		return new CMXNoteHandler(this) {
 			protected MXGroup createGroup(NoteData n, int i, GroupType type) {
 				return new MXGroup(n, i, type);
@@ -238,8 +221,7 @@ public class MXTuneData extends TuneData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneData#deleteGroup(net.muse.data.Group)
 	 */
-	@Override
-	protected void deleteGroup(Group target) {
+	@Override protected void deleteGroup(Group target) {
 		if (target == null)
 			return;
 		assert target instanceof MXGroup;
@@ -259,8 +241,8 @@ public class MXTuneData extends TuneData {
 	 * @see net.muse.data.TuneData#deleteHierarchicalGroup(net.muse.data.Group,
 	 * net.muse.data.Group)
 	 */
-	@Override
-	protected void deleteHierarchicalGroup(Group target, Group structure) {
+	@Override protected void deleteHierarchicalGroup(Group target,
+			Group structure) {
 		if (structure == null)
 			return;
 		assert structure instanceof MXGroup;
@@ -277,8 +259,7 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	@Override
-	protected void initializeNoteEvents(Group group) {
+	@Override protected void initializeNoteEvents(Group group) {
 		if (group == null)
 			return;
 		assert group instanceof MXGroup;
@@ -290,8 +271,7 @@ public class MXTuneData extends TuneData {
 		initializeNoteEvents(group.getBeginNote());
 	}
 
-	@Override
-	protected boolean isOriginalFileFormat() {
+	@Override protected boolean isOriginalFileFormat() {
 		return in().isDirectory();
 	}
 
@@ -299,8 +279,7 @@ public class MXTuneData extends TuneData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneData#printGroupList(net.muse.data.Group)
 	 */
-	@Override
-	protected void printGroupList(Group group) {
+	@Override protected void printGroupList(Group group) {
 		if (group == null)
 			return;
 		assert group instanceof MXGroup;
@@ -310,8 +289,7 @@ public class MXTuneData extends TuneData {
 		System.out.println(g);
 	}
 
-	@Override
-	protected void readOriginalFile() throws IOException {
+	@Override protected void readOriginalFile() throws IOException {
 		testPrintln("reading original format...");
 		File[] files = in().listFiles();
 		for (int i = 0; i < files.length; i++) {
@@ -398,16 +376,7 @@ public class MXTuneData extends TuneData {
 		calculateHierarchicalParameters((MXGroup) group.getChildLatterGroup());
 	}
 
-	private BufferedImage createBufferedImage(Image img) {
-		BufferedImage bimg = new BufferedImage(img.getWidth(null), img
-				.getHeight(null), BufferedImage.TYPE_INT_RGB);
 
-		Graphics g = bimg.getGraphics();
-		g.drawImage(img, 0, 0, null);
-		g.dispose();
-
-		return bimg;
-	}
 
 	/**
 	 * TODO 未検証
@@ -472,7 +441,8 @@ public class MXTuneData extends TuneData {
 
 	/**
 	 * @param keys
-	 * @param i TODO
+	 * @param i
+	 *            TODO
 	 * @return
 	 */
 	private String getValue(String[] keys, int i) {
@@ -730,8 +700,7 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	@Override
-	protected void setNoteScheduleEvent(final Group group) {
+	@Override protected void setNoteScheduleEvent(final Group group) {
 		if (group == null)
 			return;
 		assert group instanceof MXGroup;

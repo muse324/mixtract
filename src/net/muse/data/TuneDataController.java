@@ -51,7 +51,18 @@ public interface TuneDataController {
 	public void writefile() throws IOException;
 
 	/**
-	 * アプリケーションの独自ファイルを出力するメソッドです。具体的な処理については下層の各アプリケーションクラスにて実装してください。
+	 * アプリケーションの独自ファイルを出力します．
+	 * 具体的な処理については下層の各アプリケーションクラスにて実装してください。
+	 * なお，MIDIファイルについては {@link writeSMF()} を呼び出すことで生成可能です．
+	 * {@link TuneData.writeOriginalData()}メソッドに記述例があります。
+	 *
+	 * @throws IOException
+	 */
+	void writeOriginalData() throws IOException;
+
+	/**
+	 * アプリケーション独自の楽譜ファイルを出力するメソッドです。
+	 * 具体的な処理については下層の各アプリケーションクラスにて実装してください。
 	 *
 	 * @throws IOException
 	 */
