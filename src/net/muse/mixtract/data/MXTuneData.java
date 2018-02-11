@@ -43,7 +43,7 @@ import net.muse.mixtract.data.curve.TempoCurve;
 public class MXTuneData extends TuneData {
 
 	private static final String SCOREDATA_FILENAME = "score.dat";
-
+	/** 構造データのファイル名（default: structure.dat) */
 	private static final String STRUCTURE_FILENAME = "structure.dat";
 	private static int durationOffset = 100;
 	/** ユーザにより指定されるプライマリフレーズライン */
@@ -79,8 +79,6 @@ public class MXTuneData extends TuneData {
 		log.printf("duration offset = %d\n", val);
 		System.out.printf("duration offset = %d\n", val);
 	}
-
-
 
 	public MXTuneData(File in, File out) throws IOException,
 			InvalidMidiDataException {
@@ -124,6 +122,10 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.TuneData#writeOriginalData()
+	 */
 	public void writeOriginalData() throws IOException {
 		// -------- create structure data ---------------------
 		writeStructureData();
@@ -153,8 +155,6 @@ public class MXTuneData extends TuneData {
 			writeNoteData(out, (MXNoteData) getPartwiseNotelist().get(i));
 		out.close();
 	}
-
-
 
 	/**
 	 * create structure data
@@ -376,8 +376,6 @@ public class MXTuneData extends TuneData {
 		calculateHierarchicalParameters((MXGroup) group.getChildLatterGroup());
 	}
 
-
-
 	/**
 	 * TODO 未検証
 	 * <p>
@@ -474,7 +472,7 @@ public class MXTuneData extends TuneData {
 		final int id = Integer.parseInt(name.substring(1));
 		if (groupInfo.charAt(0) == '[') {
 			String group[] = groupInfo.split(" ");
-			note = parseNotelist(note, group, 1, group.length);
+			note = parseNotelist(note, group, 1, group.length, false);
 			while (note.hasPrevious())
 				note = note.previous();
 			g = new MXGroup(id, partNumber, note, GroupType.is(name.charAt(0)));
@@ -507,39 +505,46 @@ public class MXTuneData extends TuneData {
 	}
 
 	private MXNoteData parseNotelist(MXNoteData note, String[] args, int idx,
-			int size) {
+			int size, boolean fromPrevious) {
 		if (idx == size)
 			return note;
 		final String s = args[idx];
 		switch (s.charAt(0)) {
 		case '(':
-			note.setChild(new MXNoteData(++idx));
-			note = parseNotelist(note.child(), args, idx, size);
+			note.setChild(new MXNoteData(++idx)); // dummy
+			note = parseNotelist(note.child(), args, idx, size, fromPrevious);
 			break;
 		case ')':
-			note = parseNotelist(note.parent(), args, ++idx, size);
+			note = parseNotelist(note.parent(), args, ++idx, size,
+					fromPrevious);
 			break;
 		case ',':
-			// note.setNext(new MXNoteData(++idx));
-			if (note.hasParent())
-				note.next().setParent(note.parent(), false);
-			note = parseNotelist(note.next(), args, ++idx, size);
+			fromPrevious = true;
+			// note.setNext(new MXNoteData(++idx)); //dummy
+			// if (note.hasParent())
+			// note.next().setPrevious(note.parent(), false);
+			note = parseNotelist(note, args, ++idx, size, fromPrevious);
 			break;
 		case 'n':
 			MXNoteData n = null;
-			for (int i = 0; i < getPartwiseNotelist().size(); i++) {
-				n = getNote((MXNoteData) getPartwiseNotelist().get(i), s);
-				if (n != null)
+			for (NoteData d : getTempralNotelist()) {
+				n = (MXNoteData) d;
+				if (n.id().equals(s))
 					break;
 			}
-			if (note == null)
+			if (!fromPrevious&&n!=null)
 				note = n;
-			note = parseNotelist(note, args, ++idx, size);
+			else {
+				note.setNext(n);
+				fromPrevious=false;
+			}
+			note = parseNotelist(n, args, ++idx, size, fromPrevious);
 			break;
 		default:
-			note = parseNotelist(note, args, ++idx, size);
+			note = parseNotelist(note, args, ++idx, size, fromPrevious);
 		}
 		return note;
+
 	}
 
 	/**
@@ -594,15 +599,16 @@ public class MXTuneData extends TuneData {
 		nd.setFifths(fifths);
 		nd.setChord(chordName);
 
-		if (pre == null || pre.partNumber() != partNumber) {
-			setPartwiseNotelist(partNumber, nd);
-		} else if (chord || preChord) {
-			nd.setPrevious(pre.previous(), false);
-			nd.setChild(pre);
-		} else {
-			pre.setNext(nd);
-		}
-		log.println(nd.toString());
+		// if (pre == null || pre.partNumber() != partNumber) {
+		// setPartwiseNotelist(partNumber, nd);
+		// } else if (chord || preChord) {
+		// nd.setPrevious(pre.previous(), false);
+		// nd.setChild(pre);
+		// } else {
+		// pre.setNext(nd);
+		// }
+		getTempralNotelist().add(nd);
+		log.println(nd);
 		readNoteData(idx, in, in.readLine(), nd, chord);
 	}
 
@@ -756,6 +762,8 @@ public class MXTuneData extends TuneData {
 	}
 
 	/**
+	 * {@link TuneData.STRUCTURE_FILENAME}で設定さらたファイル名を持つ構造データを出力します．
+	 *
 	 * @throws IOException
 	 */
 	private void writeStructureData() throws IOException {

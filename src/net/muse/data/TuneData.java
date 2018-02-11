@@ -64,6 +64,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 	private double tempoListEndtime;
 	/** 声部ごとの音符情報（楽譜情報の読込順） */
 	private ArrayList<NoteData> partwiseNoteList = new ArrayList<NoteData>();
+	/** ファイル読込時の音符情報格納場所（構造化前） */
+	private ArrayList<NoteData> tempralNotelist = new ArrayList<NoteData>();
 	int[] midiProgram = new int[MAXIMUM_MIDICHANNEL];
 	double[] volume = new double[MAXIMUM_MIDICHANNEL];
 
@@ -350,7 +352,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 		System.out.println(getTempoList());
 	}
 
-	/* (非 Javadoc)
+	/*
+	 * (非 Javadoc)
 	 * @see net.muse.data.TuneDataController#writeOriginalData()
 	 */
 	public void writeOriginalData() throws IOException {
@@ -776,6 +779,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 		}
 		if (onset > tempoListEndtime)
 			tempoListEndtime = onset;
+	}
+
+	public ArrayList<NoteData> getTempralNotelist() {
+		return tempralNotelist;
 	}
 
 }
