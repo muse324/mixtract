@@ -37,12 +37,13 @@ public class MXGroup extends Group {
 	}
 
 	/**
-	 * @param notelist
-	 * @param partIndex
+	 * @param id
+	 * @param partNumber
+	 * @param note
 	 * @param type
 	 */
-	public MXGroup(NoteData notelist, int partIndex, GroupType type) {
-		super(notelist, partIndex, type);
+	MXGroup(int id, int partNumber, NoteData note, GroupType type) {
+		super(id, partNumber, note, type);
 	}
 
 	/**
@@ -63,13 +64,32 @@ public class MXGroup extends Group {
 	}
 
 	/**
-	 * @param id
-	 * @param partNumber
-	 * @param note
+	 * @param notelist
+	 * @param partIndex
 	 * @param type
 	 */
-	MXGroup(int id, int partNumber, NoteData note, GroupType type) {
-		super(id, partNumber, note, type);
+	MXGroup(NoteData notelist, int partIndex, GroupType type) {
+		super(notelist, partIndex, type);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.Group#addScoreNoteList()
+	 */
+	@Override public void addScoreNoteList() {
+		if (!hasChild()) {
+			getScoreNotelist().clear();
+			addScoreNoteList((MXNoteData) getBeginNote());
+			return;
+		}
+		if (hasChildFormer()) {
+			getChildFormerGroup().getScoreNotelist().clear();
+			getChildFormerGroup().addScoreNoteList();
+		}
+		if (hasChildLatter()) {
+			getChildLatterGroup().getScoreNotelist().clear();
+			getChildLatterGroup().addScoreNoteList();
+		}
 	}
 
 	/**
@@ -128,86 +148,11 @@ public class MXGroup extends Group {
 		}
 	}
 
-	private void extractNotes(ArrayList<MXNoteData> nlist) {
-		if (!hasChild()) {
-			addNote(nlist, (MXNoteData) getBeginNote());
-			return;
-		}
-		if (hasChildFormer())
-			getChildFormerGroup().extractNotes(nlist);
-		if (hasChildLatter())
-			getChildLatterGroup().extractNotes(nlist);
-	}
-
-	private void addNote(ArrayList<MXNoteData> nlist, MXNoteData n) {
-		if (n == null)
-			return;
-		nlist.add(n);
-		addNote(nlist, n.next());
-	}
-
 	/**
 	 * @return articulationCurve
 	 */
 	public final ArticulationCurve getArticulationCurve() {
 		return articulationCurve;
-	}
-
-	/**
-	 * @return dynamicsCurve
-	 */
-	public DynamicsCurve getDynamicsCurve() {
-		return dynamicsCurve;
-	}
-
-	/**
-	 * @return tempoCurve
-	 */
-	public TempoCurve getTempoCurve() {
-		return tempoCurve;
-	}
-
-	public final boolean hasPhraseCurve() {
-		return dynamicsCurve != null && tempoCurve != null
-				&& articulationCurve != null;
-	}
-
-	protected void addScoreNoteList(MXNoteData n) {
-		if (n == null)
-			return;
-		scoreNotelist.add(n);
-		addScoreNoteList(n.next());
-	}
-
-	protected void initialize() {
-		dynamicsCurve = (DynamicsCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.DYNAMICS);
-		tempoCurve = (TempoCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.TEMPO);
-		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.ARTICULATION);
-	}
-
-	public NoteData getCenterGroupNote() {
-		if (centerNote == null) {
-			// onset length
-			int len = getEndNote().onset() - onsetInTicks();
-			int targetTime = len / 2;
-			searchCenterGroupNote(targetTime, getBeginNote());
-			if (hasChild())
-				searchCenterGroupNote(targetTime, getChildLatterGroup()
-						.getBeginNote());
-		}
-		return centerNote;
-	}
-
-	private void searchCenterGroupNote(int targetTime, NoteData note) {
-		if (note == null)
-			return;
-		if (note.onset() >= targetTime)
-			return;
-		centerNote = note;
-		searchCenterGroupNote(targetTime, note.next());
 	}
 
 	public MXGroup getChildFormerGroup() {
@@ -218,24 +163,26 @@ public class MXGroup extends Group {
 		return childLatterGroup;
 	}
 
+	/**
+	 * @return dynamicsCurve
+	 */
+	public DynamicsCurve getDynamicsCurve() {
+		return dynamicsCurve;
+	}
+
 	/*
 	 * (非 Javadoc)
-	 * @see net.muse.data.Group#addScoreNoteList()
+	 * @see net.muse.data.Group#getParent()
 	 */
-	@Override public void addScoreNoteList() {
-		if (!hasChild()) {
-			getScoreNotelist().clear();
-			addScoreNoteList((MXNoteData) getBeginNote());
-			return;
-		}
-		if (hasChildFormer()) {
-			getChildFormerGroup().getScoreNotelist().clear();
-			getChildFormerGroup().addScoreNoteList();
-		}
-		if (hasChildLatter()) {
-			getChildLatterGroup().getScoreNotelist().clear();
-			getChildLatterGroup().addScoreNoteList();
-		}
+	@Override public MXGroup getParent() {
+		return (MXGroup) super.getParent();
+	}
+
+	/**
+	 * @return tempoCurve
+	 */
+	public TempoCurve getTempoCurve() {
+		return tempoCurve;
 	}
 
 	@Override public boolean hasChild() {
@@ -248,6 +195,99 @@ public class MXGroup extends Group {
 
 	public final boolean hasChildLatter() {
 		return childLatterGroup != null;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.Group#printInfo()
+	 */
+	@Override public String printInfo() {
+		return String.format("Group %s\n\t%s\n\t%s\n\t%s\n", name(),
+				getDynamicsCurve(), getTempoCurve(), getArticulationCurve());
+	}
+
+	public void setChild(MXGroup g1, MXGroup g2) {
+		setChildFormer(g1);
+		setChildLatter(g2);
+		g1.getEndNote().setNext(null);
+		g2.getBeginNote().setPrevious(null);
+	}
+
+	public int timeValue() {
+		int len = 0;
+		if (hasChild()) {
+			len += timevalue(getChildFormerGroup().getBeginNote());
+			len += timevalue(getChildLatterGroup().getBeginNote());
+		} else
+			len += timevalue(getBeginNote());
+
+		return len;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override public String toString() {
+		String str = name() + ";" + getPartNumber() + ";";
+		if (!hasChild())
+			return str + notelistToString();
+		str += (hasChildFormer()) ? getChildFormerGroup().name() : "null";
+		str += ",";
+		str += (hasChildLatter()) ? getChildLatterGroup().name() : "null";
+		return str;
+	}
+
+	private void addNote(ArrayList<MXNoteData> nlist, MXNoteData n) {
+		if (n == null)
+			return;
+		nlist.add(n);
+		addNote(nlist, n.next());
+	}
+
+	private void addScoreNoteList(MXNoteData n) {
+		if (n == null)
+			return;
+		scoreNotelist.add(n);
+		addScoreNoteList(n.next());
+	}
+
+	private void extractNotes(ArrayList<MXNoteData> nlist) {
+		if (!hasChild()) {
+			addNote(nlist, (MXNoteData) getBeginNote());
+			return;
+		}
+		if (hasChildFormer())
+			getChildFormerGroup().extractNotes(nlist);
+		if (hasChildLatter())
+			getChildLatterGroup().extractNotes(nlist);
+	}
+
+	private NoteData getCenterGroupNote() {
+		if (centerNote == null) {
+			// onset length
+			int len = getEndNote().onset() - onsetInTicks();
+			int targetTime = len / 2;
+			searchCenterGroupNote(targetTime, getBeginNote());
+			if (hasChild())
+				searchCenterGroupNote(targetTime, getChildLatterGroup()
+						.getBeginNote());
+		}
+		return centerNote;
+	}
+
+	private final boolean hasPhraseCurve() {
+		return dynamicsCurve != null && tempoCurve != null
+				&& articulationCurve != null;
+	}
+
+	private void searchCenterGroupNote(int targetTime, NoteData note) {
+		if (note == null)
+			return;
+		if (note.onset() >= targetTime)
+			return;
+		centerNote = note;
+		searchCenterGroupNote(targetTime, note.next());
 	}
 
 	/**
@@ -272,52 +312,12 @@ public class MXGroup extends Group {
 		}
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override public String toString() {
-		String str = name() + ";" + getPartNumber() + ";";
-		if (!hasChild())
-			return str + notelistToString();
-		str += (hasChildFormer()) ? getChildFormerGroup().name() : "null";
-		str += ",";
-		str += (hasChildLatter()) ? getChildLatterGroup().name() : "null";
-		return str;
-	}
-
-	public int timeValue() {
-		int len = 0;
-		if (hasChild()) {
-			len += timevalue(getChildFormerGroup().getBeginNote());
-			len += timevalue(getChildLatterGroup().getBeginNote());
-		} else
-			len += timevalue(getBeginNote());
-
-		return len;
-	}
-
-	public void setChild(MXGroup g1, MXGroup g2) {
-		setChildFormer(g1);
-		setChildLatter(g2);
-		g1.getEndNote().setNext(null);
-		g2.getBeginNote().setPrevious(null);
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.data.Group#getParent()
-	 */
-	@Override public MXGroup getParent() {
-		return (MXGroup) super.getParent();
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.data.Group#printInfo()
-	 */
-	@Override public String printInfo() {
-		return String.format("Group %s\n\t%s\n\t%s\n\t%s\n", name(),
-				getDynamicsCurve(), getTempoCurve(), getArticulationCurve());
+	protected void initialize() {
+		dynamicsCurve = (DynamicsCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.DYNAMICS);
+		tempoCurve = (TempoCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.TEMPO);
+		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.ARTICULATION);
 	}
 }
