@@ -271,22 +271,29 @@ public class MXTuneData extends TuneData {
 	 * @see net.muse.data.TuneData#deleteHierarchicalGroup(net.muse.data.Group,
 	 * net.muse.data.Group)
 	 */
-	@Override protected void deleteHierarchicalGroup(Group target,
-			Group structure) {
-		if (structure == null)
+	@Override protected void deleteHierarchicalGroup(Group root, Group target) {
+		if (root == null)
 			return;
-		assert structure instanceof MXGroup;
-		MXGroup str = (MXGroup) structure;
-		deleteHierarchicalGroup(target, str.getChildFormerGroup());
-		deleteHierarchicalGroup(target, str.getChildLatterGroup());
-		if (str.equals(target)) {
+		if (!root.hasChild())
+			return;
+		assert root instanceof MXGroup;
+		MXGroup r = (MXGroup) root;
+		MXGroup f = r.getChildFormerGroup();
+		MXGroup l = r.getChildLatterGroup();
+		if (f.equals(target) || l.equals(target)) {
 			// 子グループをすべて削除
-			deleteGroup(target);
-			target.setType(GroupType.USER);
-			// 親グループの再分析
-			// analyzeStructure(target);
+			deleteHierarchicalGroup(f, f.getChildFormerGroup());
+			deleteHierarchicalGroup(f, f.getChildLatterGroup());
+			deleteHierarchicalGroup(l, l.getChildFormerGroup());
+			deleteHierarchicalGroup(l, l.getChildLatterGroup());
+
+			// 削除
+			f.getEndNote().setNext(l.getBeginNote());
+			r.setChild(null, null);
 			return;
 		}
+		deleteHierarchicalGroup(f, target);
+		deleteHierarchicalGroup(l, target);
 	}
 
 	@Override protected void initializeNoteEvents(Group group) {

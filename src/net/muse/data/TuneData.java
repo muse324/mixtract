@@ -167,7 +167,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 					return;
 				}
 			}
-			deleteHierarchicalGroup(group, g);
+			deleteHierarchicalGroup(g, group);
+			analyze(g);
 		}
 	}
 
@@ -463,18 +464,17 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 * <li>子グループをすべて削除
 	 * <li>親グループを起点にし，再分析をかける
 	 * </ol>
-	 *
+	 * @param root
+	 *            階層フレーズ
 	 * @param target
 	 *            削除するフレーズ
-	 * @param structure
-	 *            階層フレーズ
 	 */
-	protected void deleteHierarchicalGroup(Group target, Group structure) {
-		if (structure == null)
+	protected void deleteHierarchicalGroup(Group root, Group target) {
+		if (root == null)
 			return;
 
-		deleteHierarchicalGroup(target, structure.child());
-		if (structure.equals(target)) {
+		deleteHierarchicalGroup(root.child(), target);
+		if (root.equals(target)) {
 			// 子グループをすべて削除
 			deleteGroup(target);
 			target.setType(GroupType.USER);

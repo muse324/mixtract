@@ -209,17 +209,19 @@ public class MXGroup extends Group {
 	public void setChild(MXGroup g1, MXGroup g2) {
 		setChildFormer(g1);
 		setChildLatter(g2);
-		g1.getEndNote().setNext(null);
-		g2.getBeginNote().setPrevious(null);
+		if (g1 != null)
+			g1.getEndNote().setNext(null);
+		if (g2 != null)
+			g2.getBeginNote().setPrevious(null);
 	}
 
 	public int timeValue() {
 		int len = 0;
-		if (hasChild()) {
-			len += timevalue(getChildFormerGroup().getBeginNote());
-			len += timevalue(getChildLatterGroup().getBeginNote());
-		} else
-			len += timevalue(getBeginNote());
+		if (!hasChild())
+			return timevalue(getBeginNote());
+
+		len += timevalue(getChildFormerGroup().getBeginNote());
+		len += timevalue(getChildLatterGroup().getBeginNote());
 
 		return len;
 	}

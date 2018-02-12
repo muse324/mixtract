@@ -370,13 +370,13 @@ public class Group extends SequenceData {
 		setNotelist(note.next(), root);
 	}
 
-	protected int timevalue(NoteData gnote) {
-		if (gnote == null)
+	protected int timevalue(NoteData note) {
+		if (note == null)
 			return 0;
 		int len = 0;
-		while (gnote != null) {
-			len += gnote.timeValue();
-			gnote = gnote.next();
+		while (note != null) {
+			len += note.timeValue();
+			note = note.next();
 		}
 		return len;
 	}
