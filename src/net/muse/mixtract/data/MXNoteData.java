@@ -52,6 +52,10 @@ public class MXNoteData extends NoteData {
 		super(note, partNumber, idx, bpm, beat, vel);
 	}
 
+	public MXNoteData(int index) {
+		super(index);
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#child()
@@ -95,8 +99,8 @@ public class MXNoteData extends NoteData {
 	 * @see net.muse.data.SequenceData#parent()
 	 */
 	@Override
-	public NoteData parent() {
-		return (NoteData) super.parent();
+	public MXNoteData parent() {
+		return (MXNoteData) super.parent();
 	}
 
 	/*
@@ -104,8 +108,8 @@ public class MXNoteData extends NoteData {
 	 * @see net.muse.data.SequenceData#previous()
 	 */
 	@Override
-	public NoteData previous() {
-		return (NoteData) super.previous();
+	public MXNoteData previous() {
+		return (MXNoteData) super.previous();
 	}
 
 	/*

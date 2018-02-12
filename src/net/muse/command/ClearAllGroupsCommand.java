@@ -12,7 +12,7 @@ public class ClearAllGroupsCommand extends MuseAppCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override public void execute() {
-		target().getGroupArrayList().clear();
+		target().getMiscGroup().clear();
 		for (Group g : target().getRootGroup())
 			target().deleteGroupFromData(g);
 		main().notifySetTarget();

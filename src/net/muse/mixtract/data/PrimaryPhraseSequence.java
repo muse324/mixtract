@@ -9,6 +9,7 @@ package net.muse.mixtract.data;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/11/26
  */
+@Deprecated
 public class PrimaryPhraseSequence {
 	private MXGroup group = null;
 	private PrimaryPhraseSequence next = null;

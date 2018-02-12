@@ -1,14 +1,19 @@
 package net.muse.mixtract.data.curve;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-import net.muse.data.*;
-import net.muse.mixtract.data.*;
+import net.muse.data.Group;
+import net.muse.data.NoteData;
+import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.MXNoteData;
+import net.muse.mixtract.data.MXTuneData;
 
 public class TempoCurve extends PhraseCurve {
 
 	private LinkedList<Double> tempolist;
-	private NoteData lastNote;
+	private MXNoteData lastNote;
 	private double musicLengthInRealtimeMsec;
 
 	TempoCurve() {
@@ -35,31 +40,32 @@ public class TempoCurve extends PhraseCurve {
 		return 0.;
 	}
 
-	private void applyTempoEvent(MXGroup group, ArrayList<Double> realtimeList) {
+	private void applyTempoEvent(MXGroup group,
+			ArrayList<Double> realtimeList) {
 		if (group == null)
 			return;
 		applyTempoEvent(group.getChildFormerGroup(), realtimeList);
 		applyTempoEvent(group.getChildLatterGroup(), realtimeList);
-		applyTempoEvent(group.getBeginGroupNote(), realtimeList);
+		if (!group.hasChild())
+			applyTempoEvent(group.getBeginNote(), realtimeList);
 	}
 
-	private void applyTempoEvent(GroupNote note,
+	private void applyTempoEvent(NoteData note,
 			ArrayList<Double> realtimeList) {
 		if (note == null)
 			return;
-		NoteData n = note.getNote();
-		if (n != null && !n.rest()) {
+		if (note != null && !note.rest()) {
 			final int size = realtimeList.size();
-			int idxOn = (int) getCurrentIndex(n, size, n.onset());
-			int idxOff = (int) getCurrentIndex(n, size, n.offset());
+			int idxOn = (int) getCurrentIndex(note, size, note.onset());
+			int idxOff = (int) getCurrentIndex(note, size, note.offset());
 			if (idxOn >= size)
 				idxOn = size - 1;
-			n.setRealOnset(realtimeList.get(idxOn));
+			note.setRealOnset(realtimeList.get(idxOn));
 			if (idxOff >= size)
 				idxOff = size - 1;
-			n.setRealOffset(realtimeList.get(idxOff));
+			note.setRealOffset(realtimeList.get(idxOff));
 		}
-		applyTempoEvent(note.child(), realtimeList);
+//		applyTempoEvent(note.child(), realtimeList);
 		applyTempoEvent(note.next(), realtimeList);
 	}
 
