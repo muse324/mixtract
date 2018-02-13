@@ -1,13 +1,18 @@
 package net.muse.mixtract.gui;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
 import javax.swing.SwingUtilities;
 
 import net.muse.app.Mixtract;
 import net.muse.mixtract.data.MXGroup;
-import net.muse.mixtract.data.curve.*;
+import net.muse.mixtract.data.curve.ArticulationCurve;
+import net.muse.mixtract.data.curve.DynamicsCurve;
+import net.muse.mixtract.data.curve.TempoCurve;
 
 public class CurveViewPanel extends PhraseCanvas {
 
@@ -38,6 +43,9 @@ public class CurveViewPanel extends PhraseCanvas {
 		// reset();
 		// repaint();
 	}
+
+	public CurveViewPanel() {
+super();	}
 
 	/*
 	 * (非 Javadoc)
