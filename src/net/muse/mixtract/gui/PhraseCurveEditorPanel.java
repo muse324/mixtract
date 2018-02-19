@@ -162,13 +162,13 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 
 	private Point param2graph(Double param) {
 		double x = (endX - axisX) * param.x + axisX - offset;
-		double y = (minY - maxY) * param.y + axisY - offset;
+		double y = -1 * (minY - maxY) * param.y + axisY - offset;
 		return new Point((int) x, (int) y);
 	}
 
 	public Point2D.Double graph2param(Point graph) {
 		double x = (double) (graph.x + offset - axisX) / (endX - axisX);
-		double y = (double) (graph.y + offset - axisY) / (minY - maxY);
+		double y = (double) (graph.y + offset - axisY) / (minY - maxY) * -1.;
 		Double t = new Point2D.Double(x, y);
 		return t;
 	}
@@ -222,7 +222,9 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 	@Override public void changeExpression(PhraseCurveType type) {}
 
 	public void notifyCurveUpdate() {
+		cv.rasterize();
 		cv.apply((MXTuneData) main.data(), group);
+		main.data().calculateExpressionParameters();
 	}
 
 }
