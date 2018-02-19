@@ -1,5 +1,6 @@
 package net.muse.mixtract.data;
 
+import java.awt.geom.Point2D;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -720,11 +721,15 @@ public class MXTuneData extends TuneData {
 				MXNoteData note = null;
 				String groupInfo = item[2];
 				String topNoteName = item[3];
-				String[] dynCurveInfo = item[4].split(",");
-				String[] tmpCurveInfo = item[5].split(",");
-				String[] artCurveInfo = item[6].split(",");
+				String[] curvePoints = item[4].split(",");
+				String[] dynCurveInfo = item[5].split(",");
+				String[] tmpCurveInfo = item[6].split(",");
+				String[] artCurveInfo = item[7].split(",");
 				MXGroup g = parseGroupInfo(glist, note, groupName, partNumber,
 						groupInfo);
+				parseCurvePoints(curvePoints, 0, g.getDynamicsCurve());
+				parseCurvePoints(curvePoints, 6, g.getTempoCurve());
+				parseCurvePoints(curvePoints, 12, g.getArticulationCurve());
 				try {
 					parsePhraseProfile(dynCurveInfo, g.getDynamicsCurve());
 					parsePhraseProfile(tmpCurveInfo, g.getTempoCurve());
@@ -742,6 +747,18 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
+	private void parseCurvePoints(String[] list, int idx, PhraseCurve cv) {
+		Point2D.Double st = new Point2D.Double(Double.valueOf(list[idx + 0]),
+				Double.valueOf(list[idx + 1]));
+		Point2D.Double tp = new Point2D.Double(Double.valueOf(list[idx + 2]),
+				Double.valueOf(list[idx + 3]));
+		Point2D.Double ed = new Point2D.Double(Double.valueOf(list[idx + 4]),
+				Double.valueOf(list[idx + 5]));
+		cv.setStart(st);
+		cv.setTop(tp);
+		cv.setEnd(ed);
+	}
+
 	@Override protected void setNoteScheduleEvent(final Group group) {
 		if (group == null)
 			return;
@@ -753,6 +770,23 @@ public class MXTuneData extends TuneData {
 		} else {
 			setNoteScheduleEvent(g.getBeginNote(), g.getEndNote().offset());
 		}
+	}
+
+	private Object writeCurvePointParam(MXGroup group) {
+		if (group == null) {
+			return "ERROR!";
+		}
+		String str = writeCurvePoint(group.getDynamicsCurve());
+		str += ",";
+		str += writeCurvePoint(group.getTempoCurve());
+		str += ",";
+		str += writeCurvePoint(group.getArticulationCurve());
+		return str;
+	}
+
+	private String writeCurvePoint(PhraseCurve cv) {
+		return String.format("%f,%f,%f,%f,%f,%f", cv.start().x, cv.start().y, cv
+				.top().x, cv.top().y, cv.end().x, cv.end().y);
 	}
 
 	private String writeCurveParam(MXGroup group) {
@@ -782,8 +816,9 @@ public class MXTuneData extends TuneData {
 			return;
 		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
 		writeGroupStructureData(out, (MXGroup) group.getChildLatterGroup());
-		out.format("%s;%s;%s\n", group, (group.hasTopNote()) ? group
-				.getTopNote().id() : "null", writeCurveParam(group));
+		out.format("%s;%s;%s;%s\n", group, (group.hasTopNote()) ? group
+				.getTopNote().id() : "null", writeCurvePointParam(group),
+				writeCurveParam(group));
 	}
 
 	private void writeNoteData(PrintWriter out, MXNoteData note) {
