@@ -155,7 +155,6 @@ public class MXMainFrame extends MainFrame {
 		if (phraseDynView == null) {
 			phraseDynView = new PhraseCurveEditorPanel(main,
 					PhraseCurveType.DYNAMICS);
-			phraseDynView.initialHandlerLocations();
 			main.addTuneDataListener(phraseDynView);
 		}
 		return phraseDynView;
@@ -165,7 +164,6 @@ public class MXMainFrame extends MainFrame {
 		if (phraseTempoView == null) {
 			phraseTempoView = new PhraseCurveEditorPanel(main,
 					PhraseCurveType.TEMPO);
-			phraseTempoView.initialHandlerLocations();
 			main.addTuneDataListener(phraseTempoView);
 		}
 		return phraseTempoView;
@@ -175,7 +173,6 @@ public class MXMainFrame extends MainFrame {
 		if (phraseArtView == null) {
 			phraseArtView = new PhraseCurveEditorPanel(main,
 					PhraseCurveType.ARTICULATION);
-			phraseArtView.initialHandlerLocations();
 			main.addTuneDataListener(phraseArtView);
 		}
 		return phraseArtView;

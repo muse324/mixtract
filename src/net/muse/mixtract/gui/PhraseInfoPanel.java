@@ -29,11 +29,7 @@ public class PhraseInfoPanel extends JPanel implements TuneDataListener {
 
 	@Override public void addGroup(Group g) {}
 
-	@Override public void deleteGroup(GroupLabel g) {
-		group = null;
-		border.setTitle(DEFAULT_TEXT);
-		repaint();
-	}
+	@Override public void deleteGroup(GroupLabel g) {}
 
 	@Override public void editGroup(GroupLabel g) {}
 
@@ -47,7 +43,11 @@ public class PhraseInfoPanel extends JPanel implements TuneDataListener {
 		repaint();
 	}
 
-	@Override public void deselect(GroupLabel g) {}
+	@Override public void deselect(GroupLabel g) {
+		group = null;
+		border.setTitle(DEFAULT_TEXT);
+		repaint();
+	}
 
 	@Override public void setTarget(TuneData data) {
 		setGroup(data.getRootGroup().get(0));

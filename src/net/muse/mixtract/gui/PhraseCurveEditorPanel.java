@@ -7,10 +7,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.event.MouseInputListener;
 
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
@@ -24,33 +25,12 @@ import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 
-	public enum CurveHandlerType {
-		START {
-			@Override public Point graphicBase() {
-				return null;
-			}
-		},
-		TOP {
-			@Override public Point graphicBase() {
-				return null;
-			}
-		},
-		END {
-			@Override public Point graphicBase() {
-				return null;
-			}
-		};
-
-		public abstract Point graphicBase();
-	}
-
 	private PhraseCurveType type;
-	private MXGroupLabel targetLabel;
 	private MXGroup group;
-	private PhraseCurve cv;
-	private CurveHandler st;
-	private CurveHandler tp;
-	private CurveHandler ed;
+	PhraseCurve cv;
+	CurveHandler st;
+	CurveHandler tp;
+	CurveHandler ed;
 	private int axisX;
 	private int axisY;
 	private int endX;
@@ -58,7 +38,7 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 	private int maxY;
 	private MouseActionListener mouseActions;
 	public CurveHandler target;
-	private int offset = 5;
+	int offset = 5;
 
 	public PhraseCurveEditorPanel(MuseApp main, PhraseCurveType type) {
 		super();
@@ -67,9 +47,9 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 		setBackground(Color.white);
 		setBorder(BorderFactory.createRaisedBevelBorder());
 		this.type = type;
-		st = new CurveHandler(CurveHandlerType.START);
-		tp = new CurveHandler(CurveHandlerType.TOP);
-		ed = new CurveHandler(CurveHandlerType.END);
+		st = new CurveHandler(this);
+		tp = new CurveHandler(this);
+		ed = new CurveHandler(this);
 		add(st);
 		add(tp);
 		add(ed);
@@ -104,57 +84,6 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 
 	protected int getHalfRange() {
 		return (int) Math.round(getHeight() / 2.5);
-	}
-
-	private class CurveHandler extends JPanel implements MouseInputListener {
-		Dimension size = new Dimension(10, 10);
-		private CurveHandlerType START, TOP, END;
-		private final CurveHandlerType type;
-
-		public CurveHandler(CurveHandlerType type) {
-			super(null);
-			this.type = type;
-			setSize(size);
-			setBackground(Color.ORANGE);
-			setOpaque(true);
-			setVisible(false);
-			addMouseListener(this);
-			addMouseMotionListener(this);
-		}
-
-		@Override public void mousePressed(MouseEvent e) {
-			if (e.getSource() instanceof CurveHandler)
-				target = (CurveHandler) e.getSource();
-		}
-
-		@Override public void mouseEntered(MouseEvent e) {
-			setBackground(Color.RED);
-			repaint();
-		}
-
-		@Override public void mouseExited(MouseEvent e) {
-			setBackground(Color.ORANGE);
-			repaint();
-		}
-
-		@Override public void mouseMoved(MouseEvent e) {}
-
-		@Override public void mouseClicked(MouseEvent e) {}
-
-		@Override public void mouseReleased(MouseEvent e) {}
-
-		@Override public void mouseDragged(MouseEvent e) {
-			if (target == null)
-				return;
-			Point p = new Point(target.getLocation());
-			if (target.equals(tp))
-				p.x += e.getX() - offset;
-			p.y += e.getY() - offset;
-			target.setLocation(p);
-			target.repaint();
-			getParent().repaint();
-		}
-
 	}
 
 	private void drawAxis(Graphics2D g2) {
@@ -222,10 +151,22 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 				+ sz.width, p2.getY() + sz.height);
 	}
 
-	void initialHandlerLocations() {
-		st.setLocation(getAxisX() - offset, getAxisY() - offset);
-		tp.setLocation(getWidth() / 2 - offset, getAxisY() - offset);
-		ed.setLocation(endX - offset, getAxisY() - offset);
+	void initialHandlerLocations(CurveHandler handler, Double param) {
+		Point p = param2graph(param);
+		handler.setLocation(p);
+	}
+
+	private Point param2graph(Double param) {
+		double x = (endX - axisX) * param.x + axisX - offset;
+		double y = (minY - maxY) * param.y + axisY - offset;
+		return new Point((int) x, (int) y);
+	}
+
+	public Point2D.Double graph2param(Point graph) {
+		double x = (double) (graph.x + offset - axisX) / (endX - axisX);
+		double y = (double) (graph.y + offset - axisY) / (minY - maxY);
+		Double t = new Point2D.Double(x, y);
+		return t;
 	}
 
 	private void setAxises() {
@@ -243,7 +184,6 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 	@Override public void editGroup(GroupLabel g) {}
 
 	@Override public void selectGroup(GroupLabel g, boolean flg) {
-		targetLabel = (MXGroupLabel) g;
 		selectGroup((MXGroup) g.group());
 	}
 
@@ -266,7 +206,9 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 			cv = group.getArticulationCurve();
 			break;
 		}
-		initialHandlerLocations();
+		initialHandlerLocations(st, cv.start());
+		initialHandlerLocations(tp, cv.top());
+		initialHandlerLocations(ed, cv.end());
 		st.setVisible(true);
 		tp.setVisible(true);
 		ed.setVisible(true);
