@@ -22,6 +22,7 @@ import net.muse.gui.GroupingPanel;
 import net.muse.gui.MainFrame;
 import net.muse.gui.PianoRoll;
 import net.muse.mixtract.data.MXTuneData;
+import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class MXMainFrame extends MainFrame {
 
@@ -39,11 +40,13 @@ public class MXMainFrame extends MainFrame {
 
 	private JPanel curveEditorPanel;
 
-	private CurveViewPanel phraseArtView;
+	private PhraseCurveEditorPanel phraseArtView;
 
-	private CurveViewPanel phraseDynView;
+	private PhraseCurveEditorPanel phraseDynView;
 
-	private CurveViewPanel phraseTempoView;
+	private PhraseCurveEditorPanel phraseTempoView;
+
+	private PhraseInfoPanel phraseInfoPanel;
 
 	public MXMainFrame(Mixtract mixtract) throws IOException {
 		super(mixtract);
@@ -148,29 +151,42 @@ public class MXMainFrame extends MainFrame {
 		return curveEditorPanel;
 	}
 
-	private CurveViewPanel getPhraseDynamicsView() {
+	private PhraseCurveEditorPanel getPhraseDynamicsView() {
 		if (phraseDynView == null) {
-			phraseDynView = new CurveViewPanel();
+			phraseDynView = new PhraseCurveEditorPanel(main,
+					PhraseCurveType.DYNAMICS);
+			phraseDynView.initialHandlerLocations();
+			main.addTuneDataListener(phraseDynView);
 		}
 		return phraseDynView;
 	}
 
-	private CurveViewPanel getPhraseTempoView() {
+	private PhraseCurveEditorPanel getPhraseTempoView() {
 		if (phraseTempoView == null) {
-			phraseTempoView = new CurveViewPanel();
+			phraseTempoView = new PhraseCurveEditorPanel(main,
+					PhraseCurveType.TEMPO);
+			phraseTempoView.initialHandlerLocations();
+			main.addTuneDataListener(phraseTempoView);
 		}
 		return phraseTempoView;
 	}
 
-	private CurveViewPanel getPhraseArticulationView() {
+	private PhraseCurveEditorPanel getPhraseArticulationView() {
 		if (phraseArtView == null) {
-			phraseArtView = new CurveViewPanel();
+			phraseArtView = new PhraseCurveEditorPanel(main,
+					PhraseCurveType.ARTICULATION);
+			phraseArtView.initialHandlerLocations();
+			main.addTuneDataListener(phraseArtView);
 		}
 		return phraseArtView;
 	}
 
 	private JPanel getPhraseInfoPanel() {
-		return new JPanel();
+		if (phraseInfoPanel == null) {
+			phraseInfoPanel = new PhraseInfoPanel();
+			main.addTuneDataListener(phraseInfoPanel);
+		}
+		return phraseInfoPanel;
 	}
 
 	/**

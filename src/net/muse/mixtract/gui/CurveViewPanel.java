@@ -45,14 +45,14 @@ public class CurveViewPanel extends PhraseCanvas {
 	}
 
 	public CurveViewPanel() {
-super();	}
+		super();
+	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.PhraseCanvas#reset()
 	 */
-	@Override
-	public void reset() {
+	@Override public void reset() {
 		if (cvDyn != null)
 			cvDyn.initializeGraphicValue(getAxisX(), getAxisY(), getRangeX(),
 					getRangeY() / 2.);
@@ -72,8 +72,7 @@ super();	}
 	 * @see jp.crestmuse.mixtract.gui.PhraseCanvas#setShowCurrentX(boolean,
 	 * int, java.awt.Point)
 	 */
-	@Override
-	public void setShowCurrentX(boolean showCurrentX, int x) {
+	@Override public void setShowCurrentX(boolean showCurrentX, int x) {
 		this.showCurrentX = showCurrentX;
 		this.currentMousePositionX = x;
 		repaint();
@@ -97,22 +96,22 @@ super();	}
 	/*
 	 * (非 Javadoc)
 	 * @see
-	 * jp.crestmuse.mixtract.gui.PhraseCanvas#setController(jp.crestmuse.mixtract
+	 * jp.crestmuse.mixtract.gui.PhraseCanvas#setController(jp.crestmuse.
+	 * mixtract
 	 * .Mixtract)
 	 */
-	@Override
-	void setController(Mixtract main) {
+	@Override void setController(Mixtract main) {
 		this.main = main;
 		this.mouseActions = new CanvasListener(main, this) {
 
 			/*
 			 * (非 Javadoc)
 			 * @see
-			 * jp.crestmuse.mixtract.gui.PhraseCanvas.CanvasListener#mouseDragged
+			 * jp.crestmuse.mixtract.gui.PhraseCanvas.CanvasListener#
+			 * mouseDragged
 			 * (java.awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseDragged(MouseEvent e) {
+			@Override public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
 				if (SwingUtilities.isLeftMouseButton(e))
 					_main.notifyShowCurrentX(true, getMousePosition().x);
@@ -125,8 +124,7 @@ super();	}
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mousePressed(MouseEvent e) {
+			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (SwingUtilities.isLeftMouseButton(e))
 					_main.notifyShowCurrentX(true, getMousePosition().x);
@@ -136,11 +134,11 @@ super();	}
 			/*
 			 * (非 Javadoc)
 			 * @see
-			 * jp.crestmuse.mixtract.gui.PhraseCanvas.CanvasListener#mouseReleased
+			 * jp.crestmuse.mixtract.gui.PhraseCanvas.CanvasListener#
+			 * mouseReleased
 			 * (java.awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseReleased(MouseEvent e) {
+			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (SwingUtilities.isLeftMouseButton(e))
 					_main.notifyShowCurrentX(false, getMousePosition().x);
@@ -156,8 +154,7 @@ super();	}
 	 * (non-Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.PhraseCanvas#drawCurves(null)
 	 */
-	@Override
-	protected void drawCurves(Graphics2D g2) {
+	@Override protected void drawCurves(Graphics2D g2) {
 		if (showArt)
 			drawCurve(g2, cvArt, Color.red, stroke);
 		if (showTmp)
@@ -172,8 +169,7 @@ super();	}
 	 * jp.crestmuse.mixtract.gui.PhraseCanvas#paintComponent(java.awt.Graphics
 	 * )
 	 */
-	@Override
-	public void paintComponent(Graphics g) {
+	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (showCurrentX) {
 			g.setColor(Color.magenta);

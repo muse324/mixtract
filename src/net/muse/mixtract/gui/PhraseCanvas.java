@@ -448,7 +448,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 	/**
 	 * @return
 	 */
-	private int getHalfRange() {
+	protected int getHalfRange() {
 		return (int) Math.round(getHeight() / 4.0);
 	}
 
@@ -549,7 +549,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 	/**
 	 *
 	 */
-	private void initialize() {
+	protected void initialize() {
 		setLayout(null);
 		setDoubleBuffered(true);
 		setBackground(Color.white);
