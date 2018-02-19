@@ -13,6 +13,7 @@ import java.awt.geom.Point2D.Double;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
@@ -20,6 +21,7 @@ import net.muse.gui.GroupLabel;
 import net.muse.gui.MouseActionListener;
 import net.muse.gui.TuneDataListener;
 import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurve;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
@@ -39,9 +41,11 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 	private MouseActionListener mouseActions;
 	public CurveHandler target;
 	int offset = 5;
+	private Mixtract main;
 
 	public PhraseCurveEditorPanel(MuseApp main, PhraseCurveType type) {
 		super();
+		this.main = (Mixtract) main;
 		setLayout(null);
 		setDoubleBuffered(true);
 		setBackground(Color.white);
@@ -216,5 +220,9 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 	}
 
 	@Override public void changeExpression(PhraseCurveType type) {}
+
+	public void notifyCurveUpdate() {
+		cv.apply((MXTuneData) main.data(), group);
+	}
 
 }

@@ -225,6 +225,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
 				.getBPM().get(0), currentDefaultVelocity);
 		nd.setKeyMode(keyMode, fifths);
+		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
 		testPrintln(nd.toString());
 		if (cur == null) {
 			// 冒頭音

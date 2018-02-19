@@ -775,7 +775,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 		beatInfoList.add(new BeatInfo(measure, beats, beatType));
 	}
 
-	void setTempoListEndtime(double onset, boolean isEndCheck) {
+	protected void setTempoListEndtime(double onset, boolean isEndCheck) {
 		if (!isEndCheck) {
 			this.tempoListEndtime = onset;
 			return;

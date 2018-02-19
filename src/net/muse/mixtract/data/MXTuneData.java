@@ -644,6 +644,7 @@ public class MXTuneData extends TuneData {
 		// } else {
 		// pre.setNext(nd);
 		// }
+		setTempoListEndtime(nd.offset(),false);
 		getTempralNotelist().add(nd);
 		log.println(nd);
 		readNoteData(idx, in, in.readLine(), nd, chord);

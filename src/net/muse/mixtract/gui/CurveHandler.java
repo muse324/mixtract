@@ -26,9 +26,17 @@ class CurveHandler extends JPanel implements MouseInputListener {
 		addMouseMotionListener(this);
 	}
 
-	@Override public void mousePressed(MouseEvent e) {
-		if (e.getSource() instanceof CurveHandler)
-			owner.target = (CurveHandler) e.getSource();
+	@Override public void mouseClicked(MouseEvent e) {}
+
+	@Override public void mouseDragged(MouseEvent e) {
+		cur = new Point(getLocation());
+		if (equals(owner.tp))
+			cur.x += e.getX() - offset;
+		cur.y += e.getY() - offset;
+		setLocation(cur);
+		update();
+		repaint();
+		getParent().repaint();
 	}
 
 	@Override public void mouseEntered(MouseEvent e) {
@@ -43,9 +51,16 @@ class CurveHandler extends JPanel implements MouseInputListener {
 
 	@Override public void mouseMoved(MouseEvent e) {}
 
-	@Override public void mouseClicked(MouseEvent e) {}
+	@Override public void mousePressed(MouseEvent e) {
+		if (e.getSource() instanceof CurveHandler)
+			owner.target = (CurveHandler) e.getSource();
+	}
 
 	@Override public void mouseReleased(MouseEvent e) {
+		update();
+	}
+
+	private void update() {
 		Double p = owner.graph2param(cur);
 		if (equals(owner.st))
 			owner.cv.setStart(p);
@@ -53,17 +68,8 @@ class CurveHandler extends JPanel implements MouseInputListener {
 			owner.cv.setTop(p);
 		else if (equals(owner.ed))
 			owner.cv.setEnd(p);
+		owner.notifyCurveUpdate();
 		repaint();
-	}
-
-	@Override public void mouseDragged(MouseEvent e) {
-		cur = new Point(getLocation());
-		if (equals(owner.tp))
-			cur.x += e.getX() - offset;
-		cur.y += e.getY() - offset;
-		setLocation(cur);
-		repaint();
-		getParent().repaint();
 	}
 
 }
