@@ -34,29 +34,67 @@ public class MakeGroupCommand extends MuseAppCommand {
 		Group g1 = createGroup(begin, end, GroupType.USER);
 		target().addMiscGroupList(g1);
 
+		Group g0 = null, g2 = null, parent = null;
 		// もし前後に未グループの音符があった場合，GroupType.AUTOで自動生成する
-		Group g0 = createAutoGroupBeforUserGroup(begin);
-		Group g2 = createAutoGroupAfterUserGroup(end);
-
-		// グループを連結する
-		// USER が楽曲冒頭に生成された場合
-		Group parent = combineGroups(g0, g1, g2);
-		// USER が楽曲の最後に生成された場合
-		if (parent == null)
-			parent = combineGroups(g2, g0, g1);
-		// USER が曲間に生成された場合
-		if (parent == null) {
-			parent = combineGroups(null, g0, g1);
-			parent = combineGroups(null, parent, g2);
+		if (!target().getRootGroup().get(0).hasChild()) {
+			g0 = createAutoGroupBeforUserGroup(begin);
+			g2 = createAutoGroupAfterUserGroup(end);
+			// グループを連結する
+			// USER が楽曲冒頭に生成された場合
+			parent = combineGroups(g0, g1, g2);
+			// USER が楽曲の最後に生成された場合
+			if (parent == null)
+				parent = combineGroups(g2, g0, g1);
+			// USER が曲間に生成された場合
+			if (parent == null) {
+				parent = combineGroups(null, g0, g1);
+				parent = combineGroups(null, parent, g2);
+			}
+		} else {
+			// 階層グループが既存の場合、直上の親グループを探す
+			for (Group g : target().getRootGroup()) {
+				parent = searchGroup((MXGroup) g, g1.getBeginNote(), g1
+						.getEndNote());
+				if (parent != null)
+					break;
+			}
+			assert parent != null;
+			if (g1.getBeginNote().equals(parent.getBeginNote())) {
+				g2 = createGroup(g1.getEndNote().next(), parent.getEndNote(),
+						GroupType.AUTO);
+				g2.setIndex(target().getUniqueGroupIndex());
+				parent = combineGroups(null, g1, g2);
+			} else if (parent.getEndNote().equals(g1.getEndNote())) {
+				g0 = createGroup(parent.getBeginNote(), g1.getBeginNote()
+						.previous(), GroupType.AUTO);
+				g0.setIndex(target().getUniqueGroupIndex());
+				parent = combineGroups(null, g0, g1);
+			}
 		}
 		parent.setIndex(target().getUniqueGroupIndex());
 		target().addMiscGroupList(parent);
-
 		// 階層グループとの整合性を取る
 		for (Group g : target().getRootGroup()) {
 			target().analyze(g);
 		}
 		main().notifySetTarget();
+	}
+
+	private Group searchGroup(MXGroup g, NoteData beginNote, NoteData endNote) {
+		if (g == null)
+			return null;
+
+		if (g.getBeginNote().equals(beginNote))
+			return g;
+		if (g.getEndNote().equals(endNote))
+			return g;
+
+		Group f = searchGroup(g.getChildFormerGroup(), beginNote, endNote);
+		if (f == null)
+			return searchGroup(g.getChildLatterGroup(), beginNote, endNote);
+		if (f.getBeginNote().equals(beginNote))
+			return f;
+		return g;
 	}
 
 	private Group createAutoGroupAfterUserGroup(NoteLabel end) {
