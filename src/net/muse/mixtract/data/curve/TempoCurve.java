@@ -2,7 +2,6 @@ package net.muse.mixtract.data.curve;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import net.muse.data.Group;
 import net.muse.data.NoteData;
@@ -33,7 +32,30 @@ public class TempoCurve extends PhraseCurve {
 			tempolist = target.getTempoList();
 		if (lastNote != target.getLastNote(0))
 			lastNote = target.getLastNote(0);
-		applyTempoEvent(target.getRootGroup(), target.getBPM().get(0));
+
+		// 拍占有時間(%?)
+		ArrayList<Double> beattimeList = new ArrayList<Double>();
+		for (int i = 0; i < tempolist.size(); i++) {
+			double beattime = Math.pow(2.0, -1. * tempolist.get(i));
+			beattimeList.add(beattime);
+		}
+
+		// 実時間（積分）
+		ArrayList<Double> realtimeList = new ArrayList<Double>();
+		double currentTime = 0.;
+		// int bpm = getDefaultBPM();
+		double w = lastNote.offsetInMsec(target.getBPM().get(0))
+				/ (double) beattimeList.size();
+		for (int i = 0; i < beattimeList.size(); i++) {
+			realtimeList.add(currentTime);
+			currentTime += w * beattimeList.get(i);
+		}
+		musicLengthInRealtimeMsec = currentTime;
+
+		for (Group g : target.getRootGroup()) {
+			assert g instanceof MXGroup;
+			applyTempoEvent((MXGroup) g, realtimeList);
+		}
 	}
 
 	@Override public double initialValue() {
@@ -46,8 +68,8 @@ public class TempoCurve extends PhraseCurve {
 			return;
 		applyTempoEvent(group.getChildFormerGroup(), realtimeList);
 		applyTempoEvent(group.getChildLatterGroup(), realtimeList);
-		if (!group.hasChild())
-			applyTempoEvent(group.getBeginNote(), realtimeList);
+		// if (!group.hasChild())
+		applyTempoEvent(group.getBeginNote(), realtimeList);
 	}
 
 	private void applyTempoEvent(NoteData note,
@@ -65,7 +87,7 @@ public class TempoCurve extends PhraseCurve {
 				idxOff = size - 1;
 			note.setRealOffset(realtimeList.get(idxOff));
 		}
-//		applyTempoEvent(note.child(), realtimeList);
+		applyTempoEvent(note.child(), realtimeList);
 		applyTempoEvent(note.next(), realtimeList);
 	}
 
@@ -76,30 +98,5 @@ public class TempoCurve extends PhraseCurve {
 	 */
 	private double getCurrentIndex(NoteData n, final int size, double onset) {
 		return Math.round(size * onset / (double) lastNote.offset());
-	}
-
-	private void applyTempoEvent(List<Group> rootGroup, int bpm) {
-		// 拍占有時間(%?)
-		ArrayList<Double> beattimeList = new ArrayList<Double>();
-		for (int i = 0; i < tempolist.size(); i++) {
-			double beattime = Math.pow(2.0, -1. * tempolist.get(i));
-			beattimeList.add(beattime);
-		}
-
-		// 実時間（積分）
-		ArrayList<Double> realtimeList = new ArrayList<Double>();
-		double currentTime = 0.;
-		// int bpm = getDefaultBPM();
-		double w = lastNote.offsetInMsec(bpm) / (double) beattimeList.size();
-		for (int i = 0; i < beattimeList.size(); i++) {
-			realtimeList.add(currentTime);
-			currentTime += w * beattimeList.get(i);
-		}
-		musicLengthInRealtimeMsec = currentTime;
-
-		for (Group g : rootGroup) {
-			assert g instanceof MXGroup;
-			applyTempoEvent((MXGroup) g, realtimeList);
-		}
 	}
 }
