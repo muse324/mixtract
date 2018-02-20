@@ -1,6 +1,6 @@
 package net.muse.mixtract.gui;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 import javax.swing.*;
 
@@ -8,6 +8,7 @@ import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.gui.*;
+import net.muse.mixtract.data.MXGroup;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -19,142 +20,358 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 
 	private static final long serialVersionUID = 1L;
 
-	/* 制御データ */
-	protected MuseApp main;
-	protected MainFrame owner;
+	private CurveViewPanel curveViewerPanel = null;
+	private PianoRollSmall pianoRoll = null;
 
-	/* 描画モード */
-	private boolean isEdited;
+	private JToggleButton showDynamics = null;
+	private JToggleButton showTempo = null;
+	private JToggleButton showArticulation = null;
 
-	/* グラフィック */
-	private JPanel jContentPane = null;
+	private ButtonGroup viewSelectionGroup = new ButtonGroup();
 
-	private Group group;
-
-	/**
-	 * @param main.getFrame()
-	 * @param group
-	 */
-	public PhraseViewer(MuseApp app, Group group) {
-		super(app.getFrame());
-		this.main = app;
-		setOwner(app.getFrame());
-		this.group = group;
-		initialize();
+	public PhraseViewer(MuseApp app, Group gr) {
+		super(app, gr);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see java.awt.Dialog#setTitle(java.lang.String)
-	 */
 	@Override
+	public MXGroup group() {
+		return (MXGroup) group;
+	}
+
+	public void setShowCurrentX(boolean showCurrentX, int x) {
+		getGroupPianoRoll().setShowCurrentX(showCurrentX, x);
+		getCurveViewerPanel().setShowCurrentX(showCurrentX, x);
+	}
+
 	public void setTitle(String title) {
 		super.setTitle(title + " - " + this.getClass().getSimpleName());
 	}
 
-	/**
-	 * @param gr
-	 * @return
-	 */
-	public boolean contains(Group gr) {
-		return gr.equals(group());
-	}
-
-	/**
-	 * @return the group
-	 */
-	public Group getGroup() {
-		return group();
-	}
-
-	/**
-	 * @return the isEdited
-	 */
-	boolean isEdited() {
-		return isEdited;
-	}
-
-	protected void setController(Mixtract main) {}
-
-	/**
-	 * @param isEdited the isEdited to set
-	 */
-	protected void setEdited(boolean isEdited) {
-		this.isEdited = isEdited;
-	}
-
-	/**
-	 * This method initializes jContentPane
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	protected JPanel getJContentPane() {
-		if (jContentPane == null) {
-			jContentPane = new JPanel();
-			jContentPane.setLayout(new BorderLayout());
-		}
-		return jContentPane;
-	}
-
-	/**
-	 * This method initializes this
-	 *
-	 * @return void
-	 */
-	protected void initialize() {
-		this.setContentPane(getJContentPane());
-		this.setTitle("group name");
-	}
-
 	/*
 	 * (非 Javadoc)
-	 * @see net.muse.mixtract.gui.CanvasMouseListener#setShowCurrentX(boolean,
-	 * int)
+	 * @see net.muse.gui.InfoViewer#getJContentPane()
 	 */
-	public void setShowCurrentX(boolean showCurrentX, int x) {}
-
-	public void preset() {}
+	@Override
+	protected JPanel getJContentPane() {
+		JPanel p = new JPanel(new BorderLayout());
+		p.add(getJSplitPane(), BorderLayout.CENTER);
+		p.add(getCommandPanel(), BorderLayout.SOUTH); // Generated
+		return p;
+	}
 
 	/**
 	 * @return main
 	 */
-	public MuseApp main() {
-		return main;
+	protected Mixtract main() {
+		return (Mixtract) main;
+	}
+
+	protected MXMainFrame owner() {
+		assert getOwner() instanceof MXMainFrame;
+		return (MXMainFrame) getOwner();
+	}
+
+	protected void preset() {
+		getDynamicsRadioButton().setSelected(true); // Generated
 	}
 
 	/**
-	 * @param main セットする main
+	 * This method initializes selArtButton
+	 *
+	 * @return javax.swing.JRadioButton
 	 */
-	public void setMain(Mixtract main) {
-		this.main = main;
+	private JRadioButton getArticulationRadioButton() {
+		JRadioButton selArtButton = new JRadioButton();
+		selArtButton.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent e) {
+				System.out.println("Edit: articulation");
+				getCurveViewerPanel().setCurve(group().getArticulationCurve());
+				repaint();
+			}
+		});
+		getViewSelectionGroup().add(selArtButton);
+		return selArtButton;
 	}
 
 	/**
-	 * @return owner
+	 * This method initializes showArticulation
+	 *
+	 * @return javax.swing.JToggleButton
 	 */
-	public MainFrame owner() {
-		return owner;
+	private JToggleButton getArticulationToggleButton() {
+		if (showArticulation == null) {
+			showArticulation = new JToggleButton();
+			showArticulation.setText("A"); // Generated
+			showArticulation.setSelected(true); // Generated
+			showArticulation.setFont(new Font("Dialog", Font.BOLD, 8)); // Generated
+			showArticulation.addItemListener(new java.awt.event.ItemListener() {
+				public void itemStateChanged(java.awt.event.ItemEvent e) {
+					System.out.println("itemStateChanged(): "
+							+ ((JToggleButton) e.getSource()).isSelected());
+					getCurveViewerPanel().showArticulationCurve(
+							((JToggleButton) e.getSource()).isSelected());
+				}
+			});
+		}
+		return showArticulation;
 	}
 
 	/**
-	 * @param owner セットする owner
+	 * This method initializes commandPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
-	public void setOwner(JFrame owner) {
-		this.owner = (MainFrame) owner;
+	private JPanel getCommandPanel() {
+		JPanel commandPanel = new JPanel();
+		commandPanel.setLayout(new FlowLayout());
+		commandPanel.add(getResetButton(), null); // Generated
+		return commandPanel;
 	}
 
 	/**
-	 * @return group
+	 * This method initializes curveViewerPanel
+	 *
+	 * @return javax.swing.JPanel
 	 */
-	public Group group() {
-		return group;
+	private CurveViewPanel getCurveViewerPanel() {
+		if (curveViewerPanel == null) {
+			curveViewerPanel = new CurveViewPanel(group());
+			curveViewerPanel.showDynamicsCurve(getDynamicsToggleButton()
+					.isSelected());
+			curveViewerPanel.showTempoCurve(getTempoToggleButton()
+					.isSelected());
+			curveViewerPanel.showArticulationCurve(getArticulationToggleButton()
+					.isSelected());
+			curveViewerPanel.repaint();
+		}
+		return curveViewerPanel;
 	}
 
 	/**
-	 * @param group セットする group
+	 * This method initializes selDynButton
+	 *
+	 * @return javax.swing.JRadioButton
 	 */
-	public void setGroup(Group group) {
-		this.group = group;
+	private JRadioButton getDynamicsRadioButton() {
+		JRadioButton selDynButton = new JRadioButton();
+		selDynButton.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent e) {
+				System.out.println("Edit: dynamics");
+				getCurveViewerPanel().setCurve(group().getDynamicsCurve());
+				repaint();
+			}
+		});
+		getViewSelectionGroup().add(selDynButton);
+		return selDynButton;
 	}
 
+	/**
+	 * This method initializes showDynamics
+	 *
+	 * @return javax.swing.JToggleButton
+	 */
+	private JToggleButton getDynamicsToggleButton() {
+		if (showDynamics == null) {
+			showDynamics = new JToggleButton();
+			showDynamics.setText("D"); // Generated
+			showDynamics.setSelected(true); // Generated
+			showDynamics.setFont(new Font("Dialog", Font.BOLD, 8)); // Generated
+			showDynamics.addItemListener(new java.awt.event.ItemListener() {
+				public void itemStateChanged(java.awt.event.ItemEvent e) {
+					System.out.println("itemStateChanged(): "
+							+ ((JToggleButton) e.getSource()).isSelected());
+					getCurveViewerPanel().showDynamicsCurve(((JToggleButton) e
+							.getSource()).isSelected());
+
+				}
+			});
+		}
+		return showDynamics;
+	}
+
+	/**
+	 * This method initializes pianoRoll
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private PianoRollSmall getGroupPianoRoll() {
+		if (pianoRoll == null) {
+			pianoRoll = new PianoRollSmall(main());
+			pianoRoll.setTarget(owner().getTarget());
+			pianoRoll.selectGroup(group());
+		}
+		return pianoRoll;
+	}
+
+	/**
+	 * This method initializes jPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getJPanel() {
+		JPanel jPanel = new JPanel();
+		jPanel.setLayout(new BorderLayout());
+		jPanel.add(getViewerTogglePanel(), BorderLayout.WEST); // Generated
+		jPanel.add(getCurveViewerPanel(), BorderLayout.CENTER); // Generated
+		return jPanel;
+	}
+
+	/**
+	 * This method initializes jPanel1
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getScorePanel() {
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout());
+		p.setPreferredSize(new Dimension(400, 200));
+		p.add(getKeyboard(), BorderLayout.WEST);
+		p.add(getGroupPianoRoll(), BorderLayout.CENTER);
+		return p;
+	}
+
+	/**
+	 * This method initializes jSplitPane
+	 *
+	 * @return javax.swing.JSplitPane
+	 */
+	private JSplitPane getJSplitPane() {
+		JSplitPane p = new JSplitPane();
+		p.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		p.setResizeWeight(0.5D);
+		p.setOneTouchExpandable(true); // Generated
+		p.setDividerLocation(150); // Generated
+		p.setTopComponent(getScorePanel());
+		p.setBottomComponent(getJPanel());
+		return p;
+	}
+
+	/**
+	 * This method initializes keyboard
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getKeyboard() {
+		KeyBoard k = new KeyBoard(480);
+		k.setLayout(new GridBagLayout());
+		k.resetKeyRegister();
+		k.setKeyRegister(group().getBeginNote());
+		return k;
+	}
+
+	/**
+	 * This method initializes resetButton
+	 *
+	 * @return javax.swing.JButton
+	 */
+	private JButton getResetButton() {
+		JButton resetButton = new JButton();
+		resetButton.setText("Reflesh"); // Generated
+		resetButton.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent e) {
+				getCurveViewerPanel().reset();
+				repaint();
+			}
+		});
+		return resetButton;
+	}
+
+	/**
+	 * This method initializes selTmpButton
+	 *
+	 * @return javax.swing.JRadioButton
+	 */
+	private JRadioButton getTempoRadioButton() {
+		JRadioButton selTmpButton = new JRadioButton();
+		selTmpButton.addItemListener(new java.awt.event.ItemListener() {
+			public void itemStateChanged(java.awt.event.ItemEvent e) {
+				System.out.println("Edit: tempo");
+				getCurveViewerPanel().setCurve(group().getTempoCurve());
+				repaint();
+			}
+		});
+		getViewSelectionGroup().add(selTmpButton);
+		return selTmpButton;
+	}
+
+	/**
+	 * This method initializes showTempo
+	 *
+	 * @return javax.swing.JToggleButton
+	 */
+	private JToggleButton getTempoToggleButton() {
+		if (showTempo == null) {
+			showTempo = new JToggleButton();
+			showTempo.setText("T"); // Generated
+			showTempo.setSelected(true); // Generated
+			showTempo.setFont(new Font("Dialog", Font.BOLD, 8)); // Generated
+			showTempo.addItemListener(new java.awt.event.ItemListener() {
+				public void itemStateChanged(java.awt.event.ItemEvent e) {
+					System.out.println("itemStateChanged(): "
+							+ ((JToggleButton) e.getSource()).isSelected());
+					getCurveViewerPanel().showTempoCurve(((JToggleButton) e
+							.getSource()).isSelected());
+				}
+			});
+		}
+		return showTempo;
+	}
+
+	/**
+	 * This method initializes viewerTogglePanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	private JPanel getViewerTogglePanel() {
+		GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
+		gridBagConstraints6.gridx = 1; // Generated
+		gridBagConstraints6.gridy = 3; // Generated
+		GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
+		gridBagConstraints5.gridx = 1; // Generated
+		gridBagConstraints5.gridy = 2; // Generated
+		GridBagConstraints gridBagConstraints4 = new GridBagConstraints();
+		gridBagConstraints4.gridx = 1; // Generated
+		gridBagConstraints4.gridy = 1; // Generated
+		GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
+		gridBagConstraints3.gridy = 1; // Generated
+		gridBagConstraints3.anchor = GridBagConstraints.EAST; // Generated
+		GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
+		gridBagConstraints2.gridx = 0; // Generated
+		gridBagConstraints2.insets = new Insets(0, 5, 0, 0); // Generated
+		gridBagConstraints2.gridwidth = 1; // Generated
+		gridBagConstraints2.anchor = GridBagConstraints.WEST; // Generated
+		gridBagConstraints2.gridy = 0; // Generated
+		JLabel jLabel = new JLabel();
+		jLabel.setText("Edit"); // Generated
+		GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
+		gridBagConstraints1.gridx = 0; // Generated
+		gridBagConstraints1.anchor = GridBagConstraints.EAST; // Generated
+		gridBagConstraints1.gridy = 3; // Generated
+		GridBagConstraints gridBagConstraints = new GridBagConstraints();
+		gridBagConstraints.gridx = 0; // Generated
+		gridBagConstraints.anchor = GridBagConstraints.EAST; // Generated
+		gridBagConstraints.gridy = 2; // Generated
+
+		JPanel viewerTogglePanel = new JPanel();
+		viewerTogglePanel.setLayout(new GridBagLayout()); // Generated
+		viewerTogglePanel.add(getDynamicsRadioButton(), gridBagConstraints3); // Generated
+		viewerTogglePanel.add(getTempoRadioButton(), gridBagConstraints); // Generated
+		viewerTogglePanel.add(getArticulationRadioButton(),
+				gridBagConstraints1); // Generated
+		viewerTogglePanel.add(jLabel, gridBagConstraints2); // Generated
+		viewerTogglePanel.add(getDynamicsToggleButton(), gridBagConstraints4); // Generated
+		viewerTogglePanel.add(getTempoToggleButton(), gridBagConstraints5); // Generated
+		viewerTogglePanel.add(getArticulationToggleButton(),
+				gridBagConstraints6); // Generated
+		return viewerTogglePanel;
+	}
+
+	/**
+	 * @return viewSelectionGroup
+	 */
+	private ButtonGroup getViewSelectionGroup() {
+		if (viewSelectionGroup == null)
+			viewSelectionGroup = new ButtonGroup();
+		return viewSelectionGroup;
+	}
 } // @jve:decl-index=0:visual-constraint="26,7"

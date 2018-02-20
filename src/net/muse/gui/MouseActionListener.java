@@ -16,13 +16,13 @@ public class MouseActionListener extends MouseAdapter implements
 
 	/* 制御オブジェクト */
 	protected static MuseApp _main;
-	protected final Container _owner;
+	private final Container _self;
 	private boolean mousePressed;
 	private boolean shiftKeyPressed;
 	private JPopupMenu popup;
 
 	private Rectangle mouseBox;
-	protected MainFrame _frame;
+	private final MainFrame _frame;
 
 	private Point startPoint = new Point(0, 0);
 	private Point endPoint = new Point(0, 0);
@@ -32,7 +32,7 @@ public class MouseActionListener extends MouseAdapter implements
 	public MouseActionListener(MuseApp main, Container owner) {
 		super();
 		_main = main;
-		_owner = owner;
+		_self = owner;
 		_frame = (MainFrame) _main.getFrame();
 	}
 
@@ -59,13 +59,6 @@ public class MouseActionListener extends MouseAdapter implements
 	}
 
 	/**
-	 * @return _owner
-	 */
-	public Container getOwner() {
-		return _owner;
-	}
-
-	/**
 	 * @return popup
 	 */
 	public final JPopupMenu getPopup() {
@@ -80,28 +73,29 @@ public class MouseActionListener extends MouseAdapter implements
 		return shiftKeyPressed;
 	}
 
-	@Override public void mouseClicked(MouseEvent e) {
+	@Override
+	public void mouseClicked(MouseEvent e) {
 		if (SwingUtilities.isRightMouseButton(e))
 			createPopupMenu(e);
 		// Group gr = _main.getSelectedObjects().getGroup();
 		// if (gr == null) {
-		// _owner.repaint();
+		// _self.repaint();
 		// return;
 		// }
 		// if (e.getClickCount() == 2) {
-		// for (PhraseViewer r : _owner.getPhraseViewList(_owner)) {
+		// for (PhraseViewer r : _self.getPhraseViewList(_self)) {
 		// if (r.contains(gr)) {
 		// r.setVisible(true);
 		// return;
 		// }
 		// }
-		// PhraseViewer pv = new PhraseViewer(_owner.getMainFrame(_owner), gr);
-		// pv.addWindowListener(_owner.getRuleWindowActions(_owner));
-		// _owner.getPhraseViewList(_owner).add(pv);
+		// PhraseViewer pv = new PhraseViewer(_self.getMainFrame(_self), gr);
+		// pv.addWindowListener(_self.getRuleWindowActions(_self));
+		// _self.getPhraseViewList(_self).add(pv);
 		// pv.pack();
 		// pv.setVisible(true);
 		// }
-		_owner.repaint();
+		_self.repaint();
 	}
 
 	/*
@@ -109,12 +103,13 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mouseDragged(java.awt.event.MouseEvent)
 	 */
-	@Override public void mouseDragged(MouseEvent e) {
+	@Override
+	public void mouseDragged(MouseEvent e) {
 		setMousePoint(e);
 		setEndPoint(e.getPoint());
 		setDragging(true);
 		setShiftKeyPressed(e.isShiftDown());
-		_owner.repaint();
+		_self.repaint();
 	}
 
 	/*
@@ -122,27 +117,30 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mouseEntered(java.awt.event.MouseEvent)
 	 */
-	@Override public void mouseEntered(MouseEvent e) {
+	@Override
+	public void mouseEntered(MouseEvent e) {
 		setMousePoint(e);
-		_owner.repaint();
+		_self.repaint();
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see java.awt.event.MouseAdapter#mouseExited(java.awt.event.MouseEvent)
 	 */
-	@Override public void mouseExited(MouseEvent e) {
+	@Override
+	public void mouseExited(MouseEvent e) {
 		setMousePoint(e);
-		_owner.repaint();
+		_self.repaint();
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see java.awt.event.MouseAdapter#mouseMoved(java.awt.event.MouseEvent)
 	 */
-	@Override public void mouseMoved(MouseEvent e) {
+	@Override
+	public void mouseMoved(MouseEvent e) {
 		setMousePoint(e);
-		_owner.repaint();
+		_self.repaint();
 	}
 
 	/*
@@ -150,14 +148,15 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
 	 */
-	@Override public void mousePressed(MouseEvent e) {
+	@Override
+	public void mousePressed(MouseEvent e) {
 		setShiftKeyPressed(e.isShiftDown());
 		setMousePressed(true);
 		setMousePoint(e);
 		setStartPoint(e.getPoint());
 		setEndPoint(e.getPoint());
 		// _main.notifyDeselectGroup();
-		_owner.repaint();
+		_self.repaint();
 	}
 
 	/*
@@ -165,7 +164,8 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
 	 */
-	@Override public void mouseReleased(MouseEvent e) {
+	@Override
+	public void mouseReleased(MouseEvent e) {
 		setShiftKeyPressed(e.isShiftDown());
 		setMousePressed(false);
 		setMousePoint(e);
@@ -174,10 +174,10 @@ public class MouseActionListener extends MouseAdapter implements
 		if (SwingUtilities.isRightMouseButton(e))
 			createPopupMenu(e);
 		// if (SwingUtilities.isLeftMouseButton(e)) {
-		// _owner.setGroupEditable(_owner, false);
-		// _owner.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		// _self.setGroupEditable(_self, false);
+		// _self.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		// }
-		_owner.repaint();
+		_self.repaint();
 	}
 
 	/**
@@ -246,10 +246,10 @@ public class MouseActionListener extends MouseAdapter implements
 
 	protected void addMenuItemOnGroupingPanel() {
 		boolean hasSelectedGroup = false;
-		if (_owner instanceof GroupingPanel)
-			hasSelectedGroup = ((GroupingPanel) _owner).hasSelectedGroup();
-		else if (_owner instanceof GroupLabel)
-			hasSelectedGroup = ((GroupLabel) _owner).isSelected();
+		if (_self instanceof GroupingPanel)
+			hasSelectedGroup = ((GroupingPanel) _self).hasSelectedGroup();
+		else if (_self instanceof GroupLabel)
+			hasSelectedGroup = ((GroupLabel) _self).isSelected();
 
 		// group attributes
 		JMenu attrMenu = new JMenu("Set articulation");
@@ -376,7 +376,7 @@ public class MouseActionListener extends MouseAdapter implements
 	protected void createPopupMenu(MouseEvent e) {
 		popup = new JPopupMenu();
 		// if (src instanceof GroupLabel) {
-		// _owner.notifySelectGroup(_owner, (GroupLabel) src, true);
+		// _self.notifySelectGroup(_self, (GroupLabel) src, true);
 		// }
 	}
 
@@ -393,6 +393,20 @@ public class MouseActionListener extends MouseAdapter implements
 
 	private void setStartPoint(Point point) {
 		startPoint = point;
+	}
+
+	/**
+	 * @return _self
+	 */
+	public Container self() {
+		return _self;
+	}
+
+	/**
+	 * @return _frame
+	 */
+	protected MainFrame frame() {
+		return _frame;
 	}
 
 }

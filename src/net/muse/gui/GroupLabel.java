@@ -1,16 +1,24 @@
 package net.muse.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.mixtract.command.MixtractCommand;
-import net.muse.mixtract.gui.PhraseViewer;
 
 public class GroupLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
@@ -38,7 +46,7 @@ public class GroupLabel extends JLabel {
 	protected GroupLabel(Group group, Rectangle r) {
 		this();
 		this.group = group;
-		this.setPartNumber(group.getBeginGroupNote().getNote().partNumber());
+		this.setPartNumber(group.getBeginNote().partNumber());
 		setLocation(r.x, r.y);
 		setBounds(r);
 		setTypeShape(group.getType());
@@ -80,7 +88,7 @@ public class GroupLabel extends JLabel {
 		return group.name();
 	}
 
-	GroupLabel child(ArrayList<GroupLabel> grouplist) {
+	protected GroupLabel child(ArrayList<GroupLabel> grouplist) {
 		if (child == null) {
 			for (GroupLabel l : grouplist) {
 				if (group().hasChild() && group().child().equals(l.group())) {
@@ -104,8 +112,8 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
-				MixtractCommand.SET_TYPE_CRESC.setGroup((GroupLabel) _owner);
-				MixtractCommand.SET_TYPE_DIM.setGroup((GroupLabel) _owner);
+				MixtractCommand.SET_TYPE_CRESC.setGroup(self());
+				MixtractCommand.SET_TYPE_DIM.setGroup(self());
 				addMenuItemOnGroupingPanel();
 				getPopup().show((Component) e.getSource(), e.getX(), e.getY());
 			}
@@ -119,20 +127,19 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
-				final GroupLabel l = (GroupLabel) e.getSource();
-				Group gr = l.group();
+				Group gr = self().group();
 				if (gr == null) {
-					_owner.repaint();
+					self().repaint();
 					return;
 				}
 				if (e.getClickCount() == 2) {
-					for (PhraseViewer r : _main.getPhraseViewList()) {
+					for (InfoViewer r : _main.getInfoViewList()) {
 						if (r.contains(gr)) {
 							r.setVisible(true);
 							return;
 						}
 					}
-					showPhraseViewer(_main, gr);
+					showInfoViewer(_main, gr);
 				}
 				repaint();
 			}
@@ -146,13 +153,13 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
-				final GroupLabel src = (GroupLabel) e.getSource();
-				if (!_frame.getGroupingPanel().isGroupEditable()) {
-					src.moveLabelVertical(e, getMousePoint(), src.getBounds(),
-							isShiftKeyPressed(), isMousePressed());
+				if (!frame().getGroupingPanel().isGroupEditable()) {
+					self().moveLabelVertical(e, getMousePoint(), self()
+							.getBounds(), isShiftKeyPressed(),
+							isMousePressed());
 				} else
-					src.moveLabel(e, getMousePoint(), isMousePressed());
-				_frame.getGroupingPanel().repaint();
+					self().moveLabel(e, getMousePoint(), isMousePressed());
+				frame().getGroupingPanel().repaint();
 				repaint();
 			}
 
@@ -165,7 +172,7 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mouseEntered(MouseEvent e) {
 				super.mouseEntered(e);
-				((GroupLabel) e.getSource()).setMouseOver(true);
+				self().setMouseOver(true);
 			}
 
 			/*
@@ -177,8 +184,8 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
-				((GroupLabel) e.getSource()).setMouseOver(false);
-				((GroupLabel) e.getSource()).setEditMode(getMousePoint());
+				self().setMouseOver(false);
+				self().setEditMode(getMousePoint());
 			}
 
 			/*
@@ -203,11 +210,9 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
-				GroupLabel l = (GroupLabel) e.getSource();
-				_main.notifySelectGroup(l, true);
-				if (l.getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
-					// _owner.getPianorollPane().getPianoroll().setDrawNewArea(true);
-					_frame.getGroupingPanel().setGroupEditable(true);
+				_main.notifySelectGroup(self(), true);
+				if (self().getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
+					frame().getGroupingPanel().setGroupEditable(true);
 				}
 				repaint();
 			}
@@ -221,11 +226,20 @@ public class GroupLabel extends JLabel {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
-				_frame.getGroupingPanel().setGroupEditable(false);
-				_frame.getGroupingPanel().setCursor(new Cursor(
+				frame().getGroupingPanel().setGroupEditable(false);
+				frame().getGroupingPanel().setCursor(new Cursor(
 						Cursor.DEFAULT_CURSOR));
-				_frame.getPianoroll().repaint();
+				frame().getPianoroll().repaint();
 				repaint();
+			}
+
+			/*
+			 * (非 Javadoc)
+			 * @see net.muse.gui.MouseActionListener#owner()
+			 */
+			@Override
+			public GroupLabel self() {
+				return (GroupLabel) super.self();
 			}
 
 		};
@@ -374,10 +388,6 @@ public class GroupLabel extends JLabel {
 		return child;
 	}
 
-	protected PhraseViewer createPhraseViewer(MuseApp app, Group gr) {
-		return new PhraseViewer(app, gr);
-	}
-
 	private boolean hasChild() {
 		return child != null;
 	}
@@ -438,10 +448,10 @@ public class GroupLabel extends JLabel {
 		this.endEdit = endEdit;
 	}
 
-	private void showPhraseViewer(MuseApp app, Group gr) {
-		PhraseViewer pv = createPhraseViewer(app, gr);
+	private void showInfoViewer(MuseApp app, Group gr) {
+		InfoViewer pv = InfoViewer.create(app, gr);
 		pv.setTitle(gr.name());
-		app.addPhraseViewerList(pv);
+		app.addInfoViewerList(pv);
 		pv.pack();
 		pv.setVisible(true);
 		pv.preset();

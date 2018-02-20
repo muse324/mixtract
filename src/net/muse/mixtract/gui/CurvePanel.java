@@ -32,16 +32,14 @@ public class CurvePanel extends JPanel implements MouseInputListener {
 		addMouseMotionListener(this);
 	}
 
-	public void mouseClicked(MouseEvent e) {
-	}
+	public void mouseClicked(MouseEvent e) {}
 
 	public void mouseDragged(MouseEvent e) {
 		mousePoint = e;
 		repaint();
 	}
 
-	public void mouseEntered(MouseEvent e) {
-	}
+	public void mouseEntered(MouseEvent e) {}
 
 	public void mouseExited(MouseEvent e) {
 		mousePoint = null;
@@ -53,14 +51,11 @@ public class CurvePanel extends JPanel implements MouseInputListener {
 		repaint();
 	}
 
-	public void mousePressed(MouseEvent e) {
-	}
+	public void mousePressed(MouseEvent e) {}
 
-	public void mouseReleased(MouseEvent e) {
-	}
+	public void mouseReleased(MouseEvent e) {}
 
-	@Override
-	public void paintComponent(Graphics g) {
+	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.setColor(Color.black);
 		// Y axis line
@@ -72,14 +67,14 @@ public class CurvePanel extends JPanel implements MouseInputListener {
 			final double y = i * unit;
 			g.drawLine(0, (int) y, 5, (int) y);
 			String ext = (isRelationalView) ? "%" : "";
-			g.drawString(
-					String.valueOf((int) (-6. * y / getHeight() + 3.)) + ext,
-					6, (int) y);
+			g.drawString(String.valueOf((int) (-6. * y / getHeight() + 3.))
+					+ ext, 6, (int) y);
 		}
 		g.translate(10, 0);
 		// base tempo (100%)
 		g.setColor(Color.gray);
-		final int b = (int) ((isRelationalView) ? unit * base : getHeight() / 2);
+		final int b = (int) ((isRelationalView) ? unit * base
+				: getHeight() / 2);
 		g.drawLine(0, b, getWidth(), b);
 		g.setColor(Color.blue);
 		drawCurve(g);

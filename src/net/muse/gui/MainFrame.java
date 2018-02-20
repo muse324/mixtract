@@ -1,20 +1,59 @@
 package net.muse.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.AWTException;
+import java.awt.Adjustable;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
 
+import javax.imageio.ImageIO;
 import javax.sound.midi.InvalidMidiDataException;
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDesktopPane;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
-import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.CurveView;
 import net.muse.mixtract.gui.PartSelectorPanel;
@@ -61,6 +100,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JSlider tempoSlider = null;
 	private CurveView tempoView;
 	private JInternalFrame viewer = null;
+	private JDesktopPane desktop;
+	private JScrollBar timeScrollBar = null;
 
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
@@ -193,20 +234,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	public PianoRoll getPianoroll() {
 		if (pianoroll == null) {
-			pianoroll = createPianoRoll();
-			pianoroll.setController(main);
-			// pianoroll.setPreferredSize(new Dimension(DEFAULT_WIDTH, KeyBoard
-			// .getKeyboardHeight() / 3 * 2));
+			pianoroll = createPianoRoll(main);
 		}
 		return pianoroll;
 	}
 
-	protected PianoRoll createPianoRollPane() {
-		return new PianoRoll();
-	}
-
-	protected PianoRoll createPianoRoll() {
-		return new PianoRoll();
+	protected PianoRoll createPianoRoll(MuseApp main) {
+		return new PianoRoll(main);
 	}
 
 	/**
@@ -430,7 +464,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	protected void initialize() {
 		this.setTitle("Mixtract"); // ウィンドウのタイトル
 		this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize()); // ウィンドウサイズ
-		this.setContentPane(createDesktop()); // メインの描画領域(詳細)
+		this.setContentPane(getDesktop()); // メインの描画領域(詳細)
 		this.setJMenuBar(getMenubar()); // メニューバー
 	}
 
@@ -460,7 +494,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		try {
 			data.setNoteScheduleEvent();
 			data.writefile();
-			// save screen shot
 			saveScreenShot();
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -477,8 +510,24 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		Point pos = getViewer().getLocationOnScreen();
 		Dimension size = getViewer().getSize();
 		size.height -= 15;
-		assert data instanceof MXTuneData;
-		((MXTuneData) data).writeScreenShot(pos, size);
+		Robot robot = new Robot();
+		Image img = robot.createScreenCapture(new Rectangle(pos.x, pos.y,
+				size.width, size.height));
+		File fp = new File(data.getOutputFile(), "screenshot.png");
+		if (!ImageIO.write(createBufferedImage(img), "PNG", fp)) {
+			throw new IOException("フォーマットが対象外");
+		}
+	}
+
+	private BufferedImage createBufferedImage(Image img) {
+		BufferedImage bimg = new BufferedImage(img.getWidth(null), img
+				.getHeight(null), BufferedImage.TYPE_INT_RGB);
+
+		Graphics g = bimg.getGraphics();
+		g.drawImage(img, 0, 0, null);
+		g.dispose();
+
+		return bimg;
 	}
 
 	/**
@@ -486,13 +535,14 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JDesktopPane
 	 */
-	private JDesktopPane createDesktop() {
-		JDesktopPane desktop = new JDesktopPane();
-		desktop.setLayout(new BorderLayout()); // Generated
-		desktop.setBackground(Color.GRAY);
-		// desktop.setPreferredSize(new Dimension(1024, 600)); // Generated
-		desktop.add(getViewer(), BorderLayout.CENTER); // Generated
-		desktop.add(getToolBarPanel(), BorderLayout.NORTH); // Generated
+	protected JDesktopPane getDesktop() {
+		if (desktop == null) {
+			desktop = new JDesktopPane();
+			desktop.setLayout(new BorderLayout()); // Generated
+			desktop.setBackground(Color.GRAY);
+			desktop.add(getViewer(), BorderLayout.CENTER); // Generated
+			desktop.add(getToolBarPanel(), BorderLayout.NORTH); // Generated
+		}
 		return desktop;
 	}
 
@@ -738,8 +788,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		JScrollPane p = new JScrollPane();
 		p.setRowHeaderView(getKeyboard());
 		p.setViewportView(getPianoroll()); // Generated
-		p.setHorizontalScrollBarPolicy(
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		p.setHorizontalScrollBar(getTimeScrollBar());
 		p.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		return p;
 	}
@@ -821,15 +870,14 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		JScrollPane p = new JScrollPane();
 		p.setRowHeaderView(getPartSelectorPanel());
 		p.setViewportView(getGroupingPanel());
-		p.setHorizontalScrollBarPolicy(
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		p.setHorizontalScrollBar(getTimeScrollBar());
 		p.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		return p;
 	}
 
 	// システムプロパティをダンプする
 	private String getSystemProperties(String lineSep) {
-		ArrayList keys = new ArrayList();
+		ArrayList<String> keys = new ArrayList<String>();
 		StringBuffer buf = new StringBuffer();
 		for (Enumeration<?> enm = System.getProperties().keys(); enm
 				.hasMoreElements();) {
@@ -837,7 +885,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			keys.add(key);
 		}
 		Collections.sort(keys);
-		for (Iterator ite = keys.iterator(); ite.hasNext();) {
+		for (Iterator<String> ite = keys.iterator(); ite.hasNext();) {
 			String key = (String) ite.next();
 			buf.append(key + "=" + System.getProperty(key) + lineSep);
 		}
@@ -920,7 +968,27 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		p.add(getStructurePane(), java.awt.BorderLayout.NORTH);
 		p.add(getPianorollPane(), BorderLayout.CENTER); // Generated
 		p.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
+//		getStructurePane().getHorizontalScrollBar().setModel(getTimeScrollBar()
+//				.getModel());
+//		getPianorollPane().getHorizontalScrollBar().setModel(getTimeScrollBar()
+//				.getModel());
+//		getDynamicsView().getHorizontalScrollBar().setModel(getTimeScrollBar()
+//				.getModel());
+//		getTempoView().getHorizontalScrollBar().setModel(getTimeScrollBar()
+//				.getModel());
 		return p;
+	}
+
+	private JScrollBar getTimeScrollBar() {
+		if (timeScrollBar == null) {
+			timeScrollBar = new JScrollBar(Adjustable.HORIZONTAL) {
+				@Override public Dimension getPreferredSize() {
+					Dimension dim = super.getPreferredSize();
+					return new Dimension(dim.width, 0);
+				}
+			};
+		}
+		return timeScrollBar;
 	}
 
 	/**

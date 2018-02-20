@@ -1,14 +1,31 @@
 package net.muse.mixtract.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import net.muse.app.Mixtract;
-import net.muse.gui.*;
+import net.muse.gui.CanvasMouseListener;
+import net.muse.gui.MainFrame;
+import net.muse.gui.MouseActionListener;
+import net.muse.gui.RoundedCornerButton;
 import net.muse.gui.RoundedCornerButton.RoundButton;
 import net.muse.mixtract.command.ApplyHierarchicalParamsCommand;
 import net.muse.mixtract.command.MixtractCommand;
@@ -87,7 +104,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		// repaint();
 	}
 
-	private PhraseCanvas() {
+	protected PhraseCanvas() {
 		super();
 		initialize();
 		addMouseListener(this);
@@ -431,7 +448,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 	/**
 	 * @return
 	 */
-	private int getHalfRange() {
+	protected int getHalfRange() {
 		return (int) Math.round(getHeight() / 4.0);
 	}
 
@@ -532,7 +549,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 	/**
 	 *
 	 */
-	private void initialize() {
+	protected void initialize() {
 		setLayout(null);
 		setDoubleBuffered(true);
 		setBackground(Color.white);

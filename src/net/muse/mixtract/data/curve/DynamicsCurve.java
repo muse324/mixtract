@@ -45,7 +45,7 @@ public class DynamicsCurve extends PhraseCurve {
 			return;
 		applyDynamicsEvent(group.getChildFormerGroup());
 		applyDynamicsEvent(group.getChildLatterGroup());
-		applyDynamicsEvent(group.getBeginGroupNote());
+		applyDynamicsEvent(group.getBeginNote());
 	}
 
 	private void applyDynamicsEvent(GroupNote note) {

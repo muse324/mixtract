@@ -1,29 +1,43 @@
 package net.muse.mixtract.data;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
+import java.awt.geom.Point2D;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.sound.midi.InvalidMidiDataException;
 
 import org.apache.commons.io.FileUtils;
+import org.xml.sax.SAXException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.app.Mixtract;
-import net.muse.data.*;
-import net.muse.mixtract.data.curve.*;
+import net.muse.data.CMXNoteHandler;
+import net.muse.data.Group;
+import net.muse.data.GroupType;
+import net.muse.data.Harmony;
+import net.muse.data.NoteData;
+import net.muse.data.TuneData;
+import net.muse.mixtract.data.curve.ArticulationCurve;
+import net.muse.mixtract.data.curve.DynamicsCurve;
+import net.muse.mixtract.data.curve.PhraseCurve;
+import net.muse.mixtract.data.curve.TempoCurve;
 
 /**
  * <h1>MXTuneData</h1>
  *
- * @author Mitsuyo Hashida & Haruhiro Katayose
- *         <address>@ CrestMuse Project, JST</address>
- *         <address><a href="http://mixtract.m-use.net/"
+ * @author Mitsuyo Hashida & Haruhiro Katayose <address>@ CrestMuse Project,
+ *         JST</address> <address><a href="http://mixtract.m-use.net/"
  *         >http://mixtract.m-use.net</a></address>
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/09/20
@@ -31,7 +45,7 @@ import net.muse.mixtract.data.curve.*;
 public class MXTuneData extends TuneData {
 
 	private static final String SCOREDATA_FILENAME = "score.dat";
-
+	/** 構造データのファイル名（default: structure.dat) */
 	private static final String STRUCTURE_FILENAME = "structure.dat";
 	private static int durationOffset = 100;
 	/** ユーザにより指定されるプライマリフレーズライン */
@@ -59,18 +73,13 @@ public class MXTuneData extends TuneData {
 	}
 
 	/**
-	 * @param val the durationOffset to set
+	 * @param val
+	 *            the durationOffset to set
 	 */
 	public static final void setDurationOffset(int val) {
 		MXTuneData.durationOffset = val;
 		log.printf("duration offset = %d\n", val);
 		System.out.printf("duration offset = %d\n", val);
-	}
-
-	private static void save(BufferedImage img, File f) throws IOException {
-		if (!ImageIO.write(img, "PNG", f)) {
-			throw new IOException("フォーマットが対象外");
-		}
 	}
 
 	public MXTuneData(File in, File out) throws IOException,
@@ -83,23 +92,22 @@ public class MXTuneData extends TuneData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneData#addGroupArrayList(net.muse.data.Group)
 	 */
-	@Override
-	public void addGroupArrayList(Group group) {
+	@Override public void addMiscGroupList(Group group) {
 		// 重複するグループがあれば処理中断
-		for (Group g : getGroupArrayList()) {
+		for (Group g : getMiscGroup()) {
 			if (g.nearlyEquals(group))
 				return;
 			// TODO 複数声部に未対応
 		}
 		// TODO 未検証
-		assert group instanceof MXGroup;
-		createPrimaryPhraseSequence((MXGroup) group);
+		if (group instanceof MXGroup)
+			createPrimaryPhraseSequence((MXGroup) group);
 		// ----------------------------------
-		getGroupArrayList().add(group);
+		getMiscGroup().add(group);
 	}
 
-	public NoteData getLastNote(int partIndex) {
-		return getRootGroup(partIndex).getEndGroupNote().getNote();
+	public MXNoteData getLastNote(int partIndex) {
+		return (MXNoteData) getRootGroup(partIndex).getEndNote();
 	}
 
 	public MXGroup getRootGroup(int partIndex) {
@@ -116,58 +124,66 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	@Override
-	public void writefile() throws IOException {
-		// 出力ファイル (またはフォルダ）の所在を確認する
-		confirmOutputFileLocation();
-
-		// -------- import cmx files --------------------------
-		importCMXFilesToProjectDirectory();
-
-		// -------- create score data -------------------------
-		writeScoreData();
-
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.data.TuneData#writeOriginalData()
+	 */
+	public void writeOriginalData() throws IOException {
 		// -------- create structure data ---------------------
 		writeStructureData();
-
 		// -------- create expressed SMF ---------------------
 		writeSMF();
-
-		// -------- create screen shot ---------------------
-		// writeScreenShot();
-
-		System.out.println("tempo curve list:");
-		System.out.println(getTempoList());
 	}
 
 	/**
 	 * @throws IOException
 	 */
-	@Override
-	public void writeScoreData() throws IOException {
-		if (xml() == null)
-			return;
+	@Override public void writeScoreData() throws IOException {
+		// -------- import cmx files --------------------------
+		importCMXFilesToProjectDirectory();
+
+		// if (xml() == null)
+		// return;
 		File fp = new File(out(), SCOREDATA_FILENAME);
 		fp.createNewFile();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
 				fp)));
 		// out.format("cmx=%s\n", inputFile.getName());
-		out.format("cmx=%s\n", xml().getFileName());
+		out.format("cmx=%s\n", getCMXFilename());
 		out.format("str=%s\n", STRUCTURE_FILENAME);
 		out.format("bpm=%s\n", getBPM().toString().subSequence(1, getBPM()
 				.toString().length() - 1));
-		for (int i = 0; i < getNotelist().size(); i++)
-			writeNoteData(out, (MXNoteData) getNoteList(i));
+		for (Group g : getRootGroup()) {
+			writeNoteData(out, (MXGroup) g);
+		}
+		// for (int i = 0; i < getPartwiseNotelist().size(); i++)
+		// writeNoteData(out, (MXNoteData) getPartwiseNotelist().get(i));
 		out.close();
 	}
 
-	public void writeScreenShot(Point position, Dimension size)
-			throws AWTException, IOException {
-		Robot robot = new Robot();
-		Image img = robot.createScreenCapture(new Rectangle(position.x,
-				position.y, size.width, size.height));
-		File fp = new File(out(), "screenshot.png");
-		save(createBufferedImage(img), fp);
+	private void writeNoteData(PrintWriter out, MXGroup g) {
+		if (g == null)
+			return;
+		if (!g.hasChild())
+			writeNoteData(out, (MXNoteData) g.getBeginNote());
+		writeNoteData(out, g.getChildFormerGroup());
+		writeNoteData(out, g.getChildLatterGroup());
+	}
+
+	private String getCMXFilename() throws IOException {
+		if (xml() != null)
+			return xml().getFileName();
+		if (scc() != null) {
+			if (scc().getFileName() != null)
+				return scc().getFileName();
+			try {
+				scc().writefile(new File(out(), "scc.xml"));
+				return "scc.xml";
+			} catch (SAXException e) {
+				e.printStackTrace();
+			}
+		}
+		return "";
 	}
 
 	/**
@@ -186,7 +202,7 @@ public class MXTuneData extends TuneData {
 
 	}
 
-	PrimaryPhraseSequence getGroupSequence() {
+	@Deprecated PrimaryPhraseSequence getGroupSequence() {
 		return groupSequence;
 	}
 
@@ -195,24 +211,21 @@ public class MXTuneData extends TuneData {
 	 * @see
 	 * net.muse.data.TuneData#calculateExpressionParameters(net.muse.data.Group)
 	 */
-	@Override
-	protected void calculateExpressionParameters(Group root) {
+	@Override protected void calculateExpressionParameters(Group root) {
 		assert root instanceof MXGroup;
 		MXGroup g = (MXGroup) root;
 		if (g.getTempoCurve().getParamlist().size() > 0)
 			calculateHierarchicalParameters(g);
 	}
 
-	@Override
-	protected void confirmOutputFileLocation() {
+	@Override protected void confirmOutputFileLocation() {
 		if (!out().exists())
 			out().mkdir();
 		else
 			dialogOutputLocation();
 	}
 
-	@Override
-	protected CMXNoteHandler createCMXNoteHandler() {
+	@Override protected CMXNoteHandler createCMXNoteHandler() {
 		return new CMXNoteHandler(this) {
 			protected MXGroup createGroup(NoteData n, int i, GroupType type) {
 				return new MXGroup(n, i, type);
@@ -238,18 +251,18 @@ public class MXTuneData extends TuneData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneData#deleteGroup(net.muse.data.Group)
 	 */
-	@Override
-	protected void deleteGroup(Group target) {
+	@Override protected void deleteGroup(Group target) {
 		if (target == null)
 			return;
 		assert target instanceof MXGroup;
 		MXGroup g = (MXGroup) target;
 		deleteGroup(g.getChildFormerGroup());
 		deleteGroup(g.getChildLatterGroup());
-		g.setScoreNotelist(target.getScoreNotelist());
+		target.getScoreNotelist().clear();
+		// g.setScoreNotelist(target.getScoreNotelist());
 		if (g.hasChild()) {
-			g.getChildFormerGroup().getEndGroupNote().setNext(g
-					.getChildLatterGroup().getBeginGroupNote());
+			g.getChildFormerGroup().getEndNote().setNext(g.getChildLatterGroup()
+					.getBeginNote());
 		}
 		g.setChild(null, null);
 	}
@@ -259,39 +272,44 @@ public class MXTuneData extends TuneData {
 	 * @see net.muse.data.TuneData#deleteHierarchicalGroup(net.muse.data.Group,
 	 * net.muse.data.Group)
 	 */
-	@Override
-	protected void deleteHierarchicalGroup(Group target, Group structure) {
-		if (structure == null)
+	@Override protected void deleteHierarchicalGroup(Group root, Group target) {
+		if (root == null)
 			return;
-		assert structure instanceof MXGroup;
-		MXGroup str = (MXGroup) structure;
-		deleteHierarchicalGroup(target, str.getChildFormerGroup());
-		deleteHierarchicalGroup(target, str.getChildLatterGroup());
-		if (str.equals(target)) {
+		if (!root.hasChild())
+			return;
+		assert root instanceof MXGroup;
+		MXGroup r = (MXGroup) root;
+		MXGroup f = r.getChildFormerGroup();
+		MXGroup l = r.getChildLatterGroup();
+		if (f.equals(target) || l.equals(target)) {
 			// 子グループをすべて削除
-			deleteGroup(target);
-			target.setType(GroupType.USER);
-			// 親グループの再分析
-			// analyzeStructure(target);
+			deleteHierarchicalGroup(f, f.getChildFormerGroup());
+			deleteHierarchicalGroup(f, f.getChildLatterGroup());
+			deleteHierarchicalGroup(l, l.getChildFormerGroup());
+			deleteHierarchicalGroup(l, l.getChildLatterGroup());
+
+			// 削除
+			f.getEndNote().setNext(l.getBeginNote());
+			r.setChild(null, null);
 			return;
 		}
+		deleteHierarchicalGroup(f, target);
+		deleteHierarchicalGroup(l, target);
 	}
 
-	@Override
-	protected void initializeNoteEvents(Group group) {
+	@Override protected void initializeNoteEvents(Group group) {
 		if (group == null)
 			return;
 		assert group instanceof MXGroup;
 		MXGroup g = (MXGroup) group;
 		if (group.hasChild()) {
-			initializeNoteEvents(g.getChildFormerGroup().getBeginGroupNote());
-			initializeNoteEvents(g.getChildLatterGroup().getBeginGroupNote());
+			initializeNoteEvents(g.getChildFormerGroup().getBeginNote());
+			initializeNoteEvents(g.getChildLatterGroup().getBeginNote());
 		}
-		initializeNoteEvents(group.getBeginGroupNote());
+		initializeNoteEvents(group.getBeginNote());
 	}
 
-	@Override
-	protected boolean isOriginalFileFormat() {
+	@Override protected boolean isOriginalFileFormat() {
 		return in().isDirectory();
 	}
 
@@ -299,8 +317,7 @@ public class MXTuneData extends TuneData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneData#printGroupList(net.muse.data.Group)
 	 */
-	@Override
-	protected void printGroupList(Group group) {
+	@Override protected void printGroupList(Group group) {
 		if (group == null)
 			return;
 		assert group instanceof MXGroup;
@@ -310,8 +327,7 @@ public class MXTuneData extends TuneData {
 		System.out.println(g);
 	}
 
-	@Override
-	protected void readOriginalFile() throws IOException {
+	@Override protected void readOriginalFile() throws IOException {
 		testPrintln("reading original format...");
 		File[] files = in().listFiles();
 		for (int i = 0; i < files.length; i++) {
@@ -325,7 +341,6 @@ public class MXTuneData extends TuneData {
 			if (files[i].getName().equals(strfile))
 				readStructureData(files[i]);
 		}
-
 	}
 
 	/**
@@ -358,8 +373,8 @@ public class MXTuneData extends TuneData {
 		if (group == null)
 			return;
 
-		final double startTime = group.getBeginGroupNote().getNote().onset();
-		final double endTime = group.getEndGroupNote().getNote().offset();
+		final double startTime = group.getBeginNote().onset();
+		final double endTime = group.getEndNote().offset();
 		final int st = (int) Math.round(MXGroupAnalyzer.rootDiv * startTime
 				/ getTempoListEndtime());
 		final int ed = (int) Math.round(MXGroupAnalyzer.rootDiv * endTime
@@ -398,17 +413,6 @@ public class MXTuneData extends TuneData {
 		calculateHierarchicalParameters((MXGroup) group.getChildLatterGroup());
 	}
 
-	private BufferedImage createBufferedImage(Image img) {
-		BufferedImage bimg = new BufferedImage(img.getWidth(null), img
-				.getHeight(null), BufferedImage.TYPE_INT_RGB);
-
-		Graphics g = bimg.getGraphics();
-		g.drawImage(img, 0, 0, null);
-		g.dispose();
-
-		return bimg;
-	}
-
 	/**
 	 * TODO 未検証
 	 * <p>
@@ -419,38 +423,38 @@ public class MXTuneData extends TuneData {
 	 *
 	 * @param group
 	 */
-	private void createPrimaryPhraseSequence(MXGroup group) {
+	@Deprecated private void createPrimaryPhraseSequence(MXGroup group) {
 		final PrimaryPhraseSequence seq = new PrimaryPhraseSequence(group);
 
 		// 新規作成
-		if (getGroupArrayList().size() <= 0) {
+		if (getMiscGroup().size() <= 0) {
 			groupSequence = seq;
 			return;
 		}
 
-		NoteData st = group.getBeginGroupNote().getNote();
-		NoteData ed = group.getEndGroupNote().getNote();
+		NoteData st = group.getBeginNote();
+		NoteData ed = group.getEndNote();
 		// 前後にgroup sequence がある場合
 		if (st.hasPrevious() && st.previous().equals(groupSequence.end()
-				.getGroup().getEndGroupNote().getNote())) {
+				.getGroup().getEndNote())) {
 			groupSequence.end().setNext(seq);
 			seq.setPrevious(groupSequence);
 		} else if (ed.hasNext() && ed.next().equals(groupSequence.root()
-				.getGroup().getBeginGroupNote().getNote())) {
+				.getGroup().getBeginNote())) {
 			groupSequence.root().setPrevious(seq);
 			seq.setNext(groupSequence);
 		}
 	}
 
-	private NoteData getNote(NoteData list, String id) {
-		if (list == null)
+	private MXNoteData getNote(MXNoteData note, String id) {
+		if (note == null)
 			return null;
-		if (list.id().equals(id))
-			return list;
-		NoteData n = getNote(list.parent(), id);
-		if (n == null)
-			n = getNote(list.next(), id);
-		return n;
+		if (note.id().equals(id))
+			return note;
+		if (note.hasParent())
+			return getNote(note.parent(), id);
+		MXNoteData n = getNote(note.next(), id);
+		return (n != null) ? n : note;
 	}
 
 	/*
@@ -472,7 +476,8 @@ public class MXTuneData extends TuneData {
 
 	/**
 	 * @param keys
-	 * @param i TODO
+	 * @param i
+	 *            TODO
 	 * @return
 	 */
 	private String getValue(String[] keys, int i) {
@@ -489,7 +494,7 @@ public class MXTuneData extends TuneData {
 	private void importCMXFilesToProjectDirectory() throws IOException {
 		File fp = null;
 		if (dev() != null || xml() != null) {
-			fp = new File(inputDirectory(), xml().getFileName());
+			fp = new File(inputDirectory(), getCMXFilename());
 			if (fp.exists())
 				FileUtils.copyFileToDirectory(fp, out(), true);
 			if (dev() != null) {
@@ -498,14 +503,16 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	private MXGroup parseGroupInfo(List<MXGroup> glist, GroupNote list,
+	private MXGroup parseGroupInfo(List<MXGroup> glist, MXNoteData note,
 			String name, int partNumber, String groupInfo) {
 		MXGroup g = null;
 		final int id = Integer.parseInt(name.substring(1));
 		if (groupInfo.charAt(0) == '[') {
 			String group[] = groupInfo.split(" ");
-			parseGroupNotelist(list, group, 1, group.length);
-			g = new MXGroup(id, partNumber, list, GroupType.is(name.charAt(0)));
+			note = parseNotelist(note, group, 1, group.length, false);
+			while (note.hasPrevious())
+				note = note.previous();
+			g = new MXGroup(id, partNumber, note, GroupType.is(name.charAt(0)));
 			glist.add(g);
 			if (!hasGroupList())
 				setGrouplist(partNumber, g);
@@ -534,42 +541,47 @@ public class MXTuneData extends TuneData {
 		return g;
 	}
 
-	private void parseGroupNotelist(GroupNote list, String[] args, int idx,
-			int size) {
+	private MXNoteData parseNotelist(MXNoteData note, String[] args, int idx,
+			int size, boolean fromPrevious) {
 		if (idx == size)
-			return;
+			return note;
 		final String s = args[idx];
 		switch (s.charAt(0)) {
 		case '(':
-			list.setChild(new GroupNote());
-			parseGroupNotelist(list.child(), args, ++idx, size);
+			note.setChild(new MXNoteData(++idx)); // dummy
+			note = parseNotelist(note.child(), args, idx, size, fromPrevious);
 			break;
 		case ')':
-			parseGroupNotelist(list.parent(), args, ++idx, size);
+			note = parseNotelist(note.parent(), args, ++idx, size,
+					fromPrevious);
 			break;
 		case ',':
-			list.setNext(new GroupNote());
-			if (list.hasParent())
-				list.next().setParent(list.parent(), false);
-			parseGroupNotelist(list.next(), args, ++idx, size);
+			fromPrevious = true;
+			// note.setNext(new MXNoteData(++idx)); //dummy
+			// if (note.hasParent())
+			// note.next().setPrevious(note.parent(), false);
+			note = parseNotelist(note, args, ++idx, size, fromPrevious);
 			break;
 		case 'n':
-			NoteData n = null;
-			for (int i = 0; i < getNotelist().size(); i++) {
-				n = getNote(getNoteList(i), s);
-				if (n != null)
+			MXNoteData n = null;
+			for (NoteData d : getTempralNotelist()) {
+				n = (MXNoteData) d;
+				if (n.id().equals(s))
 					break;
 			}
-			try {
-				list.setNote(n);
-			} catch (NullPointerException e) {
-				e.printStackTrace();
+			if (!fromPrevious && n != null)
+				note = n;
+			else {
+				note.setNext(n);
+				fromPrevious = false;
 			}
-			parseGroupNotelist(list, args, ++idx, size);
+			note = parseNotelist(n, args, ++idx, size, fromPrevious);
 			break;
 		default:
-			parseGroupNotelist(list, args, ++idx, size);
+			note = parseNotelist(note, args, ++idx, size, fromPrevious);
 		}
+		return note;
+
 	}
 
 	/**
@@ -624,17 +636,18 @@ public class MXTuneData extends TuneData {
 		nd.setFifths(fifths);
 		nd.setChord(chordName);
 
-		if (pre == null || pre.partNumber() != partNumber) {
-			setNotelist(partNumber, nd);
-		} else if (chord || preChord) {
-			nd.setPrevious(pre.previous(), false);
-			nd.setChild(pre);
-		} else {
-			pre.setNext(nd);
-		}
-		log.println(nd.toString());
+		// if (pre == null || pre.partNumber() != partNumber) {
+		// setPartwiseNotelist(partNumber, nd);
+		// } else if (chord || preChord) {
+		// nd.setPrevious(pre.previous(), false);
+		// nd.setChild(pre);
+		// } else {
+		// pre.setNext(nd);
+		// }
+		setTempoListEndtime(nd.offset(),false);
+		getTempralNotelist().add(nd);
+		log.println(nd);
 		readNoteData(idx, in, in.readLine(), nd, chord);
-
 	}
 
 	private String readScoreData(File file) throws IOException {
@@ -701,19 +714,23 @@ public class MXTuneData extends TuneData {
 			String str = null;
 			List<MXGroup> glist = new ArrayList<MXGroup>();
 			while ((str = in.readLine()) != null) {
-				GroupNote list = new GroupNote();
 				String item[] = str.split(";");
-				String name = item[0]; // group name
+				String groupName = item[0]; // group name
 				int partNumber = Integer.parseInt(item[1]);
 				if (partNumber <= 0)
 					partNumber = 1;
+				MXNoteData note = null;
 				String groupInfo = item[2];
 				String topNoteName = item[3];
-				String[] dynCurveInfo = item[4].split(",");
-				String[] tmpCurveInfo = item[5].split(",");
-				String[] artCurveInfo = item[6].split(",");
-				MXGroup g = parseGroupInfo(glist, list, name, partNumber,
+				String[] curvePoints = item[4].split(",");
+				String[] dynCurveInfo = item[5].split(",");
+				String[] tmpCurveInfo = item[6].split(",");
+				String[] artCurveInfo = item[7].split(",");
+				MXGroup g = parseGroupInfo(glist, note, groupName, partNumber,
 						groupInfo);
+				parseCurvePoints(curvePoints, 0, g.getDynamicsCurve());
+				parseCurvePoints(curvePoints, 6, g.getTempoCurve());
+				parseCurvePoints(curvePoints, 12, g.getArticulationCurve());
 				try {
 					parsePhraseProfile(dynCurveInfo, g.getDynamicsCurve());
 					parsePhraseProfile(tmpCurveInfo, g.getTempoCurve());
@@ -731,8 +748,19 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	@Override
-	protected void setNoteScheduleEvent(final Group group) {
+	private void parseCurvePoints(String[] list, int idx, PhraseCurve cv) {
+		Point2D.Double st = new Point2D.Double(Double.valueOf(list[idx + 0]),
+				Double.valueOf(list[idx + 1]));
+		Point2D.Double tp = new Point2D.Double(Double.valueOf(list[idx + 2]),
+				Double.valueOf(list[idx + 3]));
+		Point2D.Double ed = new Point2D.Double(Double.valueOf(list[idx + 4]),
+				Double.valueOf(list[idx + 5]));
+		cv.setStart(st);
+		cv.setTop(tp);
+		cv.setEnd(ed);
+	}
+
+	@Override protected void setNoteScheduleEvent(final Group group) {
 		if (group == null)
 			return;
 		assert group instanceof MXGroup;
@@ -741,9 +769,25 @@ public class MXTuneData extends TuneData {
 			setNoteScheduleEvent(g.getChildFormerGroup());
 			setNoteScheduleEvent(g.getChildLatterGroup());
 		} else {
-			setNoteScheduleEvent(g.getBeginGroupNote(), g.getEndGroupNote()
-					.getNote().offset());
+			setNoteScheduleEvent(g.getBeginNote(), g.getEndNote().offset());
 		}
+	}
+
+	private Object writeCurvePointParam(MXGroup group) {
+		if (group == null) {
+			return "ERROR!";
+		}
+		String str = writeCurvePoint(group.getDynamicsCurve());
+		str += ",";
+		str += writeCurvePoint(group.getTempoCurve());
+		str += ",";
+		str += writeCurvePoint(group.getArticulationCurve());
+		return str;
+	}
+
+	private String writeCurvePoint(PhraseCurve cv) {
+		return String.format("%f,%f,%f,%f,%f,%f", cv.start().x, cv.start().y, cv
+				.top().x, cv.top().y, cv.end().x, cv.end().y);
 	}
 
 	private String writeCurveParam(MXGroup group) {
@@ -773,9 +817,9 @@ public class MXTuneData extends TuneData {
 			return;
 		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
 		writeGroupStructureData(out, (MXGroup) group.getChildLatterGroup());
-		out.format("%s;%s;%s\n", group, (group.hasTopNote()) ? group
-				.getTopGroupNote().getNote().id() : "null", writeCurveParam(
-						group));
+		out.format("%s;%s;%s;%s\n", group, (group.hasTopNote()) ? group
+				.getTopNote().id() : "null", writeCurvePointParam(group),
+				writeCurveParam(group));
 	}
 
 	private void writeNoteData(PrintWriter out, MXNoteData note) {
@@ -790,6 +834,8 @@ public class MXTuneData extends TuneData {
 	}
 
 	/**
+	 * {@link TuneData.STRUCTURE_FILENAME}で設定さらたファイル名を持つ構造データを出力します．
+	 *
 	 * @throws IOException
 	 */
 	private void writeStructureData() throws IOException {
@@ -801,8 +847,28 @@ public class MXTuneData extends TuneData {
 		for (int i = 0; i < getRootGroup().size(); i++)
 			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
 		// non-hierarchical groups
-		for (int i = 0; i < getGroupArrayList().size(); i++)
-			writeGroupStructureData(out, (MXGroup) getGroupArrayList().get(i));
+		for (int i = 0; i < getMiscGroup().size(); i++)
+			writeGroupStructureData(out, (MXGroup) getMiscGroup().get(i));
 		out.close();
+	}
+
+	@Override public void analyze(Group rootGroup) {
+		if (rootGroup == null)
+			return;
+		assert rootGroup instanceof MXGroup;
+		MXGroup root = (MXGroup) rootGroup;
+		analyze(root.getChildFormerGroup());
+		analyze(root.getChildLatterGroup());
+
+		MXGroup g = null;
+		for (Group group : getMiscGroup()) {
+			if (root.nearlyEquals(group)) {
+				g = (MXGroup) group;
+				break;
+			}
+		}
+		if (g != null)
+			root.setChild(g.getChildFormerGroup(), g.getChildLatterGroup());
+		getMiscGroup().remove(g);
 	}
 }

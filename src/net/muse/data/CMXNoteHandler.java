@@ -1,7 +1,10 @@
 package net.muse.data;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Attributes;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Direction;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Measure;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.MusicData;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.gui.GUIUtil;
 
@@ -23,8 +26,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		super(tuneData);
 	}
 
-	@Override
-	public void beginMeasure(Measure measure, MusicXMLWrapper wrapper) {
+	@Override public void beginMeasure(Measure measure,
+			MusicXMLWrapper wrapper) {
 		super.beginMeasure(measure, wrapper);
 		if (currentPartNumber == 1) {
 			try {
@@ -48,8 +51,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 * .cmx.filewrappers.MusicXMLWrapper.Part,
 	 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
 	 */
-	@Override
-	public void beginPart(MusicXMLWrapper.Part part, MusicXMLWrapper wrapper) {
+	@Override public void beginPart(MusicXMLWrapper.Part part,
+			MusicXMLWrapper wrapper) {
 		super.beginPart(part, wrapper);
 		int ch = part.midiChannel() - 1;
 		data().midiProgram[ch] = part.midiProgram();
@@ -68,8 +71,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 * cmx.filewrappers.MusicXMLWrapper.Part,
 	 * jp.crestmuse.cmx.filewrappers.MusicXMLWrapper)
 	 */
-	@Override
-	public void endPart(MusicXMLWrapper.Part part, MusicXMLWrapper wrapper) {
+	@Override public void endPart(MusicXMLWrapper.Part part,
+			MusicXMLWrapper wrapper) {
 		createGroup();
 		super.endPart(part, wrapper);
 	}
@@ -80,14 +83,13 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 * filewrappers.SCCXMLWrapper.Part,
 	 * jp.crestmuse.cmx.filewrappers.SCCXMLWrapper)
 	 */
-	@Override
-	public void endPart(SCCXMLWrapper.Part arg0, SCCXMLWrapper arg1) {
+	@Override public void endPart(SCCXMLWrapper.Part arg0, SCCXMLWrapper arg1) {
 		createGroup();
 		super.endPart(arg0, arg1);
 	}
 
-	@Override
-	public void processMusicData(MusicData md, MusicXMLWrapper wrapper) {
+	@Override public void processMusicData(MusicData md,
+			MusicXMLWrapper wrapper) {
 		if (md instanceof MusicXMLWrapper.Note)
 			readNoteData((MusicXMLWrapper.Note) md);
 		else if (md instanceof Attributes) {
@@ -104,37 +106,47 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	 * filewrappers.SCCXMLWrapper.Note,
 	 * jp.crestmuse.cmx.filewrappers.SCCXMLWrapper)
 	 */
-	@Override
-	public void processNote(SCCXMLWrapper.Note note, SCCXMLWrapper arg1) {
-		data().setTempoListEndtime(note.offset(getTicksPerBeat()),true);
-		if (note.getNodeName().equals("control")) {
-			switch (note.notenum()) {
-			case 64:
-				GUIUtil.printConsole(String.format("%d: Sustain %d", note
-						.onset(), note.velocity()));
-				break;
-			default:
-				GUIUtil.printConsole(String.format("%d: control %d %d", note
-						.onset(), note.notenum(), note.velocity()));
-			}
+	@Override public void processNote(SCCXMLWrapper.Note note,
+			SCCXMLWrapper arg1) {
+		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
+		parseMIDIControlMessage(note, note.getNodeName().equals("control"));
+		parseMIDINoteMessage(note, note.getNodeName().equals("note"));
+	}
+
+	protected void parseMIDINoteMessage(SCCXMLWrapper.Note note,
+			boolean condition) {
+		if (!condition)
 			return;
+		int beat = getBeat(note);
+		NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
+				.getBPM().get(0), beat, note.velocity());
+		nd.setKeyMode(keyMode, fifths);
+		nd.setMeasureNumber(currentMeasureNumber);
+		testPrintln(nd.toString());
+		if (cur == null) {
+			// 冒頭音
+			cur = nd;
+			data().setPartwiseNotelist(partIndex, nd);
+		} else {
+			cur.setNext(nd);
+			cur = nd;
 		}
-		if (note.getNodeName().equals("note")) {
-			int beat = getBeat(note);
-			NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
-					.getBPM().get(0), beat, note.velocity());
-			nd.setKeyMode(keyMode, fifths);
-			nd.setMeasureNumber(currentMeasureNumber);
-			testPrintln(nd.toString());
-			if (cur == null) {
-				// 冒頭音
-				cur = nd;
-				data().setNotelist(partIndex, nd);
-			} else {
-				cur.setNext(nd);
-				cur = nd;
-			}
+	}
+
+	protected void parseMIDIControlMessage(SCCXMLWrapper.Note note,
+			boolean condition) {
+		if (!condition)
+			return;
+		switch (note.notenum()) {
+		case 64:
+			GUIUtil.printConsole(String.format("%d: Sustain %d", note.onset(),
+					note.velocity()));
+			break;
+		default:
+			GUIUtil.printConsole(String.format("%d: control %d %d", note
+					.onset(), note.notenum(), note.velocity()));
 		}
+		return;
 	}
 
 	protected Group createGroup(NoteData n, int i, GroupType type) {
@@ -156,15 +168,15 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	}
 
 	private void createGroup() {
-		Group g = createGroup(data().getNoteList(partIndex), partIndex + 1,
-				GroupType.NOTE);
-
+		Group g = createGroup(data().getPartwiseNotelist().get(partIndex),
+				partIndex + 1, GroupType.NOTE);
+//		data().getPartwiseNotelist().add(g.getBeginNote());
 		if (primaryGrouplist == null) {
 			primaryGrouplist = g;
 			data().setGrouplist(partIndex, g);
 		} else if (TuneData.segmentGroupnoteLine) {
-			linkToPrimaryGroup(g.getBeginGroupNote(), primaryGrouplist
-					.getBeginGroupNote());
+			linkToPrimaryGroup(g.getBeginNote(), primaryGrouplist
+					.getBeginNote());
 		} else {
 			data().setGrouplist(partIndex, g);
 		}
@@ -179,15 +191,15 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		return beat;
 	}
 
-	private void linkToPrimaryGroup(GroupNote note,
-			GroupNote currentPrimaryNote) {
+	private void linkToPrimaryGroup(NoteData note,
+			NoteData currentPrimaryNote) {
 		if (note == null)
 			return;
-		while (currentPrimaryNote.hasNext() && note.getNote()
-				.onset() >= currentPrimaryNote.next().getNote().onset()) {
+		while (currentPrimaryNote.hasNext() && note
+				.onset() >= currentPrimaryNote.next().onset()) {
 			currentPrimaryNote = currentPrimaryNote.next();
 		}
-		if (note.getNote().onset() == currentPrimaryNote.getNote().onset()) {
+		if (note.onset() == currentPrimaryNote.onset()) {
 			setChild(currentPrimaryNote, note);
 			if (TuneData.segmentGroupnoteLine) {
 				if (note.hasPrevious())
@@ -213,11 +225,12 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
 				.getBPM().get(0), currentDefaultVelocity);
 		nd.setKeyMode(keyMode, fifths);
+		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
 		testPrintln(nd.toString());
 		if (cur == null) {
 			// 冒頭音
 			cur = nd;
-			data().setNotelist(partIndex, nd);
+			data().setPartwiseNotelist(partIndex, nd);
 		} else if (note.chord()) {
 			// 和音
 			// 最高音へ移動
@@ -225,8 +238,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				cur = cur.parent();
 			cur.setParent(nd);
 			nd.setPrevious(cur.previous());
-			if (cur.equals(data().getNoteList(partIndex)))
-				data().setNotelist(partIndex, nd);
+			if (cur.equals(data().getPartwiseNotelist().get(partIndex)))
+				data().setPartwiseNotelist(partIndex, nd);
 			cur = nd;
 		} else if (note.containsTieType("stop")) {
 			// タイ
@@ -237,7 +250,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		}
 	}
 
-	private void setChild(GroupNote parent, GroupNote note) {
+	private void setChild(NoteData parent, NoteData note) {
 		if (!parent.hasChild()) {
 			parent.setChild(note);
 			return;

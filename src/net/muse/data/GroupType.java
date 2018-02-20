@@ -78,6 +78,13 @@ public enum GroupType {
 			return Color.black;
 		}
 	},
+	/** 和音 */
+	CHORD {
+		@Override
+		public Color getColor() {
+			return Color.CYAN;
+		}
+	},
 	/** ディミヌエンド */
 	DIM {
 		@Override
@@ -100,6 +107,8 @@ public enum GroupType {
 			return SLUR;
 		case 'B':
 			return BEAM;
+		case 'C':
+			return CHORD;
 		default:
 			return NOTE;
 		}

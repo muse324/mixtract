@@ -15,7 +15,6 @@ import net.muse.misc.OptionType;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.curve.PhraseCurveType;
-import net.muse.mixtract.gui.PhraseViewer;
 
 public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	protected static String PROPERTY_FILENAME = "Mixtract.properties";
@@ -39,7 +38,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	/** 楽曲情報 */
 	private TuneData data;
 	private List<TuneDataListener> tdListenerList = new ArrayList<TuneDataListener>();
-	private ArrayList<PhraseViewer> phraseViewList;
+	private ArrayList<InfoViewer> infoViewList;
 	/** 階層的フレーズ構造の分析履歴 */
 	protected final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
 
@@ -59,8 +58,8 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		setOption(args);
 	}
 
-	public void addPhraseViewerList(PhraseViewer pv) {
-		getPhraseViewList().add(pv);
+	public void addInfoViewerList(InfoViewer pv) {
+		getInfoViewList().add(pv);
 	}
 
 	public void addTuneDataListener(TuneDataListener l) {
@@ -122,11 +121,11 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		return outputFileName;
 	}
 
-	public ArrayList<PhraseViewer> getPhraseViewList() {
-		if (phraseViewList == null) {
-			phraseViewList = new ArrayList<PhraseViewer>();
+	public ArrayList<InfoViewer> getInfoViewList() {
+		if (infoViewList == null) {
+			infoViewList = new ArrayList<InfoViewer>();
 		}
-		return phraseViewList;
+		return infoViewList;
 	}
 
 	/**
@@ -201,14 +200,14 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	public void notifySetTarget() {
-		getPhraseViewList().clear();
+		getInfoViewList().clear();
 		for (TuneDataListener l : tdListenerList) {
 			l.setTarget(data());
 		}
 	}
 
 	public void notifyShowCurrentX(boolean showCurrentX, int x) {
-		for (CanvasMouseListener v : getPhraseViewList()) {
+		for (CanvasMouseListener v : getInfoViewList()) {
 			v.setShowCurrentX(showCurrentX, x);
 		}
 	}
@@ -433,16 +432,16 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 			return;
 		deleteGroup(g.child());
 
-		PhraseViewer d = null;
-		for (PhraseViewer pv : getPhraseViewList()) {
-			if (pv.getGroup() == g) {
+		InfoViewer d = null;
+		for (InfoViewer pv : getInfoViewList()) {
+			if (pv.group() == g) {
 				d = pv;
 				break;
 			}
 		}
 		if (d != null) {
 			d.setVisible(false);
-			getPhraseViewList().remove(d);
+			getInfoViewList().remove(d);
 		}
 	}
 

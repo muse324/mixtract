@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
-import net.muse.data.GroupNote;
+import net.muse.data.NoteData;
 import net.muse.gui.*;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXNoteData;
@@ -15,16 +15,19 @@ public class MXNoteLabel extends NoteLabel {
 	private MXGroupLabel childFormer;
 	private MXGroupLabel childLatter;
 
-	public MXNoteLabel(GroupNote note, Rectangle r) {
+	public MXNoteLabel(NoteData note, Rectangle r) {
 		super(note, r);
 	}
 
-	@Deprecated public Color getApexColor() {
-		double apex = ((MXNoteData) getGroupNote().getNote()).getApexScore();
+	@Deprecated
+	public Color getApexColor() {
+		double apex = ((MXNoteData) getGroupNote()).getApexScore();
 		final int c = (int) (255 * (1. - apex));
 		return new Color(255, c, c);
 	}
-	/* (非 Javadoc)
+
+	/*
+	 * (非 Javadoc)
 	 * @see net.muse.gui.GroupLabel#group()
 	 */
 	@Override
@@ -37,7 +40,8 @@ public class MXNoteLabel extends NoteLabel {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.NoteLabel#setSelected(boolean)
 	 */
-	@Override public void setSelected(boolean isSelected) {
+	@Override
+	public void setSelected(boolean isSelected) {
 		super.setSelected(isSelected);
 		if (!isSelected)
 			return;
@@ -46,7 +50,7 @@ public class MXNoteLabel extends NoteLabel {
 
 		MXPianoroll p = (MXPianoroll) getParent();
 		if (p.displayApex) {
-			MXNoteData n = (MXNoteData) getGroupNote().getNote();
+			MXNoteData n = (MXNoteData) getGroupNote();
 			double w = 1. - n.getApexScore();
 			int r = PartColor.SELECTED_COLOR.getRed();
 			int c = (int) (255 * w);
@@ -68,7 +72,6 @@ public class MXNoteLabel extends NoteLabel {
 		}
 		return childLatter;
 	}
-
 
 	protected GroupLabel getChildFormer(ArrayList<GroupLabel> grouplist) {
 		if (childFormer == null) {
