@@ -319,8 +319,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 		if (selectedGroup != null)
 			setNoteScheduleEvent(selectedGroup);
 		else {
-			for (int i = 0; i < getRootGroup().size(); i++) {
-				setNoteScheduleEvent(getRootGroup().get(i));
+			for (Group g : getRootGroup()) {
+				setNoteScheduleEvent(g);
 			}
 		}
 		// log print
@@ -464,6 +464,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 * <li>子グループをすべて削除
 	 * <li>親グループを起点にし，再分析をかける
 	 * </ol>
+	 *
 	 * @param root
 	 *            階層フレーズ
 	 * @param target

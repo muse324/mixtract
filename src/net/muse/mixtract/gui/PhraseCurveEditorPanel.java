@@ -225,6 +225,8 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 		cv.rasterize();
 		cv.apply((MXTuneData) main.data(), group);
 		main.data().calculateExpressionParameters();
+		((MXMainFrame) main.getFrame()).getDynamicsView().repaint();
+		((MXMainFrame) main.getFrame()).getTempoView().repaint();
 	}
 
 }

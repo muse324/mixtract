@@ -471,14 +471,17 @@ public abstract class PhraseCurve extends MuseObject {
 
 	public void rasterize() {
 		int size = paramlist.size();
-		for (int i = 0; i < size; i++) {
-			double t = (double) i / size;
-			double value = 0.;
-			if (t <= top().x)
-				value = t * (paramTP.y - paramST.y);
-			else if (t <= end().x)
-				value = t * (paramED.y - paramTP.y) + paramTP.y;
+		int formerSize = (int) (size * paramTP.x);
+		int latterSize = size-formerSize;
+		for (int i = 0; i < formerSize; i++) {
+			double t = (double) i / formerSize;
+			double value = t * (paramTP.y - paramST.y) + paramST.y;
 			paramlist.set(i, value);
+		}
+		for (int i = 0; i < latterSize; i++) {
+			double t = (double) i /latterSize;
+			double value = t * (paramED.y - paramTP.y) + paramTP.y;
+			paramlist.set(i+formerSize, value);
 		}
 	}
 
