@@ -1,6 +1,10 @@
 package net.muse.gui;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JWindow;
 
 import net.muse.misc.MuseObject;
 
@@ -14,11 +18,8 @@ public abstract class MuseGUIObject<F extends JFrame> extends MuseObject {
 
 	private static boolean showGUI = true;
 	private F frame;
-	protected JWindow splashScreen;
+	private JWindow splashScreen;
 
-	/**
-	 *
-	 */
 	public MuseGUIObject() {
 		super();
 	}

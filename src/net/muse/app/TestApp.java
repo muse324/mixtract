@@ -4,7 +4,9 @@ import java.awt.EventQueue;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 import net.muse.command.MuseAppCommand;
 import net.muse.data.Group;
@@ -50,7 +52,6 @@ public class TestApp extends MuseApp {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						main.showSplashScreen();
-						main.splashScreen.setLocationRelativeTo(null);
 					}
 				});
 
