@@ -496,11 +496,11 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			@Override public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_G:
-					GUIUtil.printConsole("make group");
+					butler().printConsole("make group");
 					MixtractCommand.MAKE_GROUP.execute();
 					break;
 				default:
-					GUIUtil.printConsole("Pianoroll: pressed: ");
+					butler().printConsole("Pianoroll: pressed: ");
 				}
 			}
 

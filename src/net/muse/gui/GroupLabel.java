@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
+import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.mixtract.command.MixtractCommand;
@@ -37,6 +38,8 @@ public class GroupLabel extends JLabel {
 	private KeyActionListener keyActions;
 	private boolean startEdit;
 	private boolean endEdit;
+
+	private Concierge butler;
 
 	protected GroupLabel() {
 		super();
@@ -245,16 +248,23 @@ public class GroupLabel extends JLabel {
 			@Override public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_BACK_SPACE:
-					GUIUtil.printConsole("delete group");
+					butler().printConsole("delete group");
 					MixtractCommand.DELETE_GROUP.execute();
 					break;
 				default:
-					GUIUtil.printConsole("Group: Key pressed ");
+					butler().printConsole("Group: Key pressed ");
 				}
 			}
 
 		};
 		addKeyListener(keyActions);
+	}
+
+	protected Concierge butler() {
+		if (butler == null) {
+			butler = new Concierge(group);
+		}
+		return butler;
 	}
 
 	/**

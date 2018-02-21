@@ -12,6 +12,7 @@ import javax.management.openmbean.InvalidOpenTypeException;
 import javax.sound.midi.InvalidMidiDataException;
 
 import net.muse.app.MuseApp;
+import net.muse.gui.GUIUtil;
 import net.muse.gui.TuneDataListener;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.MixtractCommand;
@@ -31,6 +32,7 @@ public class Concierge extends MuseObject {
 
 	public void printConsole(String string, Object... args) {
 		log().println(string);
+		GUIUtil.printConsole(string);
 		for (Object obj : args) {
 			if (obj instanceof File) {
 				log().printf("Open file: %s", (File) obj);

@@ -6,7 +6,6 @@ import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Direction;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Measure;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.MusicData;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
-import net.muse.gui.GUIUtil;
 
 public class CMXNoteHandler extends AbstractCMXNoteHandler {
 
@@ -140,11 +139,11 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			return;
 		switch (note.notenum()) {
 		case 64:
-			GUIUtil.printConsole(String.format("%d: Sustain %d", note.onset(),
+			butler().printConsole(String.format("%d: Sustain %d", note.onset(),
 					note.velocity()));
 			break;
 		default:
-			GUIUtil.printConsole(String.format("%d: control %d %d", note
+			butler().printConsole(String.format("%d: control %d %d", note
 					.onset(), note.notenum(), note.velocity()));
 		}
 		return;

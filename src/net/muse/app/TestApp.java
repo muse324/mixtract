@@ -11,7 +11,6 @@ import javax.swing.WindowConstants;
 import net.muse.command.MuseAppCommand;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
-import net.muse.gui.GUIUtil;
 import net.muse.gui.MainFrame;
 
 /**
@@ -67,7 +66,7 @@ public class TestApp extends MuseApp {
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
-				GUIUtil.printConsole(e.getMessage());
+				main.butler().printConsole(e.getMessage());
 			}
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {

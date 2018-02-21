@@ -1,7 +1,6 @@
 package net.muse.mixtract.command;
 
 import net.muse.data.Group;
-import net.muse.gui.GUIUtil;
 import net.muse.gui.GroupLabel;
 
 final class PrintSubgroupsCommand extends MixtractCommand {
@@ -17,7 +16,7 @@ final class PrintSubgroupsCommand extends MixtractCommand {
 	public void execute() {
 		if (getSelectedObjects() instanceof GroupLabel) {
 			final GroupLabel gl = getGroupLabel();
-			GUIUtil.printConsole(gl.getName() + "'s subgroups:");
+			butler().printConsole(gl.getName() + "'s subgroups:");
 			printSubGroups(gl.group());
 		}
 	}

@@ -12,7 +12,6 @@ import javax.swing.WindowConstants;
 
 import net.muse.data.Group;
 import net.muse.data.TuneData;
-import net.muse.gui.GUIUtil;
 import net.muse.gui.InfoViewer;
 import net.muse.gui.MainFrame;
 import net.muse.mixtract.command.MixtractCommand;
@@ -71,7 +70,7 @@ public class Mixtract extends MuseApp {
 			try {
 				Thread.sleep(2000);
 			} catch (InterruptedException e) {
-				GUIUtil.printConsole(e.getMessage());
+				main.butler().printConsole(e.getMessage());
 			}
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {

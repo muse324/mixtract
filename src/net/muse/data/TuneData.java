@@ -32,7 +32,6 @@ import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import jp.crestmuse.cmx.processing.CMXController;
 import net.muse.app.Mixtract;
-import net.muse.gui.GUIUtil;
 import net.muse.misc.MuseObject;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -249,11 +248,11 @@ public class TuneData extends MuseObject implements TuneDataController {
 	}
 
 	public void printAllGroups() {
-		GUIUtil.printConsole("Hierarchical group list:");
+		butler().printConsole("Hierarchical group list:");
 		for (Group g : getRootGroup()) {
 			printGroupList(g);
 		}
-		GUIUtil.printConsole("Non hierarchical group list:");
+		butler().printConsole("Non hierarchical group list:");
 		for (Group g : getMiscGroup()) {
 			printGroupList(g);
 		}
