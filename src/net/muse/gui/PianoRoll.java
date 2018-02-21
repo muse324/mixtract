@@ -479,10 +479,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	private Concierge butler() {
-		if (butler == null) {
-			butler = new Concierge(main);
-		}
-		return butler;
+		return main.butler();
 	}
 
 	protected KeyActionListener createKeyActions(MuseObject app) {
@@ -494,14 +491,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
 			 */
 			@Override public void keyPressed(KeyEvent e) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_G:
-					butler().printConsole("make group");
-					MixtractCommand.MAKE_GROUP.execute();
-					break;
-				default:
-					butler().printConsole("Pianoroll: pressed: ");
-				}
+				butler().keyPressed(e);
 			}
 
 		};
@@ -896,9 +886,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		// int offset = (note.hasNext() && note.next().getNote().noteNumber() ==
 		// nd
 		// .noteNumber()) ? 5 : 0;
-
-		if (note == null)
-			return;
 
 		final Rectangle r = getLabelBounds(note, offset);
 		final NoteLabel n = createNoteLabel(note, r);

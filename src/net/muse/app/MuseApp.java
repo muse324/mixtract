@@ -154,7 +154,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param g
 	 */
 	public void notifyAddGroup(Group g) {
-		for (TuneDataListener l : butler.getTdListenerList()) {
+		for (TuneDataListener l : butler().getTdListenerList()) {
 			l.addGroup(g);
 		}
 	}
@@ -163,14 +163,14 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param type
 	 */
 	public void notifyChangeHierarchicalParameters(PhraseCurveType type) {
-		for (TuneDataListener l : butler.getTdListenerList()) {
+		for (TuneDataListener l : butler().getTdListenerList()) {
 			l.changeExpression(type);
 		}
 	}
 
 	public void notifyDeleteGroup(GroupLabel label) {
 		deleteGroup(label.group());
-		for (final TuneDataListener l : butler.getTdListenerList()) {
+		for (final TuneDataListener l : butler().getTdListenerList()) {
 			l.deleteGroup(label);
 		}
 	}
@@ -181,7 +181,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	public void notifyDeselectGroup() {
 		if (data() != null)
 			data().setSelectedGroup(null);
-		for (final TuneDataListener l : butler.getTdListenerList()) {
+		for (final TuneDataListener l : butler().getTdListenerList()) {
 			l.deselect(null);
 		}
 	}
@@ -194,14 +194,14 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public void notifySelectGroup(GroupLabel g, boolean b) {
 		data().setSelectedGroup((b) ? g.group() : null);
-		for (final TuneDataListener l : butler.getTdListenerList()) {
+		for (final TuneDataListener l : butler().getTdListenerList()) {
 			l.selectGroup(g, b);
 		}
 	}
 
 	public void notifySetTarget() {
 		getInfoViewList().clear();
-		for (TuneDataListener l : butler.getTdListenerList()) {
+		for (TuneDataListener l : butler().getTdListenerList()) {
 			l.setTarget(data());
 		}
 	}

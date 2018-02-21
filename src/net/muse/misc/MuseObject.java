@@ -37,7 +37,7 @@ public abstract class MuseObject {
 
 	private PrintStream log;
 	/** コンシェルジュ（ファサードクラス） **/
-	public final Concierge butler;
+	private Concierge butler = null;
 
 	public final static void errPrintln(String val) {
 		if (DEBUG)
@@ -157,7 +157,6 @@ public abstract class MuseObject {
 
 	protected MuseObject() {
 		super();
-		butler = new Concierge(this);
 		try {
 			log = new PrintStream(new File(LOG_FILENAME));
 		} catch (FileNotFoundException e) {
@@ -240,6 +239,8 @@ public abstract class MuseObject {
 	}
 
 	public Concierge butler() {
+		if (butler == null)
+			butler = new Concierge(this);
 		return butler;
 	}
 

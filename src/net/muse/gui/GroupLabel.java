@@ -246,14 +246,7 @@ public class GroupLabel extends JLabel {
 			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
 			 */
 			@Override public void keyPressed(KeyEvent e) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_BACK_SPACE:
-					butler().printConsole("delete group");
-					MixtractCommand.DELETE_GROUP.execute();
-					break;
-				default:
-					butler().printConsole("Group: Key pressed ");
-				}
+				butler().keyPressed(e);
 			}
 
 		};

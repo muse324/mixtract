@@ -3,6 +3,7 @@
  */
 package net.muse.data;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,6 +29,33 @@ public class Concierge extends MuseObject {
 
 	public Concierge(MuseObject obj) {
 		this.obj = obj;
+	}
+
+	public void addTuneDataListenerList(TuneDataListener l) {
+		getTdListenerList().add(l);
+	}
+
+	public List<TuneDataListener> getTdListenerList() {
+		if (tdListenerList == null) {
+			tdListenerList = new ArrayList<TuneDataListener>();
+		}
+		return tdListenerList;
+	}
+
+	public void keyPressed(KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_G:
+			printConsole("make group");
+			MixtractCommand.MAKE_GROUP.execute();
+			break;
+		case KeyEvent.VK_BACK_SPACE:
+			printConsole("delete group");
+			MixtractCommand.DELETE_GROUP.execute();
+			break;
+		default:
+			printConsole(e.getSource().getClass().getName()
+					+ ": key pressed: ");
+		}
 	}
 
 	public void printConsole(String string, Object... args) {
@@ -73,17 +101,6 @@ public class Concierge extends MuseObject {
 			MixtractCommand.setTarget(app.data());
 			app.notifySetTarget();
 		}
-	}
-
-	public void addTuneDataListenerList(TuneDataListener l) {
-		tdListenerList.add(l);
-	}
-
-	public List<TuneDataListener> getTdListenerList() {
-		if (tdListenerList == null) {
-			tdListenerList = new ArrayList<TuneDataListener>();
-		}
-		return tdListenerList;
 	}
 
 }

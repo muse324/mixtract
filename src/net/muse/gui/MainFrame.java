@@ -81,7 +81,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	/** JFrameおよびDockのアイコン */
 	protected Image icon;
 
-	protected MuseApp main;
+	protected final MuseApp main;
 	protected PianoRoll pianoroll = null;
 	protected JLabel tempoValueLabel = null;
 	private JTextField bpmValue = null;
@@ -103,8 +103,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JInternalFrame viewer = null;
 	private JDesktopPane desktop;
 	private JScrollBar timeScrollBar = null;
-	private Concierge butler;
-
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
 	 *
@@ -127,8 +125,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		synthe = new MixtractMIDIController(main.getMidiDeviceName(), main
 				.getTicksPerBeat());
 		synthe.addMidiEventListener(this);
-		this.butler().addTuneDataListenerList(this);
-		this.butler().addTuneDataListenerList(synthe);
+		butler().addTuneDataListenerList(this);
+		butler().addTuneDataListenerList(synthe);
 
 		// TODO ウィンドウアイコンの設定
 		// ただし、OSXにはウィンドウアイコンはないため表示されない
@@ -209,10 +207,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	protected Concierge butler() {
-		if (butler == null) {
-			butler = new Concierge(main);
-		}
-		return butler;
+		return main.butler();
 	}
 
 	/**
@@ -700,8 +695,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 							.getMusicXMLDirectory()) : new JFileChooser();
 					int res = fc.showOpenDialog(null);
 					if (res == JFileChooser.APPROVE_OPTION) {
-						main.butler.readfile(fc.getSelectedFile(), new File(main
-								.getProjectDirectory(), fc.getSelectedFile()
+						main.butler().readfile(fc.getSelectedFile(), new File(
+								main.getProjectDirectory(), fc.getSelectedFile()
 										.getName() + Mixtract
 												.getProjectFileExtension()));
 					}
@@ -756,7 +751,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					int res = fc.showOpenDialog(null);
 					if (res == JFileChooser.APPROVE_OPTION) {
-						main.butler.readfile(fc.getSelectedFile(), main
+						main.butler().readfile(fc.getSelectedFile(), main
 								.getProjectDirectory());
 					}
 				} catch (IOException e1) {
