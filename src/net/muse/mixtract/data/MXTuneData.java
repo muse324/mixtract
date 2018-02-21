@@ -51,15 +51,6 @@ public class MXTuneData extends TuneData {
 	/** ユーザにより指定されるプライマリフレーズライン */
 	private PrimaryPhraseSequence groupSequence = null;
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Mixtract.setShowGUI(false);
-		String str[] = {};
-		Mixtract.main(str);
-	}
-
 	public static void setDefaultBPM(int t) {
 		ApexInfo.setDefaultBPM(t);
 		ArticulationCurve.setDefaultBPM(t);
@@ -643,7 +634,7 @@ public class MXTuneData extends TuneData {
 		// } else {
 		// pre.setNext(nd);
 		// }
-		setTempoListEndtime(nd.offset(),false);
+		setTempoListEndtime(nd.offset(), false);
 		getTempralNotelist().add(nd);
 		log().println(nd);
 		readNoteData(idx, in, in.readLine(), nd, chord);

@@ -155,7 +155,7 @@ public abstract class MuseObject {
 		_assertion = flg;
 	}
 
-	public MuseObject() {
+	protected MuseObject() {
 		super();
 		butler = new Concierge(this);
 		try {

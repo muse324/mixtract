@@ -114,13 +114,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Mixtract.main(args);
-	}
-
-	/**
 	 * This method initializes
 	 *
 	 * @param app
