@@ -5,11 +5,14 @@ package net.muse.data;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.management.openmbean.InvalidOpenTypeException;
 import javax.sound.midi.InvalidMidiDataException;
 
 import net.muse.app.MuseApp;
+import net.muse.gui.TuneDataListener;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.MixtractCommand;
 
@@ -20,6 +23,7 @@ import net.muse.mixtract.command.MixtractCommand;
 public class Concierge extends MuseObject {
 
 	private MuseObject obj;
+	private List<TuneDataListener> tdListenerList;
 
 	public Concierge(MuseObject obj) {
 		this.obj = obj;
@@ -67,6 +71,17 @@ public class Concierge extends MuseObject {
 			MixtractCommand.setTarget(app.data());
 			app.notifySetTarget();
 		}
+	}
+
+	public void addTuneDataListenerList(TuneDataListener l) {
+		tdListenerList.add(l);
+	}
+
+	public List<TuneDataListener> getTdListenerList() {
+		if (tdListenerList == null) {
+			tdListenerList = new ArrayList<TuneDataListener>();
+		}
+		return tdListenerList;
 	}
 
 }

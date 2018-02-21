@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.JFrame;
@@ -43,7 +42,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 
 	/** 楽曲情報 */
 	private TuneData data;
-	private List<TuneDataListener> tdListenerList = new ArrayList<TuneDataListener>();
 	private ArrayList<InfoViewer> infoViewList;
 	/** 階層的フレーズ構造の分析履歴 */
 	protected final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
@@ -66,10 +64,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 
 	public void addInfoViewerList(InfoViewer pv) {
 		getInfoViewList().add(pv);
-	}
-
-	public void addTuneDataListener(TuneDataListener l) {
-		tdListenerList.add(l);
 	}
 
 	/**
@@ -160,7 +154,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param g
 	 */
 	public void notifyAddGroup(Group g) {
-		for (TuneDataListener l : tdListenerList) {
+		for (TuneDataListener l : butler.getTdListenerList()) {
 			l.addGroup(g);
 		}
 	}
@@ -169,14 +163,14 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param type
 	 */
 	public void notifyChangeHierarchicalParameters(PhraseCurveType type) {
-		for (TuneDataListener l : tdListenerList) {
+		for (TuneDataListener l : butler.getTdListenerList()) {
 			l.changeExpression(type);
 		}
 	}
 
 	public void notifyDeleteGroup(GroupLabel label) {
 		deleteGroup(label.group());
-		for (final TuneDataListener l : tdListenerList) {
+		for (final TuneDataListener l : butler.getTdListenerList()) {
 			l.deleteGroup(label);
 		}
 	}
@@ -187,7 +181,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	public void notifyDeselectGroup() {
 		if (data() != null)
 			data().setSelectedGroup(null);
-		for (final TuneDataListener l : tdListenerList) {
+		for (final TuneDataListener l : butler.getTdListenerList()) {
 			l.deselect(null);
 		}
 	}
@@ -200,14 +194,14 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public void notifySelectGroup(GroupLabel g, boolean b) {
 		data().setSelectedGroup((b) ? g.group() : null);
-		for (final TuneDataListener l : tdListenerList) {
+		for (final TuneDataListener l : butler.getTdListenerList()) {
 			l.selectGroup(g, b);
 		}
 	}
 
 	public void notifySetTarget() {
 		getInfoViewList().clear();
-		for (TuneDataListener l : tdListenerList) {
+		for (TuneDataListener l : butler.getTdListenerList()) {
 			l.setTarget(data());
 		}
 	}

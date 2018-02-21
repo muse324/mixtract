@@ -52,6 +52,7 @@ import javax.swing.WindowConstants;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
+import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
@@ -102,6 +103,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JInternalFrame viewer = null;
 	private JDesktopPane desktop;
 	private JScrollBar timeScrollBar = null;
+	private Concierge butler;
 
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
@@ -125,8 +127,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		synthe = new MixtractMIDIController(main.getMidiDeviceName(), main
 				.getTicksPerBeat());
 		synthe.addMidiEventListener(this);
-		this.main.addTuneDataListener(this);
-		this.main.addTuneDataListener(synthe);
+		this.butler().addTuneDataListenerList(this);
+		this.butler().addTuneDataListenerList(synthe);
 
 		// TODO ウィンドウアイコンの設定
 		// ただし、OSXにはウィンドウアイコンはないため表示されない
@@ -201,9 +203,16 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public CurveView getDynamicsView() {
 		if (dynamicsView == null) {
 			dynamicsView = new CurveView(PhraseCurveType.DYNAMICS, 127, 0, 10);
-			main.addTuneDataListener(dynamicsView);
+			butler().addTuneDataListenerList(dynamicsView);
 		}
 		return dynamicsView;
+	}
+
+	protected Concierge butler() {
+		if (butler == null) {
+			butler = new Concierge(main);
+		}
+		return butler;
 	}
 
 	/**
@@ -215,7 +224,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		if (groupingPanel == null) {
 			groupingPanel = createGroupingPanel();
 			groupingPanel.setController(main);
-			main.addTuneDataListener(groupingPanel);
+			butler().addTuneDataListenerList(groupingPanel);
 		}
 		return groupingPanel;
 	}
@@ -251,7 +260,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public CurveView getTempoView() {
 		if (tempoView == null) {
 			tempoView = new CurveView(PhraseCurveType.TEMPO, 280, 10, 10);
-			main.addTuneDataListener(tempoView);
+			butler().addTuneDataListenerList(tempoView);
 		}
 		return tempoView;
 	}
@@ -714,7 +723,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	private KeyBoard getKeyboard() {
 		KeyBoard keyboard = new KeyBoard(main.getTicksPerBeat());
-		main.addTuneDataListener(keyboard);
+		butler().addTuneDataListenerList(keyboard);
 		return keyboard;
 	}
 
@@ -768,7 +777,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JPanel getPartSelectorPanel() {
 		PartSelectorPanel p = new PartSelectorPanel();
 		p.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(), 24)); // Generated
-		main.addTuneDataListener(p);
+		butler().addTuneDataListenerList(p);
 		return p;
 	}
 

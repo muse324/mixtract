@@ -28,6 +28,7 @@ import net.muse.command.ChangePartCommand;
 import net.muse.command.MuseAppCommand;
 import net.muse.command.SetKeyCommand;
 import net.muse.command.SetKeyModeCommand;
+import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.Harmony;
 import net.muse.data.KeyMode;
@@ -279,6 +280,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			Cursor.HAND_CURSOR); // @jve:decl-index=0:
 	private Group selectedGroup;
 	private KeyActionListener keyActions;
+	private Concierge butler;
 
 	protected PianoRoll(MuseApp main) {
 		super();
@@ -468,12 +470,19 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	protected void setController() {
-		main.addTuneDataListener(this);
+		butler().addTuneDataListenerList(this);
 		mouseActions = createPianoRollMouseAction(main);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
 		keyActions = createKeyActions(main);
 		addKeyListener(keyActions);
+	}
+
+	private Concierge butler() {
+		if (butler == null) {
+			butler = new Concierge(main);
+		}
+		return butler;
 	}
 
 	protected KeyActionListener createKeyActions(MuseObject app) {
