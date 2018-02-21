@@ -96,7 +96,7 @@ public class Concierge extends MuseObject {
 
 		MuseApp app = (MuseApp) obj;
 		app.setData(app.createTuneData(in, out));
-		printConsole("Open file: %s", in);
+		printConsole(String.format("Open file: %s", in));
 		if (MuseApp.isShowGUI()) {
 			MixtractCommand.setTarget(app.data());
 			app.notifySetTarget();

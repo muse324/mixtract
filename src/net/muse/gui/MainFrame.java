@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -103,6 +104,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JInternalFrame viewer = null;
 	private JDesktopPane desktop;
 	private JScrollBar timeScrollBar = null;
+
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
 	 *
@@ -688,22 +690,20 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		m.setText("Import MusicXML File...");
 		m.setMnemonic('M');
 		m.setAccelerator(KeyStroke.getKeyStroke('M', shortcutKey));
-		m.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
+		m.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				try {
 					JFileChooser fc = (main != null) ? new JFileChooser(main
 							.getMusicXMLDirectory()) : new JFileChooser();
 					int res = fc.showOpenDialog(null);
 					if (res == JFileChooser.APPROVE_OPTION) {
-						main.butler().readfile(fc.getSelectedFile(), new File(
-								main.getProjectDirectory(), fc.getSelectedFile()
+						butler().readfile(fc.getSelectedFile(), new File(main
+								.getProjectDirectory(), fc.getSelectedFile()
 										.getName() + Mixtract
 												.getProjectFileExtension()));
 					}
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				} catch (InvalidMidiDataException e1) {
-					// TODO 自動生成された catch ブロック
+				} catch (HeadlessException | IOException
+						| InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
 			}
