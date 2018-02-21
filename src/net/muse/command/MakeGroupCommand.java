@@ -77,7 +77,7 @@ public class MakeGroupCommand extends MuseAppCommand {
 		for (Group g : target().getRootGroup()) {
 			target().analyze(g);
 		}
-		main().notifySetTarget();
+		main().butler().notifySetTarget(main().data());
 	}
 
 	private Group searchGroup(MXGroup g, NoteData beginNote, NoteData endNote) {

@@ -14,14 +14,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.sound.midi.InvalidMidiDataException;
-
 import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.app.Mixtract;
+import net.muse.data.CMXImporter;
 import net.muse.data.CMXNoteHandler;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
@@ -51,6 +50,10 @@ public class MXTuneData extends TuneData {
 	/** ユーザにより指定されるプライマリフレーズライン */
 	private PrimaryPhraseSequence groupSequence = null;
 
+	public MXTuneData(File in, File out) throws IOException {
+		super(in, out);
+	}
+
 	public static void setDefaultBPM(int t) {
 		ApexInfo.setDefaultBPM(t);
 		ArticulationCurve.setDefaultBPM(t);
@@ -70,12 +73,6 @@ public class MXTuneData extends TuneData {
 	public static final void setDurationOffset(int val) {
 		MXTuneData.durationOffset = val;
 		System.out.printf("duration offset = %d\n", val);
-	}
-
-	public MXTuneData(File in, File out) throws IOException,
-			InvalidMidiDataException {
-		super(in, out);
-
 	}
 
 	/*
@@ -319,9 +316,10 @@ public class MXTuneData extends TuneData {
 
 	@Override protected void readOriginalFile() throws IOException {
 		butler().printConsole("reading original format...");
+		super.readOriginalFile();
+		String strfile = STRUCTURE_FILENAME;
 		File[] files = in().listFiles();
 		for (int i = 0; i < files.length; i++) {
-			String strfile = STRUCTURE_FILENAME;
 			if (files[i].getName().equals(SCOREDATA_FILENAME)) {
 				String s = readScoreData(files[i]);
 				if (s.length() == 0)
@@ -652,8 +650,10 @@ public class MXTuneData extends TuneData {
 			if (!str.startsWith("cmx"))
 				throw new InvalidObjectException(xmlFilename);
 			if (xmlFilename != null && xmlFilename.length() > 0) {
-				readCMXFile(new File(file.getParentFile(), xmlFilename)
-						.getAbsolutePath());
+				File fp = new File(file.getParentFile(), xmlFilename);
+				CMXImporter cmx = new CMXImporter(fp, xmlFilename, this);
+				cmx.run();
+				// readCMXFile(in.getAbsolutePath());
 				// parseMusicXMLFile();
 			}
 			// 2行目：構造ファイル名取得

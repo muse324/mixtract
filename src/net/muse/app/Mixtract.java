@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -91,9 +90,8 @@ public class Mixtract extends MuseApp {
 	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
 	 */
-	@Override public MXTuneData createTuneData(File in, File out)
-			throws IOException, InvalidMidiDataException {
-		return new MXTuneData(in, out);
+	@Override public void createTuneData(File in, File out) throws IOException {
+		setData(new MXTuneData(in, out));
 	}
 
 	/*
@@ -119,7 +117,7 @@ public class Mixtract extends MuseApp {
 		deleteGroup(g.getChildLatterGroup());
 
 		InfoViewer d = null;
-		for (InfoViewer pv : getInfoViewList()) {
+		for (InfoViewer pv : butler().getInfoViewList()) {
 			if (pv.group() == g) {
 				d = pv;
 				break;
@@ -127,7 +125,7 @@ public class Mixtract extends MuseApp {
 		}
 		if (d != null) {
 			d.setVisible(false);
-			getInfoViewList().remove(d);
+			butler().getInfoViewList().remove(d);
 		}
 	}
 

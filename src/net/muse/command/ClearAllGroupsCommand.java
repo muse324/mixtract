@@ -15,7 +15,7 @@ public class ClearAllGroupsCommand extends MuseAppCommand {
 		target().getMiscGroup().clear();
 		for (Group g : target().getRootGroup())
 			target().deleteGroupFromData(g);
-		main().notifySetTarget();
+		main().butler().notifySetTarget(target());
 	}
 
 }

@@ -201,7 +201,7 @@ public class MXMainFrame extends MainFrame {
 								java.awt.event.ActionEvent e) {
 							assert data instanceof MXTuneData;
 							main.analyzeStructure((MXTuneData) data, null);
-							main.notifySetTarget();
+							main.butler().notifySetTarget(data);
 						}
 					});
 		}

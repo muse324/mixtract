@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.JFrame;
 
 import net.muse.data.Group;
@@ -42,7 +41,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 
 	/** 楽曲情報 */
 	private TuneData data;
-	private ArrayList<InfoViewer> infoViewList;
 	/** 階層的フレーズ構造の分析履歴 */
 	protected final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
 
@@ -60,10 +58,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		setPropertyFilename(PROPERTY_FILENAME);
 		loadConfig();
 		setOption(args);
-	}
-
-	public void addInfoViewerList(InfoViewer pv) {
-		getInfoViewList().add(pv);
 	}
 
 	/**
@@ -119,13 +113,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public String getOutputFileName() {
 		return outputFileName;
-	}
-
-	public ArrayList<InfoViewer> getInfoViewList() {
-		if (infoViewList == null) {
-			infoViewList = new ArrayList<InfoViewer>();
-		}
-		return infoViewList;
 	}
 
 	/**
@@ -199,15 +186,8 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		}
 	}
 
-	public void notifySetTarget() {
-		getInfoViewList().clear();
-		for (TuneDataListener l : butler().getTdListenerList()) {
-			l.setTarget(data());
-		}
-	}
-
 	public void notifyShowCurrentX(boolean showCurrentX, int x) {
-		for (CanvasMouseListener v : getInfoViewList()) {
+		for (CanvasMouseListener v : butler().getInfoViewList()) {
 			v.setShowCurrentX(showCurrentX, x);
 		}
 	}
@@ -339,9 +319,8 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		mtd.invoke(null, new Object[] { this.getFrame() });
 	}
 
-	public TuneData createTuneData(File in, File out) throws IOException,
-			InvalidMidiDataException {
-		return new TuneData(in, out);
+	public void createTuneData(File in, File out) throws IOException {
+		setData(new TuneData(in, out));
 	}
 
 	public File getOutputDirectory() {
@@ -365,7 +344,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	/**
 	 * @param data セットする data
 	 */
-	public void setData(TuneData data) {
+	protected void setData(TuneData data) {
 		this.data = data;
 	}
 
@@ -406,7 +385,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		deleteGroup(g.child());
 
 		InfoViewer d = null;
-		for (InfoViewer pv : getInfoViewList()) {
+		for (InfoViewer pv : butler().getInfoViewList()) {
 			if (pv.group() == g) {
 				d = pv;
 				break;
@@ -414,7 +393,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		}
 		if (d != null) {
 			d.setVisible(false);
-			getInfoViewList().remove(d);
+			butler().getInfoViewList().remove(d);
 		}
 	}
 

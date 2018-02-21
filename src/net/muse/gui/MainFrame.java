@@ -27,7 +27,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -317,7 +316,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	public void startPlaying(String smfFilename) {
-		main.butler().printConsole("playing...");
+		butler().printConsole("playing...");
 		playButton.setEnabled(false);
 		stopButton.setEnabled(true);
 		bpmValue.setEnabled(false);
@@ -325,7 +324,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	public void stopPlaying() {
-		main.butler().printConsole("Sound stopped.");
+		butler().printConsole("Sound stopped.");
 		playButton.setEnabled(true);
 		stopButton.setEnabled(false);
 		bpmValue.setEnabled(true);
@@ -702,8 +701,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 										.getName() + Mixtract
 												.getProjectFileExtension()));
 					}
-				} catch (HeadlessException | IOException
-						| InvalidMidiDataException e1) {
+				} catch (HeadlessException | IOException e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -751,12 +749,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					int res = fc.showOpenDialog(null);
 					if (res == JFileChooser.APPROVE_OPTION) {
-						main.butler().readfile(fc.getSelectedFile(), main
+						butler().readfile(fc.getSelectedFile(), main
 								.getProjectDirectory());
 					}
 				} catch (IOException e1) {
-					e1.printStackTrace();
-				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
 			}

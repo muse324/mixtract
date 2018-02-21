@@ -133,7 +133,7 @@ public class GroupLabel extends JLabel {
 					return;
 				}
 				if (e.getClickCount() == 2) {
-					for (InfoViewer r : _main.getInfoViewList()) {
+					for (InfoViewer r : butler().getInfoViewList()) {
 						if (r.contains(gr)) {
 							r.setVisible(true);
 							return;
@@ -254,9 +254,6 @@ public class GroupLabel extends JLabel {
 	}
 
 	protected Concierge butler() {
-		if (butler == null) {
-			butler = new Concierge(group);
-		}
 		return butler;
 	}
 
@@ -443,7 +440,7 @@ public class GroupLabel extends JLabel {
 	private void showInfoViewer(MuseApp app, Group gr) {
 		InfoViewer pv = InfoViewer.create(app, gr);
 		pv.setTitle(gr.name());
-		app.addInfoViewerList(pv);
+		app.butler().addInfoViewerList(pv);
 		pv.pack();
 		pv.setVisible(true);
 		pv.preset();
