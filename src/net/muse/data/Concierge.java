@@ -29,14 +29,14 @@ public class Concierge extends MuseObject {
 		this.obj = obj;
 	}
 
-	public void printConsole(String string) {
-		printConsole(string, null);
-	}
-
-	public void printConsole(String string, File in) {
+	public void printConsole(String string, Object... args) {
 		log().println(string);
-		if (in != null)
-			log().printf("Open file: %s", in);
+		for (Object obj : args) {
+			if (obj instanceof File) {
+				log().printf("Open file: %s", (File) obj);
+				return;
+			}
+		}
 	}
 
 	public void readfile() throws IOException, InvalidMidiDataException {
