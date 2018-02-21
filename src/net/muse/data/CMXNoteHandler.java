@@ -37,8 +37,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				if (currentPartNumber == 1 && measure.number() == 1) {
 					setDefaultBPM(currentBPM);
 				}
-				testPrintln("-----measure " + measure.number() + ", tempo="
-						+ currentBPM);
+				butler().printConsole("-----measure " + measure.number()
+						+ ", tempo=" + currentBPM);
 			} catch (NullPointerException e) {
 			}
 		}
@@ -61,7 +61,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		currentDefaultVelocity = (int) (getDefaultVelocity()
 				* data().volume[ch]);
 		cur = null;
-		testPrintln("=====part " + currentPartNumber);
+		butler().printConsole(String.format("=====part P%d¥n",
+				currentPartNumber));
 	}
 
 	/*
@@ -122,7 +123,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				.getBPM().get(0), beat, note.velocity());
 		nd.setKeyMode(keyMode, fifths);
 		nd.setMeasureNumber(currentMeasureNumber);
-		testPrintln(nd.toString());
+		butler().printConsole(nd.toString());
 		if (cur == null) {
 			// 冒頭音
 			cur = nd;
@@ -170,7 +171,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	private void createGroup() {
 		Group g = createGroup(data().getPartwiseNotelist().get(partIndex),
 				partIndex + 1, GroupType.NOTE);
-//		data().getPartwiseNotelist().add(g.getBeginNote());
+		// data().getPartwiseNotelist().add(g.getBeginNote());
 		if (primaryGrouplist == null) {
 			primaryGrouplist = g;
 			data().setGrouplist(partIndex, g);
@@ -226,7 +227,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				.getBPM().get(0), currentDefaultVelocity);
 		nd.setKeyMode(keyMode, fifths);
 		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
-		testPrintln(nd.toString());
+		butler().printConsole(nd.toString());
 		if (cur == null) {
 			// 冒頭音
 			cur = nd;

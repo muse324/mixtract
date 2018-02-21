@@ -1,6 +1,8 @@
 package net.muse.app;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +12,13 @@ import javax.swing.JFrame;
 
 import net.muse.data.Group;
 import net.muse.data.TuneData;
-import net.muse.gui.*;
+import net.muse.gui.CanvasMouseListener;
+import net.muse.gui.GroupLabel;
+import net.muse.gui.InfoViewer;
+import net.muse.gui.MainFrame;
+import net.muse.gui.MuseGUIObject;
+import net.muse.gui.TuneDataListener;
 import net.muse.misc.OptionType;
-import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
@@ -31,9 +37,9 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	private String outputFileName;
 
 	/** ファイル格納場所 */
-	private File musicXMLDir;
+	public File musicXMLDir;
 	private File outputDir;
-	private File projectDir;
+	public File projectDir;
 
 	/** 楽曲情報 */
 	private TuneData data;
@@ -246,33 +252,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		}
 	}
 
-	/**
-	 * @param in
-	 * @param out
-	 * @throws IOException
-	 * @throws InvalidMidiDataException
-	 */
-	public void readfile(File in, File out) throws IOException,
-			InvalidMidiDataException {
-		setData(createTuneData(in, out));
-		log.printf("Open file: %s", in);
-		if (isShowGUI()) {
-			MixtractCommand.setTarget(data());
-			notifySetTarget();
-		}
-	}
-
-	public void readfile(String inputFilename, String outFilename)
-			throws IOException, InvalidMidiDataException {
-		File in = new File(inputFilename);
-		if (!in.exists())
-			in = new File(projectDir, inputFilename);
-		if (!in.exists())
-			in = new File(musicXMLDir, inputFilename);
-		File out = new File(getOutputDirectory(), outFilename);
-		readfile(in, out);
-	}
-
 	public void setAppImageFile(String imgFileName) {
 		appImageFile = imgFileName;
 	}
@@ -366,12 +345,12 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		mtd.invoke(null, new Object[] { this.getFrame() });
 	}
 
-	protected TuneData createTuneData(File in, File out) throws IOException,
+	public TuneData createTuneData(File in, File out) throws IOException,
 			InvalidMidiDataException {
 		return new TuneData(in, out);
 	}
 
-	protected File getOutputDirectory() {
+	public File getOutputDirectory() {
 		return outputDir;
 	}
 
@@ -392,7 +371,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	/**
 	 * @param data セットする data
 	 */
-	protected void setData(TuneData data) {
+	public void setData(TuneData data) {
 		this.data = data;
 	}
 
@@ -402,17 +381,17 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.MuseObject#setOption(java.lang.String)
 	 */
-	@Override
-	protected void setOption(String str) throws IllegalArgumentException {
+	@Override protected void setOption(String str)
+			throws IllegalArgumentException {
 		try {
 			super.setOption(str);
 		} catch (IllegalArgumentException e) {
 			try {
 				OptionType _cmd = OptionType.valueOf(str);
 				_cmd.exe(this, config.getProperty(str));
-				log.println("done.");
+				log().println("done.");
 			} catch (IllegalArgumentException e1) {
-				log.println("skipped.");
+				log().println("skipped.");
 			}
 		}
 	}

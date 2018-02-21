@@ -78,7 +78,6 @@ public class MXTuneData extends TuneData {
 	 */
 	public static final void setDurationOffset(int val) {
 		MXTuneData.durationOffset = val;
-		log.printf("duration offset = %d\n", val);
 		System.out.printf("duration offset = %d\n", val);
 	}
 
@@ -328,7 +327,7 @@ public class MXTuneData extends TuneData {
 	}
 
 	@Override protected void readOriginalFile() throws IOException {
-		testPrintln("reading original format...");
+		butler().printConsole("reading original format...");
 		File[] files = in().listFiles();
 		for (int i = 0; i < files.length; i++) {
 			String strfile = STRUCTURE_FILENAME;
@@ -646,7 +645,7 @@ public class MXTuneData extends TuneData {
 		// }
 		setTempoListEndtime(nd.offset(),false);
 		getTempralNotelist().add(nd);
-		log.println(nd);
+		log().println(nd);
 		readNoteData(idx, in, in.readLine(), nd, chord);
 	}
 

@@ -83,8 +83,7 @@ public class GroupLabel extends JLabel {
 		}
 	}
 
-	@Override
-	public String toString() {
+	@Override public String toString() {
 		return group.name();
 	}
 
@@ -109,8 +108,7 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
 			 * (java.awt.event.MouseEvent)
 			 */
-			@Override
-			public void createPopupMenu(MouseEvent e) {
+			@Override public void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				MixtractCommand.SET_TYPE_CRESC.setGroup(self());
 				MixtractCommand.SET_TYPE_DIM.setGroup(self());
@@ -124,8 +122,7 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseClicked(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseClicked(MouseEvent e) {
+			@Override public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
 				Group gr = self().group();
 				if (gr == null) {
@@ -150,8 +147,7 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseDragged(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseDragged(MouseEvent e) {
+			@Override public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
 				if (!frame().getGroupingPanel().isGroupEditable()) {
 					self().moveLabelVertical(e, getMousePoint(), self()
@@ -169,8 +165,7 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseEntered(MouseEvent e) {
+			@Override public void mouseEntered(MouseEvent e) {
 				super.mouseEntered(e);
 				self().setMouseOver(true);
 			}
@@ -181,8 +176,7 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseExited(MouseEvent e) {
+			@Override public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
 				self().setMouseOver(false);
 				self().setEditMode(getMousePoint());
@@ -194,8 +188,7 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
 			 * .event.MouseEvent)
 			 */
-			@Override
-			public void mouseMoved(MouseEvent e) {
+			@Override public void mouseMoved(MouseEvent e) {
 				super.mouseMoved(e);
 				setEditMode(getMousePoint());
 				repaint();
@@ -207,8 +200,7 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mousePressed(MouseEvent e) {
+			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				_main.notifySelectGroup(self(), true);
 				if (self().getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
@@ -223,8 +215,7 @@ public class GroupLabel extends JLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseReleased(MouseEvent e) {
+			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				frame().getGroupingPanel().setGroupEditable(false);
 				frame().getGroupingPanel().setCursor(new Cursor(
@@ -237,8 +228,7 @@ public class GroupLabel extends JLabel {
 			 * (非 Javadoc)
 			 * @see net.muse.gui.MouseActionListener#owner()
 			 */
-			@Override
-			public GroupLabel self() {
+			@Override public GroupLabel self() {
 				return (GroupLabel) super.self();
 			}
 
@@ -252,8 +242,7 @@ public class GroupLabel extends JLabel {
 			 * @see
 			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
 			 */
-			@Override
-			public void keyPressed(KeyEvent e) {
+			@Override public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_BACK_SPACE:
 					GUIUtil.printConsole("delete group");

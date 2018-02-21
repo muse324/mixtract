@@ -225,7 +225,7 @@ public abstract class MIDIController extends MuseObject implements
 			}
 		}
 		System.out.println(str);
-		log.println(str);
+		log().println(str);
 	}
 
 	/**

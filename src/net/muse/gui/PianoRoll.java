@@ -33,6 +33,7 @@ import net.muse.data.Harmony;
 import net.muse.data.KeyMode;
 import net.muse.data.NoteData;
 import net.muse.data.TuneData;
+import net.muse.misc.MuseObject;
 import net.muse.misc.Util;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.command.SetChordCommand;
@@ -475,7 +476,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		addKeyListener(keyActions);
 	}
 
-	protected KeyActionListener createKeyActions(MuseApp app) {
+	protected KeyActionListener createKeyActions(MuseObject app) {
 		return new KeyActionListener(app, this) {
 
 			/*

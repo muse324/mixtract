@@ -324,10 +324,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 			}
 		}
 		// log print
-		Mixtract.log.println("---- noteScheduleEventList: ");
+		log().println("---- noteScheduleEventList: ");
 		for (NoteScheduleEvent ev : noteScheduleEventList)
-			Mixtract.log.println(ev.toString());
-		Mixtract.log.println("----------------------------");
+			log().println(ev.toString());
+		log().println("----------------------------");
 	}
 
 	/**
@@ -492,13 +492,13 @@ public class TuneData extends MuseObject implements TuneDataController {
 				"Project path confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
 		switch (res) {
 		case JOptionPane.CANCEL_OPTION:
-			testPrintln("cancelled.");
+			butler().printConsole("cancelled.");
 			return;
 		case JOptionPane.NO_OPTION:
 			JFileChooser fc = new JFileChooser(outputFile.getParentFile());
 			res = fc.showSaveDialog(null);
 			if (res == JOptionPane.NO_OPTION) {
-				testPrintln("cancelled.");
+				butler().printConsole("cancelled.");
 				return;
 			}
 			// 出力ファイル(orフォルダ)を作成する
@@ -563,7 +563,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	}
 
 	protected void readCMXFile(String xmlFilename) throws IOException {
-		testPrintln("import CMX file");
+		butler().printConsole("import CMX file");
 		CMXFileWrapper cmx = CMXController.readfile(xmlFilename);
 		if (cmx instanceof DeviationInstanceWrapper) {
 			dev = ((DeviationInstanceWrapper) cmx);
@@ -578,7 +578,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	}
 
 	protected void readOriginalFile() throws IOException {
-		testPrintln("reading original format...(dummy)");
+		butler().printConsole("reading original format...(dummy)");
 	}
 
 	protected void setGrouplist(int partIndex, Group rootGroup) {

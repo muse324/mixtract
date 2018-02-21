@@ -37,8 +37,7 @@ public class Mixtract extends MuseApp {
 		try {
 			final Mixtract main = new Mixtract(args);
 			if (!isShowGUI()) {
-				main.readfile(main.getInputFileName(), main
-						.getOutputFileName());
+				main.butler().readfile();
 				return;
 			}
 			// MacOSXでのJava実行環境用のシステムプロパティの設定.
@@ -93,7 +92,7 @@ public class Mixtract extends MuseApp {
 	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
 	 */
-	@Override protected MXTuneData createTuneData(File in, File out)
+	@Override public MXTuneData createTuneData(File in, File out)
 			throws IOException, InvalidMidiDataException {
 		return new MXTuneData(in, out);
 	}

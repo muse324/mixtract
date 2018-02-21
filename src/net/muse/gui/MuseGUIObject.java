@@ -19,8 +19,7 @@ public abstract class MuseGUIObject<F extends JFrame> extends MuseObject {
 	private static boolean showGUI = true;
 	private F frame;
 	private JWindow splashScreen;
-
-	public MuseGUIObject() {
+	protected MuseGUIObject() {
 		super();
 	}
 

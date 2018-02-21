@@ -318,7 +318,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	public void startPlaying(String smfFilename) {
-		Mixtract.log.println("playing...");
+		main.butler().printConsole("playing...");
 		playButton.setEnabled(false);
 		stopButton.setEnabled(true);
 		bpmValue.setEnabled(false);
@@ -326,7 +326,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	public void stopPlaying() {
-		Mixtract.log.println("Sound stopped.");
+		main.butler().printConsole("Sound stopped.");
 		playButton.setEnabled(true);
 		stopButton.setEnabled(false);
 		bpmValue.setEnabled(true);
@@ -698,7 +698,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 							.getMusicXMLDirectory()) : new JFileChooser();
 					int res = fc.showOpenDialog(null);
 					if (res == JFileChooser.APPROVE_OPTION) {
-						main.readfile(fc.getSelectedFile(), new File(main
+						main.butler.readfile(fc.getSelectedFile(), new File(main
 								.getProjectDirectory(), fc.getSelectedFile()
 										.getName() + Mixtract
 												.getProjectFileExtension()));
@@ -754,7 +754,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					int res = fc.showOpenDialog(null);
 					if (res == JFileChooser.APPROVE_OPTION) {
-						main.readfile(fc.getSelectedFile(), main
+						main.butler.readfile(fc.getSelectedFile(), main
 								.getProjectDirectory());
 					}
 				} catch (IOException e1) {
@@ -968,14 +968,14 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		p.add(getStructurePane(), java.awt.BorderLayout.NORTH);
 		p.add(getPianorollPane(), BorderLayout.CENTER); // Generated
 		p.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
-//		getStructurePane().getHorizontalScrollBar().setModel(getTimeScrollBar()
-//				.getModel());
-//		getPianorollPane().getHorizontalScrollBar().setModel(getTimeScrollBar()
-//				.getModel());
-//		getDynamicsView().getHorizontalScrollBar().setModel(getTimeScrollBar()
-//				.getModel());
-//		getTempoView().getHorizontalScrollBar().setModel(getTimeScrollBar()
-//				.getModel());
+		// getStructurePane().getHorizontalScrollBar().setModel(getTimeScrollBar()
+		// .getModel());
+		// getPianorollPane().getHorizontalScrollBar().setModel(getTimeScrollBar()
+		// .getModel());
+		// getDynamicsView().getHorizontalScrollBar().setModel(getTimeScrollBar()
+		// .getModel());
+		// getTempoView().getHorizontalScrollBar().setModel(getTimeScrollBar()
+		// .getModel());
 		return p;
 	}
 
