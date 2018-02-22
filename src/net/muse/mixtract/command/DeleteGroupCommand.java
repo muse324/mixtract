@@ -14,8 +14,8 @@ final class DeleteGroupCommand extends MuseAppCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override
-	public void execute() {
-		if (_target != null) {
+	public void run() {
+		if (target() != null) {
 			GroupLabel sel = frame().getGroupingPanel().getSelectedGroup();
 			// _target.deleteGUIGroup(_selectedObjects.getGroupLabel());
 			// _selectedObjects.clearAll();

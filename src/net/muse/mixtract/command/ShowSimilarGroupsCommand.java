@@ -11,7 +11,7 @@ final class ShowSimilarGroupsCommand extends
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		// final SimilarGroupPanel panel = new SimilarGroupPanel(_main,
 		// _target,
 		// getSelectedObjects().getGroupLabel().getGroup(), _mainFrame

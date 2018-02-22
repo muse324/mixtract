@@ -11,7 +11,7 @@ public class ClearAllGroupsCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		target().getMiscGroup().clear();
 		for (Group g : target().getRootGroup())
 			target().deleteGroupFromData(g);

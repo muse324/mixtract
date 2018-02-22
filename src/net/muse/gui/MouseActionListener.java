@@ -1,9 +1,17 @@
 package net.muse.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Container;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.swing.*;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
@@ -44,8 +52,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 */
 	public void actionPerformed(ActionEvent e) {
 		final Command c = MixtractCommand.create(e.getActionCommand());
-		c.execute();
-	}
+		c.run();}
 
 	public Rectangle getMouseBox() {
 		return mouseBox;

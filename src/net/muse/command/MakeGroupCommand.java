@@ -26,7 +26,7 @@ public class MakeGroupCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		LinkedList<NoteLabel> notes = frame().getPianoroll()
 				.getSelectedNoteLabels();
 		NoteLabel begin = notes.get(0);

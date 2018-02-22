@@ -14,7 +14,7 @@ class OpenRuleMapCommand extends OpenMusicXMLCommand {
 	 * jp.crestmuse.mixtract.gui.MixtractCommand.OpenMusicXMLCommand#execute
 	 * ()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		// try {
 		// final File fp = new File(openFileDialog());
 		// GUIUtil.printConsole(fp.getName() + " is reading...");

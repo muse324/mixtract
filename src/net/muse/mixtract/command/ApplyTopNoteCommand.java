@@ -12,7 +12,7 @@ final class ApplyTopNoteCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		frame().getGroupingPanel()
 				.transferExpressionOfMostSimilarGroup();
 	}

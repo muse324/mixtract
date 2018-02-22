@@ -26,11 +26,11 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 			"更新");
 	public static final MuseAppCommand PRINT_ALLGROUPS = new PrintAllGroupsCommand(
 			"Print all groups", "全グループを出力");
-	protected static TuneData _target;
-	protected static MuseApp _main;
-	protected static MainFrame _mainFrame;
+	@Deprecated protected static TuneData _target;
+	@Deprecated protected static MuseApp _main;
+	@Deprecated protected static MainFrame _mainFrame;
 
-	public static TuneData target() {
+	@Deprecated public static TuneData target() {
 		return _target;
 	}
 
@@ -43,7 +43,7 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	/**
 	 * @return _main
 	 */
-	public static MuseApp main() {
+	@Deprecated public static MuseApp main() {
 		return _main;
 	}
 
@@ -57,7 +57,7 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	/**
 	 * @return _mainFrame
 	 */
-	public static MainFrame frame() {
+	@Deprecated public static MainFrame frame() {
 		return _mainFrame;
 	}
 
@@ -66,6 +66,10 @@ public class MuseAppCommand extends Command implements GroupCommandInterface {
 	 */
 	public static void setMainFrame(MainFrame _mainFrame) {
 		MuseAppCommand._mainFrame = _mainFrame;
+	}
+
+	protected static void setTarget(TuneData _target) {
+		MuseAppCommand._target = _target;
 	}
 
 }

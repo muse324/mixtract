@@ -12,7 +12,7 @@ public class SetDiminuendoCommand extends SetCrescendoCommand {
 	 * (非 Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.command.SetCrescendoCommand#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		getGroupLabel().group().setType(GroupType.DIM);
 		getGroupLabel().setTypeShape(GroupType.DIM);
 		getGroupLabel().repaint();

@@ -82,11 +82,11 @@ public class Concierge extends MuseObject implements TuneDataController {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_G:
 			printConsole("make group");
-			MixtractCommand.MAKE_GROUP.execute();
+			MixtractCommand.MAKE_GROUP.run();
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 			printConsole("delete group");
-			MixtractCommand.DELETE_GROUP.execute();
+			MixtractCommand.DELETE_GROUP.run();
 			break;
 		default:
 			printConsole(e.getSource().getClass().getName()

@@ -22,8 +22,8 @@ final class PrintAllGroupsCommand extends MuseAppCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override
-	public void execute() {
-		assert _target != null;
-		_target.printAllGroups();
+	public void run() {
+		assert target() != null;
+		target().printAllGroups();
 	}
 }

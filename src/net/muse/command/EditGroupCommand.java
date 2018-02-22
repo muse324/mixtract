@@ -10,6 +10,6 @@ final class EditGroupCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {}
+	@Override public void run() {}
 
 }

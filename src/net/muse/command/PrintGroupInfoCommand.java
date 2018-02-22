@@ -34,7 +34,7 @@ public class PrintGroupInfoCommand extends MuseAppCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override
-	public void execute() {
+	public void run() {
 		if (group == null) {
 			group = frame().getGroupingPanel().getSelectedGroup().group();
 		}

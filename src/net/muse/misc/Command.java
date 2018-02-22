@@ -8,7 +8,7 @@ import net.muse.sound.MIDIController;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2008/04/21
  */
-public abstract class Command extends MuseObject {
+public abstract class Command extends MuseObject implements Runnable {
 
 	public static final Command CLOSE = new CloseCommand("Close", "閉じる");
 	public static final Command NULL = new NullCommand("Null");
@@ -64,7 +64,10 @@ public abstract class Command extends MuseObject {
 		_language = Language.create(val);
 	}
 
-	public void execute() {
+	/* (非 Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {
 		throw new UnsupportedOperationException(name());
 	}
 
@@ -96,7 +99,7 @@ public abstract class Command extends MuseObject {
 		 * (non-Javadoc)
 		 * @see net.muse.misc.Command#execute()
 		 */
-		@Override public void execute() {
+		@Override public void run() {
 			System.out.println("do nothing");
 		}
 
@@ -147,7 +150,7 @@ public abstract class Command extends MuseObject {
 		 * (非 Javadoc)
 		 * @see net.muse.misc.Command#execute()
 		 */
-		@Override public void execute() {
+		@Override public void run() {
 			synthe.notifyStartPlaying(filename);
 		}
 
@@ -174,7 +177,7 @@ public abstract class Command extends MuseObject {
 		 * (non-Javadoc)
 		 * @see net.muse.misc.Command#execute()
 		 */
-		@Override public void execute() {
+		@Override public void run() {
 			System.exit(1);
 		}
 	}
@@ -243,7 +246,7 @@ public abstract class Command extends MuseObject {
 		 * (非 Javadoc)
 		 * @see net.muse.misc.Command#execute()
 		 */
-		@Override public void execute() {
+		@Override public void run() {
 			synthe.notifyStopPlaying();
 		}
 

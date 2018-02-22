@@ -12,7 +12,7 @@ class AnalyzeStructureCommand extends MuseAppCommand {
 	 * (非 Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		// _selectedObjects.clearAll();
 		// _target.getGroupArrayList();
 		// _mainFrame.getPianoroll().repaint();

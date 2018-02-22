@@ -5,13 +5,20 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import net.muse.app.Mixtract;
-import net.muse.command.*;
+import net.muse.command.ChangePartCommand;
+import net.muse.command.ClearAllGroupsCommand;
+import net.muse.command.MuseAppCommand;
+import net.muse.command.PrintGroupInfoCommand;
+import net.muse.command.SetKeyCommand;
+import net.muse.command.SetKeyModeCommand;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
 import net.muse.misc.Command;
-import net.muse.mixtract.data.*;
+import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.MXGroupAnalyzer;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXGroupLabel;
 import net.muse.mixtract.gui.MXMainFrame;
 
@@ -146,11 +153,11 @@ public class MixtractCommand extends MuseAppCommand {
 	/**
 	 * @return
 	 */
-	public static final MXTuneData target() {
+	@Deprecated public static final MXTuneData target() {
 		return (MXTuneData) _target;
 	}
 
-	public static MXMainFrame frame() {
+	@Deprecated public static MXMainFrame frame() {
 		return (MXMainFrame) _mainFrame;
 	}
 
@@ -158,7 +165,7 @@ public class MixtractCommand extends MuseAppCommand {
 	 * @return
 	 */
 	public static boolean hasTarget() {
-		return _target != null;
+		return target() != null;
 	}
 
 	/**
@@ -175,13 +182,12 @@ public class MixtractCommand extends MuseAppCommand {
 	/**
 	 * @deprecated
 	 */
-	@Deprecated
-	public static void writefileCurveParameters() {
-		if (_target == null)
+	@Deprecated public static void writefileCurveParameters() {
+		if (target() == null)
 			return;
 		try {
-			assert _target instanceof MXTuneData;
-			((MXTuneData) _target).writeTempfileCurveParameters();
+			assert target() instanceof MXTuneData;
+			((MXTuneData) target()).writeTempfileCurveParameters();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -220,13 +226,11 @@ public class MixtractCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#toString()
 	 */
-	@Override
-	public String toString() {
+	@Override public String toString() {
 		return super.toString();
 	}
 
-	@Override
-	public void setGroup(GroupLabel groupLabel) {
+	@Override public void setGroup(GroupLabel groupLabel) {
 		setGroupLabel(groupLabel);
 		assert groupLabel instanceof MXGroupLabel;
 		_group = (MXGroup) groupLabel.group();

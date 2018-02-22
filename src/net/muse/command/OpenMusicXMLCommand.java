@@ -16,7 +16,7 @@ public class OpenMusicXMLCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		// setTarget(openFileDialog());
 		// _mainFrame.setNewData(true);
 		// if (_target != null) {

@@ -36,7 +36,7 @@ public class SetKeyModeCommand extends MuseAppCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override
-	public void execute() {
+	public void run() {
 		for (Component c : frame().getPianoroll().getComponents()) {
 			NoteLabel l = (NoteLabel) c;
 			if (l.isSelected()) {
