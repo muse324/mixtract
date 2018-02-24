@@ -13,7 +13,6 @@ import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.InfoViewer;
 import net.muse.gui.MainFrame;
-import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
@@ -46,7 +45,7 @@ public class Mixtract extends MuseApp {
 			// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-			MixtractCommand.setMain(main);
+//			MixtractCommand.setMain(main);
 
 			/* sprash screen */
 			main.createSplashScreen(main.getAppImageFile());

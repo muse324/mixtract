@@ -8,7 +8,6 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import net.muse.command.MuseAppCommand;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.MainFrame;
@@ -43,7 +42,7 @@ public class TestApp extends MuseApp {
 
 			// 各種実行コマンド制御を行うMuseAppComandクラスにメインクラスを登録します。
 			// アプリケーション独自の制御コマンドを作成するにはMuseAppCommandクラスのサブクラスを定義してください。
-			MuseAppCommand.setMain(main);
+			// MuseAppCommand.setMain(main);
 
 			/* sprash screen */
 			main.createSplashScreen(main.getAppImageFile());

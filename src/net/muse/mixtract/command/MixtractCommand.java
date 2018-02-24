@@ -12,7 +12,6 @@ import net.muse.command.SetKeyModeCommand;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
-import net.muse.gui.MainFrame;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
@@ -28,7 +27,7 @@ public class MixtractCommand extends MuseAppCommand {
 	private MXGroupLabel _groupLabel;
 	private MXGroup _group;
 
-	public static Mixtract main() {
+	public Mixtract main() {
 		return (Mixtract) _main;
 	}
 
@@ -125,13 +124,13 @@ public class MixtractCommand extends MuseAppCommand {
 	 * @param main
 	 * @return
 	 */
-	public static MuseAppCommand create(MainFrame mainFrame, String cmd) {
+	public static MuseAppCommand create(String cmd) {
 		for (final MuseAppCommand x : commandLists) {
 			if (cmd.equals(x.name())) {
 				return x;
 			}
 		}
-		return MuseAppCommand.create(mainFrame, cmd);
+		return MuseAppCommand.create(cmd);
 	}
 
 	/**

@@ -50,8 +50,9 @@ public class MouseActionListener extends MouseAdapter implements
 	 * )
 	 */
 	public void actionPerformed(ActionEvent e) {
-		final MuseAppCommand c = MixtractCommand.create(frame(), e
-				.getActionCommand());
+		final MuseAppCommand c = MixtractCommand.create(e.getActionCommand());
+		c.setFrame(frame());
+		c.setMain(_main);
 		c.run();
 	}
 
