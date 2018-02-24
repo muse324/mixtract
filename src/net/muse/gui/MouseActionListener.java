@@ -15,7 +15,6 @@ import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
-import net.muse.misc.Command;
 import net.muse.mixtract.command.MixtractCommand;
 
 public class MouseActionListener extends MouseAdapter implements
@@ -51,7 +50,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * )
 	 */
 	public void actionPerformed(ActionEvent e) {
-		final Command c = MixtractCommand.create(e.getActionCommand());
+		final MuseAppCommand c = MixtractCommand.create(e.getActionCommand());
 		c.run();}
 
 	public Rectangle getMouseBox() {
@@ -240,7 +239,7 @@ public class MouseActionListener extends MouseAdapter implements
 		this.endPoint = endPoint;
 	}
 
-	protected JMenuItem addMenuItem(Command command, boolean enabled) {
+	protected JMenuItem addMenuItem(MuseAppCommand command, boolean enabled) {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem();
 		menuItem.setText(command.getText());

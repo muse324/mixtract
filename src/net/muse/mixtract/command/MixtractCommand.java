@@ -15,7 +15,6 @@ import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
-import net.muse.misc.Command;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
@@ -114,26 +113,26 @@ public class MixtractCommand extends MuseAppCommand {
 	private static MXGroupAnalyzer ana;
 	private static MuseAppCommand commandLists[] = new MuseAppCommand[] {
 			ANALYZE_STRUCTURE, DELETE_GROUP, DETAIL, EDIT_GROUP, MOUSE_DISPLAY,
-			OPEN_RULEPANEL, PRINT_ALL_SIMILAR_GROUPS,
-			MuseAppCommand.PRINT_ALLGROUPS, PRINT_SIMILAR_GROUPS,
-			PRINT_SUBGROUPS, OPEN_MUSICXML, OPEN_RULEMAP, REDRAW, REFRESH,
-			SELECT_GROUP, SHOW_SIMILAR_GROUPS, APPLY_PULSES_CHOPINS,
-			APPLY_PULSES_MOZARTS, APPLY_TOPONOTE, MAKE_GROUP, CHANGE_PART,
-			EXPR_LINE_DISPLAY, EXPR_VIEW_DISPLAY, RESET_PRAMETERS, SEARCH,
-			RENDER, ANALYZE_GTTM_STRUCTURE, APPLY_HIERARCHICAL_PARAMS,
-			OPEN_STRUCTURE_DATA, CLEAR_ALLGROUPS, SET_CHORD, SET_KEY,
-			SET_TYPE_CRESC, SET_TYPE_DIM, PRINT_GROUP_INFO };
+			OPEN_RULEPANEL, PRINT_ALL_SIMILAR_GROUPS, PRINT_ALLGROUPS,
+			PRINT_SIMILAR_GROUPS, PRINT_SUBGROUPS, OPEN_MUSICXML, OPEN_RULEMAP,
+			REDRAW, REFRESH, SELECT_GROUP, SHOW_SIMILAR_GROUPS,
+			APPLY_PULSES_CHOPINS, APPLY_PULSES_MOZARTS, APPLY_TOPONOTE,
+			MAKE_GROUP, CHANGE_PART, EXPR_LINE_DISPLAY, EXPR_VIEW_DISPLAY,
+			RESET_PRAMETERS, SEARCH, RENDER, ANALYZE_GTTM_STRUCTURE,
+			APPLY_HIERARCHICAL_PARAMS, OPEN_STRUCTURE_DATA, CLEAR_ALLGROUPS,
+			SET_CHORD, SET_KEY, SET_TYPE_CRESC, SET_TYPE_DIM,
+			PRINT_GROUP_INFO };
 
 	/**
 	 * @param main
 	 * @return
 	 */
-	public static Command create(String cmd) {
-		for (final Command x : commandLists) {
+	public static MuseAppCommand create(String cmd) {
+		for (final MuseAppCommand x : commandLists) {
 			if (cmd.equals(x.name()))
 				return x;
 		}
-		return Command.create(cmd);
+		return MuseAppCommand.create(cmd);
 	}
 
 	/**
