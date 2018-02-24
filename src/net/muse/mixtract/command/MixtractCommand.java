@@ -2,8 +2,6 @@ package net.muse.mixtract.command;
 
 import java.io.IOException;
 
-import javax.swing.JFrame;
-
 import net.muse.app.Mixtract;
 import net.muse.command.ChangePartCommand;
 import net.muse.command.ClearAllGroupsCommand;
@@ -19,7 +17,6 @@ import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXGroupLabel;
-import net.muse.mixtract.gui.MXMainFrame;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -124,22 +121,17 @@ public class MixtractCommand extends MuseAppCommand {
 			PRINT_GROUP_INFO };
 
 	/**
+	 * @param mainFrame
 	 * @param main
 	 * @return
 	 */
-	public static MuseAppCommand create(String cmd) {
+	public static MuseAppCommand create(MainFrame mainFrame, String cmd) {
 		for (final MuseAppCommand x : commandLists) {
-			if (cmd.equals(x.name()))
+			if (cmd.equals(x.name())) {
 				return x;
+			}
 		}
-		return MuseAppCommand.create(cmd);
-	}
-
-	/**
-	 * @return the _mainFrame
-	 */
-	public static final MXMainFrame getMainFrame() {
-		return (MXMainFrame) frame();
+		return MuseAppCommand.create(mainFrame, cmd);
 	}
 
 	/**
@@ -156,22 +148,11 @@ public class MixtractCommand extends MuseAppCommand {
 		return (MXTuneData) _target;
 	}
 
-	@Deprecated public static MXMainFrame frame() {
-		return (MXMainFrame) _mainFrame;
-	}
-
 	/**
 	 * @return
 	 */
 	public static boolean hasTarget() {
 		return target() != null;
-	}
-
-	/**
-	 * @param _frame
-	 */
-	public static void setJFrame(JFrame owner) {
-		setMainFrame((MainFrame) owner);
 	}
 
 	public static void setTarget(TuneData target) {

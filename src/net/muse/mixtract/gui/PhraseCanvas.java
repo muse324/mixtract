@@ -161,8 +161,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		repaint();
 	}
 
-	@Override
-	public void paintComponent(Graphics g) {
+	@Override public void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		super.paintComponent(g);
 
@@ -194,8 +193,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 	 * (非 Javadoc)
 	 * @see java.awt.Component#repaint()
 	 */
-	@Override
-	public void repaint() {
+	@Override public void repaint() {
 		setAxises();
 		super.repaint();
 	}
@@ -401,9 +399,9 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 							cv.calculate(getHalfRangeY());
 						}
 					});
-			if (MixtractCommand.getMainFrame() != null) {
-				calcRealTempoTimeItem.addActionListener(MixtractCommand
-						.getMainFrame());
+			if (main.getFrame() != null) {
+				calcRealTempoTimeItem.addActionListener((MainFrame) main
+						.getFrame());
 				calcRealTempoTimeItem.setActionCommand(paramApplicator.name());
 				calcRealTempoTimeItem.setText(paramApplicator.getText());
 			}
@@ -648,8 +646,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		 * MouseEvent
 		 * )
 		 */
-		@Override
-		public void mouseDragged(MouseEvent e) {
+		@Override public void mouseDragged(MouseEvent e) {
 			if (group != null)
 				super.mouseDragged(e);
 			if (SwingUtilities.isLeftMouseButton(e)) {
@@ -667,8 +664,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		 * java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent
 		 * )
 		 */
-		@Override
-		public void mouseReleased(MouseEvent e) {
+		@Override public void mouseReleased(MouseEvent e) {
 			super.mouseReleased(e);
 			// ポップアップメニューを表示する
 			if (SwingUtilities.isRightMouseButton(e)) {
@@ -695,8 +691,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		/**
 		 * @param e
 		 */
-		@Override
-		protected void createPopupMenu(MouseEvent e) {
+		@Override protected void createPopupMenu(MouseEvent e) {
 			JPopupMenu popup = new JPopupMenu();
 			popup.add(getResetStandardValueItem()); // Generated
 			popup.add(getAlignLinearMenuItem());

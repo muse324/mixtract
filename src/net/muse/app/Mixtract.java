@@ -58,7 +58,6 @@ public class Mixtract extends MuseApp {
 
 			// create main frame
 			main.createNewFrame();
-			MixtractCommand.setJFrame(main.getFrame());
 			main.getFrame().setDefaultCloseOperation(
 					WindowConstants.EXIT_ON_CLOSE);
 			JFrame.setDefaultLookAndFeelDecorated(false);

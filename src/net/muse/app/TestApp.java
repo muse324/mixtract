@@ -55,7 +55,6 @@ public class TestApp extends MuseApp {
 
 			// create main frame
 			main.createNewFrame();
-			MuseAppCommand.setMainFrame((MainFrame) main.getFrame());
 			main.getFrame().setDefaultCloseOperation(
 					WindowConstants.EXIT_ON_CLOSE);
 			JFrame.setDefaultLookAndFeelDecorated(false);

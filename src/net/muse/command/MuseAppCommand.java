@@ -49,7 +49,7 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 			NULL };
 	@Deprecated protected static MuseApp _main;
 
-	@Deprecated protected static MainFrame _mainFrame;
+	protected MainFrame _frame;
 
 	@Deprecated protected static TuneData _target;
 
@@ -61,19 +61,26 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	 * @param cmd
 	 * @return
 	 */
-	public static MuseAppCommand create(String cmd) {
+	public static MuseAppCommand create(MainFrame mainFrame, String cmd) {
 		for (MuseAppCommand c : commandlist) {
-			if (cmd.equals(c.name()))
+			if (cmd.equals(c.name())) {
+				c.setFrame(mainFrame);
 				return c;
+			}
 		}
 		return NULL;
+	}
+
+	private void setFrame(MainFrame mainFrame) {
+		if (_frame == null || _frame != mainFrame)
+			_frame = mainFrame;
 	}
 
 	/**
 	 * @return _mainFrame
 	 */
-	@Deprecated public static MainFrame frame() {
-		return _mainFrame;
+	public MainFrame frame() {
+		return _frame;
 	}
 
 	/**
@@ -101,13 +108,6 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 		_main = main;
 	}
 
-	/**
-	 * @param _mainFrame セットする _mainFrame
-	 */
-	public static void setMainFrame(MainFrame _mainFrame) {
-		MuseAppCommand._mainFrame = _mainFrame;
-	}
-
 	@Deprecated public static TuneData target() {
 		return _target;
 	}
@@ -130,7 +130,6 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	private MuseAppCommand() {
 		super();
 		names = new String[Language.getLanguageList().length];
-
 	}
 
 	public final String getText() {
@@ -138,7 +137,7 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	}
 
 	public final String name() {
-		return getClass().getSimpleName().replace("Command", "");
+		return getClass().getSimpleName().replace("MuseAppCommand", "");
 	}
 
 	/*

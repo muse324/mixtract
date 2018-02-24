@@ -50,8 +50,10 @@ public class MouseActionListener extends MouseAdapter implements
 	 * )
 	 */
 	public void actionPerformed(ActionEvent e) {
-		final MuseAppCommand c = MixtractCommand.create(e.getActionCommand());
-		c.run();}
+		final MuseAppCommand c = MixtractCommand.create(frame(), e
+				.getActionCommand());
+		c.run();
+	}
 
 	public Rectangle getMouseBox() {
 		return mouseBox;
@@ -79,8 +81,7 @@ public class MouseActionListener extends MouseAdapter implements
 		return shiftKeyPressed;
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
+	@Override public void mouseClicked(MouseEvent e) {
 		if (SwingUtilities.isRightMouseButton(e))
 			createPopupMenu(e);
 		// Group gr = _main.getSelectedObjects().getGroup();
@@ -109,8 +110,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mouseDragged(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mouseDragged(MouseEvent e) {
+	@Override public void mouseDragged(MouseEvent e) {
 		setMousePoint(e);
 		setEndPoint(e.getPoint());
 		setDragging(true);
@@ -123,8 +123,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mouseEntered(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mouseEntered(MouseEvent e) {
+	@Override public void mouseEntered(MouseEvent e) {
 		setMousePoint(e);
 		_self.repaint();
 	}
@@ -133,8 +132,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * (非 Javadoc)
 	 * @see java.awt.event.MouseAdapter#mouseExited(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mouseExited(MouseEvent e) {
+	@Override public void mouseExited(MouseEvent e) {
 		setMousePoint(e);
 		_self.repaint();
 	}
@@ -143,8 +141,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * (非 Javadoc)
 	 * @see java.awt.event.MouseAdapter#mouseMoved(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mouseMoved(MouseEvent e) {
+	@Override public void mouseMoved(MouseEvent e) {
 		setMousePoint(e);
 		_self.repaint();
 	}
@@ -154,8 +151,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mousePressed(MouseEvent e) {
+	@Override public void mousePressed(MouseEvent e) {
 		setShiftKeyPressed(e.isShiftDown());
 		setMousePressed(true);
 		setMousePoint(e);
@@ -170,8 +166,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mouseReleased(MouseEvent e) {
+	@Override public void mouseReleased(MouseEvent e) {
 		setShiftKeyPressed(e.isShiftDown());
 		setMousePressed(false);
 		setMousePoint(e);
