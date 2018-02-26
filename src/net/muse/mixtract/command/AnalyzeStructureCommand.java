@@ -1,8 +1,6 @@
 package net.muse.mixtract.command;
 
-import net.muse.command.MuseAppCommand;
-
-class AnalyzeStructureCommand extends MuseAppCommand {
+class AnalyzeStructureCommand extends MixtractCommand {
 
 	protected AnalyzeStructureCommand(String... lang) {
 		super(lang);

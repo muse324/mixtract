@@ -1,8 +1,6 @@
 package net.muse.mixtract.command;
 
-import net.muse.command.OpenMusicXMLCommand;
-
-class OpenRuleMapCommand extends OpenMusicXMLCommand {
+class OpenRuleMapCommand extends MixtractCommand {
 
 	protected OpenRuleMapCommand(String... lang) {
 		super(lang);

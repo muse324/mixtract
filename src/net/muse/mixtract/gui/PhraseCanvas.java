@@ -109,7 +109,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		initialize();
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		paramApplicator = MixtractCommand.APPLY_HIERARCHICAL_PARAMS; // @jve:decl-index=0:
+		paramApplicator = (ApplyHierarchicalParamsCommand) MixtractCommand.APPLY_HIERARCHICAL_PARAMS; // @jve:decl-index=0:
 
 		setAxises();
 

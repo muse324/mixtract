@@ -16,8 +16,6 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	protected static MIDIController synthe;
 	private static Language _language;
 
-	public static final MuseAppCommand MAKE_GROUP = new MakeGroupCommand(
-			"Make a group", "グループを作成");
 	private static final MuseAppCommand CLOSE = new CloseCommand("Close",
 			"閉じる");
 	private static final MuseAppCommand NULL = new NullCommand("Null");
@@ -35,19 +33,15 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	private static final MuseAppCommand STOP = new StopCommand("Stop", "停止");
 	protected static final MuseAppCommand DETAIL = new DetailCommand(
 			"Show parameters", "詳細表示");
-	protected static final MuseAppCommand EDIT_GROUP = new EditGroupCommand(
-			"Edit group", "グループを編集");
 	protected static final MuseAppCommand OPEN_MUSICXML = new OpenMusicXMLCommand(
 			"Open MusicXML...", "MusicXMLを開く...");
 	protected static final MuseAppCommand REFRESH = new RefreshCommand(
 			"Refresh", "更新");
 	protected static final MuseAppCommand RENDER = new RenderCommand("Render",
 			"生成");
-	protected static final MuseAppCommand SELECT_GROUP = new SelectGroupCommand(
-			"Select group", "グループを選択");
 	private static final MuseAppCommand[] commandlist = new MuseAppCommand[] {
-			CLOSE, PAUSE, PLAY, QUIT, SAVE, SAVEAS, SETENV, SHOW_CONSOLE, STOP,
-			NULL };
+			CLOSE, DETAIL, REFRESH, RENDER, OPEN_MUSICXML, PAUSE, PLAY, QUIT,
+			SAVE, SAVEAS, SETENV, SHOW_CONSOLE, STOP, NULL };
 
 	public static void setLanguage(String val) {
 		_language = Language.create(val);

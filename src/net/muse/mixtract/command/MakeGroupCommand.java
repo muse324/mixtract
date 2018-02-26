@@ -1,4 +1,4 @@
-package net.muse.command;
+package net.muse.mixtract.command;
 
 import java.util.LinkedList;
 
@@ -16,7 +16,7 @@ import net.muse.mixtract.gui.MXNoteLabel;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/03/12
  */
-public class MakeGroupCommand extends MuseAppCommand {
+public class MakeGroupCommand extends MixtractCommand {
 
 	public MakeGroupCommand(String... lang) {
 		super(lang);
