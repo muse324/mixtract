@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
 import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommandType;
 
 public class MouseActionListener extends MouseAdapter implements
 		ActionListener {
@@ -256,24 +257,25 @@ public class MouseActionListener extends MouseAdapter implements
 		// group attributes
 		JMenu attrMenu = new JMenu("Set articulation");
 		attrMenu.setEnabled(hasSelectedGroup);
-		attrMenu.add(addMenuItem(MixtractCommand.SET_TYPE_CRESC,
+		attrMenu.add(addMenuItem(MixtractCommandType.SET_TYPE_CRESC.self(),
 				hasSelectedGroup));
-		attrMenu.add(addMenuItem(MixtractCommand.SET_TYPE_DIM,
+		attrMenu.add(addMenuItem(MixtractCommandType.SET_TYPE_DIM.self(),
 				hasSelectedGroup));
 		popup.add(attrMenu);
 		popup.addSeparator();
 
-		popup.add(addMenuItem(MixtractCommand.PRINT_GROUP_INFO,
+		popup.add(addMenuItem(MixtractCommandType.PRINT_GROUP_INFO.self(),
 				hasSelectedGroup));
-		popup.add(addMenuItem(MixtractCommand.DELETE_GROUP, hasSelectedGroup));
-		popup.add(addMenuItem(MixtractCommand.CLEAR_ALLGROUPS, _main
+		popup.add(addMenuItem(MixtractCommandType.DELETE_GROUP.self(),
+				hasSelectedGroup));
+		popup.add(addMenuItem(MixtractCommandType.CLEAR_ALLGROUPS.self(), _main
 				.hasTarget()));
 		popup.addSeparator();
-		popup.add(addMenuItem(MixtractCommand.PRINT_ALLGROUPS, _main
+		popup.add(addMenuItem(MixtractCommandType.PRINT_ALLGROUPS.self(), _main
 				.hasTarget()));
 		// popup.add(addMenuItem(MixtractCommand.PRINT_SUBGROUPS,
 		// _main.hasTarget()));
-		popup.add(addMenuItem(MixtractCommand.MOUSE_DISPLAY, true));
+		popup.add(addMenuItem(MixtractCommandType.MOUSE_DISPLAY.self(), true));
 	}
 
 	// private enum OwnerContainer {

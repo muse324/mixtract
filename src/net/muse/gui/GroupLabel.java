@@ -19,7 +19,7 @@ import net.muse.app.MuseApp;
 import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
-import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommandType;
 
 public class GroupLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
@@ -113,8 +113,8 @@ public class GroupLabel extends JLabel {
 			 */
 			@Override public void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
-				MixtractCommand.SET_TYPE_CRESC.setGroup(self());
-				MixtractCommand.SET_TYPE_DIM.setGroup(self());
+				MixtractCommandType.SET_TYPE_CRESC.self().setGroup(self());
+				MixtractCommandType.SET_TYPE_DIM.self().setGroup(self());
 				addMenuItemOnGroupingPanel();
 				getPopup().show((Component) e.getSource(), e.getX(), e.getY());
 			}
@@ -364,7 +364,7 @@ public class GroupLabel extends JLabel {
 
 	protected void setSelectedOption(boolean isSelected) {
 		setFocusable(isSelected);
-		MixtractCommand.DELETE_GROUP.setGroup(isSelected ? this : null);
+		MixtractCommandType.DELETE_GROUP.self().setGroup(isSelected ? this : null);
 		if (isSelected)
 			requestFocus();
 	}

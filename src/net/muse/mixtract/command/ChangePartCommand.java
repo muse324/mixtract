@@ -19,8 +19,8 @@ public class ChangePartCommand extends MixtractCommand {
 			partSize = size;
 	}
 
-	public ChangePartCommand(String string) {
-		super(string);
+	public ChangePartCommand(String... lang) {
+		super(lang);
 	}
 
 	/*

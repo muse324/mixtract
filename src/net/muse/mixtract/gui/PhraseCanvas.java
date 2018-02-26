@@ -29,6 +29,7 @@ import net.muse.gui.RoundedCornerButton;
 import net.muse.gui.RoundedCornerButton.RoundButton;
 import net.muse.mixtract.command.ApplyHierarchicalParamsCommand;
 import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurve;
@@ -109,7 +110,8 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		initialize();
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		paramApplicator = (ApplyHierarchicalParamsCommand) MixtractCommand.APPLY_HIERARCHICAL_PARAMS; // @jve:decl-index=0:
+		paramApplicator = (ApplyHierarchicalParamsCommand) MixtractCommand
+				.create(MixtractCommandType.APPLY_HIERARCHICAL_PARAMS);
 
 		setAxises();
 

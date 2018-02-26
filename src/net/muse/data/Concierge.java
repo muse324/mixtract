@@ -23,6 +23,7 @@ import net.muse.gui.MainFrame;
 import net.muse.gui.TuneDataListener;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommandType;
 
 /**
  * @author hashida
@@ -85,11 +86,11 @@ public class Concierge extends MuseObject implements TuneDataController {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_G:
 			printConsole("make group");
-			c = MixtractCommand.create(MixtractCommand.MAKE_GROUP.name());
+			c = MixtractCommand.create(MixtractCommandType.MAKE_GROUP);
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 			printConsole("delete group");
-			c = MixtractCommand.create(MixtractCommand.DELETE_GROUP.name());
+			c = MixtractCommand.create(MixtractCommandType.DELETE_GROUP);
 			break;
 		default:
 			printConsole(e.getSource().getClass().getName()
