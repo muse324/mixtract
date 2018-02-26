@@ -1,33 +1,33 @@
-package net.muse.command;
+package net.muse.mixtract.command;
 
 import java.awt.Component;
 
+import net.muse.data.KeyMode;
 import net.muse.gui.NoteLabel;
-import net.muse.misc.Util;
 
 /**
- * <h1>SetKeyCommand</h1>
+ * <h1>SetKeyModeCommand</h1>
  *
  * @author Mitsuyo Hashida & Haruhiro Katayose <address>CrestMuse Project,
  *         JST</address> <address>http://www.m-use.net/</address>
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/12/21
  */
-public class SetKeyCommand extends MuseAppCommand {
+public class SetKeyModeCommand extends MixtractCommand {
 
-	private static String newKey = null;
+	private static KeyMode newMode;
 
 	/**
-	 * @param text
+	 * @param valueOf
 	 */
-	public static void setSelectedKey(String text) {
-		newKey = text;
+	public static void setSelectedKeyMode(KeyMode mode) {
+		newMode = mode;
 	}
 
 	/**
 	 * @param lang
 	 */
-	public SetKeyCommand(String... lang) {
+	public SetKeyModeCommand(String... lang) {
 		super(lang);
 	}
 
@@ -39,7 +39,7 @@ public class SetKeyCommand extends MuseAppCommand {
 		for (Component c : frame().getPianoroll().getComponents()) {
 			NoteLabel l = (NoteLabel) c;
 			if (l.isSelected()) {
-				l.getScoreNote().setFifths(Util.valueOfFifths(newKey));
+				l.getScoreNote().setKeyMode(newMode, l.getScoreNote().fifths());
 				l.repaint();
 			}
 		}

@@ -16,8 +16,10 @@ import javax.sound.midi.InvalidMidiDataException;
 import eu.medsea.mimeutil.MimeType;
 import eu.medsea.mimeutil.MimeUtil;
 import net.muse.app.MuseApp;
+import net.muse.command.MuseAppCommand;
 import net.muse.gui.GUIUtil;
 import net.muse.gui.InfoViewer;
+import net.muse.gui.MainFrame;
 import net.muse.gui.TuneDataListener;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.MixtractCommand;
@@ -79,18 +81,25 @@ public class Concierge extends MuseObject implements TuneDataController {
 	}
 
 	public void keyPressed(KeyEvent e) {
+		MuseAppCommand c = null;
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_G:
 			printConsole("make group");
-			MixtractCommand.MAKE_GROUP.run();
+			c = MixtractCommand.create(MixtractCommand.MAKE_GROUP.name());
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 			printConsole("delete group");
-			MixtractCommand.DELETE_GROUP.run();
+			c = MixtractCommand.create(MixtractCommand.DELETE_GROUP.name());
 			break;
 		default:
 			printConsole(e.getSource().getClass().getName()
 					+ ": key pressed: ");
+		}
+		if (c != null) {
+			c.setFrame((MainFrame) app().getFrame());
+			c.setMain(app());
+			c.setTarget(app().data());
+			c.run();
 		}
 	}
 
@@ -139,7 +148,6 @@ public class Concierge extends MuseObject implements TuneDataController {
 		readfile(in, app.data());
 		printConsole(String.format("Open file: %s", in));
 		if (MuseApp.isShowGUI()) {
-			MixtractCommand.setTarget(app.data());
 			notifySetTarget(app.data());
 		}
 	}

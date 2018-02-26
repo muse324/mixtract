@@ -1,14 +1,8 @@
 package net.muse.mixtract.command;
 
-import java.io.IOException;
-
 import net.muse.app.Mixtract;
-import net.muse.command.ChangePartCommand;
-import net.muse.command.ClearAllGroupsCommand;
+import net.muse.command.DeleteGroupCommand;
 import net.muse.command.MuseAppCommand;
-import net.muse.command.PrintGroupInfoCommand;
-import net.muse.command.SetKeyCommand;
-import net.muse.command.SetKeyModeCommand;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
@@ -26,6 +20,8 @@ import net.muse.mixtract.gui.MXGroupLabel;
 public class MixtractCommand extends MuseAppCommand {
 	private MXGroupLabel _groupLabel;
 	private MXGroup _group;
+	protected static final Group _selectedObjects = null;
+	private static MXGroupAnalyzer ana;
 
 	public Mixtract main() {
 		return (Mixtract) _main;
@@ -67,6 +63,8 @@ public class MixtractCommand extends MuseAppCommand {
 
 	public static final MuseAppCommand OPEN_RULEMAP = new OpenRuleMapCommand(
 			"Open Rulemap", "ルールマップを開く");
+	public static final MixtractCommand PRINT_ALLGROUPS = new PrintAllGroupsCommand(
+			"Print all groups", "全グループを出力");
 
 	public static final MixtractCommand PRINT_ALL_SIMILAR_GROUPS = new PrintAllSimilarGroupsCommand(
 			"Show all similar groups", "Show all similar groups");
@@ -91,33 +89,28 @@ public class MixtractCommand extends MuseAppCommand {
 	public static final MuseAppCommand ANALYZE_GTTM_STRUCTURE = new GTTMAnalysisCommand(
 			"GTTMAnalysis");
 
-	protected static final Group _selectedObjects = null;
-
 	public static final MixtractCommand OPEN_STRUCTURE_DATA = new OpenStructureDataCommand(
 			"Read structure data", "構造データ読込");
-	public static final MuseAppCommand SET_KEY = new SetKeyCommand("Change key",
-			"調を変更");
-	public static final MuseAppCommand SET_KEYMODE = new SetKeyModeCommand(
+	public static final MixtractCommand SET_KEY = new SetKeyCommand(
+			"Change key", "調を変更");
+	public static final MixtractCommand SET_KEYMODE = new SetKeyModeCommand(
 			"Change key mode", "長調/短調");
 	public static final MixtractCommand SET_TYPE_CRESC = new SetCrescendoCommand(
 			"< (cresc.)");
 	public static final MixtractCommand SET_TYPE_DIM = new SetDiminuendoCommand(
 			"> (dim.)");
-	public static final MuseAppCommand PRINT_GROUP_INFO = new PrintGroupInfoCommand(
+	public static final MixtractCommand PRINT_GROUP_INFO = new PrintGroupInfoCommand(
 			"Print group info.", "グループ情報");
-
-	private static MXGroupAnalyzer ana;
 	private static MuseAppCommand commandLists[] = new MuseAppCommand[] {
 			ANALYZE_STRUCTURE, DELETE_GROUP, DETAIL, EDIT_GROUP, MOUSE_DISPLAY,
 			OPEN_RULEPANEL, PRINT_ALL_SIMILAR_GROUPS, PRINT_ALLGROUPS,
 			PRINT_SIMILAR_GROUPS, PRINT_SUBGROUPS, OPEN_MUSICXML, OPEN_RULEMAP,
-			REDRAW, REFRESH, SELECT_GROUP, SHOW_SIMILAR_GROUPS,
-			APPLY_PULSES_CHOPINS, APPLY_PULSES_MOZARTS, APPLY_TOPONOTE,
-			MAKE_GROUP, CHANGE_PART, EXPR_LINE_DISPLAY, EXPR_VIEW_DISPLAY,
-			RESET_PRAMETERS, SEARCH, RENDER, ANALYZE_GTTM_STRUCTURE,
-			APPLY_HIERARCHICAL_PARAMS, OPEN_STRUCTURE_DATA, CLEAR_ALLGROUPS,
-			SET_CHORD, SET_KEY, SET_TYPE_CRESC, SET_TYPE_DIM,
-			PRINT_GROUP_INFO };
+			REFRESH, SELECT_GROUP, SHOW_SIMILAR_GROUPS, APPLY_PULSES_CHOPINS,
+			APPLY_PULSES_MOZARTS, APPLY_TOPONOTE, MAKE_GROUP, CHANGE_PART,
+			EXPR_LINE_DISPLAY, EXPR_VIEW_DISPLAY, RESET_PRAMETERS, SEARCH,
+			RENDER, ANALYZE_GTTM_STRUCTURE, APPLY_HIERARCHICAL_PARAMS,
+			OPEN_STRUCTURE_DATA, CLEAR_ALLGROUPS, SET_CHORD, SET_KEY,
+			SET_TYPE_CRESC, SET_TYPE_DIM, PRINT_GROUP_INFO };
 
 	/**
 	 * @param mainFrame
@@ -140,60 +133,19 @@ public class MixtractCommand extends MuseAppCommand {
 		return _selectedObjects;
 	}
 
-	/**
-	 * @return
-	 */
-	@Deprecated public static final MXTuneData target() {
+	public final MXTuneData target() {
 		return (MXTuneData) _target;
 	}
 
 	/**
 	 * @return
 	 */
-	public static boolean hasTarget() {
-		return target() != null;
+	public boolean hasTarget() {
+		return _target != null;
 	}
 
-	public static void setTarget(TuneData target) {
+	public void setTarget(TuneData target) {
 		_target = target;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	@Deprecated public static void writefileCurveParameters() {
-		if (target() == null)
-			return;
-		try {
-			assert target() instanceof MXTuneData;
-			((MXTuneData) target()).writeTempfileCurveParameters();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// try {
-		// _target.writefile();
-		// } catch (IOException e1) {
-		// e1.printStackTrace();
-		// }
-
-		// if (_target.getGroupNoteList(0) == null)
-		// return;
-		// if (isAssertion()) {
-		// assert _target != null : "target is null";
-		// assert _target.getGroupNoteList(0) != null : "root group is null";
-		// }
-		// try {
-		// PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
-		// "paramtest.dat")));
-		// out.println(_target.getInputFilename());
-		// if (_target.getGroupNoteList(0) != null)
-		// writeCurveParam(_target.getGroupList(0), out);
-		// out.close();
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
 	}
 
 	protected MixtractCommand(String... lang) {

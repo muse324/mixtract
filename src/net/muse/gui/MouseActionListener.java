@@ -269,7 +269,7 @@ public class MouseActionListener extends MouseAdapter implements
 		popup.add(addMenuItem(MixtractCommand.CLEAR_ALLGROUPS, _main
 				.hasTarget()));
 		popup.addSeparator();
-		popup.add(addMenuItem(MuseAppCommand.PRINT_ALLGROUPS, _main
+		popup.add(addMenuItem(MixtractCommand.PRINT_ALLGROUPS, _main
 				.hasTarget()));
 		// popup.add(addMenuItem(MixtractCommand.PRINT_SUBGROUPS,
 		// _main.hasTarget()));
@@ -377,9 +377,6 @@ public class MouseActionListener extends MouseAdapter implements
 
 	protected void createPopupMenu(MouseEvent e) {
 		popup = new JPopupMenu();
-		// if (src instanceof GroupLabel) {
-		// _self.notifySelectGroup(_self, (GroupLabel) src, true);
-		// }
 	}
 
 	/**

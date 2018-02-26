@@ -24,10 +24,7 @@ import javax.xml.transform.TransformerException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.app.MuseApp;
-import net.muse.command.ChangePartCommand;
 import net.muse.command.MuseAppCommand;
-import net.muse.command.SetKeyCommand;
-import net.muse.command.SetKeyModeCommand;
 import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.Harmony;
@@ -36,8 +33,11 @@ import net.muse.data.NoteData;
 import net.muse.data.TuneData;
 import net.muse.misc.MuseObject;
 import net.muse.misc.Util;
+import net.muse.mixtract.command.ChangePartCommand;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.command.SetChordCommand;
+import net.muse.mixtract.command.SetKeyCommand;
+import net.muse.mixtract.command.SetKeyModeCommand;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.ViewerMode;
 

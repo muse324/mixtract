@@ -1,8 +1,8 @@
-package net.muse.command;
+package net.muse.mixtract.command;
 
 import net.muse.data.Group;
 
-public class ClearAllGroupsCommand extends MuseAppCommand {
+public class ClearAllGroupsCommand extends MixtractCommand {
 	public ClearAllGroupsCommand(String... lang) {
 		super(lang);
 	}

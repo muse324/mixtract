@@ -159,22 +159,6 @@ public class MakeGroupCommand extends MuseAppCommand {
 	 */
 	private Group createGroup(NoteLabel begin, NoteLabel end, GroupType type) {
 		Group g = null;
-		// // 巻き戻し
-		// while (begin.prev() != null && begin.prev().isSelected())
-		// begin = begin.prev();
-		// // ユーザグループを構成する音符列を生成する
-		// NoteData groupNoteList = createUserGroupNotelist(begin, end, null,
-		// null,
-		// false);
-		// while (groupNoteList.hasParent())
-		// groupNoteList = groupNoteList.parent();
-		// NoteData endNote = groupNoteList;
-		// // 巻き戻し
-		// while (groupNoteList.hasPrevious()) {
-		// groupNoteList = groupNoteList.previous();
-		// if (groupNoteList.equals(begin.getGroupNote()))
-		// break;
-		// }
 		if (begin instanceof MXNoteLabel)
 			g = new MXGroup(begin.getScoreNote(), end.getScoreNote(), type);
 		else
