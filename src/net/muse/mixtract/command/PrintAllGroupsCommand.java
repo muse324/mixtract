@@ -22,7 +22,7 @@ final class PrintAllGroupsCommand extends MixtractCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override public void run() {
-		assert target() != null;
-		target().printAllGroups();
+		assert data() != null;
+		data().printAllGroups();
 	}
 }

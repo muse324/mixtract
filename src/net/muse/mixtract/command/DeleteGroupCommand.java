@@ -13,7 +13,7 @@ public final class DeleteGroupCommand extends MixtractCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override public void run() {
-		if (target() == null)
+		if (data() == null)
 			return;
 
 		GroupLabel sel = frame().getGroupingPanel().getSelectedGroup();

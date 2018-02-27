@@ -18,9 +18,9 @@ public final class ApplyHierarchicalParamsCommand extends MixtractCommand {
 	 */
 	@Override
 	public void run() {
-		target().calculateExpressionParameters();
+		data().calculateExpressionParameters();
 		if (cv != null) {
-			cv.apply(target(), group);
+			cv.apply(data(), group);
 		}
 		main().notifyChangeHierarchicalParameters(cv.getType());
 		frame().getTempoView().repaint();

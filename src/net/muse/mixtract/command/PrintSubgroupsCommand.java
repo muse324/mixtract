@@ -14,7 +14,7 @@ final class PrintSubgroupsCommand extends MixtractCommand {
 
 	@Override
 	public void run() {
-		if (getSelectedObjects() instanceof GroupLabel) {
+		if (target() instanceof GroupLabel) {
 			final GroupLabel gl = getGroupLabel();
 			butler().printConsole(gl.getName() + "'s subgroups:");
 			printSubGroups(gl.group());

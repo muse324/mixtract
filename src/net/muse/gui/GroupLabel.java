@@ -2,6 +2,7 @@ package net.muse.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -16,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
-import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.mixtract.command.MixtractCommandType;
@@ -38,8 +38,6 @@ public class GroupLabel extends JLabel {
 	private KeyActionListener keyActions;
 	private boolean startEdit;
 	private boolean endEdit;
-
-	private Concierge butler;
 
 	protected GroupLabel() {
 		super();
@@ -102,140 +100,144 @@ public class GroupLabel extends JLabel {
 		return child;
 	}
 
-	void setController(MuseApp main) {
-		mouseActions = new MouseActionListener(main, this) {
+	protected class GLMouseActionListener extends MouseActionListener {
 
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
-			 * (java.awt.event.MouseEvent)
-			 */
-			@Override public void createPopupMenu(MouseEvent e) {
-				super.createPopupMenu(e);
-				MixtractCommandType.SET_TYPE_CRESC.self().setGroup(self());
-				MixtractCommandType.SET_TYPE_DIM.self().setGroup(self());
-				addMenuItemOnGroupingPanel();
-				getPopup().show((Component) e.getSource(), e.getX(), e.getY());
+		public GLMouseActionListener(MuseApp main, Container owner) {
+			super(main, owner);
+		}
+
+		/*
+		 * (非 Javadoc)
+		 * @see
+		 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
+		 * (java.awt.event.MouseEvent)
+		 */
+		@Override public void createPopupMenu(MouseEvent e) {
+			super.createPopupMenu(e);
+			MixtractCommandType.SET_TYPE_CRESC.self().setGroup(self());
+			MixtractCommandType.SET_TYPE_DIM.self().setGroup(self());
+			addMenuItemOnGroupingPanel();
+			getPopup().show((Component) e.getSource(), e.getX(), e.getY());
+		}
+
+		/*
+		 * (非 Javadoc)
+		 * @see
+		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseClicked(java
+		 * .awt.event.MouseEvent)
+		 */
+		@Override public void mouseClicked(MouseEvent e) {
+			super.mouseClicked(e);
+			Group gr = self().group();
+			if (gr == null) {
+				self().repaint();
+				return;
 			}
-
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseClicked(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-				Group gr = self().group();
-				if (gr == null) {
-					self().repaint();
-					return;
-				}
-				if (e.getClickCount() == 2) {
-					for (InfoViewer r : butler().getInfoViewList()) {
-						if (r.contains(gr)) {
-							r.setVisible(true);
-							return;
-						}
+			if (e.getClickCount() == 2) {
+				for (InfoViewer r : main().butler().getInfoViewList()) {
+					if (r.contains(gr)) {
+						r.setVisible(true);
+						return;
 					}
-					showInfoViewer(_main, gr);
 				}
-				repaint();
+				showInfoViewer(main(), gr);
 			}
+			repaint();
+		}
 
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseDragged(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mouseDragged(MouseEvent e) {
-				super.mouseDragged(e);
-				if (!frame().getGroupingPanel().isGroupEditable()) {
-					self().moveLabelVertical(e, getMousePoint(), self()
-							.getBounds(), isShiftKeyPressed(),
-							isMousePressed());
-				} else
-					self().moveLabel(e, getMousePoint(), isMousePressed());
-				frame().getGroupingPanel().repaint();
-				repaint();
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseDragged(java
+		 * .awt.event.MouseEvent)
+		 */
+		@Override public void mouseDragged(MouseEvent e) {
+			super.mouseDragged(e);
+			if (!frame().getGroupingPanel().isGroupEditable()) {
+				self().moveLabelVertical(e, getMousePoint(), self().getBounds(),
+						isShiftKeyPressed(), isMousePressed());
+			} else
+				self().moveLabel(e, getMousePoint(), isMousePressed());
+			frame().getGroupingPanel().repaint();
+			repaint();
+		}
+
+		/*
+		 * (非 Javadoc)
+		 * @see
+		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
+		 * .awt.event.MouseEvent)
+		 */
+		@Override public void mouseEntered(MouseEvent e) {
+			super.mouseEntered(e);
+			self().setMouseOver(true);
+		}
+
+		/*
+		 * (非 Javadoc)
+		 * @see
+		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java
+		 * .awt.event.MouseEvent)
+		 */
+		@Override public void mouseExited(MouseEvent e) {
+			super.mouseExited(e);
+			self().setMouseOver(false);
+			self().setEditMode(getMousePoint());
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
+		 * .event.MouseEvent)
+		 */
+		@Override public void mouseMoved(MouseEvent e) {
+			super.mouseMoved(e);
+			setEditMode(getMousePoint());
+			repaint();
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
+		 * .awt.event.MouseEvent)
+		 */
+		@Override public void mousePressed(MouseEvent e) {
+			super.mousePressed(e);
+			main().notifySelectGroup(self(), true);
+			if (self().getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
+				frame().getGroupingPanel().setGroupEditable(true);
 			}
+			repaint();
+		}
 
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mouseEntered(MouseEvent e) {
-				super.mouseEntered(e);
-				self().setMouseOver(true);
-			}
+		/*
+		 * (non-Javadoc)
+		 * @see
+		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
+		 * .awt.event.MouseEvent)
+		 */
+		@Override public void mouseReleased(MouseEvent e) {
+			super.mouseReleased(e);
+			frame().getGroupingPanel().setGroupEditable(false);
+			frame().getGroupingPanel().setCursor(new Cursor(
+					Cursor.DEFAULT_CURSOR));
+			frame().getPianoroll().repaint();
+			repaint();
+		}
 
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mouseExited(MouseEvent e) {
-				super.mouseExited(e);
-				self().setMouseOver(false);
-				self().setEditMode(getMousePoint());
-			}
+		/*
+		 * (非 Javadoc)
+		 * @see net.muse.gui.MouseActionListener#owner()
+		 */
+		@Override public GroupLabel self() {
+			return (GroupLabel) super.self();
+		}
+	}
 
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
-			 * .event.MouseEvent)
-			 */
-			@Override public void mouseMoved(MouseEvent e) {
-				super.mouseMoved(e);
-				setEditMode(getMousePoint());
-				repaint();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mousePressed(MouseEvent e) {
-				super.mousePressed(e);
-				_main.notifySelectGroup(self(), true);
-				if (self().getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
-					frame().getGroupingPanel().setGroupEditable(true);
-				}
-				repaint();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mouseReleased(MouseEvent e) {
-				super.mouseReleased(e);
-				frame().getGroupingPanel().setGroupEditable(false);
-				frame().getGroupingPanel().setCursor(new Cursor(
-						Cursor.DEFAULT_CURSOR));
-				frame().getPianoroll().repaint();
-				repaint();
-			}
-
-			/*
-			 * (非 Javadoc)
-			 * @see net.muse.gui.MouseActionListener#owner()
-			 */
-			@Override public GroupLabel self() {
-				return (GroupLabel) super.self();
-			}
-
-		};
+	void setController(MuseApp main) {
+		mouseActions = createMouseActionListener(main);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
 		keyActions = new KeyActionListener(main, this) {
@@ -246,15 +248,15 @@ public class GroupLabel extends JLabel {
 			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
 			 */
 			@Override public void keyPressed(KeyEvent e) {
-				butler().keyPressed(e);
+				main().butler().keyPressed(e);
 			}
 
 		};
 		addKeyListener(keyActions);
 	}
 
-	protected Concierge butler() {
-		return butler;
+	protected GLMouseActionListener createMouseActionListener(MuseApp main) {
+		return new GLMouseActionListener(main, this);
 	}
 
 	/**
@@ -364,7 +366,8 @@ public class GroupLabel extends JLabel {
 
 	protected void setSelectedOption(boolean isSelected) {
 		setFocusable(isSelected);
-		MixtractCommandType.DELETE_GROUP.self().setGroup(isSelected ? this : null);
+		MixtractCommandType.DELETE_GROUP.self().setGroup(isSelected ? this
+				: null);
 		if (isSelected)
 			requestFocus();
 	}

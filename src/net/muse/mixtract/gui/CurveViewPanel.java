@@ -114,7 +114,7 @@ public class CurveViewPanel extends PhraseCanvas {
 			@Override public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
 				if (SwingUtilities.isLeftMouseButton(e))
-					_main.notifyShowCurrentX(true, getMousePosition().x);
+					main().notifyShowCurrentX(true, getMousePosition().x);
 				repaint();
 			}
 
@@ -127,7 +127,7 @@ public class CurveViewPanel extends PhraseCanvas {
 			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (SwingUtilities.isLeftMouseButton(e))
-					_main.notifyShowCurrentX(true, getMousePosition().x);
+					main().notifyShowCurrentX(true, getMousePosition().x);
 				repaint();
 			}
 
@@ -141,7 +141,7 @@ public class CurveViewPanel extends PhraseCanvas {
 			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (SwingUtilities.isLeftMouseButton(e))
-					_main.notifyShowCurrentX(false, getMousePosition().x);
+					main().notifyShowCurrentX(false, getMousePosition().x);
 				repaint();
 			}
 

@@ -89,7 +89,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		@Override public void createPopupMenu(MouseEvent e) {
 			super.createPopupMenu(e);
 			boolean enabled = selectedNoteLabels.size() > 0;
-			getPopup().add(addMenuItem(MixtractCommandType.MAKE_GROUP.self(),
+			getPopup().add(addMenuItem(MixtractCommandType.MAKE_GROUP,
 					enabled));
 			getPopup().addSeparator();
 
@@ -206,7 +206,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				setMouseSelectBoxDraw(false);
 				selectNotes();
 				if (selectedNoteLabels.size() == 0)
-					_main.notifyDeselectGroup();
+					main().notifyDeselectGroup();
 				else {
 					setFocusable(true);
 					requestFocus();

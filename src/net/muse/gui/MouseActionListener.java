@@ -14,6 +14,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
+import net.muse.command.MuseAPpCommandAction;
 import net.muse.command.MuseAppCommand;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.command.MixtractCommandType;
@@ -23,7 +24,7 @@ public class MouseActionListener extends MouseAdapter implements
 	private static Point mousePoint;
 
 	/* 制御オブジェクト */
-	protected static MuseApp _main;
+	private final MuseApp _main;
 	private final Container _self;
 	private boolean mousePressed;
 	private boolean shiftKeyPressed;
@@ -41,7 +42,7 @@ public class MouseActionListener extends MouseAdapter implements
 		super();
 		_main = main;
 		_self = owner;
-		_frame = (MainFrame) _main.getFrame();
+		_frame = (MainFrame) main().getFrame();
 	}
 
 	/*
@@ -53,7 +54,8 @@ public class MouseActionListener extends MouseAdapter implements
 	public void actionPerformed(ActionEvent e) {
 		final MuseAppCommand c = MixtractCommand.create(e.getActionCommand());
 		c.setFrame(frame());
-		c.setMain(_main);
+		c.setMain(main());
+		c.setTarget(e.getSource());
 		c.run();
 	}
 
@@ -236,10 +238,11 @@ public class MouseActionListener extends MouseAdapter implements
 		this.endPoint = endPoint;
 	}
 
-	protected JMenuItem addMenuItem(MuseAppCommand command, boolean enabled) {
+	protected JMenuItem addMenuItem(MuseAPpCommandAction command,
+			boolean enabled) {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem();
-		menuItem.setText(command.getText());
+		menuItem.setText(command.self().getText());
 		menuItem.setActionCommand(command.name());
 		menuItem.addActionListener(this);
 		menuItem.setEnabled(enabled);
@@ -257,25 +260,25 @@ public class MouseActionListener extends MouseAdapter implements
 		// group attributes
 		JMenu attrMenu = new JMenu("Set articulation");
 		attrMenu.setEnabled(hasSelectedGroup);
-		attrMenu.add(addMenuItem(MixtractCommandType.SET_TYPE_CRESC.self(),
+		attrMenu.add(addMenuItem(MixtractCommandType.SET_TYPE_CRESC,
 				hasSelectedGroup));
-		attrMenu.add(addMenuItem(MixtractCommandType.SET_TYPE_DIM.self(),
+		attrMenu.add(addMenuItem(MixtractCommandType.SET_TYPE_DIM,
 				hasSelectedGroup));
 		popup.add(attrMenu);
 		popup.addSeparator();
 
-		popup.add(addMenuItem(MixtractCommandType.PRINT_GROUP_INFO.self(),
+		popup.add(addMenuItem(MixtractCommandType.PRINT_GROUP_INFO,
 				hasSelectedGroup));
-		popup.add(addMenuItem(MixtractCommandType.DELETE_GROUP.self(),
+		popup.add(addMenuItem(MixtractCommandType.DELETE_GROUP,
 				hasSelectedGroup));
-		popup.add(addMenuItem(MixtractCommandType.CLEAR_ALLGROUPS.self(), _main
+		popup.add(addMenuItem(MixtractCommandType.CLEAR_ALLGROUPS, main()
 				.hasTarget()));
 		popup.addSeparator();
-		popup.add(addMenuItem(MixtractCommandType.PRINT_ALLGROUPS.self(), _main
+		popup.add(addMenuItem(MixtractCommandType.PRINT_ALLGROUPS, main()
 				.hasTarget()));
 		// popup.add(addMenuItem(MixtractCommand.PRINT_SUBGROUPS,
 		// _main.hasTarget()));
-		popup.add(addMenuItem(MixtractCommandType.MOUSE_DISPLAY.self(), true));
+		popup.add(addMenuItem(MixtractCommandType.MOUSE_DISPLAY, true));
 	}
 
 	// private enum OwnerContainer {
@@ -396,9 +399,6 @@ public class MouseActionListener extends MouseAdapter implements
 		startPoint = point;
 	}
 
-	/**
-	 * @return _self
-	 */
 	public Container self() {
 		return _self;
 	}
@@ -408,6 +408,10 @@ public class MouseActionListener extends MouseAdapter implements
 	 */
 	protected MainFrame frame() {
 		return _frame;
+	}
+
+	protected MuseApp main() {
+		return _main;
 	}
 
 }

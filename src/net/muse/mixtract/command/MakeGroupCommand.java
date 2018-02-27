@@ -32,11 +32,11 @@ public class MakeGroupCommand extends MixtractCommand {
 		NoteLabel begin = notes.get(0);
 		NoteLabel end = notes.get(notes.size() - 1);
 		Group g1 = createGroup(begin, end, GroupType.USER);
-		target().addMiscGroupList(g1);
+		data().addMiscGroupList(g1);
 
 		Group g0 = null, g2 = null, parent = null;
 		// もし前後に未グループの音符があった場合，GroupType.AUTOで自動生成する
-		if (!target().getRootGroup().get(0).hasChild()) {
+		if (!data().getRootGroup().get(0).hasChild()) {
 			g0 = createAutoGroupBeforUserGroup(begin);
 			g2 = createAutoGroupAfterUserGroup(end);
 			// グループを連結する
@@ -52,7 +52,7 @@ public class MakeGroupCommand extends MixtractCommand {
 			}
 		} else {
 			// 階層グループが既存の場合、直上の親グループを探す
-			for (Group g : target().getRootGroup()) {
+			for (Group g : data().getRootGroup()) {
 				parent = searchGroup((MXGroup) g, g1.getBeginNote(), g1
 						.getEndNote());
 				if (parent != null)
@@ -62,20 +62,20 @@ public class MakeGroupCommand extends MixtractCommand {
 			if (g1.getBeginNote().equals(parent.getBeginNote())) {
 				g2 = createGroup(g1.getEndNote().next(), parent.getEndNote(),
 						GroupType.AUTO);
-				g2.setIndex(target().getUniqueGroupIndex());
+				g2.setIndex(data().getUniqueGroupIndex());
 				parent = combineGroups(null, g1, g2);
 			} else if (parent.getEndNote().equals(g1.getEndNote())) {
 				g0 = createGroup(parent.getBeginNote(), g1.getBeginNote()
 						.previous(), GroupType.AUTO);
-				g0.setIndex(target().getUniqueGroupIndex());
+				g0.setIndex(data().getUniqueGroupIndex());
 				parent = combineGroups(null, g0, g1);
 			}
 		}
-		parent.setIndex(target().getUniqueGroupIndex());
-		target().addMiscGroupList(parent);
+		parent.setIndex(data().getUniqueGroupIndex());
+		data().addMiscGroupList(parent);
 		// 階層グループとの整合性を取る
-		for (Group g : target().getRootGroup()) {
-			target().analyze(g);
+		for (Group g : data().getRootGroup()) {
+			data().analyze(g);
 		}
 		main().butler().notifySetTarget(main().data());
 	}
@@ -105,7 +105,7 @@ public class MakeGroupCommand extends MixtractCommand {
 			while (e.next() != null)
 				e = e.next();
 			g = createGroup(b, e, GroupType.AUTO);
-			target().addMiscGroupList(g);
+			data().addMiscGroupList(g);
 			main().notifyAddGroup(g);
 		}
 		return g;
@@ -119,7 +119,7 @@ public class MakeGroupCommand extends MixtractCommand {
 			while (b.prev() != null)
 				b = b.prev();
 			g0 = createGroup(b, e, GroupType.AUTO);
-			target().addMiscGroupList(g0);
+			data().addMiscGroupList(g0);
 			main().notifyAddGroup(g0);
 		}
 		return g0;
@@ -133,8 +133,8 @@ public class MakeGroupCommand extends MixtractCommand {
 				GroupType.PARENT);
 		if (p instanceof MXGroup) {
 			((MXGroup) p).setChild((MXGroup) former, (MXGroup) latter);
-			target().getMiscGroup().remove(former);
-			target().getMiscGroup().remove(latter);
+			data().getMiscGroup().remove(former);
+			data().getMiscGroup().remove(latter);
 		}
 		return p;
 	}
@@ -163,7 +163,7 @@ public class MakeGroupCommand extends MixtractCommand {
 			g = new MXGroup(begin.getScoreNote(), end.getScoreNote(), type);
 		else
 			g = new Group(begin.getScoreNote(), end.getScoreNote(), type);
-		g.setIndex(target().getUniqueGroupIndex());
+		g.setIndex(data().getUniqueGroupIndex());
 		return g;
 	}
 

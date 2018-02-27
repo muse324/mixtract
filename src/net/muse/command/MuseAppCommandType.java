@@ -1,6 +1,6 @@
 package net.muse.command;
 
-public enum MuseAppCommandType implements Runnable {
+public enum MuseAppCommandType implements Runnable, MuseAPpCommandAction {
 	CLOSE("Close", "閉じる") {
 		@Override CloseCommand create(String... lang) {
 			return (CloseCommand) (self = new CloseCommand(lang));

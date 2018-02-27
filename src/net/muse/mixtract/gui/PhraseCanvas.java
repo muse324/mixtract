@@ -682,8 +682,8 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 			// cv.calculate(getRangeY() / 2.);
 			paramApplicator.run();
 			try {
-				assert _main.data() instanceof MXTuneData;
-				((MXTuneData) _main.data()).writeTempfileCurveParameters();
+				assert main().data() instanceof MXTuneData;
+				((MXTuneData) main().data()).writeTempfileCurveParameters();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

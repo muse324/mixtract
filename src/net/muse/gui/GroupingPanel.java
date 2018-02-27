@@ -90,7 +90,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (!SwingUtilities.isRightMouseButton(e))
-					_main.notifyDeselectGroup();
+					main().notifyDeselectGroup();
 			}
 
 			/*
@@ -102,7 +102,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (selectedGroup == null)
-					_main.notifyDeselectGroup();
+					main().notifyDeselectGroup();
 				repaint();
 			}
 
