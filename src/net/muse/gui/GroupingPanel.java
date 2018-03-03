@@ -125,17 +125,6 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			/*
 			 * (非 Javadoc)
 			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
-			 * .event.MouseEvent)
-			 */
-			@Override public void mouseMoved(MouseEvent e) {
-				super.mouseMoved(e);
-				repaint();
-			}
-
-			/*
-			 * (非 Javadoc)
-			 * @see
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu(
 			 * java
 			 * .awt.event.MouseEvent)

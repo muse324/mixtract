@@ -103,16 +103,6 @@ public class NoteLabel extends GroupLabel {
 	@Override void setController(MuseApp main) {
 		mouseActions = new MouseActionListener(main, this) {
 			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mousePressed(MouseEvent e) {
-				super.mousePressed(e);
-			}
-
-			/*
 			 * (非 Javadoc)
 			 * @see
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
