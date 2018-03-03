@@ -21,7 +21,7 @@ public enum MuseAppCommandType implements Runnable, MuseAPpCommandAction {
 			return (RenderCommand) (self = new RenderCommand(lang));
 		}
 	},
-	OPEN_MUSICXML("Open MusicXML...", "MusicXMLを開く...") {
+	OPEN_MUSICXML("Import MusicXML...", "MusicXMLを開く...") {
 		@Override OpenMusicXMLCommand create(String... lang) {
 			return (OpenMusicXMLCommand) (self = new OpenMusicXMLCommand(lang));
 		}

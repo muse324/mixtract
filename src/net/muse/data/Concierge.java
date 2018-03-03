@@ -190,7 +190,10 @@ public class Concierge extends MuseObject implements TuneDataController {
 	}
 
 	protected MuseApp app() {
-		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼びs出してください";
+		if (obj instanceof MuseAppCommand)
+			return (MuseApp) (((MuseAppCommand) obj).app());
+		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼びs出してください: obj:"
+				+ obj.getClass().getSimpleName();
 		return (MuseApp) obj;
 	}
 
