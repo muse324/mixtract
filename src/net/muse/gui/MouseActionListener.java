@@ -1,32 +1,47 @@
 package net.muse.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Container;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.swing.*;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
 import net.muse.misc.Command;
 import net.muse.mixtract.command.MixtractCommand;
 
+/**
+ * MuseApp GUI システムに共通するマウスアクションを集めたものです。
+ *
+ * @author Mitsuyo Hashida / M-USE Lab.
+ */
 public class MouseActionListener extends MouseAdapter implements
 		ActionListener {
+	/* マウス座標 */
 	private static Point mousePoint;
 
 	/* 制御オブジェクト */
 	protected static MuseApp _main;
 	private final Container _self;
-	private boolean mousePressed;
-	private boolean shiftKeyPressed;
+	private final MainFrame _frame;
 	private JPopupMenu popup;
 
-	private Rectangle mouseBox;
-	private final MainFrame _frame;
-
+	/* マウスドラッグによる矩形範囲の座標 */
 	private Point startPoint = new Point(0, 0);
 	private Point endPoint = new Point(0, 0);
+	private Rectangle mouseBox;
 
+	/* マウスのステータス */
+	private boolean mousePressed;
+	private boolean shiftKeyPressed;
 	private boolean isDragging;
 
 	public MouseActionListener(MuseApp main, Container owner) {
@@ -73,28 +88,9 @@ public class MouseActionListener extends MouseAdapter implements
 		return shiftKeyPressed;
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
+	@Override public void mouseClicked(MouseEvent e) {
 		if (SwingUtilities.isRightMouseButton(e))
 			createPopupMenu(e);
-		// Group gr = _main.getSelectedObjects().getGroup();
-		// if (gr == null) {
-		// _self.repaint();
-		// return;
-		// }
-		// if (e.getClickCount() == 2) {
-		// for (PhraseViewer r : _self.getPhraseViewList(_self)) {
-		// if (r.contains(gr)) {
-		// r.setVisible(true);
-		// return;
-		// }
-		// }
-		// PhraseViewer pv = new PhraseViewer(_self.getMainFrame(_self), gr);
-		// pv.addWindowListener(_self.getRuleWindowActions(_self));
-		// _self.getPhraseViewList(_self).add(pv);
-		// pv.pack();
-		// pv.setVisible(true);
-		// }
 		_self.repaint();
 	}
 
@@ -103,8 +99,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mouseDragged(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mouseDragged(MouseEvent e) {
+	@Override public void mouseDragged(MouseEvent e) {
 		setMousePoint(e);
 		setEndPoint(e.getPoint());
 		setDragging(true);
@@ -117,8 +112,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mouseEntered(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mouseEntered(MouseEvent e) {
+	@Override public void mouseEntered(MouseEvent e) {
 		setMousePoint(e);
 		_self.repaint();
 	}
@@ -127,8 +121,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * (非 Javadoc)
 	 * @see java.awt.event.MouseAdapter#mouseExited(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mouseExited(MouseEvent e) {
+	@Override public void mouseExited(MouseEvent e) {
 		setMousePoint(e);
 		_self.repaint();
 	}
@@ -137,8 +130,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * (非 Javadoc)
 	 * @see java.awt.event.MouseAdapter#mouseMoved(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mouseMoved(MouseEvent e) {
+	@Override public void mouseMoved(MouseEvent e) {
 		setMousePoint(e);
 		_self.repaint();
 	}
@@ -148,8 +140,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mousePressed(MouseEvent e) {
+	@Override public void mousePressed(MouseEvent e) {
 		setShiftKeyPressed(e.isShiftDown());
 		setMousePressed(true);
 		setMousePoint(e);
@@ -164,8 +155,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @see
 	 * java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
 	 */
-	@Override
-	public void mouseReleased(MouseEvent e) {
+	@Override public void mouseReleased(MouseEvent e) {
 		setShiftKeyPressed(e.isShiftDown());
 		setMousePressed(false);
 		setMousePoint(e);
