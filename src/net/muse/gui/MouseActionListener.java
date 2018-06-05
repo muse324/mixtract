@@ -44,6 +44,7 @@ public class MouseActionListener extends MouseAdapter implements
 	private boolean mousePressed;
 	private boolean shiftKeyPressed;
 	private boolean isDragging;
+	private boolean altKeyPressed;
 
 	public MouseActionListener(MuseApp main, Container owner) {
 		super();
@@ -108,7 +109,16 @@ public class MouseActionListener extends MouseAdapter implements
 		setEndPoint(e.getPoint());
 		setDragging(true);
 		setShiftKeyPressed(e.isShiftDown());
+		setAltKeyPressed(e.isAltDown());
 		_self.repaint();
+	}
+
+	public void setAltKeyPressed(boolean altDown) {
+		this.altKeyPressed = altDown;
+	}
+
+	public boolean isAltKeyPressed() {
+		return altKeyPressed;
 	}
 
 	/*
