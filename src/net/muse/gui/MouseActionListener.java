@@ -19,23 +19,30 @@ import net.muse.command.MuseAppCommand;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.command.MixtractCommandType;
 
+/**
+ * MuseApp GUI システムに共通するマウスアクションを集めたものです。
+ *
+ * @author Mitsuyo Hashida / M-USE Lab.
+ */
 public class MouseActionListener extends MouseAdapter implements
 		ActionListener {
+	/* マウス座標 */
 	private static Point mousePoint;
 
 	/* 制御オブジェクト */
 	private final MuseApp _main;
 	private final Container _self;
-	private boolean mousePressed;
-	private boolean shiftKeyPressed;
+	private final MainFrame _frame;
 	private JPopupMenu popup;
 
-	private Rectangle mouseBox;
-	private final MainFrame _frame;
-
+	/* マウスドラッグによる矩形範囲の座標 */
 	private Point startPoint = new Point(0, 0);
 	private Point endPoint = new Point(0, 0);
+	private Rectangle mouseBox;
 
+	/* マウスのステータス */
+	private boolean mousePressed;
+	private boolean shiftKeyPressed;
 	private boolean isDragging;
 
 	public MouseActionListener(MuseApp main, Container owner) {
@@ -88,24 +95,6 @@ public class MouseActionListener extends MouseAdapter implements
 	@Override public void mouseClicked(MouseEvent e) {
 		if (SwingUtilities.isRightMouseButton(e))
 			createPopupMenu(e);
-		// Group gr = _main.getSelectedObjects().getGroup();
-		// if (gr == null) {
-		// _self.repaint();
-		// return;
-		// }
-		// if (e.getClickCount() == 2) {
-		// for (PhraseViewer r : _self.getPhraseViewList(_self)) {
-		// if (r.contains(gr)) {
-		// r.setVisible(true);
-		// return;
-		// }
-		// }
-		// PhraseViewer pv = new PhraseViewer(_self.getMainFrame(_self), gr);
-		// pv.addWindowListener(_self.getRuleWindowActions(_self));
-		// _self.getPhraseViewList(_self).add(pv);
-		// pv.pack();
-		// pv.setVisible(true);
-		// }
 		_self.repaint();
 	}
 
