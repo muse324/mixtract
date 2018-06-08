@@ -94,7 +94,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			readNoteData((MusicXMLWrapper.Note) md);
 		else if (md instanceof Attributes) {
 			Attributes a = (Attributes) md;
-			setKeys(a.mode(), a.fifths());
+			if (a.mode() != null)
+				setKeys(a.mode(), a.fifths());
 			data().setBeatInfo(a.measure().number(), a.beats(), a.beatType());
 		} else if (md instanceof Direction)
 			readDirections((Direction) md);
