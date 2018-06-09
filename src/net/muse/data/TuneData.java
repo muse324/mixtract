@@ -38,6 +38,10 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class TuneData extends MuseObject implements TuneDataController {
 	private static int MAXIMUM_MIDICHANNEL = 16;
+	public static int getMaxmimumMIDICchannel() {
+		return MAXIMUM_MIDICHANNEL;
+	}
+
 	static boolean segmentGroupnoteLine = false;
 
 	/** 入力ファイル */
