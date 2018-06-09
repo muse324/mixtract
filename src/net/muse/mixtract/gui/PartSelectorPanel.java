@@ -5,7 +5,10 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 import net.muse.data.Group;
 import net.muse.data.TuneData;
@@ -25,13 +28,16 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 		initialize();
 	}
 
+	/* (非 Javadoc)
+	 * @see net.muse.gui.TuneDataListener#setTarget(net.muse.data.TuneData)
+	 */
 	public void setTarget(TuneData target) {
 		// 画面リセット
 		removeAll();
 		checkBoxList.clear();
 
 		// 楽曲データ代入
-		if (data == target || data == null)
+		if (data == target || target == null)
 			return;
 
 		data = target;
