@@ -30,18 +30,18 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		super.beginMeasure(measure, wrapper);
 		if (currentPartNumber >= 1)
 			return;
-			try {
-				currentBPM = (currentBPM == measure.tempo()) ? currentBPM
-						: measure.tempo();
+		try {
+			currentBPM = (currentBPM == measure.tempo()) ? currentBPM
+					: measure.tempo();
 		} catch (NullPointerException e) {
 		} catch (NumberFormatException e) {
 		} finally {
-				data().getBPM().add(currentBPM);
-				if (currentPartNumber == 1 && measure.number() == 1) {
-					setDefaultBPM(currentBPM);
-				}
-				butler().printConsole("-----measure " + measure.number()
-						+ ", tempo=" + currentBPM);
+			data().getBPM().add(currentBPM);
+			if (currentPartNumber == 1 && measure.number() == 1) {
+				setDefaultBPM(currentBPM);
+			}
+			butler().printConsole("-----measure " + measure.number()
+					+ ", tempo=" + currentBPM);
 		}
 	}
 
