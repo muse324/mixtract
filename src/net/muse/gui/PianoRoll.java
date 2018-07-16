@@ -48,10 +48,10 @@ import net.muse.mixtract.gui.ViewerMode;
 public class PianoRoll extends JPanel implements TuneDataListener,
 		CanvasMouseListener {
 
-	public class PianoRollAction extends MouseActionListener {
+	public class PianoRollActionListener extends MouseActionListener {
 		private final Point pp = new Point();
 
-		public PianoRollAction(MuseApp main, Container owner) {
+		public PianoRollActionListener(MuseApp main, Container owner) {
 			super(main, owner);
 		}
 
@@ -498,8 +498,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		};
 	}
 
-	protected PianoRollAction createPianoRollMouseAction(MuseApp app) {
-		return new PianoRollAction(app, this);
+	protected PianoRollActionListener createPianoRollMouseAction(MuseApp app) {
+		return new PianoRollActionListener(app, this);
 	}
 
 	void setMouseOveredNoteLabel(NoteLabel src) {
