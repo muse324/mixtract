@@ -1,10 +1,10 @@
-package net.muse.command;
+package net.muse.mixtract.command;
 
 import java.awt.Component;
 
 import net.muse.gui.NoteLabel;
 
-public class ChangePartCommand extends MuseAppCommand {
+public class ChangePartCommand extends MixtractCommand {
 	private static final int defaultSize = 4;
 	public static int partSize = defaultSize;
 	private static int newPart;
@@ -19,15 +19,15 @@ public class ChangePartCommand extends MuseAppCommand {
 			partSize = size;
 	}
 
-	public ChangePartCommand(String string) {
-		super(string);
+	public ChangePartCommand(String... lang) {
+		super(lang);
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		for (Component c : frame().getPianoroll().getComponents()) {
 			NoteLabel l = (NoteLabel) c;
 			if (l.isSelected()) {

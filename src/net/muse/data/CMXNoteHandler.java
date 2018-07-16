@@ -6,7 +6,6 @@ import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Direction;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Measure;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.MusicData;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
-import net.muse.gui.GUIUtil;
 
 public class CMXNoteHandler extends AbstractCMXNoteHandler {
 
@@ -37,8 +36,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				if (currentPartNumber == 1 && measure.number() == 1) {
 					setDefaultBPM(currentBPM);
 				}
-				testPrintln("-----measure " + measure.number() + ", tempo="
-						+ currentBPM);
+				butler().printConsole("-----measure " + measure.number()
+						+ ", tempo=" + currentBPM);
 			} catch (NullPointerException e) {
 			}
 		}
@@ -61,7 +60,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		currentDefaultVelocity = (int) (getDefaultVelocity()
 				* data().volume[ch]);
 		cur = null;
-		testPrintln("=====part " + currentPartNumber);
+		butler().printConsole(String.format("=====part P%d¥n",
+				currentPartNumber));
 	}
 
 	/*
@@ -122,7 +122,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				.getBPM().get(0), beat, note.velocity());
 		nd.setKeyMode(keyMode, fifths);
 		nd.setMeasureNumber(currentMeasureNumber);
-		testPrintln(nd.toString());
+		butler().printConsole(nd.toString());
 		if (cur == null) {
 			// 冒頭音
 			cur = nd;
@@ -139,11 +139,11 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			return;
 		switch (note.notenum()) {
 		case 64:
-			GUIUtil.printConsole(String.format("%d: Sustain %d", note.onset(),
+			butler().printConsole(String.format("%d: Sustain %d", note.onset(),
 					note.velocity()));
 			break;
 		default:
-			GUIUtil.printConsole(String.format("%d: control %d %d", note
+			butler().printConsole(String.format("%d: control %d %d", note
 					.onset(), note.notenum(), note.velocity()));
 		}
 		return;
@@ -170,7 +170,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	private void createGroup() {
 		Group g = createGroup(data().getPartwiseNotelist().get(partIndex),
 				partIndex + 1, GroupType.NOTE);
-//		data().getPartwiseNotelist().add(g.getBeginNote());
+		// data().getPartwiseNotelist().add(g.getBeginNote());
 		if (primaryGrouplist == null) {
 			primaryGrouplist = g;
 			data().setGrouplist(partIndex, g);
@@ -226,7 +226,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				.getBPM().get(0), currentDefaultVelocity);
 		nd.setKeyMode(keyMode, fifths);
 		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
-		testPrintln(nd.toString());
+		butler().printConsole(nd.toString());
 		if (cur == null) {
 			// 冒頭音
 			cur = nd;

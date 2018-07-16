@@ -4,73 +4,124 @@ import net.muse.app.MuseApp;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
-import net.muse.misc.Command;
+import net.muse.misc.Language;
+import net.muse.misc.MuseObject;
+import net.muse.sound.MIDIController;
 
-public class MuseAppCommand extends Command implements GroupCommandInterface {
-
-	public static final MuseAppCommand DELETE_GROUP = new DeleteGroupCommand(
-			"Delete", "グループを削除");
-//	public static final MuseAppCommand ADD_GROUP = new AddGroupCommand(
-//			"Add group", "グループを追加");
-	public static final MuseAppCommand EDIT_GROUP = new EditGroupCommand(
-			"Edit group", "グループを編集");
-	public static final MuseAppCommand MAKE_GROUP = new MakeGroupCommand(
-			"Make a group", "グループを作成");
-	public static final MuseAppCommand OPEN_MUSICXML = new OpenMusicXMLCommand(
-			"Open MusicXML...", "MusicXMLを開く...");
-	public static final MuseAppCommand REDRAW = new RedrawCommand("Redraw",
-			"再描画");
-	public static final MuseAppCommand SELECT_GROUP = new SelectGroupCommand(
-			"Select group", "グループを選択");
-	public static final MuseAppCommand RENDER = new RenderCommand("Render",
-			"生成");
-	public static final MuseAppCommand DETAIL = new DetailCommand(
-			"Show parameters", "詳細表示");
-	public static final MuseAppCommand REFRESH = new RefreshCommand("Refresh",
-			"更新");
-	public static final MuseAppCommand PRINT_ALLGROUPS = new PrintAllGroupsCommand(
-			"Print all groups", "全グループを出力");
-	protected static TuneData _target;
-	protected static MuseApp _main;
-	protected static MainFrame _mainFrame;
-
-	public static TuneData target() {
-		return _target;
-	}
-
-	public MuseAppCommand(String... lang) {
-		super(lang);
-	}
-
-	@Override
-	public void setGroup(GroupLabel groupLabel) {}
+public class MuseAppCommand extends MuseObject implements Runnable,
+		GroupCommandInterface {
+	private static Language _language;
+	protected static String filename;
+	protected static MIDIController synthe;
 
 	/**
-	 * @return _main
+	 * @param cmd
+	 * @return
 	 */
-	public static MuseApp main() {
-		return _main;
+	public static MuseAppCommand create(String cmd) {
+		MuseAppCommandType type = MuseAppCommandType.valueOf(cmd);
+		return type.self();
 	}
+
+	public static void setLanguage(String val) {
+		_language = Language.create(val);
+	}
+
+	/**
+	 * @return the _language
+	 */
+	private static Language getLanguage() {
+		return _language;
+	}
+
+	private MainFrame _frame;
+
+	private TuneData _data;
+
+	private String[] names;
+
+	protected MuseApp _main;
+	private Object _target;
+
+	protected MuseAppCommand(String... lang) {
+		super();
+		names = new String[Language.getLanguageList().length];
+		if (isAssertion())
+			assert lang.length <= names.length;
+		for (int i = 0; i < names.length; i++) {
+			names[i] = (i < lang.length) ? lang[i] : lang[0];
+		}
+	}
+
+	public final String getText() {
+		return names[getLanguage().getIndex()];
+	}
+
+	public final String name() {
+		return getClass().getSimpleName();
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {
+		throw new UnsupportedOperationException(name());
+	}
+
+	public void setFrame(MainFrame mainFrame) {
+		if (_frame == null || _frame != mainFrame)
+			_frame = mainFrame;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.command.GroupCommandInterface#setGroup(net.muse.gui.GroupLabel)
+	 */
+	public void setGroup(GroupLabel groupLabel) {}
 
 	/**
 	 * @param _main セットする _main
 	 */
-	public static void setMain(MuseApp main) {
-		_main = main;
+	public void setMain(MuseApp main) {
+		if (_main == null | _main != main)
+			_main = main;
+	}
+
+	public void setTarget(TuneData target) {
+		_data = target;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override public String toString() {
+		return getText();
 	}
 
 	/**
 	 * @return _mainFrame
 	 */
-	public static MainFrame frame() {
-		return _mainFrame;
+	protected MainFrame frame() {
+		return _frame;
 	}
 
-	/**
-	 * @param _mainFrame セットする _mainFrame
-	 */
-	public static void setMainFrame(MainFrame _mainFrame) {
-		MuseAppCommand._mainFrame = _mainFrame;
+	protected TuneData data() {
+		return _data;
+	}
+
+	public void setTarget(Object obj) {
+		_target = obj;
+	}
+
+	protected Object target() {
+		return _target;
+	}
+
+	public MuseApp app() {
+		return _main;
 	}
 
 }

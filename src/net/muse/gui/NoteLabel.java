@@ -32,8 +32,7 @@ public class NoteLabel extends GroupLabel {
 		return next;
 	}
 
-	@Override
-	protected void setSelectedOption(boolean isSelected) {
+	@Override protected void setSelectedOption(boolean isSelected) {
 		setBorder(!isSelected ? null
 				: BorderFactory.createLineBorder(PartColor.SELECTED_COLOR));
 	}
@@ -79,8 +78,7 @@ public class NoteLabel extends GroupLabel {
 	 * (非 Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.GroupLabel#setPartNumber(int)
 	 */
-	@Override
-	public void setPartNumber(int partNumber) {
+	@Override public void setPartNumber(int partNumber) {
 		super.setPartNumber(partNumber);
 		setCurrentColor(new PartColor(partNumber).getColor());
 		note.setPartNumber(partNumber);
@@ -102,28 +100,15 @@ public class NoteLabel extends GroupLabel {
 		return measureBeginning;
 	}
 
-	@Override
-	void setController(MuseApp main) {
+	@Override void setController(MuseApp main) {
 		mouseActions = new MouseActionListener(main, this) {
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override
-			public void mousePressed(MouseEvent e) {
-				super.mousePressed(e);
-			}
-
 			/*
 			 * (非 Javadoc)
 			 * @see
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseEntered(MouseEvent e) {
+			@Override public void mouseEntered(MouseEvent e) {
 				super.mouseEntered(e);
 				NoteLabel src = (NoteLabel) e.getSource();
 				src.setMouseOver(true);
@@ -137,8 +122,7 @@ public class NoteLabel extends GroupLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseExited(MouseEvent e) {
+			@Override public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
 				((NoteLabel) e.getSource()).setMouseOver(false);
 				((NoteLabel) e.getSource()).setEditMode(getMousePoint());
@@ -152,8 +136,7 @@ public class NoteLabel extends GroupLabel {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
 			 * .event.MouseEvent)
 			 */
-			@Override
-			public void mouseMoved(MouseEvent e) {
+			@Override public void mouseMoved(MouseEvent e) {
 				((PianoRoll) getParent()).setMouseOveredNoteLabel((NoteLabel) e
 						.getSource());
 			}
@@ -191,8 +174,7 @@ public class NoteLabel extends GroupLabel {
 	 * (非 Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.GroupLabel#toString()
 	 */
-	@Override
-	public String toString() {
+	@Override public String toString() {
 		return String.format("(%s) %s (%s) -> %s", (parent != null) ? parent
 				.getGroupNote().noteName() : "null", note.noteName(),
 				(child != null) ? child.getGroupNote().noteName() : "null",

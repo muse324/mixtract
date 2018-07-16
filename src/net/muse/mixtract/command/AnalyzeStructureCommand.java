@@ -1,8 +1,6 @@
 package net.muse.mixtract.command;
 
-import net.muse.command.MuseAppCommand;
-
-class AnalyzeStructureCommand extends MuseAppCommand {
+class AnalyzeStructureCommand extends MixtractCommand {
 
 	protected AnalyzeStructureCommand(String... lang) {
 		super(lang);
@@ -12,7 +10,7 @@ class AnalyzeStructureCommand extends MuseAppCommand {
 	 * (非 Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		// _selectedObjects.clearAll();
 		// _target.getGroupArrayList();
 		// _mainFrame.getPianoroll().repaint();

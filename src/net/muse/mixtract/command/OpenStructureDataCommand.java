@@ -24,7 +24,7 @@ class OpenStructureDataCommand extends MixtractCommand {
 	 * jp.crestmuse.mixtract.gui.MixtractCommand.OpenMusicXMLCommand#execute
 	 * ()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		// if (isAssertion()) {
 		// assert _target != null : "target is null";
 		// assert ana != null : "target has't been analysed structure yet";

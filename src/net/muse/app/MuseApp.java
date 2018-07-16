@@ -1,18 +1,22 @@
 package net.muse.app;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 
-import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.JFrame;
 
 import net.muse.data.Group;
 import net.muse.data.TuneData;
-import net.muse.gui.*;
+import net.muse.gui.CanvasMouseListener;
+import net.muse.gui.GroupLabel;
+import net.muse.gui.InfoViewer;
+import net.muse.gui.MainFrame;
+import net.muse.gui.MuseGUIObject;
+import net.muse.gui.TuneDataListener;
 import net.muse.misc.OptionType;
-import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
@@ -31,14 +35,12 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	private String outputFileName;
 
 	/** ファイル格納場所 */
-	private File musicXMLDir;
+	public File musicXMLDir;
 	private File outputDir;
-	private File projectDir;
+	public File projectDir;
 
 	/** 楽曲情報 */
 	private TuneData data;
-	private List<TuneDataListener> tdListenerList = new ArrayList<TuneDataListener>();
-	private ArrayList<InfoViewer> infoViewList;
 	/** 階層的フレーズ構造の分析履歴 */
 	protected final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
 
@@ -56,14 +58,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		setPropertyFilename(PROPERTY_FILENAME);
 		loadConfig();
 		setOption(args);
-	}
-
-	public void addInfoViewerList(InfoViewer pv) {
-		getInfoViewList().add(pv);
-	}
-
-	public void addTuneDataListener(TuneDataListener l) {
-		tdListenerList.add(l);
 	}
 
 	/**
@@ -121,13 +115,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		return outputFileName;
 	}
 
-	public ArrayList<InfoViewer> getInfoViewList() {
-		if (infoViewList == null) {
-			infoViewList = new ArrayList<InfoViewer>();
-		}
-		return infoViewList;
-	}
-
 	/**
 	 * @return projectDir
 	 */
@@ -154,7 +141,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param g
 	 */
 	public void notifyAddGroup(Group g) {
-		for (TuneDataListener l : tdListenerList) {
+		for (TuneDataListener l : butler().getTdListenerList()) {
 			l.addGroup(g);
 		}
 	}
@@ -163,14 +150,14 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param type
 	 */
 	public void notifyChangeHierarchicalParameters(PhraseCurveType type) {
-		for (TuneDataListener l : tdListenerList) {
+		for (TuneDataListener l : butler().getTdListenerList()) {
 			l.changeExpression(type);
 		}
 	}
 
 	public void notifyDeleteGroup(GroupLabel label) {
 		deleteGroup(label.group());
-		for (final TuneDataListener l : tdListenerList) {
+		for (final TuneDataListener l : butler().getTdListenerList()) {
 			l.deleteGroup(label);
 		}
 	}
@@ -181,7 +168,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	public void notifyDeselectGroup() {
 		if (data() != null)
 			data().setSelectedGroup(null);
-		for (final TuneDataListener l : tdListenerList) {
+		for (final TuneDataListener l : butler().getTdListenerList()) {
 			l.deselect(null);
 		}
 	}
@@ -194,20 +181,13 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	public void notifySelectGroup(GroupLabel g, boolean b) {
 		data().setSelectedGroup((b) ? g.group() : null);
-		for (final TuneDataListener l : tdListenerList) {
+		for (final TuneDataListener l : butler().getTdListenerList()) {
 			l.selectGroup(g, b);
 		}
 	}
 
-	public void notifySetTarget() {
-		getInfoViewList().clear();
-		for (TuneDataListener l : tdListenerList) {
-			l.setTarget(data());
-		}
-	}
-
 	public void notifyShowCurrentX(boolean showCurrentX, int x) {
-		for (CanvasMouseListener v : getInfoViewList()) {
+		for (CanvasMouseListener v : butler().getInfoViewList()) {
 			v.setShowCurrentX(showCurrentX, x);
 		}
 	}
@@ -244,33 +224,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 			//
 			// GUIUtil.printConsole("");
 		}
-	}
-
-	/**
-	 * @param in
-	 * @param out
-	 * @throws IOException
-	 * @throws InvalidMidiDataException
-	 */
-	public void readfile(File in, File out) throws IOException,
-			InvalidMidiDataException {
-		setData(createTuneData(in, out));
-		log.printf("Open file: %s", in);
-		if (isShowGUI()) {
-			MixtractCommand.setTarget(data());
-			notifySetTarget();
-		}
-	}
-
-	public void readfile(String inputFilename, String outFilename)
-			throws IOException, InvalidMidiDataException {
-		File in = new File(inputFilename);
-		if (!in.exists())
-			in = new File(projectDir, inputFilename);
-		if (!in.exists())
-			in = new File(musicXMLDir, inputFilename);
-		File out = new File(getOutputDirectory(), outFilename);
-		readfile(in, out);
 	}
 
 	public void setAppImageFile(String imgFileName) {
@@ -366,12 +319,11 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		mtd.invoke(null, new Object[] { this.getFrame() });
 	}
 
-	protected TuneData createTuneData(File in, File out) throws IOException,
-			InvalidMidiDataException {
-		return new TuneData(in, out);
+	public void createTuneData(File in, File out) throws IOException {
+		setData(new TuneData(in, out));
 	}
 
-	protected File getOutputDirectory() {
+	public File getOutputDirectory() {
 		return outputDir;
 	}
 
@@ -402,17 +354,17 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.MuseObject#setOption(java.lang.String)
 	 */
-	@Override
-	protected void setOption(String str) throws IllegalArgumentException {
+	@Override protected void setOption(String str)
+			throws IllegalArgumentException {
 		try {
 			super.setOption(str);
 		} catch (IllegalArgumentException e) {
 			try {
 				OptionType _cmd = OptionType.valueOf(str);
 				_cmd.exe(this, config.getProperty(str));
-				log.println("done.");
+				log().println("done.");
 			} catch (IllegalArgumentException e1) {
-				log.println("skipped.");
+				log().println("skipped.");
 			}
 		}
 	}
@@ -433,7 +385,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		deleteGroup(g.child());
 
 		InfoViewer d = null;
-		for (InfoViewer pv : getInfoViewList()) {
+		for (InfoViewer pv : butler().getInfoViewList()) {
 			if (pv.group() == g) {
 				d = pv;
 				break;
@@ -441,7 +393,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		}
 		if (d != null) {
 			d.setVisible(false);
-			getInfoViewList().remove(d);
+			butler().getInfoViewList().remove(d);
 		}
 	}
 

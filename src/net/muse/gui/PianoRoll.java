@@ -24,18 +24,19 @@ import javax.xml.transform.TransformerException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.app.MuseApp;
-import net.muse.command.ChangePartCommand;
-import net.muse.command.MuseAppCommand;
-import net.muse.command.SetKeyCommand;
-import net.muse.command.SetKeyModeCommand;
+import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.Harmony;
 import net.muse.data.KeyMode;
 import net.muse.data.NoteData;
 import net.muse.data.TuneData;
+import net.muse.misc.MuseObject;
 import net.muse.misc.Util;
-import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.command.ChangePartCommand;
+import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.mixtract.command.SetChordCommand;
+import net.muse.mixtract.command.SetKeyCommand;
+import net.muse.mixtract.command.SetKeyModeCommand;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.ViewerMode;
 
@@ -63,15 +64,15 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		@Override public void actionPerformed(ActionEvent e) {
 			JMenuItem src = (JMenuItem) e.getSource();
 			String cmd = src.getActionCommand();
-			if (cmd.equals(MixtractCommand.CHANGE_PART.name())) {
+			if (cmd.equals(MixtractCommandType.CHANGE_PART.name())) {
 				int part = Integer.parseInt(src.getText());
 				ChangePartCommand.setChangePartTo(part);
-			} else if (cmd.equals(MixtractCommand.SET_CHORD.name())) {
+			} else if (cmd.equals(MixtractCommandType.SET_CHORD.name())) {
 				SetChordCommand.setSelectedChord(Harmony.valueOf(src
 						.getText()));
-			} else if (cmd.equals(MixtractCommand.SET_KEY.name())) {
+			} else if (cmd.equals(MixtractCommandType.SET_KEY.name())) {
 				SetKeyCommand.setSelectedKey(src.getText());
-			} else if (cmd.equals(MixtractCommand.SET_KEYMODE.name())) {
+			} else if (cmd.equals(MixtractCommandType.SET_KEYMODE.name())) {
 				SetKeyModeCommand.setSelectedKeyMode(KeyMode.valueOf(src
 						.getText()));
 			}
@@ -88,7 +89,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		@Override public void createPopupMenu(MouseEvent e) {
 			super.createPopupMenu(e);
 			boolean enabled = selectedNoteLabels.size() > 0;
-			getPopup().add(addMenuItem(MuseAppCommand.MAKE_GROUP, enabled));
+			getPopup().add(addMenuItem(MixtractCommandType.MAKE_GROUP,
+					enabled));
 			getPopup().addSeparator();
 
 			// annotate chord
@@ -120,7 +122,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			JMenu partSelectMenu = new JMenu("Change part");
 			for (int i = 0; i < ChangePartCommand.partSize; i++) {
 				JMenuItem item = new JMenuItem(String.valueOf(i + 1));
-				item.setActionCommand(MixtractCommand.CHANGE_PART.name());
+				item.setActionCommand(MixtractCommandType.CHANGE_PART.self()
+						.name());
 				item.addActionListener(mouseActions);
 				item.setEnabled(i + 1 != selectedVoice);
 				partSelectMenu.add(item);
@@ -203,7 +206,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				setMouseSelectBoxDraw(false);
 				selectNotes();
 				if (selectedNoteLabels.size() == 0)
-					_main.notifyDeselectGroup();
+					main().notifyDeselectGroup();
 				else {
 					setFocusable(true);
 					requestFocus();
@@ -214,14 +217,14 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 		private JMenuItem createChordMenuItem(Harmony c) {
 			JMenuItem item = new JMenuItem(c.name());
-			item.setActionCommand(MixtractCommand.SET_CHORD.name());
+			item.setActionCommand(MixtractCommandType.SET_CHORD.name());
 			item.addActionListener(mouseActions);
 			return item;
 		}
 
 		private JMenuItem createKeyMenuItem(int i) {
 			JMenuItem item = new JMenuItem(Util.fifthsToString(i));
-			item.setActionCommand(MixtractCommand.SET_KEY.name());
+			item.setActionCommand(MixtractCommandType.SET_KEY.name());
 			item.addActionListener(mouseActions);
 			item.setEnabled(selectedNoteLabels.size() > 0 && selectedNoteLabels
 					.get(0).getScoreNote().fifths() != i);
@@ -231,7 +234,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		private JMenuItem createKeyModeMenuItem(int i) {
 			final KeyMode mode = KeyMode.values()[i];
 			JMenuItem item = new JMenuItem(mode.name());
-			item.setActionCommand(MixtractCommand.SET_KEYMODE.name());
+			item.setActionCommand(MixtractCommandType.SET_KEYMODE.name());
 			item.addActionListener(mouseActions);
 			item.setEnabled(selectedNoteLabels.size() > 0 && selectedNoteLabels
 					.get(0).getScoreNote().getKeyMode() != mode);
@@ -278,6 +281,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			Cursor.HAND_CURSOR); // @jve:decl-index=0:
 	private Group selectedGroup;
 	private KeyActionListener keyActions;
+	private Concierge butler;
 
 	protected PianoRoll(MuseApp main) {
 		super();
@@ -467,7 +471,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	protected void setController() {
-		main.addTuneDataListener(this);
+		butler().addTuneDataListenerList(this);
 		mouseActions = createPianoRollMouseAction(main);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
@@ -475,7 +479,11 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		addKeyListener(keyActions);
 	}
 
-	protected KeyActionListener createKeyActions(MuseApp app) {
+	private Concierge butler() {
+		return main.butler();
+	}
+
+	protected KeyActionListener createKeyActions(MuseObject app) {
 		return new KeyActionListener(app, this) {
 
 			/*
@@ -484,14 +492,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
 			 */
 			@Override public void keyPressed(KeyEvent e) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_G:
-					GUIUtil.printConsole("make group");
-					MixtractCommand.MAKE_GROUP.execute();
-					break;
-				default:
-					GUIUtil.printConsole("Pianoroll: pressed: ");
-				}
+				butler().keyPressed(e);
 			}
 
 		};
@@ -886,9 +887,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		// int offset = (note.hasNext() && note.next().getNote().noteNumber() ==
 		// nd
 		// .noteNumber()) ? 5 : 0;
-
-		if (note == null)
-			return;
 
 		final Rectangle r = getLabelBounds(note, offset);
 		final NoteLabel n = createNoteLabel(note, r);

@@ -19,7 +19,7 @@ public class MXGroupingPanel extends GroupingPanel {
 	 */
 	@Override protected MXGroupLabel createGroupLabel(Group group,
 			Rectangle r) {
-		return new MXGroupLabel(group, r);
+		return new MXGroupLabel((MXGroup) group, r);
 	}
 
 	private static final long serialVersionUID = 1L;

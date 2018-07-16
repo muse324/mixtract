@@ -1,6 +1,8 @@
 package net.muse.mixtract.data;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.data.AbstractPhraseFeature;
@@ -227,10 +229,10 @@ public class PhraseFeature extends AbstractPhraseFeature {
 		pitchInterval = latterFirstNoteData.noteNumber() - formerLastNoteData
 				.noteNumber();
 
-		testPrintln("slopeA=" + slopeA);
-		testPrintln("slopeB=" + slopeB);
-		testPrintln("ratioOfMalodyA=" + ratioOfMalodyA);
-		testPrintln("pitchInterval=" + pitchInterval);
-		testPrintln("timeValue=" + timeValue);
+		butler().printConsole("slopeA=" + slopeA);
+		butler().printConsole("slopeB=" + slopeB);
+		butler().printConsole("ratioOfMalodyA=" + ratioOfMalodyA);
+		butler().printConsole("pitchInterval=" + pitchInterval);
+		butler().printConsole("timeValue=" + timeValue);
 	}
 }

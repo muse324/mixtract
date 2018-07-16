@@ -26,7 +26,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -50,8 +49,10 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
-import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
+import net.muse.command.MuseAppCommand;
+import net.muse.command.MuseAppCommandType;
+import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
@@ -80,7 +81,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	/** JFrameおよびDockのアイコン */
 	protected Image icon;
 
-	protected MuseApp main;
+	protected final MuseApp main;
 	protected PianoRoll pianoroll = null;
 	protected JLabel tempoValueLabel = null;
 	private JTextField bpmValue = null;
@@ -102,6 +103,11 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JInternalFrame viewer = null;
 	private JDesktopPane desktop;
 	private JScrollBar timeScrollBar = null;
+	private JMenuItem menuAbout;
+	private JMenuItem menuPreference;
+	private JMenu helpMenu;
+	private JMenuItem quitMenu;
+	private JMenuItem xmlMenuItem;
 
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
@@ -111,13 +117,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	public static int getXOfNote(final double val) {
 		return (int) Math.round(val / pixelperbeat);
-	}
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Mixtract.main(args);
 	}
 
 	/**
@@ -132,8 +131,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		synthe = new MixtractMIDIController(main.getMidiDeviceName(), main
 				.getTicksPerBeat());
 		synthe.addMidiEventListener(this);
-		this.main.addTuneDataListener(this);
-		this.main.addTuneDataListener(synthe);
+		butler().addTuneDataListenerList(this);
+		butler().addTuneDataListenerList(synthe);
 
 		// TODO ウィンドウアイコンの設定
 		// ただし、OSXにはウィンドウアイコンはないため表示されない
@@ -208,9 +207,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public CurveView getDynamicsView() {
 		if (dynamicsView == null) {
 			dynamicsView = new CurveView(PhraseCurveType.DYNAMICS, 127, 0, 10);
-			main.addTuneDataListener(dynamicsView);
+			butler().addTuneDataListenerList(dynamicsView);
 		}
 		return dynamicsView;
+	}
+
+	protected Concierge butler() {
+		return main.butler();
 	}
 
 	/**
@@ -222,7 +225,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		if (groupingPanel == null) {
 			groupingPanel = createGroupingPanel();
 			groupingPanel.setController(main);
-			main.addTuneDataListener(groupingPanel);
+			butler().addTuneDataListenerList(groupingPanel);
 		}
 		return groupingPanel;
 	}
@@ -258,7 +261,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public CurveView getTempoView() {
 		if (tempoView == null) {
 			tempoView = new CurveView(PhraseCurveType.TEMPO, 280, 10, 10);
-			main.addTuneDataListener(tempoView);
+			butler().addTuneDataListenerList(tempoView);
 		}
 		return tempoView;
 	}
@@ -318,7 +321,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	public void startPlaying(String smfFilename) {
-		Mixtract.log.println("playing...");
+		butler().printConsole("playing...");
 		playButton.setEnabled(false);
 		stopButton.setEnabled(true);
 		bpmValue.setEnabled(false);
@@ -326,7 +329,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	public void stopPlaying() {
-		Mixtract.log.println("Sound stopped.");
+		butler().printConsole("Sound stopped.");
 		playButton.setEnabled(true);
 		stopButton.setEnabled(false);
 		bpmValue.setEnabled(true);
@@ -632,52 +635,71 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			// バージョン情報と終了コマンド
 			if (!main.isMac()) {
 				fileMenu.addSeparator();
-				JMenuItem quitMenu = new JMenuItem("終了(Q)");
-				quitMenu.setMnemonic(KeyEvent.VK_Q);
-				quitMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
-						shortcutKey));
-				quitMenu.addActionListener(new AbstractAction() {
-					private static final long serialVersionUID = 1L;
-
-					public void actionPerformed(ActionEvent e) {
-						quit();
-					}
-				});
-				fileMenu.add(quitMenu);
+				fileMenu.add(getQuitMenuItemForMac());
 
 				getMenubar().add(getHelpMenu());
+				getHelpMenu().add(getPreferenceMenuItem());
 
-				JMenuItem menuPreference = new JMenuItem("環境設定(E)");
-				menuPreference.setMnemonic(KeyEvent.VK_E);
-				menuPreference.setAccelerator(KeyStroke.getKeyStroke(
-						KeyEvent.VK_COMMA, shortcutKey));
-				menuPreference.addActionListener(new AbstractAction() {
-					private static final long serialVersionUID = 1L;
-
-					public void actionPerformed(ActionEvent e) {
-						onPreference();
-					}
-				});
-				getHelpMenu().add(menuPreference);
-
-				JMenuItem menuAbout = new JMenuItem("バージョン情報(V)");
-				menuAbout.setMnemonic(KeyEvent.VK_V);
-				menuAbout.addActionListener(new AbstractAction() {
-					private static final long serialVersionUID = 1L;
-
-					public void actionPerformed(ActionEvent e) {
-						onAbout();
-					}
-				});
-				getHelpMenu().add(menuAbout);
+				getHelpMenu().add(getVersionMenuItem());
 			}
 		}
 		return fileMenu;
 	}
 
+	protected JMenuItem getVersionMenuItem() {
+		if (menuAbout == null) {
+			menuAbout = new JMenuItem("バージョン情報(V)");
+			menuAbout.setMnemonic(KeyEvent.VK_V);
+			menuAbout.addActionListener(new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
+					onAbout();
+				}
+			});
+		}
+		return menuAbout;
+	}
+
+	protected JMenuItem getPreferenceMenuItem() {
+		if (menuPreference == null) {
+			menuPreference = new JMenuItem("環境設定(E)");
+			menuPreference.setMnemonic(KeyEvent.VK_E);
+			menuPreference.setAccelerator(KeyStroke.getKeyStroke(
+					KeyEvent.VK_COMMA, shortcutKey));
+			menuPreference.addActionListener(new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
+					onPreference();
+				}
+			});
+		}
+		return menuPreference;
+	}
+
+	protected JMenuItem getQuitMenuItemForMac() {
+		if (quitMenu == null) {
+			quitMenu = new JMenuItem("終了(Q)");
+			quitMenu.setMnemonic(KeyEvent.VK_Q);
+			quitMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
+					shortcutKey));
+			quitMenu.addActionListener(new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e) {
+					quit();
+				}
+			});
+		}
+		return quitMenu;
+	}
+
 	private JMenu getHelpMenu() {
-		JMenu helpMenu = new JMenu("ヘルプ(H)");
-		helpMenu.setMnemonic(KeyEvent.VK_H);
+		if (helpMenu == null) {
+			helpMenu = new JMenu("ヘルプ(H)");
+			helpMenu.setMnemonic(KeyEvent.VK_H);
+		}
 		return helpMenu;
 	}
 
@@ -687,31 +709,18 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JMenuItem
 	 */
 	private JMenuItem getImportXMLMenu() {
-		JMenuItem m = new JMenuItem();
-		m.setText("Import MusicXML File...");
-		m.setMnemonic('M');
-		m.setAccelerator(KeyStroke.getKeyStroke('M', shortcutKey));
-		m.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				try {
-					JFileChooser fc = (main != null) ? new JFileChooser(main
-							.getMusicXMLDirectory()) : new JFileChooser();
-					int res = fc.showOpenDialog(null);
-					if (res == JFileChooser.APPROVE_OPTION) {
-						main.readfile(fc.getSelectedFile(), new File(main
-								.getProjectDirectory(), fc.getSelectedFile()
-										.getName() + Mixtract
-												.getProjectFileExtension()));
-					}
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				} catch (InvalidMidiDataException e1) {
-					// TODO 自動生成された catch ブロック
-					e1.printStackTrace();
-				}
-			}
-		});
-		return m;
+		if (xmlMenuItem == null) {
+			MuseAppCommand cmd = MuseAppCommand.create(
+					MuseAppCommandType.OPEN_MUSICXML.name());
+			xmlMenuItem = new JMenuItem();
+			xmlMenuItem.setText(cmd.getText());
+			xmlMenuItem.setMnemonic('M');
+			xmlMenuItem.setAccelerator(KeyStroke.getKeyStroke('M',
+					shortcutKey));
+			xmlMenuItem.setActionCommand(cmd.name());
+			xmlMenuItem.addActionListener(new MouseActionListener(main, this));
+		}
+		return xmlMenuItem;
 	}
 
 	/**
@@ -721,7 +730,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	private KeyBoard getKeyboard() {
 		KeyBoard keyboard = new KeyBoard(main.getTicksPerBeat());
-		main.addTuneDataListener(keyboard);
+		butler().addTuneDataListenerList(keyboard);
 		return keyboard;
 	}
 
@@ -754,12 +763,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					int res = fc.showOpenDialog(null);
 					if (res == JFileChooser.APPROVE_OPTION) {
-						main.readfile(fc.getSelectedFile(), main
+						butler().readfile(fc.getSelectedFile(), main
 								.getProjectDirectory());
 					}
 				} catch (IOException e1) {
-					e1.printStackTrace();
-				} catch (InvalidMidiDataException e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -775,7 +782,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JPanel getPartSelectorPanel() {
 		PartSelectorPanel p = new PartSelectorPanel();
 		p.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(), 24)); // Generated
-		main.addTuneDataListener(p);
+		butler().addTuneDataListenerList(p);
 		return p;
 	}
 
@@ -968,14 +975,14 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		p.add(getStructurePane(), java.awt.BorderLayout.NORTH);
 		p.add(getPianorollPane(), BorderLayout.CENTER); // Generated
 		p.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
-//		getStructurePane().getHorizontalScrollBar().setModel(getTimeScrollBar()
-//				.getModel());
-//		getPianorollPane().getHorizontalScrollBar().setModel(getTimeScrollBar()
-//				.getModel());
-//		getDynamicsView().getHorizontalScrollBar().setModel(getTimeScrollBar()
-//				.getModel());
-//		getTempoView().getHorizontalScrollBar().setModel(getTimeScrollBar()
-//				.getModel());
+		// getStructurePane().getHorizontalScrollBar().setModel(getTimeScrollBar()
+		// .getModel());
+		// getPianorollPane().getHorizontalScrollBar().setModel(getTimeScrollBar()
+		// .getModel());
+		// getDynamicsView().getHorizontalScrollBar().setModel(getTimeScrollBar()
+		// .getModel());
+		// getTempoView().getHorizontalScrollBar().setModel(getTimeScrollBar()
+		// .getModel());
 		return p;
 	}
 

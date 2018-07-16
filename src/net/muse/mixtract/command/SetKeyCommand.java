@@ -1,4 +1,4 @@
-package net.muse.command;
+package net.muse.mixtract.command;
 
 import java.awt.Component;
 
@@ -13,7 +13,7 @@ import net.muse.misc.Util;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/12/21
  */
-public class SetKeyCommand extends MuseAppCommand {
+public class SetKeyCommand extends MixtractCommand {
 
 	private static String newKey = null;
 
@@ -35,7 +35,7 @@ public class SetKeyCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		for (Component c : frame().getPianoroll().getComponents()) {
 			NoteLabel l = (NoteLabel) c;
 			if (l.isSelected()) {
