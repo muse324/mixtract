@@ -79,9 +79,9 @@ public class MXPianoroll extends PianoRoll {
 	 * @see
 	 * net.muse.gui.PianoRoll#createPianoRollMouseAction(net.muse.app.MuseApp)
 	 */
-	@Override protected PianoRollAction createPianoRollMouseAction(
+	@Override protected PianoRollActionListener createPianoRollMouseAction(
 			MuseApp app) {
-		return new PianoRollAction(app, this) {
+		return new PianoRollActionListener(app, this) {
 
 		};
 	}

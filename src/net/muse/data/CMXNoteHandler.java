@@ -28,18 +28,20 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	@Override public void beginMeasure(Measure measure,
 			MusicXMLWrapper wrapper) {
 		super.beginMeasure(measure, wrapper);
-		if (currentPartNumber == 1) {
+		if (currentPartNumber >= 1)
+			return;
 			try {
 				currentBPM = (currentBPM == measure.tempo()) ? currentBPM
 						: measure.tempo();
+		} catch (NullPointerException e) {
+		} catch (NumberFormatException e) {
+		} finally {
 				data().getBPM().add(currentBPM);
 				if (currentPartNumber == 1 && measure.number() == 1) {
 					setDefaultBPM(currentBPM);
 				}
 				butler().printConsole("-----measure " + measure.number()
 						+ ", tempo=" + currentBPM);
-			} catch (NullPointerException e) {
-			}
 		}
 	}
 
@@ -94,7 +96,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			readNoteData((MusicXMLWrapper.Note) md);
 		else if (md instanceof Attributes) {
 			Attributes a = (Attributes) md;
-			setKeys(a.mode(), a.fifths());
+			if (a.mode() != null)
+				setKeys(a.mode(), a.fifths());
 			data().setBeatInfo(a.measure().number(), a.beats(), a.beatType());
 		} else if (md instanceof Direction)
 			readDirections((Direction) md);
