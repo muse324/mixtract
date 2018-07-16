@@ -120,4 +120,8 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 		return _target;
 	}
 
+	public MuseApp app() {
+		return _main;
+	}
+
 }
