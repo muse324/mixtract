@@ -27,6 +27,7 @@ import net.muse.mixtract.data.curve.PhraseCurveType;
 public class MXMainFrame extends MainFrame {
 
 	private static final long serialVersionUID = 1L;
+	private static String WINDOW_TITLE = "Mixtract";
 
 	private JButton analyzeButton = null;
 
@@ -121,7 +122,7 @@ public class MXMainFrame extends MainFrame {
 		return d;
 	}
 
-	private JInternalFrame getPhraseEditorPanel() {
+	protected JInternalFrame getPhraseEditorPanel() {
 		if (phraseEditorPanel == null) {
 			phraseEditorPanel = new JInternalFrame();
 			phraseEditorPanel.setClosable(false);
@@ -260,4 +261,7 @@ public class MXMainFrame extends MainFrame {
 		return scoreViewButton;
 	}
 
+	protected String getWindowTitle() {
+		return WINDOW_TITLE;
+	}
 }

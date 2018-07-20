@@ -73,6 +73,7 @@ import net.muse.sound.MIDIEventListener;
 public class MainFrame extends JFrame implements TuneDataListener,
 		MIDIEventListener, ActionListener {
 
+	private static String WINDOW_TITLE = "MuseApp";
 	private static int pixelperbeat = 30;
 	private static final long serialVersionUID = 1L;
 
@@ -108,6 +109,9 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JMenu helpMenu;
 	private JMenuItem quitMenu;
 	private JMenuItem xmlMenuItem;
+	private JSplitPane curveSplitPane;
+	private JScrollPane pianorollPanel;
+	private JScrollPane structurePane;
 
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
@@ -465,7 +469,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 	/** ウィンドウ表示の初期設定を行います。 */
 	protected void initialize() {
-		this.setTitle("Mixtract"); // ウィンドウのタイトル
+		this.setTitle(getWindowTitle()); // ウィンドウのタイトル
 		this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize()); // ウィンドウサイズ
 		this.setContentPane(getDesktop()); // メインの描画領域(詳細)
 		this.setJMenuBar(getMenubar()); // メニューバー
@@ -579,16 +583,18 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JSplitPane
 	 */
-	private JSplitPane getCurveSplitPane() {
-		JSplitPane p = new JSplitPane();
-		p.setOrientation(JSplitPane.VERTICAL_SPLIT); // Generated
-		p.setPreferredSize(new Dimension(20, 200)); // Generated
-		p.setResizeWeight(0.5D); // Generated
-		p.setOneTouchExpandable(true); // Generated
-		p.setTopComponent(getDynamicsCurvePane()); // Generated
-		p.setBottomComponent(getTempoCurvePane()); // Generated
-		p.setDividerSize(10); // Generated
-		return p;
+	protected JSplitPane getCurveSplitPane() {
+		if (curveSplitPane == null) {
+			curveSplitPane = new JSplitPane();
+			curveSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT); // Generated
+			curveSplitPane.setPreferredSize(new Dimension(20, 200)); // Generated
+			curveSplitPane.setResizeWeight(0.5D); // Generated
+			curveSplitPane.setOneTouchExpandable(true); // Generated
+			curveSplitPane.setTopComponent(getDynamicsCurvePane()); // Generated
+			curveSplitPane.setBottomComponent(getTempoCurvePane()); // Generated
+			curveSplitPane.setDividerSize(10); // Generated
+		}
+		return curveSplitPane;
 	}
 
 	/**
@@ -792,12 +798,15 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getPianorollPane() {
-		JScrollPane p = new JScrollPane();
-		p.setRowHeaderView(getKeyboard());
-		p.setViewportView(getPianoroll()); // Generated
-		p.setHorizontalScrollBar(getTimeScrollBar());
-		p.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		return p;
+		if (pianorollPanel == null) {
+			pianorollPanel = new JScrollPane();
+			pianorollPanel.setRowHeaderView(getKeyboard());
+			pianorollPanel.setViewportView(getPianoroll()); // Generated
+			pianorollPanel.setHorizontalScrollBar(getTimeScrollBar());
+			pianorollPanel.setVerticalScrollBarPolicy(
+					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}
+		return pianorollPanel;
 	}
 
 	/**
@@ -806,16 +815,17 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JMenuItem
 	 */
 	private JMenuItem getQuitMenu() {
-		JMenuItem quitMenu = new JMenuItem();
-		quitMenu.setMnemonic('Q');
-		quitMenu.setText("Quit");
-		quitMenu.setAccelerator(KeyStroke.getKeyStroke('Q', shortcutKey));
-
-		quitMenu.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				quit();
-			}
-		});
+		if (quitMenu == null) {
+			quitMenu = new JMenuItem();
+			quitMenu.setMnemonic('Q');
+			quitMenu.setText("Quit");
+			quitMenu.setAccelerator(KeyStroke.getKeyStroke('Q', shortcutKey));
+			quitMenu.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					quit();
+				}
+			});
+		}
 		return quitMenu;
 	}
 
@@ -874,12 +884,15 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getStructurePane() {
-		JScrollPane p = new JScrollPane();
-		p.setRowHeaderView(getPartSelectorPanel());
-		p.setViewportView(getGroupingPanel());
-		p.setHorizontalScrollBar(getTimeScrollBar());
-		p.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		return p;
+		if (structurePane == null) {
+			structurePane = new JScrollPane();
+			structurePane.setRowHeaderView(getPartSelectorPanel());
+			structurePane.setViewportView(getGroupingPanel());
+			structurePane.setHorizontalScrollBar(getTimeScrollBar());
+			structurePane.setVerticalScrollBarPolicy(
+					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}
+		return structurePane;
 	}
 
 	// システムプロパティをダンプする
@@ -969,7 +982,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	private JPanel getTuneViewPane() {
+	protected JPanel getTuneViewPane() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout()); // Generated
 		p.add(getStructurePane(), java.awt.BorderLayout.NORTH);
@@ -1015,6 +1028,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			// viewer.setBounds(new Rectangle(8, 8, 238, 155)); // Generated
 		}
 		return viewer;
+	}
+
+	 protected String getWindowTitle() {
+		return WINDOW_TITLE;
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"
