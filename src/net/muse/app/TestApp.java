@@ -27,50 +27,7 @@ public class TestApp extends MuseApp {
 	public static void main(String[] args) {
 		try {
 			TestApp main = new TestApp(args);
-			if (!isShowGUI()) {// isShowGUI()は、起動時にGUIを用いるかどうかを判別します。プロパティファイル内のSHOW_GUIによる値で判別します。
-				main.butler().readfile();
-				return;
-			}
-			// ---- GUI起動 ------------------------
-			// MacOSXでのJava実行環境用のシステムプロパティの設定.
-			main.setupSystemPropertiesForMacOSX();
-
-			// システム標準のL&Fを設定.
-			// MacOSXならAqua、WindowsXPならLuna、Vista/Windows7ならばAeroになる.
-			// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-			// 各種実行コマンド制御を行うMuseAppComandクラスにメインクラスを登録します。
-			// アプリケーション独自の制御コマンドを作成するにはMuseAppCommandクラスのサブクラスを定義してください。
-			// MuseAppCommand.setMain(main);
-
-			/* sprash screen */
-			main.createSplashScreen(main.getAppImageFile());
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					main.showSplashScreen();
-				}
-			});
-
-			// create main frame
-			main.createNewFrame();
-			main.getFrame().setDefaultCloseOperation(
-					WindowConstants.EXIT_ON_CLOSE);
-			JFrame.setDefaultLookAndFeelDecorated(false);
-			main.getFrame().pack(); // ウィンドウサイズを最適化
-			main.getFrame().setVisible(true); // ウィンドウを表示させる
-
-			// 3秒後にスプラッシュスクリーンを非表示にする
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				main.butler().printConsole(e.getMessage());
-			}
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					main.hideSplash();
-				}
-			});
+			main.setup();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -107,5 +64,51 @@ public class TestApp extends MuseApp {
 	@Override public void analyzeStructure(TuneData data, Group group) {
 		throw new UnsupportedOperationException("実装してください");
 	}
+
+	@Override protected void setup() throws Exception {
+		if (!isShowGUI()) {// isShowGUI()は、起動時にGUIを用いるかどうかを判別します。プロパティファイル内のSHOW_GUIによる値で判別します。
+			butler().readfile();
+			return;
+		}
+		// ---- GUI起動 ------------------------
+		// MacOSXでのJava実行環境用のシステムプロパティの設定.
+		setupSystemPropertiesForMacOSX();
+
+		// システム標準のL&Fを設定.
+		// MacOSXならAqua、WindowsXPならLuna、Vista/Windows7ならばAeroになる.
+		// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+		// 各種実行コマンド制御を行うMuseAppComandクラスにメインクラスを登録します。
+		// アプリケーション独自の制御コマンドを作成するにはMuseAppCommandクラスのサブクラスを定義してください。
+		// MuseAppCommand.setMain(main);
+
+		/* sprash screen */
+		createSplashScreen(getAppImageFile());
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				showSplashScreen();
+			}
+		});
+
+		// create main frame
+		createNewFrame();
+		getFrame().setDefaultCloseOperation(
+				WindowConstants.EXIT_ON_CLOSE);
+		JFrame.setDefaultLookAndFeelDecorated(false);
+		getFrame().pack(); // ウィンドウサイズを最適化
+		getFrame().setVisible(true); // ウィンドウを表示させる
+
+		// 3秒後にスプラッシュスクリーンを非表示にする
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			butler().printConsole(e.getMessage());
+		}
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				hideSplash();
+			}
+		});	}
 
 }

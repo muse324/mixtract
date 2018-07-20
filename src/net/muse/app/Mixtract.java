@@ -33,48 +33,7 @@ public class Mixtract extends MuseApp {
 	public static void main(String[] args) {
 		try {
 			final Mixtract main = new Mixtract(args);
-			if (!isShowGUI()) {
-				main.butler().readfile();
-				return;
-			}
-			// MacOSXでのJava実行環境用のシステムプロパティの設定.
-			main.setupSystemPropertiesForMacOSX();
-
-			// システム標準のL&Fを設定.
-			// MacOSXならAqua、WindowsXPならLuna、Vista/Windows7ならばAeroになる.
-			// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-//			MixtractCommand.setMain(main);
-
-			/* sprash screen */
-			main.createSplashScreen(main.getAppImageFile());
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					main.showSplashScreen();
-				}
-			});
-
-			// create main frame
-			main.createNewFrame();
-			main.getFrame().setDefaultCloseOperation(
-					WindowConstants.EXIT_ON_CLOSE);
-			JFrame.setDefaultLookAndFeelDecorated(false);
-			main.getFrame().pack(); // ウィンドウサイズを最適化
-			main.getFrame().setVisible(true); // ウィンドウを表示させる
-
-			// 長い処理のdummy
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				main.butler().printConsole(e.getMessage());
-			}
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					// showPanel();
-					main.hideSplash();
-				}
-			});
+			main.setup();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -136,5 +95,50 @@ public class Mixtract extends MuseApp {
 		ana.setRootGroup((MXGroup) group);
 		ana.run();
 		analyzer.add(ana);
+	}
+
+	@Override protected void setup() throws Exception {
+		if (!isShowGUI()) {
+			butler().readfile();
+			return;
+		}
+		// MacOSXでのJava実行環境用のシステムプロパティの設定.
+		setupSystemPropertiesForMacOSX();
+
+		// システム標準のL&Fを設定.
+		// MacOSXならAqua、WindowsXPならLuna、Vista/Windows7ならばAeroになる.
+		// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+//		MixtractCommand.setMain(main);
+
+		/* sprash screen */
+		createSplashScreen(getAppImageFile());
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				showSplashScreen();
+			}
+		});
+
+		// create main frame
+		createNewFrame();
+		getFrame().setDefaultCloseOperation(
+				WindowConstants.EXIT_ON_CLOSE);
+		JFrame.setDefaultLookAndFeelDecorated(false);
+		getFrame().pack(); // ウィンドウサイズを最適化
+		getFrame().setVisible(true); // ウィンドウを表示させる
+
+		// 長い処理のdummy
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			butler().printConsole(e.getMessage());
+		}
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				// showPanel();
+				hideSplash();
+			}
+		});
 	}
 }

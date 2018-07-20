@@ -339,6 +339,13 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 */
 	protected abstract void initialize();
 
+	/**
+	 * アプリケーションを起動するmain関数で実行するセットアップを記述します。
+	 *
+	 * @throws Exception
+	 */
+	protected abstract void setup() throws Exception;
+
 	abstract protected MainFrame mainFrame() throws IOException;
 
 	/**
