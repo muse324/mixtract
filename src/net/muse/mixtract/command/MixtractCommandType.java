@@ -1,8 +1,8 @@
 package net.muse.mixtract.command;
 
-import net.muse.command.MuseAPpCommandAction;
+import net.muse.command.MuseAppCommandAction;
 
-public enum MixtractCommandType implements Runnable, MuseAPpCommandAction {
+public enum MixtractCommandType implements Runnable, MuseAppCommandAction {
 	ANALYZE_GTTM_STRUCTURE("GTTM Analysis", "GTTM分析") {
 		@Override GTTMAnalysisCommand create(String... lang) {
 			return (GTTMAnalysisCommand) (self = new GTTMAnalysisCommand(lang));

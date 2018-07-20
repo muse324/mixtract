@@ -629,8 +629,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			fileMenu.add(getImportXMLMenu());
 			fileMenu.add(getSaveMenu());
 			fileMenu.add(getSaveAsMenu());
-			fileMenu.addSeparator();
-			fileMenu.add(getQuitMenu());
 
 			// バージョン情報と終了コマンド
 			if (!main.isMac()) {
@@ -639,8 +637,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 				getMenubar().add(getHelpMenu());
 				getHelpMenu().add(getPreferenceMenuItem());
-
 				getHelpMenu().add(getVersionMenuItem());
+			} else {
+				fileMenu.addSeparator();
+				fileMenu.add(getQuitMenu());
 			}
 		}
 		return fileMenu;
@@ -717,7 +717,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			xmlMenuItem.setMnemonic('M');
 			xmlMenuItem.setAccelerator(KeyStroke.getKeyStroke('M',
 					shortcutKey));
-			xmlMenuItem.setActionCommand(cmd.name());
+			xmlMenuItem.setActionCommand(MuseAppCommandType.OPEN_MUSICXML.name());
 			xmlMenuItem.addActionListener(new MouseActionListener(main, this));
 		}
 		return xmlMenuItem;

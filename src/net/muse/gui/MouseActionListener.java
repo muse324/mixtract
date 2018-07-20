@@ -14,9 +14,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
-import net.muse.command.MuseAPpCommandAction;
+import net.muse.command.MuseAppCommandAction;
 import net.muse.command.MuseAppCommand;
-import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.command.MixtractCommandType;
 
 public class MouseActionListener extends MouseAdapter implements
@@ -52,7 +51,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * )
 	 */
 	public void actionPerformed(ActionEvent e) {
-		final MuseAppCommand c = MixtractCommand.create(e.getActionCommand());
+		final MuseAppCommand c = MuseAppCommand.create(e.getActionCommand());
 		c.setFrame(frame());
 		c.setMain(main());
 		c.setTarget(e.getSource());
@@ -238,7 +237,7 @@ public class MouseActionListener extends MouseAdapter implements
 		this.endPoint = endPoint;
 	}
 
-	protected JMenuItem addMenuItem(MuseAPpCommandAction command,
+	protected JMenuItem addMenuItem(MuseAppCommandAction command,
 			boolean enabled) {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem();

@@ -1,6 +1,6 @@
 package net.muse.command;
 
-public interface MuseAPpCommandAction {
+public interface MuseAppCommandAction {
 	public MuseAppCommand self();
 	public String name() ;
 }

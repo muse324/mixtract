@@ -38,23 +38,23 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 
 	private TuneData _data;
 
-	private String[] names;
+	private String[] menuText;
 
 	protected MuseApp _main;
 	private Object _target;
 
 	protected MuseAppCommand(String... lang) {
 		super();
-		names = new String[Language.getLanguageList().length];
+		menuText = new String[Language.getLanguageList().length];
 		if (isAssertion())
-			assert lang.length <= names.length;
-		for (int i = 0; i < names.length; i++) {
-			names[i] = (i < lang.length) ? lang[i] : lang[0];
+			assert lang.length <= menuText.length;
+		for (int i = 0; i < menuText.length; i++) {
+			menuText[i] = (i < lang.length) ? lang[i] : lang[0];
 		}
 	}
 
 	public final String getText() {
-		return names[getLanguage().getIndex()];
+		return menuText[getLanguage().getIndex()];
 	}
 
 	public final String name() {
