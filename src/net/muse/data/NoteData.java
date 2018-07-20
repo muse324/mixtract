@@ -52,8 +52,8 @@ public class NoteData extends SequenceData {
 	 * MusicXMLの声部番号(1～)。１から始まる。0の場合、声部の区別がされていないことを表す。
 	 */
 	private int xmlPartNumber = 0;
-	/** オリジナルの声部番号。１から始まる。0の場合、声部の区別がされていないことを表す。*/
-	private int musePhony=0;
+	/** オリジナルの声部番号。１から始まる。0の場合、声部の区別がされていないことを表す。 */
+	private int musePhony = 0;
 	/**
 	 * Measure number begins from 0 (Auftakt) by integer.<br>
 	 * 小節番号(0～)
@@ -106,7 +106,7 @@ public class NoteData extends SequenceData {
 		initialize(partNumber, note.noteName(), (note.rest()) ? -1
 				: note.notenum(), note.voice(), note.grace(), note
 						.tiedTo() != null, note.rest(), note.beat(), Harmony.I);
-
+		setMusePhony(note.voice());
 		setMeasureNumber(note.measure().number());
 		setOnset(note.onset(getTicksPerBeat()));
 		setOffset(note.offset(getTicksPerBeat()));
@@ -147,8 +147,7 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#child()
 	 */
-	@Override
-	public NoteData child() {
+	@Override public NoteData child() {
 		return (NoteData) super.child();
 	}
 
@@ -238,8 +237,7 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#next()
 	 */
-	@Override
-	public NoteData next() {
+	@Override public NoteData next() {
 		return (NoteData) super.next();
 	}
 
@@ -281,8 +279,7 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#parent()
 	 */
-	@Override
-	public NoteData parent() {
+	@Override public NoteData parent() {
 		return (NoteData) super.parent();
 	}
 
@@ -297,8 +294,7 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#previous()
 	 */
-	@Override
-	public NoteData previous() {
+	@Override public NoteData previous() {
 		return (NoteData) super.previous();
 	}
 
@@ -495,10 +491,10 @@ public class NoteData extends SequenceData {
 	 */
 	@Override public String toString() {
 		return String.format(
-				"idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tie=%b, fifths=%d, harmony=%s, phony=%s",
+				"idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d, phony=%s/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tie=%b, fifths=%d, harmony=%s",
 				index(), onset(), noteName(), beat(), timeValue(),
-				xmlPartNumber(), measureNumber(), xmlVoice(), offset(),
-				velocity(), rest(), child() != null, isGrace(), isTied(),
-				fifths(), chord(), musePhony());
+				xmlPartNumber(), measureNumber(), xmlVoice(), musePhony(),
+				offset(), velocity(), rest(), child() != null, isGrace(),
+				isTied(), fifths(), chord());
 	}
 }
