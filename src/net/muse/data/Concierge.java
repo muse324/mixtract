@@ -181,8 +181,7 @@ public class Concierge extends MuseObject implements TuneDataController {
 		}
 		// ファイルの種類を調べる
 		String fileType = getInputFileType(in);
-		if (fileType == null)
-			return;
+		assert fileType == null;
 
 		// CMX対応形式の読み込み
 		CMXImporter cmx = new CMXImporter(in, fileType, data);
