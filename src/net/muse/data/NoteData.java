@@ -48,10 +48,12 @@ public class NoteData extends SequenceData {
 	/** 音名 */
 	private String noteName = "";
 	/**
-	 * Part number begins from 1 by integer.<br>
-	 * 声部番号(1～)。１から始まる。0の場合、声部の区別がされていないことを表す。
+	 * MusicXML Part number begins from 1 by integer.<br>
+	 * MusicXMLの声部番号(1～)。１から始まる。0の場合、声部の区別がされていないことを表す。
 	 */
 	private int xmlPartNumber = 0;
+	/** オリジナルの声部番号。１から始まる。0の場合、声部の区別がされていないことを表す。*/
+	private int musePhony=0;
 	/**
 	 * Measure number begins from 0 (Auftakt) by integer.<br>
 	 * 小節番号(0～)
@@ -479,4 +481,24 @@ public class NoteData extends SequenceData {
 		this.sccNote = sccNote;
 	}
 
+	public int musePhony() {
+		return musePhony;
+	}
+
+	public void setMusePhony(int musePhony) {
+		this.musePhony = musePhony;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override public String toString() {
+		return String.format(
+				"idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tie=%b, fifths=%d, harmony=%s, phony=%s",
+				index(), onset(), noteName(), beat(), timeValue(),
+				xmlPartNumber(), measureNumber(), xmlVoice(), offset(),
+				velocity(), rest(), child() != null, isGrace(), isTied(),
+				fifths(), chord(), musePhony());
+	}
 }

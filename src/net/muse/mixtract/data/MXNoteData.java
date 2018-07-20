@@ -112,19 +112,6 @@ public class MXNoteData extends NoteData {
 		return (MXNoteData) super.previous();
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return String.format(
-				"idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tie=%b, fifths=%d, harmony=%s",
-				index(), onset(), noteName(), beat(), timeValue(), xmlPartNumber(),
-				measureNumber(), xmlVoice(), offset(), velocity(), rest(),
-				child() != null, isGrace(), isTied(), fifths(), chord());
-	}
-
 	/**
 	 * @param longerNoteRule
 	 */

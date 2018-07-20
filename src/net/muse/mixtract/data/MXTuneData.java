@@ -601,9 +601,15 @@ public class MXTuneData extends TuneData {
 		String noteName = getValue(keys, 2);
 		double beat = Double.parseDouble(getValue(keys, 3));
 		int tval = Integer.parseInt(getValue(keys, 4));
-		int partNumber = Integer.parseInt(getValue(keys, 5));
+		int xmlPartNumber = Integer.parseInt(getValue(keys, 5));
 		int measureNumber = Integer.parseInt(getValue(keys, 6));
-		int voice = Integer.parseInt(getValue(keys, 7));
+		int xmlVoice = Integer.parseInt(getValue(keys, 7));
+		int musePhony = 0;
+		try {
+			musePhony = Integer.parseInt(getValue(keys, 8));
+		} catch (IllegalArgumentException e) {
+			musePhony = xmlVoice;
+		}
 
 		// rendering information
 		keys = type[1].split(", ");
@@ -616,10 +622,11 @@ public class MXTuneData extends TuneData {
 		int fifths = Integer.parseInt(getValue(keys, 6));
 		Harmony chordName = Harmony.valueOf(getValue(keys, 7));
 
-		MXNoteData nd = new MXNoteData(++idx, partNumber, onset, offset,
+		MXNoteData nd = new MXNoteData(++idx, xmlPartNumber, onset, offset,
 				noteName, rest, grace, tie, tval, beat);
 		nd.setMeasureNumber(measureNumber);
-		nd.setXMLVoice(voice);
+		nd.setXMLVoice(xmlVoice);
+		nd.setMusePhony(musePhony);
 		nd.setVelocity(vel);
 		nd.setFifths(fifths);
 		nd.setChord(chordName);
