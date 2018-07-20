@@ -655,10 +655,10 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				continue;
 			// ひとつめの音のvoiceで選択声部を制限する
 			if (selectedVoice < 0) {
-				selectedVoice = l.getScoreNote().partNumber();
+				selectedVoice = l.getScoreNote().xmlPartNumber();
 				System.out.println("selected voice: " + selectedVoice);
 			}
-			if (l.getScoreNote().partNumber() != selectedVoice)
+			if (l.getScoreNote().xmlPartNumber() != selectedVoice)
 				continue;
 			if (!selectedNoteLabels.contains(l)) {
 				selectedNoteLabels.addLast(l);

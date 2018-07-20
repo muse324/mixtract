@@ -74,7 +74,7 @@ public class MXNoteData extends NoteData {
 		if (obj == null)
 			return false;
 		NoteData cmp = (NoteData) obj;
-		return partNumber() == cmp.partNumber() && onset() == cmp.onset()
+		return xmlPartNumber() == cmp.xmlPartNumber() && onset() == cmp.onset()
 				&& noteNumber() == cmp.noteNumber();
 	}
 
@@ -120,8 +120,8 @@ public class MXNoteData extends NoteData {
 	public String toString() {
 		return String.format(
 				"idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tie=%b, fifths=%d, harmony=%s",
-				index(), onset(), noteName(), beat(), timeValue(), partNumber(),
-				measureNumber(), voice(), offset(), velocity(), rest(),
+				index(), onset(), noteName(), beat(), timeValue(), xmlPartNumber(),
+				measureNumber(), xmlVoice(), offset(), velocity(), rest(),
 				child() != null, isGrace(), isTied(), fifths(), chord());
 	}
 

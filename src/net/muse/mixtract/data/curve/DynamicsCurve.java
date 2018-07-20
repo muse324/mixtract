@@ -65,7 +65,7 @@ public class DynamicsCurve extends PhraseCurve {
 			if (idx >= size)
 				idx = size - 1;
 
-			double vel = getDefaultVelocity() * volume[note.partNumber() - 1];
+			double vel = getDefaultVelocity() * volume[note.xmlPartNumber() - 1];
 			vel += 20 * dynamicsList.get(idx);
 			note.setVelocity((int) vel);
 		}

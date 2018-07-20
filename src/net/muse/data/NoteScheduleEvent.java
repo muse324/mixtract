@@ -42,7 +42,7 @@ public class NoteScheduleEvent {
 		this.onset = (long) onset;
 		this.type = NoteType.is(shortMessageType);
 		message = new ShortMessage();
-		message.setMessage(shortMessageType, parent.partNumber() - 1, (!parent
+		message.setMessage(shortMessageType, parent.xmlPartNumber() - 1, (!parent
 				.rest()) ? parent.noteNumber() : 0, velocity);
 	}
 

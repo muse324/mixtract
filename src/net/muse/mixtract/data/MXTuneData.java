@@ -619,7 +619,7 @@ public class MXTuneData extends TuneData {
 		MXNoteData nd = new MXNoteData(++idx, partNumber, onset, offset,
 				noteName, rest, grace, tie, tval, beat);
 		nd.setMeasureNumber(measureNumber);
-		nd.setVoice(voice);
+		nd.setXMLVoice(voice);
 		nd.setVelocity(vel);
 		nd.setFifths(fifths);
 		nd.setChord(chordName);

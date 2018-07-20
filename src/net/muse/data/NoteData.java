@@ -49,9 +49,9 @@ public class NoteData extends SequenceData {
 	private String noteName = "";
 	/**
 	 * Part number begins from 1 by integer.<br>
-	 * 声部番号(1～)
+	 * 声部番号(1～)。１から始まる。0の場合、声部の区別がされていないことを表す。
 	 */
-	private int partNumber = 0;
+	private int xmlPartNumber = 0;
 	/**
 	 * Measure number begins from 0 (Auftakt) by integer.<br>
 	 * 小節番号(0～)
@@ -78,8 +78,8 @@ public class NoteData extends SequenceData {
 	 * 小節内の拍の位置。 TODO １拍目を0.0とするか1.0とするかは各プログラムで確認してください。
 	 */
 	private double beat;
-	/** 声部番号。１から始まる。0の場合、声部の区別がされていないことを表す。 */
-	private int voice = 0;
+	/** MusicXMLのボイス番号。１から始まる。0の場合、声部の区別がされていないことを表す。 */
+	private int xmlVoice = 0;
 	/** 装飾音であるかどうかを判別します。 */
 	private boolean grace = false;
 	/** タイであるかどうかを判別します。 */
@@ -287,8 +287,8 @@ public class NoteData extends SequenceData {
 	/**
 	 * @return partNumber
 	 */
-	public int partNumber() {
-		return partNumber;
+	public int xmlPartNumber() {
+		return xmlPartNumber;
 	}
 
 	/*
@@ -359,8 +359,8 @@ public class NoteData extends SequenceData {
 	/**
 	 * @param partNumber セットする partNumber
 	 */
-	public final void setPartNumber(int partNumber) {
-		this.partNumber = partNumber;
+	public final void setXMLPartNumber(int partNumber) {
+		this.xmlPartNumber = partNumber;
 	}
 
 	public void setRealOffset(double offset) {
@@ -388,8 +388,8 @@ public class NoteData extends SequenceData {
 	/**
 	 * @param voice セットする voice
 	 */
-	public void setVoice(int voice) {
-		this.voice = voice;
+	public void setXMLVoice(int voice) {
+		this.xmlVoice = voice;
 	}
 
 	/**
@@ -414,8 +414,8 @@ public class NoteData extends SequenceData {
 	/**
 	 * @return voice
 	 */
-	public int voice() {
-		return voice;
+	public int xmlVoice() {
+		return xmlVoice;
 	}
 
 	protected void createMIDINoteEvent(int bpm, int vel) {
@@ -433,10 +433,10 @@ public class NoteData extends SequenceData {
 	protected void initialize(int partNumber, String noteName, int noteNumber,
 			int voice, boolean grace, boolean tie, boolean rest, double beat,
 			Harmony chord) {
-		this.partNumber = partNumber;
+		this.xmlPartNumber = partNumber;
 		this.noteName = noteName;
 		this.noteNumber = noteNumber;
-		this.voice = voice;
+		this.xmlVoice = voice;
 		this.grace = grace;
 		this.tied = tie;
 		this.rest = rest;

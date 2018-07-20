@@ -65,8 +65,8 @@ public class NoteLabel extends GroupLabel {
 	protected NoteLabel(NoteData note, Rectangle r) {
 		super();
 		this.note = note;
-		setPartNumber(note.partNumber());
-		setCurrentColor(new PartColor(note.partNumber()).getColor());
+		setPartNumber(note.xmlPartNumber());
+		setCurrentColor(new PartColor(note.xmlPartNumber()).getColor());
 		setOpaque(true);
 		setLocation(r.x, r.y);
 		setBounds(r);
@@ -81,7 +81,7 @@ public class NoteLabel extends GroupLabel {
 	@Override public void setPartNumber(int partNumber) {
 		super.setPartNumber(partNumber);
 		setCurrentColor(new PartColor(partNumber).getColor());
-		note.setPartNumber(partNumber);
+		note.setXMLPartNumber(partNumber);
 	}
 
 	private void setMeasureBeginning(boolean b) {
