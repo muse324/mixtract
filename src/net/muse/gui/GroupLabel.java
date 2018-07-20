@@ -134,15 +134,19 @@ public class GroupLabel extends JLabel {
 				return;
 			}
 			if (e.getClickCount() == 2) {
-				for (InfoViewer r : main().butler().getInfoViewList()) {
-					if (r.contains(gr)) {
-						r.setVisible(true);
-						return;
-					}
-				}
-				showInfoViewer(main(), gr);
+				doubleClicked(gr);
 			}
 			repaint();
+		}
+
+		protected void doubleClicked(Group gr) {
+			for (InfoViewer r : main().butler().getInfoViewList()) {
+				if (r.contains(gr)) {
+					r.setVisible(true);
+					return;
+				}
+			}
+			showInfoViewer(main(), gr);
 		}
 
 		/*

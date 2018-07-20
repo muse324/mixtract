@@ -2,7 +2,9 @@ package net.muse.gui;
 
 import java.awt.BorderLayout;
 
-import javax.swing.*;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import net.muse.app.Mixtract;
 import net.muse.data.Group;
