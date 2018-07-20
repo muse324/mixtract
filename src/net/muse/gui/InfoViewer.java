@@ -5,8 +5,8 @@ import java.awt.BorderLayout;
 import javax.swing.*;
 
 import net.muse.app.Mixtract;
-import net.muse.app.MuseApp;
 import net.muse.data.Group;
+import net.muse.misc.MuseObject;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.gui.PhraseViewer;
 
@@ -14,16 +14,16 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 	private static final long serialVersionUID = 1L;
 
 	/* 制御データ */
-	protected final MuseApp main;
+	protected final MuseObject main;
 	protected final Group group;
 
-	public static InfoViewer create(MuseApp app, Group gr) {
+	public static InfoViewer create(MuseGUIObject<JFrame> app, Group gr) {
 		if (app instanceof Mixtract && gr instanceof MXGroup)
 			return new PhraseViewer(app, gr);
 		return new InfoViewer(app, gr);
 	}
 
-	protected InfoViewer(MuseApp app, Group group) {
+	protected InfoViewer(MuseGUIObject<JFrame> app, Group group) {
 		super(app.getFrame());
 		this.main = app;
 		this.group = group;
@@ -67,7 +67,7 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 	/**
 	 * @return main
 	 */
-	protected MuseApp main() {
+	protected MuseObject main() {
 		return main;
 	}
 

@@ -1,9 +1,8 @@
 package net.muse.mixtract.command;
 
-import net.muse.command.MuseAppCommand;
 import net.muse.gui.GroupLabel;
 
-final class DeleteGroupCommand extends MuseAppCommand {
+public final class DeleteGroupCommand extends MixtractCommand {
 
 	public DeleteGroupCommand(String... lang) {
 		super(lang);
@@ -13,19 +12,13 @@ final class DeleteGroupCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override
-	public void execute() {
-		if (_target != null) {
-			GroupLabel sel = frame().getGroupingPanel().getSelectedGroup();
-			// _target.deleteGUIGroup(_selectedObjects.getGroupLabel());
-			// _selectedObjects.clearAll();
-			main().data().deleteGroupFromData(sel.group());
-			main().notifyDeleteGroup(sel);
-			// getPianorollScroll().repaint();
-			// getGroupingPanel().deselectLabel();
-			// getExpressionPanel().clearGroup();
-			// setTune(target);
-		}
+	@Override public void run() {
+		if (data() == null)
+			return;
+
+		GroupLabel sel = frame().getGroupingPanel().getSelectedGroup();
+		main().data().deleteGroupFromData(sel.group());
+		main().notifyDeleteGroup(sel);
 	}
 
 }

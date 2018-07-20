@@ -17,7 +17,7 @@ final class GTTMAnalysisCommand extends
 	 * AnalyseStructureCommand
 	 * #execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		makeUserGroup();
 	}
 

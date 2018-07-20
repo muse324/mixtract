@@ -5,7 +5,6 @@ import java.awt.*;
 import javax.swing.*;
 
 import net.muse.app.Mixtract;
-import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.gui.*;
 import net.muse.mixtract.data.MXGroup;
@@ -29,7 +28,7 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 
 	private ButtonGroup viewSelectionGroup = new ButtonGroup();
 
-	public PhraseViewer(MuseApp app, Group gr) {
+	public PhraseViewer(MuseGUIObject<JFrame> app, Group gr) {
 		super(app, gr);
 	}
 

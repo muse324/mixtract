@@ -155,7 +155,7 @@ public class MXMainFrame extends MainFrame {
 		if (phraseDynView == null) {
 			phraseDynView = new PhraseCurveEditorPanel(main,
 					PhraseCurveType.DYNAMICS);
-			main.addTuneDataListener(phraseDynView);
+			butler().addTuneDataListenerList(phraseDynView);
 		}
 		return phraseDynView;
 	}
@@ -164,7 +164,7 @@ public class MXMainFrame extends MainFrame {
 		if (phraseTempoView == null) {
 			phraseTempoView = new PhraseCurveEditorPanel(main,
 					PhraseCurveType.TEMPO);
-			main.addTuneDataListener(phraseTempoView);
+			butler().addTuneDataListenerList(phraseTempoView);
 		}
 		return phraseTempoView;
 	}
@@ -173,7 +173,7 @@ public class MXMainFrame extends MainFrame {
 		if (phraseArtView == null) {
 			phraseArtView = new PhraseCurveEditorPanel(main,
 					PhraseCurveType.ARTICULATION);
-			main.addTuneDataListener(phraseArtView);
+			butler().addTuneDataListenerList(phraseArtView);
 		}
 		return phraseArtView;
 	}
@@ -181,7 +181,7 @@ public class MXMainFrame extends MainFrame {
 	private JPanel getPhraseInfoPanel() {
 		if (phraseInfoPanel == null) {
 			phraseInfoPanel = new PhraseInfoPanel();
-			main.addTuneDataListener(phraseInfoPanel);
+			butler().addTuneDataListenerList(phraseInfoPanel);
 		}
 		return phraseInfoPanel;
 	}
@@ -201,7 +201,7 @@ public class MXMainFrame extends MainFrame {
 								java.awt.event.ActionEvent e) {
 							assert data instanceof MXTuneData;
 							main.analyzeStructure((MXTuneData) data, null);
-							main.notifySetTarget();
+							main.butler().notifySetTarget(data);
 						}
 					});
 		}

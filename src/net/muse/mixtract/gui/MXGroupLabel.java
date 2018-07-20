@@ -5,7 +5,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import net.muse.data.Group;
+import net.muse.app.MuseApp;
 import net.muse.gui.GroupLabel;
 import net.muse.mixtract.data.MXGroup;
 
@@ -15,7 +15,7 @@ public class MXGroupLabel extends GroupLabel {
 	private MXGroupLabel childFormer;
 	private MXGroupLabel childLatter;
 
-	public MXGroupLabel(Group group, Rectangle r) {
+	public MXGroupLabel(MXGroup group, Rectangle r) {
 		super(group, r);
 	}
 
@@ -38,6 +38,26 @@ public class MXGroupLabel extends GroupLabel {
 			}
 		}
 		return childLatter;
+	}
+
+	protected GroupLabel child(ArrayList<GroupLabel> grouplist) {
+		throw new NoClassDefFoundError("MXGroupLabelでは使用できません．");
+	}
+
+	/* (非 Javadoc)
+	 * @see net.muse.gui.GroupLabel#createMouseActionListener(net.muse.app.MuseApp)
+	 */
+	@Override protected GLMouseActionListener createMouseActionListener(
+			MuseApp main) {
+		return new GLMouseActionListener(main, this){
+
+			/* (非 Javadoc)
+			 * @see net.muse.gui.GroupLabel.GLMouseActionListener#self()
+			 */
+			@Override public MXGroupLabel self() {
+				return (MXGroupLabel) super.self();
+			}
+		};
 	}
 
 	protected GroupLabel getChildFormer(ArrayList<GroupLabel> grouplist) {
@@ -128,10 +148,6 @@ public class MXGroupLabel extends GroupLabel {
 	 */
 	private boolean hasChildLatter() {
 		return childLatter != null;
-	}
-
-	protected GroupLabel child(ArrayList<GroupLabel> grouplist) {
-		throw new NoClassDefFoundError("MXGroupLabelでは使用できません．");
 	}
 
 }

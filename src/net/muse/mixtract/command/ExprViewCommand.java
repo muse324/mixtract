@@ -9,7 +9,7 @@ final class ExprViewCommand extends MixtractCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 
-	@Override public void execute() {
+	@Override public void run() {
 		// _mainFrame.getExpressionPanel()
 		// .setShowExpression(
 		// !_mainFrame.getExpressionPanel()

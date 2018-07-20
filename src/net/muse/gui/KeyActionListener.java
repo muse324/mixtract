@@ -3,20 +3,20 @@ package net.muse.gui;
 import java.awt.Container;
 import java.awt.event.KeyAdapter;
 
-import net.muse.app.MuseApp;
+import net.muse.misc.MuseObject;
 
 public class KeyActionListener extends KeyAdapter {
 
-	private final MuseApp _main;
+	private final MuseObject _main;
 	private final Container _owner;
 
-	public KeyActionListener(MuseApp main, Container owner) {
+	public KeyActionListener(MuseObject main, Container owner) {
 		super();
 		_main = main;
 		_owner = owner;
 	}
 
-	public MuseApp main() {
+	public MuseObject main() {
 		return _main;
 	}
 

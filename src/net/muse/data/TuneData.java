@@ -3,8 +3,6 @@ package net.muse.data;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,22 +15,14 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.FileUtils;
-import org.xml.sax.SAXException;
 
-import eu.medsea.mimeutil.MimeType;
-import eu.medsea.mimeutil.MimeUtil;
 import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
 import jp.crestmuse.cmx.filewrappers.DeviationInstanceWrapper;
-import jp.crestmuse.cmx.filewrappers.MIDIXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
-import jp.crestmuse.cmx.processing.CMXController;
 import net.muse.app.Mixtract;
-import net.muse.gui.GUIUtil;
 import net.muse.misc.MuseObject;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -100,13 +90,12 @@ public class TuneData extends MuseObject implements TuneDataController {
 		TuneData.segmentGroupnoteLine = segmentGroupnoteLine;
 	}
 
-	public TuneData(File in, File out) throws IOException,
-			InvalidMidiDataException {
+	public TuneData(File in, File out) throws IOException {
 		dynamicsList = new LinkedList<Double>();
 		tempoList = new LinkedList<Double>();
 		articulationList = new LinkedList<Double>();
-		this.inputFile = in;
-		this.outputFile = out;
+		inputFile = in;
+		outputFile = out;
 		readfile();
 		calculateExpressionParameters();
 	}
@@ -253,11 +242,11 @@ public class TuneData extends MuseObject implements TuneDataController {
 	}
 
 	public void printAllGroups() {
-		GUIUtil.printConsole("Hierarchical group list:");
+		butler().printConsole("Hierarchical group list:");
 		for (Group g : getRootGroup()) {
 			printGroupList(g);
 		}
-		GUIUtil.printConsole("Non hierarchical group list:");
+		butler().printConsole("Non hierarchical group list:");
 		for (Group g : getMiscGroup()) {
 			printGroupList(g);
 		}
@@ -267,49 +256,31 @@ public class TuneData extends MuseObject implements TuneDataController {
 	 * (非 Javadoc)
 	 * @see net.muse.data.TuneDataController#readfile()
 	 */
-	public void readfile() throws IOException {
-		// システム独自形式の読込
-		if (isOriginalFileFormat()) {
-			readOriginalFile();
-			outputFile = inputFile;
-			return;
-		}
-
-		// ファイルの種類を調べる
-		String fileType = getInputFileType();
-		if (fileType == null)
-			return;
-
-		// XMLならCMX形式でインポート
-		if (fileType.equals("xml")) {
-			readCMXFile(inputFile.getAbsolutePath());
-			parseMusicXMLFile();
-			return;
-		}
-		// MIDIファイル
-		if (fileType.equals("midi") || fileType.equals("x-midi")) {
-			readMIDIFile();
-			parseSCCXMLFile();
-			return;
-		}
-	}
-
-	/**
-	 * 入力ファイルのファイルタイプを調べます．
-	 *
-	 * @see {@link https://hacknote.jp/archives/5320/}
-	 * @return (String) ファイルの種類
-	 */
-	private String getInputFileType() {
-		MimeUtil.registerMimeDetector(
-				"eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
-		Collection<?> mimeTypes = MimeUtil.getMimeTypes(in());
-		if (mimeTypes.isEmpty())
-			return null;
-		Iterator<?> iterator = mimeTypes.iterator();
-		MimeType mimeType = (MimeType) iterator.next();
-		String fileType = mimeType.getSubType();
-		return fileType;
+	@Deprecated public void readfile() throws IOException {
+		// // システム独自形式の読込
+		// if (isOriginalFileFormat()) {
+		// readOriginalFile();
+		// outputFile = inputFile;
+		// return;
+		// }
+		//
+		// // ファイルの種類を調べる
+		// String fileType = butler().getInputFileType(in());
+		// if (fileType == null)
+		// return;
+		//
+		// // XMLならCMX形式でインポート
+		// if (fileType.equals("xml")) {
+		// readCMXFile(in().getAbsolutePath());
+		// parseMusicXMLFile();
+		// return;
+		// }
+		// // MIDIファイル
+		// if (fileType.equals("midi") || fileType.equals("x-midi")) {
+		// readMIDIFile();
+		// parseSCCXMLFile();
+		// return;
+		// }
 	}
 
 	public void setBPM(int idx, int value) {
@@ -328,10 +299,10 @@ public class TuneData extends MuseObject implements TuneDataController {
 			}
 		}
 		// log print
-		Mixtract.log.println("---- noteScheduleEventList: ");
+		log().println("---- noteScheduleEventList: ");
 		for (NoteScheduleEvent ev : noteScheduleEventList)
-			Mixtract.log.println(ev.toString());
-		Mixtract.log.println("----------------------------");
+			log().println(ev.toString());
+		log().println("----------------------------");
 	}
 
 	/**
@@ -447,10 +418,6 @@ public class TuneData extends MuseObject implements TuneDataController {
 		dialogOutputLocation();
 	}
 
-	protected CMXNoteHandler createCMXNoteHandler() {
-		return new CMXNoteHandler(this);
-	}
-
 	/**
 	 * @param target
 	 */
@@ -496,13 +463,13 @@ public class TuneData extends MuseObject implements TuneDataController {
 				"Project path confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
 		switch (res) {
 		case JOptionPane.CANCEL_OPTION:
-			testPrintln("cancelled.");
+			butler().printConsole("cancelled.");
 			return;
 		case JOptionPane.NO_OPTION:
 			JFileChooser fc = new JFileChooser(outputFile.getParentFile());
 			res = fc.showSaveDialog(null);
 			if (res == JOptionPane.NO_OPTION) {
-				testPrintln("cancelled.");
+				butler().printConsole("cancelled.");
 				return;
 			}
 			// 出力ファイル(orフォルダ)を作成する
@@ -566,23 +533,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 		System.out.println(g);
 	}
 
-	protected void readCMXFile(String xmlFilename) throws IOException {
-		testPrintln("import CMX file");
-		CMXFileWrapper cmx = CMXController.readfile(xmlFilename);
-		if (cmx instanceof DeviationInstanceWrapper) {
-			dev = ((DeviationInstanceWrapper) cmx);
-			xml = dev.getTargetMusicXML();
-			// TODO deviation データを読み込む処理
-		} else if (cmx instanceof MusicXMLWrapper) {
-			xml = (MusicXMLWrapper) cmx;
-		} else if (cmx instanceof SCCXMLWrapper) {
-			scc = (SCCXMLWrapper) cmx;
-		} else
-			readCMXFile(cmx);
-	}
-
 	protected void readOriginalFile() throws IOException {
-		testPrintln("reading original format...(dummy)");
+		outputFile = inputFile;
 	}
 
 	protected void setGrouplist(int partIndex, Group rootGroup) {
@@ -682,45 +634,6 @@ public class TuneData extends MuseObject implements TuneDataController {
 		}
 	}
 
-	private void parseMusicXMLFile() {
-		if (xml == null)
-			return;
-		xml.processNotePartwise(createCMXNoteHandler());
-	}
-
-	private void parseSCCXMLFile() {
-		if (scc == null)
-			return;
-		try {
-			scc.processNotes(createCMXNoteHandler());
-		} catch (TransformerException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * CrestMuseXML(CMX)形式のデータから読込処理を行います。
-	 * MusicXML、DeviationIncetanceWrapper形式についてはreadCMLFile(String)メソッドにてすでに格納されています。
-	 * このメソッドでは、それ以外の形式についての処理を実装してください。
-	 *
-	 * @param cmx
-	 * @see TuneData.readCMXFile(String)
-	 * @see {@link CrestMuseXML:<a href=
-	 *      "http://cmx.osdn.jp/">http://cmx.osdn.jp/</a>}
-	 */
-	private void readCMXFile(CMXFileWrapper cmx) {}
-
-	private void readMIDIFile() {
-		try {
-			MIDIXMLWrapper mid = CMXController.readSMFAsMIDIXML(in()
-					.getAbsolutePath());
-			scc = mid.toSCCXML();
-		} catch (TransformerException | IOException
-				| ParserConfigurationException | SAXException e) {
-			e.printStackTrace();
-		}
-	}
-
 	/**
 	 * @param inputFile
 	 *            セットする inputFile
@@ -797,4 +710,24 @@ public class TuneData extends MuseObject implements TuneDataController {
 		throw new NotImplementedException();
 	}
 
+	protected CMXNoteHandler createCMXNoteHandler() {
+		return new CMXNoteHandler(this);
+	}
+
+	public void importCMXobjects(CMXFileWrapper... args) {
+		for (CMXFileWrapper in : args) {
+			if (in instanceof MusicXMLWrapper) {
+				xml = (MusicXMLWrapper) in;
+				continue;
+			}
+			if (in instanceof DeviationInstanceWrapper) {
+				dev = (DeviationInstanceWrapper) in;
+				continue;
+			}
+			if (in instanceof SCCXMLWrapper) {
+				scc = (SCCXMLWrapper) in;
+				continue;
+			}
+		}
+	}
 }

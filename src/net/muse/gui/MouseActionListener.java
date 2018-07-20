@@ -14,9 +14,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
+import net.muse.command.MuseAppCommandAction;
 import net.muse.command.MuseAppCommand;
-import net.muse.misc.Command;
-import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommandType;
 
 /**
  * MuseApp GUI システムに共通するマウスアクションを集めたものです。
@@ -29,7 +29,7 @@ public class MouseActionListener extends MouseAdapter implements
 	private static Point mousePoint;
 
 	/* 制御オブジェクト */
-	protected static MuseApp _main;
+	private final MuseApp _main;
 	private final Container _self;
 	private final MainFrame _frame;
 	private JPopupMenu popup;
@@ -49,7 +49,7 @@ public class MouseActionListener extends MouseAdapter implements
 		super();
 		_main = main;
 		_self = owner;
-		_frame = (MainFrame) _main.getFrame();
+		_frame = (MainFrame) main().getFrame();
 	}
 
 	/*
@@ -59,8 +59,11 @@ public class MouseActionListener extends MouseAdapter implements
 	 * )
 	 */
 	public void actionPerformed(ActionEvent e) {
-		final Command c = MixtractCommand.create(e.getActionCommand());
-		c.execute();
+		final MuseAppCommand c = MuseAppCommand.create(e.getActionCommand());
+		c.setFrame(frame());
+		c.setMain(main());
+		c.setTarget(e.getSource());
+		c.run();
 	}
 
 	public Rectangle getMouseBox() {
@@ -233,10 +236,11 @@ public class MouseActionListener extends MouseAdapter implements
 		this.endPoint = endPoint;
 	}
 
-	protected JMenuItem addMenuItem(Command command, boolean enabled) {
+	protected JMenuItem addMenuItem(MuseAppCommandAction command,
+			boolean enabled) {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem();
-		menuItem.setText(command.getText());
+		menuItem.setText(command.self().getText());
 		menuItem.setActionCommand(command.name());
 		menuItem.addActionListener(this);
 		menuItem.setEnabled(enabled);
@@ -254,24 +258,25 @@ public class MouseActionListener extends MouseAdapter implements
 		// group attributes
 		JMenu attrMenu = new JMenu("Set articulation");
 		attrMenu.setEnabled(hasSelectedGroup);
-		attrMenu.add(addMenuItem(MixtractCommand.SET_TYPE_CRESC,
+		attrMenu.add(addMenuItem(MixtractCommandType.SET_TYPE_CRESC,
 				hasSelectedGroup));
-		attrMenu.add(addMenuItem(MixtractCommand.SET_TYPE_DIM,
+		attrMenu.add(addMenuItem(MixtractCommandType.SET_TYPE_DIM,
 				hasSelectedGroup));
 		popup.add(attrMenu);
 		popup.addSeparator();
 
-		popup.add(addMenuItem(MixtractCommand.PRINT_GROUP_INFO,
+		popup.add(addMenuItem(MixtractCommandType.PRINT_GROUP_INFO,
 				hasSelectedGroup));
-		popup.add(addMenuItem(MixtractCommand.DELETE_GROUP, hasSelectedGroup));
-		popup.add(addMenuItem(MixtractCommand.CLEAR_ALLGROUPS, _main
+		popup.add(addMenuItem(MixtractCommandType.DELETE_GROUP,
+				hasSelectedGroup));
+		popup.add(addMenuItem(MixtractCommandType.CLEAR_ALLGROUPS, main()
 				.hasTarget()));
 		popup.addSeparator();
-		popup.add(addMenuItem(MuseAppCommand.PRINT_ALLGROUPS, _main
+		popup.add(addMenuItem(MixtractCommandType.PRINT_ALLGROUPS, main()
 				.hasTarget()));
 		// popup.add(addMenuItem(MixtractCommand.PRINT_SUBGROUPS,
 		// _main.hasTarget()));
-		popup.add(addMenuItem(MixtractCommand.MOUSE_DISPLAY, true));
+		popup.add(addMenuItem(MixtractCommandType.MOUSE_DISPLAY, true));
 	}
 
 	// private enum OwnerContainer {
@@ -375,9 +380,6 @@ public class MouseActionListener extends MouseAdapter implements
 
 	protected void createPopupMenu(MouseEvent e) {
 		popup = new JPopupMenu();
-		// if (src instanceof GroupLabel) {
-		// _self.notifySelectGroup(_self, (GroupLabel) src, true);
-		// }
 	}
 
 	/**
@@ -395,9 +397,6 @@ public class MouseActionListener extends MouseAdapter implements
 		startPoint = point;
 	}
 
-	/**
-	 * @return _self
-	 */
 	public Container self() {
 		return _self;
 	}
@@ -407,6 +406,10 @@ public class MouseActionListener extends MouseAdapter implements
 	 */
 	protected MainFrame frame() {
 		return _frame;
+	}
+
+	protected MuseApp main() {
+		return _main;
 	}
 
 }

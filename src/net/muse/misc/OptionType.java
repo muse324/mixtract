@@ -4,6 +4,7 @@ import java.io.File;
 
 import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
 import net.muse.app.MuseApp;
+import net.muse.command.MuseAppCommand;
 import net.muse.data.Group;
 import net.muse.gui.KeyBoard;
 import net.muse.mixtract.data.MXTuneData;
@@ -80,7 +81,7 @@ public enum OptionType {
 	LANGUAGE {
 		@Override
 		public void exe(MuseObject app, String property) {
-			Command.setLanguage(property);
+			MuseAppCommand.setLanguage(property);
 		}
 	},
 	MAXIMUM_MIDICHANNEL {

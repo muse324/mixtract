@@ -25,6 +25,7 @@ import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.data.TuneData;
 import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.MelodyFlagViewer;
@@ -38,7 +39,8 @@ import net.muse.mixtract.gui.ViewerMode;
  */
 public class GroupingPanel extends JPanel implements TuneDataListener {
 
-	private MuseAppCommand cmd = MixtractCommand.PRINT_GROUP_INFO;
+	private MuseAppCommand cmd = MixtractCommand.create(
+			MixtractCommandType.PRINT_GROUP_INFO);
 	private BasicStroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_ROUND,
 			BasicStroke.JOIN_ROUND, 10.0f, dashLineList, 0.0f);
 	private static final long serialVersionUID = 1L;
@@ -88,7 +90,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (!SwingUtilities.isRightMouseButton(e))
-					_main.notifyDeselectGroup();
+					main().notifyDeselectGroup();
 			}
 
 			/*
@@ -100,7 +102,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (selectedGroup == null)
-					_main.notifyDeselectGroup();
+					main().notifyDeselectGroup();
 				repaint();
 			}
 
@@ -123,26 +125,18 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			/*
 			 * (非 Javadoc)
 			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
-			 * .event.MouseEvent)
-			 */
-			@Override public void mouseMoved(MouseEvent e) {
-				super.mouseMoved(e);
-				repaint();
-			}
-
-			/*
-			 * (非 Javadoc)
-			 * @see
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu(
 			 * java
 			 * .awt.event.MouseEvent)
 			 */
 			@Override protected void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
-				MixtractCommand.SET_TYPE_CRESC.setGroup(getSelectedGroup());
-				MixtractCommand.SET_TYPE_DIM.setGroup(getSelectedGroup());
-				MixtractCommand.PRINT_GROUP_INFO.setGroup(getSelectedGroup());
+				MixtractCommandType.SET_TYPE_CRESC.self().setGroup(
+						getSelectedGroup());
+				MixtractCommandType.SET_TYPE_DIM.self().setGroup(
+						getSelectedGroup());
+				MixtractCommandType.PRINT_GROUP_INFO.self().setGroup(
+						getSelectedGroup());
 				addMenuItemOnGroupingPanel();
 				getPopup().show((Component) e.getSource(), e.getX(), e.getY());
 			}

@@ -1,4 +1,4 @@
-package net.muse.command;
+package net.muse.mixtract.command;
 
 /**
  * <h1>PrintAllGroupsCommand</h1>
@@ -11,7 +11,7 @@ package net.muse.command;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/10/29
  */
-final class PrintAllGroupsCommand extends MuseAppCommand {
+final class PrintAllGroupsCommand extends MixtractCommand {
 
 	public PrintAllGroupsCommand(String... lang) {
 		super(lang);
@@ -21,9 +21,8 @@ final class PrintAllGroupsCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override
-	public void execute() {
-		assert _target != null;
-		_target.printAllGroups();
+	@Override public void run() {
+		assert data() != null;
+		data().printAllGroups();
 	}
 }

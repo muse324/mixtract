@@ -1,4 +1,4 @@
-package net.muse.command;
+package net.muse.mixtract.command;
 
 import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
@@ -12,7 +12,7 @@ import net.muse.gui.GroupLabel;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2010/02/15
  */
-public class PrintGroupInfoCommand extends MuseAppCommand {
+public class PrintGroupInfoCommand extends MixtractCommand {
 
 	private Group group = null;
 
@@ -23,8 +23,7 @@ public class PrintGroupInfoCommand extends MuseAppCommand {
 	 * mixtract
 	 * .gui.GroupLabel)
 	 */
-	@Override
-	public void setGroup(GroupLabel groupLabel) {
+	@Override public void setGroup(GroupLabel groupLabel) {
 		if (groupLabel != null)
 			this.group = groupLabel.group();
 	}
@@ -33,8 +32,7 @@ public class PrintGroupInfoCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override
-	public void execute() {
+	@Override public void run() {
 		if (group == null) {
 			group = frame().getGroupingPanel().getSelectedGroup().group();
 		}

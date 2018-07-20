@@ -1,8 +1,6 @@
 package net.muse.mixtract.command;
 
-import net.muse.command.MuseAppCommand;
-
-final class ApplyTopNoteCommand extends MuseAppCommand {
+final class ApplyTopNoteCommand extends MixtractCommand {
 
 	public ApplyTopNoteCommand(String... lang) {
 		super(lang);
@@ -12,9 +10,8 @@ final class ApplyTopNoteCommand extends MuseAppCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
-		frame().getGroupingPanel()
-				.transferExpressionOfMostSimilarGroup();
+	@Override public void run() {
+		frame().getGroupingPanel().transferExpressionOfMostSimilarGroup();
 	}
 
 }

@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 
@@ -62,17 +61,7 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 	}
 
 	private void setController(MuseApp main) {
-		mouseActions = new MouseActionListener(main, this) {
-
-			@Override public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-			}
-
-			@Override public void mouseDragged(MouseEvent e) {
-				super.mouseDragged(e);
-				repaint();
-			}
-		};
+		mouseActions = new MouseActionListener(main, this);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
 	}

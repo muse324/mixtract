@@ -10,7 +10,7 @@ final class MouseDisplayCommand extends MixtractCommand {
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		frame().getGroupingPanel().setDisplayMousePointer(!frame()
 				.getGroupingPanel().isDisplayMousePointer());
 	}

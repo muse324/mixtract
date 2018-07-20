@@ -10,7 +10,7 @@ final class RefreshCommand extends MuseAppCommand {
 	 * (非 Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		frame().refreshDatabase();
 	}
 

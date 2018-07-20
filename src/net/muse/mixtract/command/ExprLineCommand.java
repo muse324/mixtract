@@ -9,7 +9,7 @@ final class ExprLineCommand extends MixtractCommand {
 		 * @see net.muse.misc.Command#execute()
 		 */
 
-	@Override public void execute() {
+	@Override public void run() {
 		// _mainFrame.getExpressionPanel().setShowExprLine(
 		// !_mainFrame
 		// .getExpressionPanel()
