@@ -173,19 +173,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		}
 	}
 
-	/**
-	 * グループが選択/解除されたことを通知します．
-	 *
-	 * @param g グループラベル
-	 * @param b 選択(true)/解除(false)
-	 */
-	public void notifySelectGroup(GroupLabel g, boolean b) {
-		data().setSelectedGroup((b) ? g.group() : null);
-		for (final TuneDataListener l : butler().getTdListenerList()) {
-			l.selectGroup(g, b);
-		}
-	}
-
 	public void notifyShowCurrentX(boolean showCurrentX, int x) {
 		for (CanvasMouseListener v : butler().getInfoViewList()) {
 			v.setShowCurrentX(showCurrentX, x);

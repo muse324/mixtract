@@ -18,6 +18,7 @@ import eu.medsea.mimeutil.MimeUtil;
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
 import net.muse.gui.GUIUtil;
+import net.muse.gui.GroupLabel;
 import net.muse.gui.InfoViewer;
 import net.muse.gui.MainFrame;
 import net.muse.gui.TuneDataListener;
@@ -101,6 +102,19 @@ public class Concierge extends MuseObject implements TuneDataController {
 			c.setMain(app());
 			c.setTarget(app().data());
 			c.run();
+		}
+	}
+
+	/**
+	 * グループが選択/解除されたことを通知します．
+	 *
+	 * @param g グループラベル
+	 * @param b 選択(true)/解除(false)
+	 */
+	public void notifySelectGroup(GroupLabel g, boolean b) {
+		data().setSelectedGroup((b) ? g.group() : null);
+		for (TuneDataListener l : getTdListenerList()) {
+			l.selectGroup(g, b);
 		}
 	}
 

@@ -209,7 +209,7 @@ public class GroupLabel extends JLabel {
 		 */
 		@Override public void mousePressed(MouseEvent e) {
 			super.mousePressed(e);
-			main().notifySelectGroup(self(), true);
+			main().butler().notifySelectGroup(self(), true);
 			if (self().getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
 				frame().getGroupingPanel().setGroupEditable(true);
 			}
