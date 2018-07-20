@@ -74,7 +74,7 @@ public class MXNoteData extends NoteData {
 		if (obj == null)
 			return false;
 		NoteData cmp = (NoteData) obj;
-		return xmlPartNumber() == cmp.xmlPartNumber() && onset() == cmp.onset()
+		return musePhony() == cmp.musePhony() && onset() == cmp.onset()
 				&& noteNumber() == cmp.noteNumber();
 	}
 

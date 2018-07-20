@@ -60,7 +60,7 @@ public class Group extends SequenceData {
 	 */
 	public Group(NoteData beginNote, NoteData endNote, GroupType type) {
 		this(type);
-		this.partNumber = beginNote.xmlPartNumber();
+		this.partNumber = beginNote.musePhony();
 		this.setBeginNote(beginNote);
 		this.setEndNote(endNote);
 	}

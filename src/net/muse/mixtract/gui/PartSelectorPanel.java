@@ -78,7 +78,7 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 	private void parseVoiceAssignedToNote(int[] voiceList, NoteData n) {
 		if (n == null)
 			return;
-		voiceList[n.xmlVoice() - 1]++;
+		voiceList[n.musePhony() - 1]++;
 		parseVoiceAssignedToNote(voiceList, n.child());
 		parseVoiceAssignedToNote(voiceList, n.next());
 	}

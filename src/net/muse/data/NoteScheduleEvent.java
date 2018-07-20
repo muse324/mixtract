@@ -1,7 +1,10 @@
 package net.muse.data;
 
 import java.security.InvalidParameterException;
-import javax.sound.midi.*;
+
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.ShortMessage;
 
 /**
  * <h1>NoteScheduleEvent</h1>
@@ -42,7 +45,7 @@ public class NoteScheduleEvent {
 		this.onset = (long) onset;
 		this.type = NoteType.is(shortMessageType);
 		message = new ShortMessage();
-		message.setMessage(shortMessageType, parent.xmlPartNumber() - 1, (!parent
+		message.setMessage(shortMessageType, parent.musePhony() - 1, (!parent
 				.rest()) ? parent.noteNumber() : 0, velocity);
 	}
 

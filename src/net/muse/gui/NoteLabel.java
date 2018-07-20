@@ -65,8 +65,8 @@ public class NoteLabel extends GroupLabel {
 	protected NoteLabel(NoteData note, Rectangle r) {
 		super();
 		this.note = note;
-		setPartNumber(note.xmlPartNumber());
-		setCurrentColor(new PartColor(note.xmlPartNumber()).getColor());
+		setPartNumber(note.musePhony());
+		setCurrentColor(new PartColor(note.musePhony()).getColor());
 		setOpaque(true);
 		setLocation(r.x, r.y);
 		setBounds(r);

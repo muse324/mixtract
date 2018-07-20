@@ -2,7 +2,9 @@ package net.muse.mixtract.data.curve;
 
 import java.util.LinkedList;
 
-import net.muse.data.*;
+import net.muse.data.Group;
+import net.muse.data.GroupNote;
+import net.muse.data.NoteData;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXTuneData;
 
@@ -65,7 +67,7 @@ public class DynamicsCurve extends PhraseCurve {
 			if (idx >= size)
 				idx = size - 1;
 
-			double vel = getDefaultVelocity() * volume[note.xmlPartNumber() - 1];
+			double vel = getDefaultVelocity() * volume[note.musePhony() - 1];
 			vel += 20 * dynamicsList.get(idx);
 			note.setVelocity((int) vel);
 		}
