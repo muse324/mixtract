@@ -54,6 +54,11 @@ public class MXPianoroll extends PianoRoll {
 		((MXGroup) g.group()).extractApex();
 	}
 
+	@Override public void editGroup(GroupLabel g) {
+		assert g.group() instanceof MXGroup;
+		((MXGroup) g.group()).setModified(true);
+	}
+
 	protected NoteLabel createNoteLabel(final NoteData note,
 			final Rectangle r) {
 		return new MXNoteLabel(note, r);

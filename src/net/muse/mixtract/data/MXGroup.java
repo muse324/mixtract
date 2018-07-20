@@ -26,6 +26,8 @@ public class MXGroup extends Group {
 	private NoteData centerNote;
 	private MXGroup childFormerGroup = null;
 	private MXGroup childLatterGroup = null;
+	private ArrayList<MXNoteData> apexNotelist;
+	private boolean isModified = false;
 
 	/**
 	 * @param beginNote
@@ -34,6 +36,7 @@ public class MXGroup extends Group {
 	 */
 	public MXGroup(NoteData beginNote, NoteData endNote, GroupType type) {
 		super(beginNote, endNote, type);
+		apexNotelist = new ArrayList<MXNoteData>();
 	}
 
 	/**
@@ -44,6 +47,7 @@ public class MXGroup extends Group {
 	 */
 	MXGroup(int id, int partNumber, NoteData note, GroupType type) {
 		super(id, partNumber, note, type);
+		apexNotelist = new ArrayList<MXNoteData>();
 	}
 
 	/**
@@ -61,6 +65,7 @@ public class MXGroup extends Group {
 		setBeginNote(g1.getBeginNote());
 		setEndNote(g2.getEndNote());
 		setChild(g1, g2);
+		apexNotelist = new ArrayList<MXNoteData>();
 	}
 
 	/**
@@ -70,6 +75,7 @@ public class MXGroup extends Group {
 	 */
 	MXGroup(NoteData notelist, int partIndex, GroupType type) {
 		super(notelist, partIndex, type);
+		apexNotelist = new ArrayList<MXNoteData>();
 	}
 
 	/*
@@ -96,43 +102,46 @@ public class MXGroup extends Group {
 	 * 頂点らしさを算出します。
 	 */
 	public void extractApex() {
-		ArrayList<MXNoteData> nlist = new ArrayList<MXNoteData>();
-		extractNotes(nlist);
+		if (!isModified)
+			return;
+		isModified=false;
+		apexNotelist.clear();
+		extractNotes();
 		// score clear
-		for (MXNoteData n : nlist) {
+		for (MXNoteData n : apexNotelist) {
 			n.clearApexScore();
 		}
 
-		final int sz = nlist.size();
-		ApexInfo.applyRule(ApexInfo.LONGER_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.SAME_TIMEVALUE_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.HIGHER_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.SAME_PITCH_NOTE, nlist, 0, sz);
+		final int sz = apexNotelist.size();
+		ApexInfo.applyRule(ApexInfo.LONGER_NOTE, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.SAME_TIMEVALUE_NOTE, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.HIGHER_NOTE, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.SAME_PITCH_NOTE, apexNotelist, 0, sz);
 		ApexInfo.applyRule(ApexInfo.BEGIN_NOTE, this);
 		ApexInfo.applyRule(ApexInfo.END_NOTE, this);
-		ApexInfo.applyRule(ApexInfo.MOUNTAIN_PROGRESS, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.VALLEY_PROGRESS, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.ZIGZAG_PROGRESS1, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.ZIGZAG_PROGRESS2, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.UPPER_STETCH_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.LOWER_STETCH_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.UPPER_PROGRESS_NOTE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.LOWER_PROGRESS_NOTE, nlist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.MOUNTAIN_PROGRESS, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.VALLEY_PROGRESS, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.ZIGZAG_PROGRESS1, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.ZIGZAG_PROGRESS2, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.UPPER_STETCH_NOTE, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.LOWER_STETCH_NOTE, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.UPPER_PROGRESS_NOTE, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.LOWER_PROGRESS_NOTE, apexNotelist, 0, sz);
 		for (Harmony h : Harmony.values()) {
-			ApexInfo.SingleChordRule.applyRule(h, nlist, 0, sz);
+			ApexInfo.SingleChordRule.applyRule(h, apexNotelist, 0, sz);
 		}
-		ApexInfo.applyRule(ApexInfo.CHORD_CHANGE, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.CADENTZ_I, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.CADENTZ_I6, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.CADENTZ_VI, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.APPOGGIATURA_LONGER, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.APPOGGIATURA_SAME, nlist, 0, sz);
-		ApexInfo.applyRule(ApexInfo.APPOGGIATURA_SHORTER, nlist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.CHORD_CHANGE, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.CADENTZ_I, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.CADENTZ_I6, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.CADENTZ_VI, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.APPOGGIATURA_LONGER, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.APPOGGIATURA_SAME, apexNotelist, 0, sz);
+		ApexInfo.applyRule(ApexInfo.APPOGGIATURA_SHORTER, apexNotelist, 0, sz);
 		// summarize
 		double max = -1000.;
 		double min = 1000.;
 		ArrayList<Double> scoreList = new ArrayList<Double>();
-		for (NoteData n : nlist) {
+		for (NoteData n : apexNotelist) {
 			assert n instanceof MXNoteData;
 			double score = ((MXNoteData) n).sumTotalApexScore();
 			if (score > max)
@@ -143,7 +152,7 @@ public class MXGroup extends Group {
 		}
 		double range = max - min;
 		for (int i = 0; i < sz; i++) {
-			((MXNoteData) nlist.get(i)).setApexScore((scoreList.get(i) - min)
+			((MXNoteData) apexNotelist.get(i)).setApexScore((scoreList.get(i) - min)
 					/ range);
 		}
 	}
@@ -240,11 +249,11 @@ public class MXGroup extends Group {
 		return str;
 	}
 
-	private void addNote(ArrayList<MXNoteData> nlist, MXNoteData n) {
+	private void addNote(MXNoteData n) {
 		if (n == null)
 			return;
-		nlist.add(n);
-		addNote(nlist, n.next());
+		apexNotelist.add(n);
+		addNote(n.next());
 	}
 
 	private void addScoreNoteList(MXNoteData n) {
@@ -254,15 +263,15 @@ public class MXGroup extends Group {
 		addScoreNoteList(n.next());
 	}
 
-	private void extractNotes(ArrayList<MXNoteData> nlist) {
+	private void extractNotes() {
 		if (!hasChild()) {
-			addNote(nlist, (MXNoteData) getBeginNote());
+			addNote((MXNoteData) getBeginNote());
 			return;
 		}
 		if (hasChildFormer())
-			getChildFormerGroup().extractNotes(nlist);
+			getChildFormerGroup().extractNotes();
 		if (hasChildLatter())
-			getChildLatterGroup().extractNotes(nlist);
+			getChildLatterGroup().extractNotes();
 	}
 
 	NoteData getCenterGroupNote() {
@@ -321,5 +330,13 @@ public class MXGroup extends Group {
 				PhraseCurveType.TEMPO);
 		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
 				PhraseCurveType.ARTICULATION);
+	}
+
+	public boolean isModified() {
+		return isModified;
+	}
+
+	public void setModified(boolean isModified) {
+		this.isModified = isModified;
 	}
 }

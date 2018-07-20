@@ -112,7 +112,7 @@ public class Concierge extends MuseObject implements TuneDataController {
 	 * @param b 選択(true)/解除(false)
 	 */
 	public void notifySelectGroup(GroupLabel g, boolean b) {
-		data().setSelectedGroup((b) ? g.group() : null);
+		app().data().setSelectedGroup((b) ? g.group() : null);
 		for (TuneDataListener l : getTdListenerList()) {
 			l.selectGroup(g, b);
 		}
