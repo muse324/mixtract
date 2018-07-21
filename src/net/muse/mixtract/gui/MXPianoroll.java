@@ -18,7 +18,7 @@ public class MXPianoroll extends PianoRoll {
 
 	boolean displayApex = false;
 
-	MXPianoroll(Mixtract main) {
+	protected MXPianoroll(Mixtract main) {
 		super(main);
 	}
 
