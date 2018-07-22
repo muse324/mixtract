@@ -118,6 +118,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private KeyBoard keyboard;
 	private JPanel dynHeaderView;
 	private JPanel dynCurvePanel;
+	private JMenu midiMenu;
+	private JMenuItem playStopMenu;
 
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
@@ -305,6 +307,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		getSaveMenu().setEnabled(true);
 		getDataSetButton().setEnabled(true);
 		getPlayButton().setEnabled(true);
+		getPlayStopMenu().setEnabled(true);
 
 		if (data != null) {
 			try {
@@ -332,6 +335,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		butler().printConsole("playing...");
 		playButton.setEnabled(false);
 		stopButton.setEnabled(true);
+		setPlaybarMode(MuseAppCommandType.STOP);
 		bpmValue.setEnabled(false);
 		tempoSlider.setEnabled(false);
 	}
@@ -340,6 +344,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		butler().printConsole("Sound stopped.");
 		playButton.setEnabled(true);
 		stopButton.setEnabled(false);
+		setPlaybarMode(MuseAppCommandType.PLAY);
 		bpmValue.setEnabled(true);
 		tempoSlider.setEnabled(true);
 	}
@@ -413,6 +418,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			playButton = new JButton();
 			playButton.setIcon(new ImageIcon(getClass().getResource(
 					"images/Play16.gif"))); // Generated
+			playButton.setMnemonic(KeyEvent.VK_SPACE);
 			playButton.setActionCommand("Play");
 			playButton.setToolTipText("Play");
 			playButton.setEnabled(false); // Generated
@@ -442,7 +448,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			stopButton.setText("Stop");
 			stopButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					butler().nosifyStopPlaying();
+					butler().notifyStopPlaying();
 				}
 			});
 		}
@@ -753,8 +759,43 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		if (menubar == null) {
 			menubar = new JMenuBar();
 			menubar.add(getFileMenu());
+			menubar.add(getMIDIMenu());
 		}
 		return menubar;
+	}
+
+	private JMenu getMIDIMenu() {
+		if (midiMenu == null) {
+			midiMenu = new JMenu();
+			midiMenu.setText("MIDI");
+			midiMenu.setMnemonic('M'); // ショートカットキー
+			midiMenu.add(getPlayStopMenu());
+			// midiMenu.add(getStopMenu());
+		}
+		return midiMenu;
+	}
+
+	private JMenuItem getPlayStopMenu() {
+		if (playStopMenu == null) {
+			playStopMenu = new JMenuItem();
+			setPlaybarMode(MuseAppCommandType.PLAY);
+			playStopMenu.setEnabled(false);
+			playStopMenu.setMnemonic(KeyEvent.VK_SPACE);
+			playStopMenu.setAccelerator(KeyStroke.getKeyStroke(
+					KeyEvent.VK_SPACE, shortcutKey));
+			playStopMenu.addActionListener(new ActionListener() {
+				@Override public void actionPerformed(ActionEvent e) {
+					switchPlayMode(e);
+				}
+			});
+		}
+		return playStopMenu;
+	}
+
+	private void setPlaybarMode(MuseAppCommandType type) {
+		MuseAppCommand cmd = MuseAppCommand.create(type.name());
+		playStopMenu.setActionCommand(type.name());
+		playStopMenu.setText(cmd.getText());
 	}
 
 	/**
@@ -1044,6 +1085,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 	protected String getWindowTitle() {
 		return WINDOW_TITLE;
+	}
+
+	protected void switchPlayMode(ActionEvent e) {
+		if (e.getActionCommand().equals(MuseAppCommandType.PLAY.name()))
+			butler().notifyStartPlaying(data);
+		else if (e.getActionCommand().equals(MuseAppCommandType.STOP.name()))
+			butler().notifyStopPlaying();
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

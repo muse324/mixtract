@@ -235,7 +235,7 @@ public class Concierge extends MuseObject implements TuneDataController {
 		((MuseApp) obj).synthe().notifyStartPlaying(data.getInputFilename());
 	}
 
-	public void nosifyStopPlaying() {
+	public void notifyStopPlaying() {
 		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
 				+ obj.getClass().getSimpleName();
 		((MuseApp) obj).synthe().notifyStopPlaying();
