@@ -23,6 +23,10 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 		return type.self();
 	}
 
+	public static MuseAppCommand create(MuseAppCommandType type) {
+		return type.self();
+	}
+
 	public static void setLanguage(String val) {
 		_language = Language.create(val);
 	}

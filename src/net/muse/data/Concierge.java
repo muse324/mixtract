@@ -17,6 +17,7 @@ import eu.medsea.mimeutil.MimeType;
 import eu.medsea.mimeutil.MimeUtil;
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
+import net.muse.command.MuseAppCommandType;
 import net.muse.gui.GUIUtil;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.InfoViewer;
@@ -35,6 +36,8 @@ public class Concierge extends MuseObject implements TuneDataController {
 	protected MuseObject obj;
 	private List<TuneDataListener> tdListenerList;
 	private ArrayList<InfoViewer> infoViewList;
+	private MuseAppCommand c = null;
+	private boolean isPlayed = false;
 
 	public Concierge(MuseObject obj) {
 		this.obj = obj;
@@ -83,19 +86,25 @@ public class Concierge extends MuseObject implements TuneDataController {
 	}
 
 	public void keyPressed(KeyEvent e) {
-		MuseAppCommand c = null;
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_G:
-			printConsole("make group");
-			c = MixtractCommand.create(MixtractCommandType.MAKE_GROUP);
-			break;
-		case KeyEvent.VK_BACK_SPACE:
-			printConsole("delete group");
-			c = MixtractCommand.create(MixtractCommandType.DELETE_GROUP);
-			break;
-		default:
-			printConsole(e.getSource().getClass().getName()
-					+ ": key pressed: ");
+		if (c == null) {
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_G:
+				printConsole("make group");
+				c = MixtractCommand.create(MixtractCommandType.MAKE_GROUP);
+				break;
+			case KeyEvent.VK_BACK_SPACE:
+				printConsole("delete group");
+				c = MixtractCommand.create(MixtractCommandType.DELETE_GROUP);
+				break;
+			case KeyEvent.VK_SPACE:
+				printConsole((!isPlayed) ? "play" : "stop");
+				c = MuseAppCommand.create((!isPlayed) ? MuseAppCommandType.PLAY
+						: MuseAppCommandType.STOP);
+				break;
+			default:
+				printConsole(e.getSource().getClass().getName()
+						+ ": key pressed: ");
+			}
 		}
 		if (c != null) {
 			c.setFrame((MainFrame) app().getFrame());
@@ -205,7 +214,7 @@ public class Concierge extends MuseObject implements TuneDataController {
 	protected MuseApp app() {
 		if (obj instanceof MuseAppCommand)
 			return (MuseApp) (((MuseAppCommand) obj).app());
-		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼びs出してください: obj:"
+		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
 				+ obj.getClass().getSimpleName();
 		return (MuseApp) obj;
 	}
@@ -213,6 +222,23 @@ public class Concierge extends MuseObject implements TuneDataController {
 	protected TuneData data() {
 		assert obj instanceof TuneData : "obj がTuneDataクラス系ではありません";
 		return (TuneData) obj;
+	}
+
+	public void notifyStartPlaying(TuneData data) {
+		if (data == null)
+			return;
+		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
+				+ obj.getClass().getSimpleName();
+		if (!data.getRootGroup(0).hasChild())
+			data.initializeNoteEvents();
+		data.setNoteScheduleEvent();
+		((MuseApp) obj).synthe().notifyStartPlaying(data.getInputFilename());
+	}
+
+	public void nosifyStopPlaying() {
+		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
+				+ obj.getClass().getSimpleName();
+		((MuseApp) obj).synthe().notifyStopPlaying();
 	}
 
 }

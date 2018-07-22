@@ -58,7 +58,6 @@ import net.muse.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.CurveView;
 import net.muse.mixtract.gui.PartSelectorPanel;
-import net.muse.mixtract.sound.MixtractMIDIController;
 import net.muse.sound.MIDIController;
 import net.muse.sound.MIDIEventListener;
 
@@ -97,7 +96,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JMenuItem saveMenu = null;
 	private int shortcutKey;
 	private JButton stopButton = null;
-	private final MixtractMIDIController synthe;
 	private JPanel tempoSettingPanel = null;
 	private JSlider tempoSlider = null;
 	private CurveView tempoView;
@@ -140,11 +138,9 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public MainFrame(MuseApp app) throws IOException {
 		super();
 		this.main = app;
-		synthe = new MixtractMIDIController(main.getMidiDeviceName(), main
-				.getTicksPerBeat());
-		synthe.addMidiEventListener(this);
+		main.synthe().addMidiEventListener(this);
 		butler().addTuneDataListenerList(this);
-		butler().addTuneDataListenerList(synthe);
+		butler().addTuneDataListenerList(main.synthe());
 
 		// TODO ウィンドウアイコンの設定
 		// ただし、OSXにはウィンドウアイコンはないため表示されない
@@ -421,14 +417,9 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			playButton.setToolTipText("Play");
 			playButton.setEnabled(false); // Generated
 			playButton.setText("Play");
-			playButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					if (data == null)
-						return;
-					if (!data.getRootGroup(0).hasChild())
-						data.initializeNoteEvents();
-					data.setNoteScheduleEvent();
-					synthe.notifyStartPlaying(data.getInputFilename());
+			playButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					butler().notifyStartPlaying(data);
 				}
 			});
 		}
@@ -451,8 +442,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			stopButton.setText("Stop");
 			stopButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					// data.setNoteScheduleEvent();
-					synthe.notifyStopPlaying();
+					butler().nosifyStopPlaying();
 				}
 			});
 		}

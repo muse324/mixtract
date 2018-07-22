@@ -19,6 +19,7 @@ import net.muse.gui.TuneDataListener;
 import net.muse.misc.OptionType;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.curve.PhraseCurveType;
+import net.muse.mixtract.sound.MixtractMIDIController;
 
 public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	protected static String PROPERTY_FILENAME = "Mixtract.properties";
@@ -43,6 +44,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	private TuneData data;
 	/** 階層的フレーズ構造の分析履歴 */
 	protected final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
+	private final MixtractMIDIController synthe;
 
 	/**
 	 * @return projectfileextension
@@ -54,6 +56,8 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	public MuseApp(String[] args) throws FileNotFoundException, IOException {
 		/* 初期化 */
 		super();
+		synthe = new MixtractMIDIController(getMidiDeviceName(),
+				getTicksPerBeat());
 		initialize();
 		setPropertyFilename(PROPERTY_FILENAME);
 		loadConfig();
@@ -415,6 +419,10 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 				doSearch = false;
 			}
 		}
+	}
+
+	public MixtractMIDIController synthe() {
+		return synthe;
 	}
 
 }
