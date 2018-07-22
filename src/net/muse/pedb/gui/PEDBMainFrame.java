@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import net.muse.app.Mixtract;
 import net.muse.mixtract.gui.MXMainFrame;
@@ -29,5 +30,14 @@ public class PEDBMainFrame extends MXMainFrame {
 		JPanel p = super.getTuneViewPanel();
 		p.remove(getCurveSplitPane());
 		return p;
+	}
+
+	@Override protected JToolBar getJToolBar() {
+		JToolBar toolBar = super.getJToolBar();
+		toolBar.remove(getScoreViewButton()); // Generated
+		toolBar.remove(getRealtimeViewButton()); // Generated
+		toolBar.remove(getAnalyzeButton()); // Generated
+		toolBar.remove(getTempoSettingPanel());
+		return toolBar;
 	}
 }

@@ -120,6 +120,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JPanel dynCurvePanel;
 	private JMenu midiMenu;
 	private JMenuItem playStopMenu;
+	private JToolBar toolBar;
 
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
@@ -379,15 +380,17 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	protected JToolBar getJToolBar() {
-		tempoValueLabel = new JLabel();
-		tempoValueLabel.setText("   BPM:");
-		JToolBar jToolBar = new JToolBar();
-		jToolBar.add(getDataSetButton()); // Generated
-		jToolBar.add(getPlayButton()); // Generated
-		jToolBar.add(getPauseButton()); // Generated
-		jToolBar.add(getStopButton()); // Generated
-		jToolBar.add(getTempoSettingPanel());
-		return jToolBar;
+		if (toolBar == null) {
+			tempoValueLabel = new JLabel();
+			tempoValueLabel.setText("   BPM:");
+			toolBar = new JToolBar();
+			toolBar.add(getDataSetButton()); // Generated
+			toolBar.add(getPlayButton()); // Generated
+			toolBar.add(getPauseButton()); // Generated
+			toolBar.add(getStopButton()); // Generated
+			toolBar.add(getTempoSettingPanel());
+		}
+		return toolBar;
 	}
 
 	/**

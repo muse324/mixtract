@@ -97,12 +97,12 @@ public class MXMainFrame extends MainFrame {
 	}
 
 	@Override protected JToolBar getJToolBar() {
-		JToolBar jToolBar = super.getJToolBar();
-		jToolBar.add(getScoreViewButton()); // Generated
-		jToolBar.add(getRealtimeViewButton()); // Generated
-		jToolBar.add(getAnalyzeButton()); // Generated
-		jToolBar.add(getTempoSettingPanel());
-		return jToolBar;
+		JToolBar toolBar = super.getJToolBar();
+		toolBar.add(getScoreViewButton()); // Generated
+		toolBar.add(getRealtimeViewButton()); // Generated
+		toolBar.add(getAnalyzeButton()); // Generated
+		toolBar.add(getTempoSettingPanel());
+		return toolBar;
 	}
 
 	/*
@@ -192,7 +192,7 @@ public class MXMainFrame extends MainFrame {
 	 *
 	 * @return javax.swing.JButton
 	 */
-	private JButton getAnalyzeButton() {
+	protected JButton getAnalyzeButton() {
 		if (analyzeButton == null) {
 			analyzeButton = new JButton("Analyze");
 			analyzeButton.setEnabled(false);
@@ -214,7 +214,7 @@ public class MXMainFrame extends MainFrame {
 	 *
 	 * @return javax.swing.JRadioButton
 	 */
-	private JRadioButton getRealtimeViewButton() {
+	protected JRadioButton getRealtimeViewButton() {
 		if (realtimeViewButton == null) {
 			realtimeViewButton = new JRadioButton("realtime view");
 			getPianorollViewerGroup().add(realtimeViewButton);
@@ -243,7 +243,7 @@ public class MXMainFrame extends MainFrame {
 	 *
 	 * @return javax.swing.JRadioButton
 	 */
-	private JRadioButton getScoreViewButton() {
+	protected JRadioButton getScoreViewButton() {
 		if (scoreViewButton == null) {
 			scoreViewButton = new JRadioButton("score view");
 			getPianorollViewerGroup().add(scoreViewButton);
