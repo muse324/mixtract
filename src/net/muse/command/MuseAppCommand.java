@@ -14,18 +14,18 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	protected static String filename;
 	protected static MIDIController synthe;
 
-	/**
-	 * @param cmd
-	 * @return
-	 */
-	public static MuseAppCommand create(String cmd) {
-		MuseAppCommandType type = MuseAppCommandType.valueOf(cmd);
-		return type.self();
-	}
-
-	public static MuseAppCommand create(MuseAppCommandType type) {
-		return type.self();
-	}
+//	/**
+//	 * @param cmd
+//	 * @return
+//	 */
+//	public static MuseAppCommand create(String cmd) {
+//		MuseAppCommandType type = MuseAppCommandType.valueOf(cmd);
+//		return type.command();
+//	}
+//
+//	public static MuseAppCommand create(MuseAppCommandType type) {
+//		return type.command();
+//	}
 
 	public static void setLanguage(String val) {
 		_language = Language.create(val);

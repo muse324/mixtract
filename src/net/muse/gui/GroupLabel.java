@@ -114,8 +114,8 @@ public class GroupLabel extends JLabel {
 		 */
 		@Override public void createPopupMenu(MouseEvent e) {
 			super.createPopupMenu(e);
-			MixtractCommandType.SET_TYPE_CRESC.self().setGroup(self());
-			MixtractCommandType.SET_TYPE_DIM.self().setGroup(self());
+			MixtractCommandType.SET_TYPE_CRESC.command().setGroup(self());
+			MixtractCommandType.SET_TYPE_DIM.command().setGroup(self());
 			addMenuItemOnGroupingPanel();
 			getPopup().show((Component) e.getSource(), e.getX(), e.getY());
 		}
@@ -370,7 +370,7 @@ public class GroupLabel extends JLabel {
 
 	protected void setSelectedOption(boolean isSelected) {
 		setFocusable(isSelected);
-		MixtractCommandType.DELETE_GROUP.self().setGroup(isSelected ? this
+		MixtractCommandType.DELETE_GROUP.command().setGroup(isSelected ? this
 				: null);
 		if (isSelected)
 			requestFocus();

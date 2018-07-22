@@ -5,9 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.JFrame;
 
+import net.muse.command.MuseAppCommand;
+import net.muse.command.MuseAppCommandAction;
+import net.muse.command.MuseAppCommandType;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.CanvasMouseListener;
@@ -45,6 +49,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	/** 階層的フレーズ構造の分析履歴 */
 	protected final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
 	private final MixtractMIDIController synthe;
+	private final ArrayList<MuseAppCommandAction> commandList = new ArrayList<MuseAppCommandAction>();
 
 	/**
 	 * @return projectfileextension
@@ -58,10 +63,16 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		super();
 		synthe = new MixtractMIDIController(getMidiDeviceName(),
 				getTicksPerBeat());
+		setupCommands();
 		initialize();
 		setPropertyFilename(PROPERTY_FILENAME);
 		loadConfig();
 		setOption(args);
+	}
+
+	protected void setupCommands() {
+		for (MuseAppCommandType e : MuseAppCommandType.values())
+			commandList.add((MuseAppCommandAction) e);
 	}
 
 	/**
@@ -423,6 +434,32 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 
 	public MixtractMIDIController synthe() {
 		return synthe;
+	}
+
+	public ArrayList<MuseAppCommandAction> getCommandList() {
+		return commandList;
+	}
+
+	public MuseAppCommand searchCommand(MuseAppCommandAction type) {
+		MuseAppCommandAction t = null;
+		Iterator<MuseAppCommandAction> c = getCommandList().iterator();
+		while (c.hasNext()) {
+			t = c.next();
+			if (t == type)
+				break;
+		}
+		return t.command();
+	}
+
+	public MuseAppCommand searchCommand(String actionCommand) {
+		MuseAppCommandType c = null;
+		Iterator<MuseAppCommandAction> i = getCommandList().iterator();
+		while (i.hasNext()) {
+			c = (MuseAppCommandType) i.next();
+			if (c.name().equals(actionCommand))
+				break;
+		}
+		return c.command();
 	}
 
 }

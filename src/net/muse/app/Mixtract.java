@@ -9,10 +9,12 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import net.muse.command.MuseAppCommandAction;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.InfoViewer;
 import net.muse.gui.MainFrame;
+import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
@@ -43,28 +45,23 @@ public class Mixtract extends MuseApp {
 		super(args);
 	}
 
+	@Override public void analyzeStructure(TuneData data, Group group) {
+		assert data != null && data instanceof MXTuneData;
+		if (group == null)
+			return;
+		assert group instanceof MXGroup;
+		MXGroupAnalyzer ana = new MXGroupAnalyzer((MXTuneData) data, false);
+		ana.setRootGroup((MXGroup) group);
+		ana.run();
+		analyzer.add(ana);
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
 	 */
 	@Override public void createTuneData(File in, File out) throws IOException {
 		setData(new MXTuneData(in, out));
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.app.MuseApp#initialize()
-	 */
-	@Override protected void initialize() {
-		setAppImageFile("mixtract-logo.png");
-		PROPERTY_FILENAME = "Mixtract.properties";
-		projectFileExtension = ".mxt";
-	}
-
-	@Override protected MainFrame mainFrame() throws IOException {
-		if (getFrame() == null)
-			return new MXMainFrame(this);
-		return (MainFrame) getFrame();
 	}
 
 	protected void deleteGroup(final MXGroup g) {
@@ -86,15 +83,20 @@ public class Mixtract extends MuseApp {
 		}
 	}
 
-	@Override public void analyzeStructure(TuneData data, Group group) {
-		assert data != null && data instanceof MXTuneData;
-		if (group == null)
-			return;
-		assert group instanceof MXGroup;
-		MXGroupAnalyzer ana = new MXGroupAnalyzer((MXTuneData) data, false);
-		ana.setRootGroup((MXGroup) group);
-		ana.run();
-		analyzer.add(ana);
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.app.MuseApp#initialize()
+	 */
+	@Override protected void initialize() {
+		setAppImageFile("mixtract-logo.png");
+		PROPERTY_FILENAME = "Mixtract.properties";
+		projectFileExtension = ".mxt";
+	}
+
+	@Override protected MainFrame mainFrame() throws IOException {
+		if (getFrame() == null)
+			return new MXMainFrame(this);
+		return (MainFrame) getFrame();
 	}
 
 	@Override protected void setup() throws Exception {
@@ -110,7 +112,7 @@ public class Mixtract extends MuseApp {
 		// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-//		MixtractCommand.setMain(main);
+		// MixtractCommand.setMain(main);
 
 		/* sprash screen */
 		createSplashScreen(getAppImageFile());
@@ -122,8 +124,7 @@ public class Mixtract extends MuseApp {
 
 		// create main frame
 		createNewFrame();
-		getFrame().setDefaultCloseOperation(
-				WindowConstants.EXIT_ON_CLOSE);
+		getFrame().setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		JFrame.setDefaultLookAndFeelDecorated(false);
 		getFrame().pack(); // ウィンドウサイズを最適化
 		getFrame().setVisible(true); // ウィンドウを表示させる
@@ -140,5 +141,11 @@ public class Mixtract extends MuseApp {
 				hideSplash();
 			}
 		});
+	}
+
+	protected void setupCommands() {
+		super.setupCommands();
+		for (MixtractCommandType e : MixtractCommandType.values())
+			getCommandList().add((MuseAppCommandAction) e);
 	}
 }

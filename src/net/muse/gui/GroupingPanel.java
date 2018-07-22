@@ -131,11 +131,11 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 */
 			@Override protected void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
-				MixtractCommandType.SET_TYPE_CRESC.self().setGroup(
+				MixtractCommandType.SET_TYPE_CRESC.command().setGroup(
 						getSelectedGroup());
-				MixtractCommandType.SET_TYPE_DIM.self().setGroup(
+				MixtractCommandType.SET_TYPE_DIM.command().setGroup(
 						getSelectedGroup());
-				MixtractCommandType.PRINT_GROUP_INFO.self().setGroup(
+				MixtractCommandType.PRINT_GROUP_INFO.command().setGroup(
 						getSelectedGroup());
 				addMenuItemOnGroupingPanel();
 				getPopup().show((Component) e.getSource(), e.getX(), e.getY());

@@ -728,8 +728,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	private JMenuItem getImportXMLMenu() {
 		if (xmlMenuItem == null) {
-			MuseAppCommand cmd = MuseAppCommand.create(
-					MuseAppCommandType.OPEN_MUSICXML.name());
+			MuseAppCommand cmd = main.searchCommand(
+					MuseAppCommandType.OPEN_MUSICXML);
 			xmlMenuItem = new JMenuItem();
 			xmlMenuItem.setText(cmd.getText());
 			xmlMenuItem.setMnemonic('M');
@@ -796,7 +796,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	private void setPlaybarMode(MuseAppCommandType type) {
-		MuseAppCommand cmd = MuseAppCommand.create(type.name());
+		MuseAppCommand cmd = main.searchCommand(type);
 		playStopMenu.setActionCommand(type.name());
 		playStopMenu.setText(cmd.getText());
 	}

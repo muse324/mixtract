@@ -24,16 +24,16 @@ public class MixtractCommand extends MuseAppCommand {
 	 * @return
 	 */
 	public static MuseAppCommand create(MixtractCommandType type) {
-		return type.self();
+		return type.command();
 	}
 
 	public static MuseAppCommand create(String cmd) {
 		try {
 			MixtractCommandType type1 = MixtractCommandType.valueOf(cmd);
-			return type1.self();
+			return type1.command();
 		} catch (IllegalArgumentException e) {
 			MuseAppCommandType type2 = MuseAppCommandType.valueOf(cmd);
-			return type2.self();
+			return type2.command();
 		}
 	}
 

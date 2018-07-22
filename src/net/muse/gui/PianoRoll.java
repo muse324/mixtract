@@ -122,7 +122,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			JMenu partSelectMenu = new JMenu("Change part");
 			for (int i = 0; i < ChangePartCommand.partSize; i++) {
 				JMenuItem item = new JMenuItem(String.valueOf(i + 1));
-				item.setActionCommand(MixtractCommandType.CHANGE_PART.self()
+				item.setActionCommand(MixtractCommandType.CHANGE_PART.command()
 						.name());
 				item.addActionListener(mouseActions);
 				item.setEnabled(i + 1 != selectedVoice);

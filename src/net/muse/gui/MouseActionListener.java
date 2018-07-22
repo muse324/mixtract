@@ -14,8 +14,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
-import net.muse.command.MuseAppCommandAction;
 import net.muse.command.MuseAppCommand;
+import net.muse.command.MuseAppCommandAction;
 import net.muse.mixtract.command.MixtractCommandType;
 
 /**
@@ -59,7 +59,10 @@ public class MouseActionListener extends MouseAdapter implements
 	 * )
 	 */
 	public void actionPerformed(ActionEvent e) {
-		final MuseAppCommand c = MuseAppCommand.create(e.getActionCommand());
+		MuseAppCommand c = main().searchCommand(e.getActionCommand());
+		if (c == null)
+			return;
+		// final MuseAppCommand c = MuseAppCommand.create(e.getActionCommand());
 		c.setFrame(frame());
 		c.setMain(main());
 		c.setTarget(e.getSource());
@@ -240,7 +243,7 @@ public class MouseActionListener extends MouseAdapter implements
 			boolean enabled) {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem();
-		menuItem.setText(command.self().getText());
+		menuItem.setText(command.command().getText());
 		menuItem.setActionCommand(command.name());
 		menuItem.addActionListener(this);
 		menuItem.setEnabled(enabled);
