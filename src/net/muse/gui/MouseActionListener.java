@@ -1,5 +1,6 @@
 package net.muse.gui;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -383,7 +384,11 @@ public class MouseActionListener extends MouseAdapter implements
 
 	protected void createPopupMenu(MouseEvent e) {
 		popup = new JPopupMenu();
+		createCustomPopupMenu(e);
+		popup.show((Component) e.getSource(), e.getX(), e.getY());
 	}
+
+	public void createCustomPopupMenu(MouseEvent e) {}
 
 	/**
 	 * @return isDragging

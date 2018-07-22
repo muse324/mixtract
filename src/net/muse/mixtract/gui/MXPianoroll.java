@@ -10,6 +10,7 @@ import net.muse.data.NoteData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.NoteLabel;
 import net.muse.gui.PianoRoll;
+import net.muse.gui.PianoRollActionListener;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXPianoroll extends PianoRoll {
@@ -84,9 +85,9 @@ public class MXPianoroll extends PianoRoll {
 	 * @see
 	 * net.muse.gui.PianoRoll#createPianoRollMouseAction(net.muse.app.MuseApp)
 	 */
-	@Override protected PianoRollAction createPianoRollMouseAction(
+	@Override protected PianoRollActionListener createPianoRollMouseAction(
 			MuseApp app) {
-		return new PianoRollAction(app, this) {
+		return new PianoRollActionListener(app, this) {
 
 		};
 	}

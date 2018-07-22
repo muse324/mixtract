@@ -2,7 +2,6 @@ package net.muse.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -10,16 +9,11 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JViewport;
-import javax.swing.SwingUtilities;
 import javax.xml.transform.TransformerException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
@@ -27,16 +21,11 @@ import net.muse.app.MuseApp;
 import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.Harmony;
-import net.muse.data.KeyMode;
 import net.muse.data.NoteData;
 import net.muse.data.TuneData;
 import net.muse.misc.MuseObject;
 import net.muse.misc.Util;
 import net.muse.mixtract.command.ChangePartCommand;
-import net.muse.mixtract.command.MixtractCommandType;
-import net.muse.mixtract.command.SetChordCommand;
-import net.muse.mixtract.command.SetKeyCommand;
-import net.muse.mixtract.command.SetKeyModeCommand;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.ViewerMode;
 
@@ -47,204 +36,6 @@ import net.muse.mixtract.gui.ViewerMode;
  */
 public class PianoRoll extends JPanel implements TuneDataListener,
 		CanvasMouseListener {
-
-	public class PianoRollAction extends MouseActionListener {
-		private final Point pp = new Point();
-
-		public PianoRollAction(MuseApp main, Container owner) {
-			super(main, owner);
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MouseActionListener#actionPerformed
-		 * (java .awt.event.ActionEvent)
-		 */
-		@Override public void actionPerformed(ActionEvent e) {
-			JMenuItem src = (JMenuItem) e.getSource();
-			String cmd = src.getActionCommand();
-			if (cmd.equals(MixtractCommandType.CHANGE_PART.name())) {
-				int part = Integer.parseInt(src.getText());
-				ChangePartCommand.setChangePartTo(part);
-			} else if (cmd.equals(MixtractCommandType.SET_CHORD.name())) {
-				SetChordCommand.setSelectedChord(Harmony.valueOf(src
-						.getText()));
-			} else if (cmd.equals(MixtractCommandType.SET_KEY.name())) {
-				SetKeyCommand.setSelectedKey(src.getText());
-			} else if (cmd.equals(MixtractCommandType.SET_KEYMODE.name())) {
-				SetKeyModeCommand.setSelectedKeyMode(KeyMode.valueOf(src
-						.getText()));
-			}
-			super.actionPerformed(e);
-			repaint();
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
-		 * (java .awt.event.MouseEvent)
-		 */
-		@Override public void createPopupMenu(MouseEvent e) {
-			super.createPopupMenu(e);
-			boolean enabled = selectedNoteLabels.size() > 0;
-			getPopup().add(addMenuItem(MixtractCommandType.MAKE_GROUP,
-					enabled));
-			getPopup().addSeparator();
-
-			// annotate chord
-			JMenu chordMenu = new JMenu("Harmony chord");
-			for (Harmony c : Harmony.values())
-				chordMenu.add(createChordMenuItem(c));
-			chordMenu.setEnabled(selectedNoteLabels.size() > 0);
-			getPopup().add(chordMenu);
-
-			// change key
-			JMenu keyMenu = new JMenu("Change key");
-			for (int i = 0; i < 7; i++) {
-				keyMenu.add(createKeyMenuItem(i));
-			}
-			for (int i = -5; i < 0; i++) {
-				keyMenu.add(createKeyMenuItem(i));
-			}
-			keyMenu.setEnabled(selectedNoteLabels.size() > 0);
-			getPopup().add(keyMenu);
-
-			// change key mode
-			JMenu keyModeMenu = new JMenu("Change key mode");
-			keyModeMenu.setEnabled(selectedNoteLabels.size() > 0);
-			for (int i = 0; i < KeyMode.values().length; i++) {
-				keyModeMenu.add(createKeyModeMenuItem(i));
-			}
-			getPopup().add(keyModeMenu);
-			// change part
-			JMenu partSelectMenu = new JMenu("Change part");
-			for (int i = 0; i < ChangePartCommand.partSize; i++) {
-				JMenuItem item = new JMenuItem(String.valueOf(i + 1));
-				item.setActionCommand(MixtractCommandType.CHANGE_PART.command()
-						.name());
-				item.addActionListener(mouseActions);
-				item.setEnabled(i + 1 != selectedVoice);
-				partSelectMenu.add(item);
-			}
-			partSelectMenu.setEnabled(enabled);
-			getPopup().add(partSelectMenu);
-
-			getPopup().show((Component) e.getSource(), e.getX(), e.getY());
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * java.awt.event.MouseMotionListener#mouseDragged(java.awt.event.
-		 * MouseEvent )
-		 */
-		@Override public void mouseDragged(MouseEvent e) {
-			super.mouseDragged(e);
-			if (e.isAltDown()) {
-				Point cp = e.getPoint();
-				final JViewport vport = (JViewport) getParent();
-				Point vp = vport.getViewPosition();
-				vp.translate(pp.x - cp.x, pp.y - cp.y);
-				scrollRectToVisible(new Rectangle(vp, vport.getSize()));
-				pp.setLocation(cp);
-			} else {
-				setMouseEndPoint(e);
-				encloseNotes();
-			}
-			repaint();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.
-		 * MouseEvent )
-		 */
-		@Override public void mouseMoved(MouseEvent e) {
-			super.mouseMoved(e);
-			setMouseOveredNoteLabel(null);
-			repaint();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * java.awt.event.MouseListener#mousePressed(java.awt.event.
-		 * MouseEvent
-		 * )
-		 */
-		@Override public void mousePressed(MouseEvent e) {
-			super.mousePressed(e);
-			if (!SwingUtilities.isLeftMouseButton(e))
-				return;
-			if (e.isAltDown()) {
-				setCursor(hndCursor);
-				pp.setLocation(e.getPoint());
-			} else {
-				/* ピアノロール上で矩形の左上隅座標を取得する */
-				getLeftUpperCornerAxis(e);
-				selectedVoice = -1;
-			}
-			if (!mouseActions.isShiftKeyPressed()) {
-				selectedNoteLabels.clear();
-			}
-			repaint();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * java.awt.event.MouseListener#mouseReleased(java.awt.event.
-		 * MouseEvent
-		 * )
-		 */
-		@Override public void mouseReleased(MouseEvent e) {
-			super.mouseReleased(e);
-			if (e.isAltDown()) {
-				setCursor(defCursor);
-			} else {
-				setMouseEndPoint(e);
-				setMouseSelectBoxDraw(false);
-				encloseNotes();
-				selectNotes();
-				if (selectedNoteLabels.size() == 0)
-					main().notifyDeselectGroup();
-				else {
-					setFocusable(true);
-					requestFocus();
-				}
-			}
-			repaint();
-		}
-
-		private JMenuItem createChordMenuItem(Harmony c) {
-			JMenuItem item = new JMenuItem(c.name());
-			item.setActionCommand(MixtractCommandType.SET_CHORD.name());
-			item.addActionListener(mouseActions);
-			return item;
-		}
-
-		private JMenuItem createKeyMenuItem(int i) {
-			JMenuItem item = new JMenuItem(Util.fifthsToString(i));
-			item.setActionCommand(MixtractCommandType.SET_KEY.name());
-			item.addActionListener(mouseActions);
-			item.setEnabled(selectedNoteLabels.size() > 0 && selectedNoteLabels
-					.get(0).getScoreNote().fifths() != i);
-			return item;
-		}
-
-		private JMenuItem createKeyModeMenuItem(int i) {
-			final KeyMode mode = KeyMode.values()[i];
-			JMenuItem item = new JMenuItem(mode.name());
-			item.setActionCommand(MixtractCommandType.SET_KEYMODE.name());
-			item.addActionListener(mouseActions);
-			item.setEnabled(selectedNoteLabels.size() > 0 && selectedNoteLabels
-					.get(0).getScoreNote().getKeyMode() != mode);
-			return item;
-		}
-	}
 
 	private static final long serialVersionUID = 1L;
 	static final int DEFAULT_WIDTH = 1024;
@@ -259,11 +50,11 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	public void selectNotes() {
 		selectedNoteLabels.clear();
-		for( Component c : getComponents()) {
-			if(!(c instanceof NoteLabel))
+		for (Component c : getComponents()) {
+			if (!(c instanceof NoteLabel))
 				continue;
 			NoteLabel l = (NoteLabel) c;
-			if(l.isSelected()) {
+			if (l.isSelected()) {
 				selectedNoteLabels.addLast(l);
 			}
 		}
@@ -281,19 +72,19 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	private boolean drawMelodyLine = false;
 	/* マウス制御 */
-	private MouseActionListener mouseActions; // @jve:decl-index=0:
+	MouseActionListener mouseActions; // @jve:decl-index=0:
 	private Point mouseEndPoint;
 	private Point mouseStartPoint;
 	/* 格納データ */
-	private final LinkedList<NoteLabel> selectedNoteLabels;
+	final LinkedList<NoteLabel> selectedNoteLabels;
 	private NoteLabel _notelist = null;
 	private NoteLabel notelist = null;
 	private NoteLabel mouseOveredNoteLabel = null;
-	private int selectedVoice;
-	private final Cursor defCursor = Cursor.getPredefinedCursor(
+	int selectedVoice;
+	final Cursor defCursor = Cursor.getPredefinedCursor(
 			Cursor.DEFAULT_CURSOR); // @jve:decl-index=0:
 
-	private final Cursor hndCursor = Cursor.getPredefinedCursor(
+	final Cursor hndCursor = Cursor.getPredefinedCursor(
 			Cursor.HAND_CURSOR); // @jve:decl-index=0:
 	private Group selectedGroup;
 	private KeyActionListener keyActions;
@@ -505,8 +296,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		};
 	}
 
-	protected PianoRollAction createPianoRollMouseAction(MuseApp app) {
-		return new PianoRollAction(app, this);
+	protected PianoRollActionListener createPianoRollMouseAction(MuseApp app) {
+		return new PianoRollActionListener(app, this);
 	}
 
 	void setMouseOveredNoteLabel(NoteLabel src) {
@@ -652,13 +443,13 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				continue;
 			final NoteLabel l = (NoteLabel) c;
 			final Rectangle r = l.getBounds();
-			//横方向
+			// 横方向
 			if (r.x + r.width < mouseBox.x || mouseBox.x
 					+ mouseBox.width < r.x) {
 				l.setSelected(false);
 				continue;
 			}
-			//縦方向
+			// 縦方向
 			if (r.y + r.height < mouseBox.y || mouseBox.y
 					+ mouseBox.height < r.y) {
 				l.setSelected(false);
@@ -849,7 +640,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	/**
 	 * @param e
 	 */
-	private void getLeftUpperCornerAxis(MouseEvent e) {
+	void getLeftUpperCornerAxis(MouseEvent e) {
 		setMouseSelectBoxDraw(true);
 		setStartPositionOfMouseBox(e);
 	}
@@ -949,11 +740,11 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		selectNote(l, note.next());
 	}
 
-	private void setMouseEndPoint(MouseEvent e) {
+	void setMouseEndPoint(MouseEvent e) {
 		mouseEndPoint = e.getPoint();
 	}
 
-	private void setMouseSelectBoxDraw(boolean isMouseSelectBoxDraw) {
+	void setMouseSelectBoxDraw(boolean isMouseSelectBoxDraw) {
 		this.isMouseSelectBoxDraw = isMouseSelectBoxDraw;
 	}
 
