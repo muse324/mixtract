@@ -25,8 +25,8 @@ public class PEDBMainFrame extends MXMainFrame {
 		return d;
 	}
 
-	@Override protected JPanel getTuneViewPane() {
-		JPanel p = super.getTuneViewPane();
+	@Override protected JPanel getTuneViewPanel() {
+		JPanel p = super.getTuneViewPanel();
 		p.remove(getCurveSplitPane());
 		return p;
 	}

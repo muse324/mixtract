@@ -112,6 +112,14 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JSplitPane curveSplitPane;
 	private JScrollPane pianorollPanel;
 	private JScrollPane structurePane;
+	protected JPanel tuneViewPanel;
+	protected JPanel toolBarPanel;
+	protected JPanel tempoHeaderViewPanel;
+	protected JPanel tempoCurvePanel;
+	protected PartSelectorPanel partSelectorPanel;
+	private KeyBoard keyboard;
+	private JPanel dynHeaderView;
+	private JPanel dynCurvePanel;
 
 	/**
 	 * 発音時刻や音長に対する横軸の長さを求めます．
@@ -603,11 +611,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getDynamicsCurvePane() {
-		JPanel p = new JPanel();
-		p.setLayout(new BorderLayout()); // Generated
-		p.add(getDynamicsView(), BorderLayout.CENTER); // Generated
-		p.add(getDynamicsHeaderView(), BorderLayout.WEST); // Generated
-		return p;
+		if (dynCurvePanel == null) {
+			dynCurvePanel = new JPanel();
+			dynCurvePanel.setLayout(new BorderLayout()); // Generated
+			dynCurvePanel.add(getDynamicsView(), BorderLayout.CENTER); // Generated
+			dynCurvePanel.add(getDynamicsHeaderView(), BorderLayout.WEST); // Generated
+		}
+		return dynCurvePanel;
 	}
 
 	/**
@@ -616,11 +626,14 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getDynamicsHeaderView() {
-		JPanel p = new JPanel();
-		p.setLayout(new BorderLayout()); // Generated
-		p.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(), 16)); // Generated
-		p.add(new JLabel("dynamics"), BorderLayout.NORTH); // Generated
-		return p;
+		if (dynHeaderView == null) {
+			dynHeaderView = new JPanel();
+			dynHeaderView.setLayout(new BorderLayout()); // Generated
+			dynHeaderView.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(),
+					16)); // Generated
+			dynHeaderView.add(new JLabel("dynamics"), BorderLayout.NORTH); // Generated
+		}
+		return dynHeaderView;
 	}
 
 	/**
@@ -723,7 +736,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			xmlMenuItem.setMnemonic('M');
 			xmlMenuItem.setAccelerator(KeyStroke.getKeyStroke('M',
 					shortcutKey));
-			xmlMenuItem.setActionCommand(MuseAppCommandType.OPEN_MUSICXML.name());
+			xmlMenuItem.setActionCommand(MuseAppCommandType.OPEN_MUSICXML
+					.name());
 			xmlMenuItem.addActionListener(new MouseActionListener(main, this));
 		}
 		return xmlMenuItem;
@@ -735,8 +749,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private KeyBoard getKeyboard() {
-		KeyBoard keyboard = new KeyBoard(main.getTicksPerBeat());
-		butler().addTuneDataListenerList(keyboard);
+		if (keyboard == null) {
+			keyboard = new KeyBoard(main.getTicksPerBeat());
+			butler().addTuneDataListenerList(keyboard);
+		}
 		return keyboard;
 	}
 
@@ -786,10 +802,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getPartSelectorPanel() {
-		PartSelectorPanel p = new PartSelectorPanel();
-		p.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(), 24)); // Generated
-		butler().addTuneDataListenerList(p);
-		return p;
+		if (partSelectorPanel == null) {
+			partSelectorPanel = new PartSelectorPanel();
+			partSelectorPanel.setPreferredSize(new Dimension(KeyBoard
+					.getKeyWidth(), 24)); // Generated
+			butler().addTuneDataListenerList(partSelectorPanel);
+		}
+		return partSelectorPanel;
 	}
 
 	/**
@@ -803,6 +822,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			pianorollPanel.setRowHeaderView(getKeyboard());
 			pianorollPanel.setViewportView(getPianoroll()); // Generated
 			pianorollPanel.setHorizontalScrollBar(getTimeScrollBar());
+			pianorollPanel.setHorizontalScrollBarPolicy(
+					JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			pianorollPanel.setVerticalScrollBarPolicy(
 					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		}
@@ -914,19 +935,24 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	private JPanel getTempoCurvePane() {
-		JPanel jPanel5 = new JPanel();
-		jPanel5.setLayout(new BorderLayout()); // Generated
-		jPanel5.add(getTempoView(), BorderLayout.CENTER); // Generated
-		jPanel5.add(getTempoHeaderView(), BorderLayout.WEST); // Generated
-		return jPanel5;
+		if (tempoCurvePanel == null) {
+			tempoCurvePanel = new JPanel();
+			tempoCurvePanel.setLayout(new BorderLayout()); // Generated
+			tempoCurvePanel.add(getTempoView(), BorderLayout.CENTER); // Generated
+			tempoCurvePanel.add(getTempoHeaderView(), BorderLayout.WEST); // Generated
+		}
+		return tempoCurvePanel;
 	}
 
 	private JPanel getTempoHeaderView() {
-		JPanel p = new JPanel();
-		p.setLayout(new BorderLayout()); // Generated
-		p.setPreferredSize(new Dimension(KeyBoard.getKeyWidth(), 10)); // Generated
-		p.add(new JLabel("tempo"), BorderLayout.NORTH); // Generated
-		return p;
+		if (tempoHeaderViewPanel == null) {
+			tempoHeaderViewPanel = new JPanel();
+			tempoHeaderViewPanel.setLayout(new BorderLayout()); // Generated
+			tempoHeaderViewPanel.setPreferredSize(new Dimension(KeyBoard
+					.getKeyWidth(), 10)); // Generated
+			tempoHeaderViewPanel.add(new JLabel("tempo"), BorderLayout.NORTH); // Generated
+		}
+		return tempoHeaderViewPanel;
 	}
 
 	/**
@@ -966,15 +992,17 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getToolBarPanel() {
-		GridBagConstraints g = new GridBagConstraints();
-		g.fill = GridBagConstraints.VERTICAL; // Generated
-		g.gridy = 0; // Generated
-		g.weightx = 1.0; // Generated
-		g.anchor = GridBagConstraints.NORTHWEST; // Generated
-		JPanel p = new JPanel();
-		p.setLayout(new GridBagLayout()); // Generated
-		p.add(getJToolBar(), g); // Generated
-		return p;
+		if (toolBarPanel == null) {
+			GridBagConstraints g = new GridBagConstraints();
+			g.fill = GridBagConstraints.VERTICAL; // Generated
+			g.gridy = 0; // Generated
+			g.weightx = 1.0; // Generated
+			g.anchor = GridBagConstraints.NORTHWEST; // Generated
+			toolBarPanel = new JPanel();
+			toolBarPanel.setLayout(new GridBagLayout()); // Generated
+			toolBarPanel.add(getJToolBar(), g); // Generated
+		}
+		return toolBarPanel;
 	}
 
 	/**
@@ -982,21 +1010,15 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	protected JPanel getTuneViewPane() {
-		JPanel p = new JPanel();
-		p.setLayout(new BorderLayout()); // Generated
-		p.add(getStructurePane(), java.awt.BorderLayout.NORTH);
-		p.add(getPianorollPane(), BorderLayout.CENTER); // Generated
-		p.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
-		// getStructurePane().getHorizontalScrollBar().setModel(getTimeScrollBar()
-		// .getModel());
-		// getPianorollPane().getHorizontalScrollBar().setModel(getTimeScrollBar()
-		// .getModel());
-		// getDynamicsView().getHorizontalScrollBar().setModel(getTimeScrollBar()
-		// .getModel());
-		// getTempoView().getHorizontalScrollBar().setModel(getTimeScrollBar()
-		// .getModel());
-		return p;
+	protected JPanel getTuneViewPanel() {
+		if (tuneViewPanel == null) {
+			tuneViewPanel = new JPanel();
+			tuneViewPanel.setLayout(new BorderLayout()); // Generated
+			tuneViewPanel.add(getStructurePane(), BorderLayout.NORTH);
+			tuneViewPanel.add(getPianorollPane(), BorderLayout.CENTER); // Generated
+			tuneViewPanel.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
+		}
+		return tuneViewPanel;
 	}
 
 	private JScrollBar getTimeScrollBar() {
@@ -1004,7 +1026,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			timeScrollBar = new JScrollBar(Adjustable.HORIZONTAL) {
 				@Override public Dimension getPreferredSize() {
 					Dimension dim = super.getPreferredSize();
-					return new Dimension(dim.width, 0);
+					return new Dimension(dim.width, 20);
 				}
 			};
 		}
@@ -1024,13 +1046,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			viewer.setMaximizable(true);
 			viewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 			// viewer.setBounds(new Rectangle(0, 0, 540, 390));
-			viewer.setContentPane(getTuneViewPane()); // Generated
+			viewer.setContentPane(getTuneViewPanel()); // Generated
 			// viewer.setBounds(new Rectangle(8, 8, 238, 155)); // Generated
 		}
 		return viewer;
 	}
 
-	 protected String getWindowTitle() {
+	protected String getWindowTitle() {
 		return WINDOW_TITLE;
 	}
 
