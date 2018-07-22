@@ -149,7 +149,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * @see jp.crestmuse.mixtract.gui.PianoRoll#selectNotes()
 	 */
 	@Override
-	protected void selectNotes() {
+	protected void encloseNotes() {
 		setDisplayApex(true);
 	}
 

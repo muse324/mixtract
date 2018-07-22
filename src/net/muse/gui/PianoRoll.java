@@ -151,7 +151,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				pp.setLocation(cp);
 			} else {
 				setMouseEndPoint(e);
-				selectNotes();
+				encloseNotes();
 			}
 			repaint();
 		}
@@ -177,15 +177,18 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		 */
 		@Override public void mousePressed(MouseEvent e) {
 			super.mousePressed(e);
-			if (SwingUtilities.isLeftMouseButton(e)) {
-				if (e.isAltDown()) {
-					setCursor(hndCursor);
-					pp.setLocation(e.getPoint());
-				} else {
-					/* ピアノロール上で矩形の左上隅座標を取得する */
-					getLeftUpperCornerAxis(e);
-					selectedVoice = -1;
-				}
+			if (!SwingUtilities.isLeftMouseButton(e))
+				return;
+			if (e.isAltDown()) {
+				setCursor(hndCursor);
+				pp.setLocation(e.getPoint());
+			} else {
+				/* ピアノロール上で矩形の左上隅座標を取得する */
+				getLeftUpperCornerAxis(e);
+				selectedVoice = -1;
+			}
+			if (!mouseActions.isShiftKeyPressed()) {
+				selectedNoteLabels.clear();
 			}
 			repaint();
 		}
@@ -204,6 +207,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			} else {
 				setMouseEndPoint(e);
 				setMouseSelectBoxDraw(false);
+				encloseNotes();
 				selectNotes();
 				if (selectedNoteLabels.size() == 0)
 					main().notifyDeselectGroup();
@@ -251,6 +255,18 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	public static int getDefaultAxisX() {
 		return defaultAxisX;
+	}
+
+	public void selectNotes() {
+		selectedNoteLabels.clear();
+		for( Component c : getComponents()) {
+			if(!(c instanceof NoteLabel))
+				continue;
+			NoteLabel l = (NoteLabel) c;
+			if(l.isSelected()) {
+				selectedNoteLabels.addLast(l);
+			}
+		}
 	}
 
 	protected int axisX = 10;
@@ -370,7 +386,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		/* 楽譜が読み込まれてないなら以下の描画は不要 */
 		if (data() != null) {
 
-			/* 座標軸を再取得し、note labes をリスケール */
+			/* 座標軸を再取得し、note labels をリスケール */
 			rescaleNoteLabels();
 
 			/* 小節線を表示 */
@@ -379,15 +395,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			drawFifthsKeyText(g2, notelist, null);
 			/* 和声カラーを表示 */
 			drawHarmonyGround(g2, notelist, null);
-
-			// drawHierarchyLine(g2, notelist, null);
-
-			/* 音符を表示 */
-			try {
-				drawNotes(g2, notelist);
-			} catch (final TransformerException e) {
-				e.printStackTrace();
-			}
 
 			/* TODO（実装中）タイムライン表示 */
 			drawTimeline(g2);
@@ -631,28 +638,32 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	/**
-	 * マウスの選択範囲に収まる音符を抽出する．
+	 * マウスの選択範囲に収まる音符を色付けする．
 	 */
-	protected void selectNotes() {
+	protected void encloseNotes() {
 		if (data() == null)
 			return;
 		final Rectangle mouseBox = mouseActions.getMouseBox();
 		if (mouseBox == null)
 			return;
 
-		if (!mouseActions.isShiftKeyPressed()) {
-			selectedNoteLabels.clear();
-		}
 		for (Component c : getComponents()) {
 			if (!(c instanceof NoteLabel))
 				continue;
 			final NoteLabel l = (NoteLabel) c;
 			final Rectangle r = l.getBounds();
-			if (r.x + r.width < mouseBox.x || mouseBox.x + mouseBox.width < r.x)
+			//横方向
+			if (r.x + r.width < mouseBox.x || mouseBox.x
+					+ mouseBox.width < r.x) {
+				l.setSelected(false);
 				continue;
+			}
+			//縦方向
 			if (r.y + r.height < mouseBox.y || mouseBox.y
-					+ mouseBox.height < r.y)
+					+ mouseBox.height < r.y) {
+				l.setSelected(false);
 				continue;
+			}
 			// ひとつめの音のvoiceで選択声部を制限する
 			if (selectedVoice < 0) {
 				selectedVoice = l.getScoreNote().musePhony();
@@ -660,11 +671,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			}
 			if (l.getScoreNote().musePhony() != selectedVoice)
 				continue;
-			if (!selectedNoteLabels.contains(l)) {
-				selectedNoteLabels.addLast(l);
-				l.setSelected(true);
-			} else
-				l.setSelected(selectedNoteLabels.contains(l));
+			l.setSelected(true);
 		}
 	}
 
