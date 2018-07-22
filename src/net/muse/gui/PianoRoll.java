@@ -72,7 +72,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	private boolean drawMelodyLine = false;
 	/* マウス制御 */
-	MouseActionListener mouseActions; // @jve:decl-index=0:
+	private MouseActionListener mouseActions; // @jve:decl-index=0:
 	private Point mouseEndPoint;
 	private Point mouseStartPoint;
 	/* 格納データ */
@@ -80,12 +80,10 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	private NoteLabel _notelist = null;
 	private NoteLabel notelist = null;
 	private NoteLabel mouseOveredNoteLabel = null;
-	int selectedVoice;
-	final Cursor defCursor = Cursor.getPredefinedCursor(
-			Cursor.DEFAULT_CURSOR); // @jve:decl-index=0:
+	private int selectedVoice;
+	final Cursor defCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR); // @jve:decl-index=0:
 
-	final Cursor hndCursor = Cursor.getPredefinedCursor(
-			Cursor.HAND_CURSOR); // @jve:decl-index=0:
+	final Cursor hndCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); // @jve:decl-index=0:
 	private Group selectedGroup;
 	private KeyActionListener keyActions;
 	private Concierge butler;
@@ -94,7 +92,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		super();
 		this.main = main;
 		selectedNoteLabels = new LinkedList<NoteLabel>();
-		selectedVoice = -1;
+		setSelectedVoice(-1);
 		viewerMode = ViewerMode.REALTIME_VIEW;
 		initialize();
 		setController();
@@ -270,9 +268,9 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	protected void setController() {
 		butler().addTuneDataListenerList(this);
-		mouseActions = createPianoRollMouseAction(main);
-		addMouseListener(mouseActions);
-		addMouseMotionListener(mouseActions);
+		setMouseActions(createPianoRollMouseAction(main));
+		addMouseListener(getMouseActions());
+		addMouseMotionListener(getMouseActions());
 		keyActions = createKeyActions(main);
 		addKeyListener(keyActions);
 	}
@@ -434,7 +432,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	protected void encloseNotes() {
 		if (data() == null)
 			return;
-		final Rectangle mouseBox = mouseActions.getMouseBox();
+		final Rectangle mouseBox = getMouseActions().getMouseBox();
 		if (mouseBox == null)
 			return;
 
@@ -456,11 +454,11 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				continue;
 			}
 			// ひとつめの音のvoiceで選択声部を制限する
-			if (selectedVoice < 0) {
-				selectedVoice = l.getScoreNote().musePhony();
-				System.out.println("selected voice: " + selectedVoice);
+			if (getSelectedVoice() < 0) {
+				setSelectedVoice(l.getScoreNote().musePhony());
+				System.out.println("selected voice: " + getSelectedVoice());
 			}
-			if (l.getScoreNote().musePhony() != selectedVoice)
+			if (l.getScoreNote().musePhony() != getSelectedVoice())
 				continue;
 			l.setSelected(true);
 		}
@@ -471,7 +469,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	private void clearSelection() {
 		selectedNoteLabels.clear();
-		selectedVoice = -1;
+		setSelectedVoice(-1);
 		setSelectedGroup(null);
 	}
 
@@ -571,8 +569,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 					.onset(), nd.offset());
 			break;
 		}
-		System.out.println(str + " at " + mouseActions.getMousePoint());
-		g2.drawString(str, mouseActions.getMousePoint().x - axisX, mouseActions
+		System.out.println(str + " at " + getMouseActions().getMousePoint());
+		g2.drawString(str, getMouseActions().getMousePoint().x - axisX, getMouseActions()
 				.getMousePoint().y - KeyBoard.keyHeight);
 	}
 
@@ -606,7 +604,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		final int h = (mouseStartPoint.y < mouseEndPoint.y) ? mouseEndPoint.y
 				- sy : mouseStartPoint.y - sy;
 		final Rectangle r = new Rectangle(sx, sy, w, h);
-		mouseActions.setMouseBox(r);
+		getMouseActions().setMouseBox(r);
 		// if (MixtractCommand.getSelectedObjects() != null) {
 		// MixtractCommand.getSelectedObjects().setMouseBox(r);
 		// }
@@ -797,6 +795,22 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	public void setSelectedGroup(Group selectedGroup) {
 		this.selectedGroup = selectedGroup;
+	}
+
+	public MouseActionListener getMouseActions() {
+		return mouseActions;
+	}
+
+	public void setMouseActions(MouseActionListener mouseActions) {
+		this.mouseActions = mouseActions;
+	}
+
+	public int getSelectedVoice() {
+		return selectedVoice;
+	}
+
+	public void setSelectedVoice(int selectedVoice) {
+		this.selectedVoice = selectedVoice;
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

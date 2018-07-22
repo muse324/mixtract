@@ -3,7 +3,9 @@ package net.muse.app;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import net.muse.command.MuseAppCommandAction;
 import net.muse.gui.MainFrame;
+import net.muse.pedb.command.PEDBCommandType;
 import net.muse.pedb.gui.PEDBMainFrame;
 
 public class PEDBStructureEditor extends Mixtract {
@@ -20,6 +22,12 @@ public class PEDBStructureEditor extends Mixtract {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override protected void setupCommands() {
+		super.setupCommands();
+		for (PEDBCommandType e : PEDBCommandType.values())
+			getCommandList().add((MuseAppCommandAction) e);
 	}
 
 	@Override protected MainFrame mainFrame() throws IOException {

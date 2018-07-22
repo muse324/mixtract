@@ -176,7 +176,7 @@ public enum MixtractCommandType implements MuseAppCommandAction {
 	};
 
 	protected MixtractCommand self;
-
+	public abstract MixtractCommand create(String... lang);
 	MixtractCommandType(String... lang) {
 		create(lang);
 	}
@@ -189,5 +189,4 @@ public enum MixtractCommandType implements MuseAppCommandAction {
 		return self;
 	}
 
-	public abstract MixtractCommand create(String... lang);
 }

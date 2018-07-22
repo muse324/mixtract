@@ -98,8 +98,8 @@ public class PianoRollActionListener extends MouseActionListener {
 			JMenuItem item = new JMenuItem(String.valueOf(i + 1));
 			item.setActionCommand(MixtractCommandType.CHANGE_PART.command()
 					.name());
-			item.addActionListener(self().mouseActions);
-			item.setEnabled(i + 1 != self().selectedVoice);
+			item.addActionListener(self().getMouseActions());
+			item.setEnabled(i + 1 != self().getSelectedVoice());
 			partSelectMenu.add(item);
 		}
 		partSelectMenu.setEnabled(enabled);
@@ -157,9 +157,9 @@ public class PianoRollActionListener extends MouseActionListener {
 		} else {
 			/* ピアノロール上で矩形の左上隅座標を取得する */
 			self().getLeftUpperCornerAxis(e);
-			self().selectedVoice = -1;
+			self().setSelectedVoice(-1);
 		}
-		if (!self().mouseActions.isShiftKeyPressed()) {
+		if (!self().getMouseActions().isShiftKeyPressed()) {
 			self().selectedNoteLabels.clear();
 		}
 		self().repaint();
@@ -194,14 +194,14 @@ public class PianoRollActionListener extends MouseActionListener {
 	private JMenuItem createChordMenuItem(Harmony c) {
 		JMenuItem item = new JMenuItem(c.name());
 		item.setActionCommand(MixtractCommandType.SET_CHORD.name());
-		item.addActionListener(self().mouseActions);
+		item.addActionListener(self().getMouseActions());
 		return item;
 	}
 
 	private JMenuItem createKeyMenuItem(int i) {
 		JMenuItem item = new JMenuItem(Util.fifthsToString(i));
 		item.setActionCommand(MixtractCommandType.SET_KEY.name());
-		item.addActionListener(self().mouseActions);
+		item.addActionListener(self().getMouseActions());
 		item.setEnabled(self().selectedNoteLabels.size() > 0
 				&& self().selectedNoteLabels.get(0).getScoreNote()
 						.fifths() != i);
@@ -212,7 +212,7 @@ public class PianoRollActionListener extends MouseActionListener {
 		final KeyMode mode = KeyMode.values()[i];
 		JMenuItem item = new JMenuItem(mode.name());
 		item.setActionCommand(MixtractCommandType.SET_KEYMODE.name());
-		item.addActionListener(self().mouseActions);
+		item.addActionListener(self().getMouseActions());
 		item.setEnabled(self().selectedNoteLabels.size() > 0
 				&& self().selectedNoteLabels.get(0).getScoreNote()
 						.getKeyMode() != mode);
