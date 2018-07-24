@@ -35,7 +35,7 @@ public class Concierge extends MuseObject implements TuneDataController {
 	protected MuseObject obj;
 	private List<TuneDataListener> tdListenerList;
 	private ArrayList<InfoViewer> infoViewList;
-	private MuseAppCommand c = null;
+	protected MuseAppCommand c = null;
 	private boolean isPlayed = false;
 
 	public Concierge(MuseObject obj) {
@@ -239,6 +239,20 @@ public class Concierge extends MuseObject implements TuneDataController {
 		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
 				+ obj.getClass().getSimpleName();
 		((MuseApp) obj).synthe().notifyStopPlaying();
+	}
+
+	/**
+	 * @return isPlayed
+	 */
+	public boolean isPlayed() {
+		return isPlayed;
+	}
+
+	/**
+	 * @param isPlayed セットする isPlayed
+	 */
+	public void setPlayed(boolean isPlayed) {
+		this.isPlayed = isPlayed;
 	}
 
 }

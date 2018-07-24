@@ -240,8 +240,12 @@ public abstract class MuseObject {
 
 	public Concierge butler() {
 		if (butler == null)
-			butler = new Concierge(this);
+			butler = createConcierge();
 		return butler;
+	}
+
+	protected Concierge createConcierge() {
+		return new Concierge(this);
 	}
 
 }

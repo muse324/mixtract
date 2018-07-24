@@ -157,7 +157,7 @@ public class MakeGroupCommand extends MixtractCommand {
 	 * @return
 	 * @see combineGroups()
 	 */
-	private Group createGroup(NoteLabel begin, NoteLabel end, GroupType type) {
+	protected Group createGroup(NoteLabel begin, NoteLabel end, GroupType type) {
 		Group g = null;
 		if (begin instanceof MXNoteLabel)
 			g = new MXGroup(begin.getScoreNote(), end.getScoreNote(), type);
