@@ -1,12 +1,15 @@
 package net.muse.mixtract.gui;
 
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import net.muse.app.MuseApp;
+import net.muse.gui.GLMouseActionListener;
 import net.muse.gui.GroupLabel;
+import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXGroupLabel extends GroupLabel {
@@ -44,18 +47,37 @@ public class MXGroupLabel extends GroupLabel {
 		throw new NoClassDefFoundError("MXGroupLabelでは使用できません．");
 	}
 
-	/* (非 Javadoc)
-	 * @see net.muse.gui.GroupLabel#createMouseActionListener(net.muse.app.MuseApp)
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.GroupLabel#createMouseActionListener(net.muse.app.MuseApp)
 	 */
 	@Override protected GLMouseActionListener createMouseActionListener(
 			MuseApp main) {
-		return new GLMouseActionListener(main, this){
+		return new GLMouseActionListener(main, this) {
 
-			/* (非 Javadoc)
+			/*
+			 * (非 Javadoc)
 			 * @see net.muse.gui.GroupLabel.GLMouseActionListener#self()
 			 */
 			@Override public MXGroupLabel self() {
 				return (MXGroupLabel) super.self();
+			}
+
+			/*
+			 * (非 Javadoc)
+			 * @see
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
+			 * (java.awt.event.MouseEvent)
+			 */
+			@Override public void createPopupMenu(MouseEvent e) {
+				super.createPopupMenu(e);
+				main().searchCommand(MixtractCommandType.SET_TYPE_CRESC)
+						.setGroup(self());
+				main().searchCommand(MixtractCommandType.SET_TYPE_DIM).setGroup(
+						self());
+				addMenuItemOnGroupingPanel();
+				getPopup().show((Component) e.getSource(), e.getX(), e.getY());
 			}
 		};
 	}

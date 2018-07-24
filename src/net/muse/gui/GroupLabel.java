@@ -1,8 +1,6 @@
 package net.muse.gui;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -98,146 +96,6 @@ public class GroupLabel extends JLabel {
 			}
 		}
 		return child;
-	}
-
-	protected class GLMouseActionListener extends MouseActionListener {
-
-		public GLMouseActionListener(MuseApp main, Container owner) {
-			super(main, owner);
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
-		 * (java.awt.event.MouseEvent)
-		 */
-		@Override public void createPopupMenu(MouseEvent e) {
-			super.createPopupMenu(e);
-			MixtractCommandType.SET_TYPE_CRESC.command().setGroup(self());
-			MixtractCommandType.SET_TYPE_DIM.command().setGroup(self());
-			addMenuItemOnGroupingPanel();
-			getPopup().show((Component) e.getSource(), e.getX(), e.getY());
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseClicked(java
-		 * .awt.event.MouseEvent)
-		 */
-		@Override public void mouseClicked(MouseEvent e) {
-			super.mouseClicked(e);
-			Group gr = self().group();
-			if (gr == null) {
-				self().repaint();
-				return;
-			}
-			if (e.getClickCount() == 2) {
-				doubleClicked(gr);
-			}
-			repaint();
-		}
-
-		protected void doubleClicked(Group gr) {
-			for (InfoViewer r : main().butler().getInfoViewList()) {
-				if (r.contains(gr)) {
-					r.setVisible(true);
-					return;
-				}
-			}
-			showInfoViewer(main(), gr);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseDragged(java
-		 * .awt.event.MouseEvent)
-		 */
-		@Override public void mouseDragged(MouseEvent e) {
-			super.mouseDragged(e);
-			if (!frame().getGroupingPanel().isGroupEditable()) {
-				self().moveLabelVertical(e, getMousePoint(), self().getBounds(),
-						isShiftKeyPressed(), isMousePressed());
-			} else
-				self().moveLabel(e, getMousePoint(), isMousePressed());
-			frame().getGroupingPanel().repaint();
-			repaint();
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
-		 * .awt.event.MouseEvent)
-		 */
-		@Override public void mouseEntered(MouseEvent e) {
-			super.mouseEntered(e);
-			self().setMouseOver(true);
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java
-		 * .awt.event.MouseEvent)
-		 */
-		@Override public void mouseExited(MouseEvent e) {
-			super.mouseExited(e);
-			self().setMouseOver(false);
-			self().setEditMode(getMousePoint());
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
-		 * .event.MouseEvent)
-		 */
-		@Override public void mouseMoved(MouseEvent e) {
-			super.mouseMoved(e);
-			setEditMode(getMousePoint());
-			repaint();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
-		 * .awt.event.MouseEvent)
-		 */
-		@Override public void mousePressed(MouseEvent e) {
-			super.mousePressed(e);
-			main().butler().notifySelectGroup(self(), true);
-			if (self().getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
-				frame().getGroupingPanel().setGroupEditable(true);
-			}
-			repaint();
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * @see
-		 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
-		 * .awt.event.MouseEvent)
-		 */
-		@Override public void mouseReleased(MouseEvent e) {
-			super.mouseReleased(e);
-			frame().getGroupingPanel().setGroupEditable(false);
-			frame().getGroupingPanel().setCursor(new Cursor(
-					Cursor.DEFAULT_CURSOR));
-			frame().getPianoroll().repaint();
-			repaint();
-		}
-
-		/*
-		 * (非 Javadoc)
-		 * @see net.muse.gui.MouseActionListener#owner()
-		 */
-		@Override public GroupLabel self() {
-			return (GroupLabel) super.self();
-		}
 	}
 
 	void setController(MuseApp main) {
@@ -430,7 +288,7 @@ public class GroupLabel extends JLabel {
 	 * @param mousePressed TODO
 	 * @param src
 	 */
-	private void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
+	void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
 			boolean shiftKeyPressed, boolean mousePressed) {
 		r.y = p.y;
 		setBounds(r);
@@ -444,7 +302,7 @@ public class GroupLabel extends JLabel {
 		this.endEdit = endEdit;
 	}
 
-	private void showInfoViewer(MuseApp app, Group gr) {
+	void showInfoViewer(MuseApp app, Group gr) {
 		InfoViewer pv = InfoViewer.create(app, gr);
 		pv.setTitle(gr.name());
 		app.butler().addInfoViewerList(pv);
