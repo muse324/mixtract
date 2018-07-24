@@ -79,7 +79,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	final LinkedList<NoteLabel> selectedNoteLabels;
 	private NoteLabel _notelist = null;
 	private NoteLabel notelist = null;
-	private NoteLabel mouseOveredNoteLabel = null;
+	protected NoteLabel mouseOveredNoteLabel = null;
 	private int selectedVoice;
 	final Cursor defCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR); // @jve:decl-index=0:
 
@@ -554,7 +554,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		g2.drawLine(x3, y3, x4, y4);
 	}
 
-	private void drawMouseOveredNoteInfo(Graphics2D g2) {
+	protected void drawMouseOveredNoteInfo(Graphics2D g2) {
 		if (mouseOveredNoteLabel == null)
 			return;
 		final NoteData nd = mouseOveredNoteLabel.getScoreNote();
