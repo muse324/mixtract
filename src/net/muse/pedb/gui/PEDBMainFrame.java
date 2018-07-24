@@ -7,9 +7,12 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 import net.muse.app.Mixtract;
+import net.muse.app.MuseApp;
+import net.muse.gui.PianoRoll;
 import net.muse.mixtract.gui.MXMainFrame;
 
 public class PEDBMainFrame extends MXMainFrame {
+	private static final long serialVersionUID = 1L;
 	private static String WINDOW_TITLE = "PEDB Editor";
 
 	public PEDBMainFrame(Mixtract mixtract) throws IOException {
@@ -39,5 +42,14 @@ public class PEDBMainFrame extends MXMainFrame {
 		toolBar.remove(getAnalyzeButton()); // Generated
 		toolBar.remove(getTempoSettingPanel());
 		return toolBar;
+	}
+
+	/* (非 Javadoc)
+	 * @see net.muse.mixtract.gui.MXMainFrame#createPianoRoll(net.muse.app.MuseApp)
+	 */
+	@Override
+	protected PianoRoll createPianoRoll(MuseApp main) {
+		assert main instanceof Mixtract;
+		return (PEDBPianoroll) new PEDBPianoroll((Mixtract) main);
 	}
 }
