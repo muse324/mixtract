@@ -84,9 +84,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	final Cursor defCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR); // @jve:decl-index=0:
 
 	final Cursor hndCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); // @jve:decl-index=0:
-	private Group selectedGroup;
+	private GroupLabel selectedGroup;
 	private KeyActionListener keyActions;
-	private Concierge butler;
 
 	protected PianoRoll(MuseApp main) {
 		super();
@@ -221,7 +220,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	public void selectGroup(GroupLabel g, boolean flg) {
 		clearSelection();
-		setSelectedGroup(g.group());
+		setSelectedGroup(g);
 		selectGroup(g.group());
 		repaint();
 	}
@@ -275,7 +274,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		addKeyListener(keyActions);
 	}
 
-	private Concierge butler() {
+	protected Concierge butler() {
 		return main.butler();
 	}
 
@@ -531,8 +530,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		int y4 = n4.getY() + n4.getHeight() / 2;
 
 		// final Note bg = group.getBeginningNote();
-		Note n1 = group().getMelodyFlagment().getFormerLastNote();
-		final Note n2 = group().getMelodyFlagment().getLatterFirstNote();
+		Note n1 = selectedGroup.group().getMelodyFlagment().getFormerLastNote();
+		final Note n2 = selectedGroup.group().getMelodyFlagment().getLatterFirstNote();
 		// final Note ed = group.getEndNote();
 		final int keyheight = KeyBoard.keyHeight;
 		// final int y1 = KeyBoard.getYPositionOfPitch(bg.notenum()) *
@@ -786,14 +785,14 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	/**
 	 * @return selectedGroup
 	 */
-	protected Group group() {
+	protected GroupLabel group() {
 		return selectedGroup;
 	}
 
 	/**
 	 * @param selectedGroup セットする selectedGroup
 	 */
-	public void setSelectedGroup(Group selectedGroup) {
+	public void setSelectedGroup(GroupLabel selectedGroup) {
 		this.selectedGroup = selectedGroup;
 	}
 

@@ -182,7 +182,7 @@ public class PianoRollActionListener extends MouseActionListener {
 			self().encloseNotes();
 			self().selectNotes();
 			if (self().selectedNoteLabels.size() == 0)
-				main().notifyDeselectGroup();
+				main().butler().notifyDeselectGroup();
 			else {
 				self().setFocusable(true);
 				self().requestFocus();

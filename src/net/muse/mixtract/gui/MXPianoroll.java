@@ -96,8 +96,8 @@ public class MXPianoroll extends PianoRoll {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#group()
 	 */
-	@Override protected MXGroup group() {
-		return (MXGroup) super.group();
+	@Override protected MXGroupLabel group() {
+		return (MXGroupLabel) super.group();
 	}
 
 	@Override protected void makeNoteLabel(Group group) {

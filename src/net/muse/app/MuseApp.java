@@ -177,17 +177,6 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		}
 	}
 
-	/**
-	 *
-	 */
-	public void notifyDeselectGroup() {
-		if (data() != null)
-			data().setSelectedGroup(null);
-		for (final TuneDataListener l : butler().getTdListenerList()) {
-			l.deselect(null);
-		}
-	}
-
 	public void notifyShowCurrentX(boolean showCurrentX, int x) {
 		for (CanvasMouseListener v : butler().getInfoViewList()) {
 			v.setShowCurrentX(showCurrentX, x);

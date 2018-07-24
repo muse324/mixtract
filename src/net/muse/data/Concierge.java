@@ -126,7 +126,13 @@ public class Concierge extends MuseObject implements TuneDataController {
 			l.selectGroup(g, b);
 		}
 	}
-
+	public void notifyDeselectGroup() {
+		if (app().data() != null)
+			app().data().setSelectedGroup(null);
+		for (final TuneDataListener l : getTdListenerList()) {
+			l.deselect(null);
+		}
+	}
 	public void notifySetTarget(TuneData data) {
 		getInfoViewList().clear();
 		for (TuneDataListener l : getTdListenerList()) {

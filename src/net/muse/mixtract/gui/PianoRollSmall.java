@@ -1,10 +1,16 @@
 package net.muse.mixtract.gui;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 import net.muse.app.Mixtract;
 import net.muse.data.NoteData;
-import net.muse.gui.*;
+import net.muse.gui.GroupLabel;
+import net.muse.gui.KeyBoard;
+import net.muse.gui.NoteLabel;
 
 class PianoRollSmall extends MXPianoroll {
 	private static final long serialVersionUID = 1L;
@@ -50,7 +56,7 @@ class PianoRollSmall extends MXPianoroll {
 	public void makeNoteLabel() {
 		removeAll();
 		setNotelist(null);
-		makeNoteLabel(group());
+		makeNoteLabel(group().group());
 		validate();
 		repaint();
 	}
@@ -136,9 +142,9 @@ class PianoRollSmall extends MXPianoroll {
 			break;
 		default:
 			double len = endX - getAxisX();
-			x = getAxisX() + ((nd.onset() - group().getBeginNote().onset())
-					/ (double) group().timeValue()) * len;
-			w = (nd.timeValue() / (double) group().timeValue()) * len - offset;
+			x = getAxisX() + ((nd.onset() - group().group().getBeginNote()
+					.onset()) / (double) group().group().timeValue()) * len;
+			w = (nd.timeValue() / (double) group().group().timeValue()) * len - offset;
 			break;
 		}
 		return new Rectangle((int) x, y, (int) w, h);
