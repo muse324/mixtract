@@ -1,7 +1,6 @@
 package net.muse.gui;
 
 import java.awt.Rectangle;
-import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 
@@ -101,46 +100,7 @@ public class NoteLabel extends GroupLabel {
 	}
 
 	@Override void setController(MuseApp main) {
-		mouseActions = new MouseActionListener(main, this) {
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mouseEntered(MouseEvent e) {
-				super.mouseEntered(e);
-				NoteLabel src = (NoteLabel) e.getSource();
-				src.setMouseOver(true);
-				((PianoRoll) getParent()).setMouseOveredNoteLabel(src);
-				repaint();
-			}
-
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mouseExited(MouseEvent e) {
-				super.mouseExited(e);
-				((NoteLabel) e.getSource()).setMouseOver(false);
-				((NoteLabel) e.getSource()).setEditMode(getMousePoint());
-				((PianoRoll) getParent()).setMouseOveredNoteLabel(null);
-				repaint();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
-			 * .event.MouseEvent)
-			 */
-			@Override public void mouseMoved(MouseEvent e) {
-				((PianoRoll) getParent()).setMouseOveredNoteLabel((NoteLabel) e
-						.getSource());
-			}
-		};
+		mouseActions = new NLMouseActionListener(main, this);
 		addMouseListener(mouseActions);
 		addMouseWheelListener(mouseActions);
 	}
