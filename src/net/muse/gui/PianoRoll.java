@@ -261,7 +261,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		selectGroup(group.child());
 		for (Component c : getComponents()) {
 			NoteLabel l = (NoteLabel) c;
-			selectNote(l, group.getBeginNote());
+			selectNote(l, group.getBeginNote(), group.getEndNote());
 		}
 	}
 
@@ -467,7 +467,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 *
 	 */
 	private void clearSelection() {
-		for(NoteLabel l: selectedNoteLabels)
+		for (NoteLabel l : selectedNoteLabels)
 			l.setSelected(false);
 		selectedNoteLabels.clear();
 		setSelectedVoice(-1);
@@ -534,7 +534,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 		// final Note bg = group.getBeginningNote();
 		Note n1 = selectedGroup.group().getMelodyFlagment().getFormerLastNote();
-		final Note n2 = selectedGroup.group().getMelodyFlagment().getLatterFirstNote();
+		final Note n2 = selectedGroup.group().getMelodyFlagment()
+				.getLatterFirstNote();
 		// final Note ed = group.getEndNote();
 		final int keyheight = KeyBoard.keyHeight;
 		// final int y1 = KeyBoard.getYPositionOfPitch(bg.notenum()) *
@@ -572,8 +573,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			break;
 		}
 		System.out.println(str + " at " + getMouseActions().getMousePoint());
-		g2.drawString(str, getMouseActions().getMousePoint().x - axisX, getMouseActions()
-				.getMousePoint().y - KeyBoard.keyHeight);
+		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
+				getMouseActions().getMousePoint().y - KeyBoard.keyHeight);
 	}
 
 	/**
@@ -728,16 +729,17 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	/**
 	 * @param notelist2
 	 * @param note
+	 * @param end
 	 */
-	public void selectNote(NoteLabel l, NoteData note) {
+	public void selectNote(NoteLabel l, NoteData note, NoteData end) {
 		if (note == null)
 			return;
 		if (l.getScoreNote().equals(note)) {
 			l.setSelected(true);
 			selectedNoteLabels.add(l);
 		}
-		selectNote(l, note.child());
-		selectNote(l, note.next());
+		selectNote(l, note.child(), end);
+		selectNote(l, note.next(), end);
 	}
 
 	void setMouseEndPoint(MouseEvent e) {

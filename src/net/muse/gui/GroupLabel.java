@@ -158,7 +158,7 @@ public class GroupLabel extends JLabel {
 	/**
 	 * @param hasSelectedNoteList
 	 */
-	protected void setSelected(boolean isSelected) {
+	public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
 		setBackground(isSelected ? PartColor.SELECTED_COLOR
 				: getCurrentColor());

@@ -44,7 +44,7 @@ public class MXPianoroll extends PianoRoll {
 		selectGroup(g.getChildLatterGroup());
 		for (Component c : getComponents()) {
 			NoteLabel l = (NoteLabel) c;
-			selectNote(l, group.getBeginNote());
+			selectNote(l, group.getBeginNote(), group.getEndNote());
 		}
 	}
 

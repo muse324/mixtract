@@ -165,8 +165,8 @@ public class Group extends SequenceData {
 	 * @return cur
 	 */
 	public List<NoteData> getScoreNotelist() {
-//		scoreNotelist.clear();
-//		addScoreNoteList();
+		// scoreNotelist.clear();
+		// addScoreNoteList();
 		return scoreNotelist;
 	}
 
@@ -321,6 +321,10 @@ public class Group extends SequenceData {
 	private String notelistName(String str, NoteData note) {
 		if (note == null)
 			return str;
+		if (note.offset() > getEndNote().offset())
+			return str;
+		if (note.onset() < getBeginNote().onset())
+			return notelistName(str, note.next());
 		if (str.length() > 1)
 			str += ",";
 		str += " " + note.id() + " ";

@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import net.muse.app.Mixtract;
 import net.muse.data.NoteData;
 import net.muse.gui.KeyBoard;
+import net.muse.gui.NoteLabel;
 import net.muse.mixtract.gui.MXPianoroll;
 import net.muse.mixtract.gui.ViewerMode;
 
@@ -30,4 +31,12 @@ public class PEDBPianoroll extends MXPianoroll {
 		setViewMode(ViewerMode.SCORE_VIEW);
 	}
 
+	public void selectNote(NoteLabel l, NoteData note, NoteData end) {
+		if (note == null)
+			return;
+		NoteData s = l.getScoreNote();
+		l.setSelected(s.onset() >= note.onset() && s.onset() <= end.onset());
+
+		getSelectedNoteLabels().add(l);
+	}
 }

@@ -87,7 +87,7 @@ public class NoteLabel extends GroupLabel {
 		measureBeginning = b;
 	}
 
-	public NoteData getGroupNote() {
+	@Deprecated public NoteData getGroupNote() {
 		return note;
 	}
 
