@@ -467,9 +467,12 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 *
 	 */
 	private void clearSelection() {
+		for(NoteLabel l: selectedNoteLabels)
+			l.setSelected(false);
 		selectedNoteLabels.clear();
 		setSelectedVoice(-1);
 		setSelectedGroup(null);
+		repaint();
 	}
 
 	/**
