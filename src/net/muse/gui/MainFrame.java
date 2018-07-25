@@ -422,7 +422,9 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			playButton.setIcon(new ImageIcon(getClass().getResource(
 					"images/Play16.gif"))); // Generated
 			playButton.setMnemonic(KeyEvent.VK_SPACE);
-			playButton.setActionCommand("Play");
+			MuseAppCommand cmd = main.searchCommand(
+					MuseAppCommandType.PLAY);
+			playButton.setActionCommand(cmd.name());
 			playButton.setToolTipText("Play");
 			playButton.setEnabled(false); // Generated
 			playButton.setText("Play");
@@ -445,7 +447,8 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			stopButton = new JButton();
 			stopButton.setIcon(new ImageIcon(getClass().getResource(
 					"images/Stop16.gif"))); // Generated
-			stopButton.setActionCommand("Stop");
+			MuseAppCommandType cmd = MuseAppCommandType.STOP;
+			stopButton.setActionCommand(cmd.name());
 			stopButton.setEnabled(false); // Generated
 			stopButton.setToolTipText("Stop");
 			stopButton.setText("Stop");

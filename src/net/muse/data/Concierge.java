@@ -85,6 +85,7 @@ public class Concierge extends MuseObject implements TuneDataController {
 	}
 
 	public void keyPressed(KeyEvent e) {
+		c=null;
 		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
 				+ obj.getClass().getSimpleName();
 		MuseApp main = (MuseApp) obj;
@@ -101,6 +102,7 @@ public class Concierge extends MuseObject implements TuneDataController {
 			printConsole((!isPlayed) ? "play" : "stop");
 			c = main.searchCommand((!isPlayed) ? MuseAppCommandType.PLAY
 					: MuseAppCommandType.STOP);
+			setPlayed(!isPlayed);
 			break;
 		default:
 			printConsole(e.getSource().getClass().getName()

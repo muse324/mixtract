@@ -13,7 +13,7 @@ class StopCommand extends MuseAppCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override public void run() {
-		synthe.notifyStopPlaying();
+		app().butler().notifyStopPlaying();
 	}
 
 	protected StopCommand(String... lang) {
