@@ -16,8 +16,8 @@ public class PEDBTuneData extends MXTuneData {
 	protected void writeGroupStructureData(PrintWriter out, MXGroup group) {
 		if (group == null)
 			return;
-		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
-		writeGroupStructureData(out, (MXGroup) group.getChildLatterGroup());
+		writeGroupStructureData(out, (PEDBGroup) group.getChildFormerGroup());
+		writeGroupStructureData(out, (PEDBGroup) group.getChildLatterGroup());
 		out.format("%s;%s\n", group, (group.hasTopNote()) ? group.getTopNote()
 				.id() : "null");
 	}

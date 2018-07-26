@@ -809,7 +809,7 @@ public class MXTuneData extends TuneData {
 		return str;
 	}
 
-	private void writeGroupStructureData(PrintWriter out, MXGroup group) {
+	protected void writeGroupStructureData(PrintWriter out, MXGroup group) {
 		if (group == null)
 			return;
 		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
@@ -835,7 +835,7 @@ public class MXTuneData extends TuneData {
 	 *
 	 * @throws IOException
 	 */
-	private void writeStructureData() throws IOException {
+	protected void writeStructureData() throws IOException {
 		File fp = new File(out(), STRUCTURE_FILENAME);
 		fp.createNewFile();
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
