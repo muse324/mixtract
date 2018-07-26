@@ -551,14 +551,17 @@ public class TuneData extends MuseObject implements TuneDataController {
 			partwiseNoteList.set(partIndex, root);
 	}
 
-	protected void setNoteScheduleEvent(NoteData note, int endOffset) {
+	protected void setNoteScheduleEvent(NoteData note, int beginOnset, int endOffset) {
 		if (note == null)
 			return;
+		if(note.onset()>endOffset)return;
+		if(note.offset()<beginOnset)
+			setNoteScheduleEvent(note.next(),beginOnset, endOffset);
 		if (!note.rest()) {
 			addNoteScheduleEventList(note);
 		}
-		setNoteScheduleEvent(note.child(), endOffset);
-		setNoteScheduleEvent(note.next(), endOffset);
+		setNoteScheduleEvent(note.child(),beginOnset, endOffset);
+		setNoteScheduleEvent(note.next(),beginOnset, endOffset);
 	}
 
 	/**
@@ -646,7 +649,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 		if (g == null)
 			return;
 		setNoteScheduleEvent(g.child());
-		setNoteScheduleEvent(g.getBeginNote(), g.getEndNote().offset());
+		setNoteScheduleEvent(g.getBeginNote(),g.getBeginNote().onset(), g.getEndNote().offset());
 	}
 
 	/**

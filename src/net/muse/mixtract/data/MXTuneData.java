@@ -766,7 +766,7 @@ public class MXTuneData extends TuneData {
 			setNoteScheduleEvent(g.getChildFormerGroup());
 			setNoteScheduleEvent(g.getChildLatterGroup());
 		} else {
-			setNoteScheduleEvent(g.getBeginNote(), g.getEndNote().offset());
+			setNoteScheduleEvent(g.getBeginNote(),g.getBeginNote().onset(), g.getEndNote().offset());
 		}
 	}
 
