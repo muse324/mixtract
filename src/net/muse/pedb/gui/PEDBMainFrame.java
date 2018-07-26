@@ -36,8 +36,8 @@ public class PEDBMainFrame extends MXMainFrame {
 
 	@Override protected JPanel getTuneViewPanel() {
 		if (tuneViewPanel == null) {
-			tuneViewPanel = super.getTuneViewPanel();
-			tuneViewPanel.remove(getCurveSplitPane());
+//			tuneViewPanel = super.getTuneViewPanel();
+			tuneViewPanel = new MainPanel(getStructurePane(),getPianorollPane());
 		}
 		return tuneViewPanel;
 	}

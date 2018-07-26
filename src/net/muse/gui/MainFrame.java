@@ -854,7 +854,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JScrollPane
 	 */
-	private JScrollPane getPianorollPane() {
+	protected JScrollPane getPianorollPane() {
 		if (pianorollPanel == null) {
 			pianorollPanel = new JScrollPane();
 			pianorollPanel.setRowHeaderView(getKeyboard());
@@ -942,7 +942,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JScrollPane
 	 */
-	private JScrollPane getStructurePane() {
+	protected JScrollPane getStructurePane() {
 		if (structurePane == null) {
 			structurePane = new JScrollPane();
 			structurePane.setRowHeaderView(getPartSelectorPanel());

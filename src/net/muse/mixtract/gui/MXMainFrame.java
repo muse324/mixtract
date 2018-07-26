@@ -49,6 +49,7 @@ public class MXMainFrame extends MainFrame {
 
 	private PhraseInfoPanel phraseInfoPanel;
 	private JToolBar toolBar;
+	private JDesktopPane desktop;
 
 	public MXMainFrame(Mixtract mixtract) throws IOException {
 		super(mixtract);
@@ -118,11 +119,14 @@ public class MXMainFrame extends MainFrame {
 	}
 
 	@Override protected JDesktopPane getDesktop() {
-		JDesktopPane d = super.getDesktop();
-		d.add(getPhraseEditorPanel(), BorderLayout.WEST);
-		Dimension sz = getCurveEditorPanel().getPreferredSize();
-		getCurveEditorPanel().setPreferredSize(new Dimension(300, sz.height));
-		return d;
+		if (desktop == null) {
+			desktop = super.getDesktop();
+			desktop.add(getPhraseEditorPanel(), BorderLayout.WEST);
+			Dimension sz = getCurveEditorPanel().getPreferredSize();
+			getCurveEditorPanel().setPreferredSize(new Dimension(300,
+					sz.height));
+		}
+		return desktop;
 	}
 
 	protected JInternalFrame getPhraseEditorPanel() {
