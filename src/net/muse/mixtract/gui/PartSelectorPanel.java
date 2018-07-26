@@ -59,7 +59,7 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 			for (int x = 0; x < voiceList.length; x++) {
 				if (voiceList[x] <= 0)
 					continue;
-				voicePanel.add(createVoiseSelectorBox(i, v), null);
+				voicePanel.add(createVoiseSelectorBox(i, v++), null);
 			}
 		}
 		add(partPanel);
