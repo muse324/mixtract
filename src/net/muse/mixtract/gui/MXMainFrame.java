@@ -48,6 +48,7 @@ public class MXMainFrame extends MainFrame {
 	private PhraseCurveEditorPanel phraseTempoView;
 
 	private PhraseInfoPanel phraseInfoPanel;
+	private JToolBar toolBar;
 
 	public MXMainFrame(Mixtract mixtract) throws IOException {
 		super(mixtract);
@@ -97,11 +98,13 @@ public class MXMainFrame extends MainFrame {
 	}
 
 	@Override protected JToolBar getJToolBar() {
-		JToolBar toolBar = super.getJToolBar();
-		toolBar.add(getScoreViewButton()); // Generated
-		toolBar.add(getRealtimeViewButton()); // Generated
-		toolBar.add(getAnalyzeButton()); // Generated
-		toolBar.add(getTempoSettingPanel());
+		if (toolBar == null) {
+			toolBar = super.getJToolBar();
+			toolBar.add(getScoreViewButton()); // Generated
+			toolBar.add(getRealtimeViewButton()); // Generated
+			toolBar.add(getAnalyzeButton()); // Generated
+			toolBar.add(getTempoSettingPanel());
+		}
 		return toolBar;
 	}
 

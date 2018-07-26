@@ -481,6 +481,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	protected void initialize() {
 		this.setTitle(getWindowTitle()); // ウィンドウのタイトル
 		this.setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize()); // ウィンドウサイズ
+		this.setMinimumSize(new Dimension(640, 480));
 		this.setContentPane(getDesktop()); // メインの描画領域(詳細)
 		this.setJMenuBar(getMenubar()); // メニューバー
 	}

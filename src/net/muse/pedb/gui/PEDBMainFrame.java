@@ -13,7 +13,10 @@ import net.muse.mixtract.gui.MXMainFrame;
 
 public class PEDBMainFrame extends MXMainFrame {
 	private static final long serialVersionUID = 1L;
-	private static String WINDOW_TITLE = "PEDB Editor";
+	private static String WINDOW_TITLE = "PEDB Structure Editor";
+	private JToolBar toolBar;
+	private JDesktopPane desktopPane;
+	private JPanel tuneViewPanel;
 
 	public PEDBMainFrame(Mixtract mixtract) throws IOException {
 		super(mixtract);
@@ -24,23 +27,29 @@ public class PEDBMainFrame extends MXMainFrame {
 	}
 
 	@Override protected JDesktopPane getDesktop() {
-		JDesktopPane d = super.getDesktop();
-		d.remove(getPhraseEditorPanel());
-		return d;
+		if (desktopPane == null) {
+			desktopPane = super.getDesktop();
+			desktopPane.remove(getPhraseEditorPanel());
+		}
+		return desktopPane;
 	}
 
 	@Override protected JPanel getTuneViewPanel() {
-		JPanel p = super.getTuneViewPanel();
-		p.remove(getCurveSplitPane());
-		return p;
+		if (tuneViewPanel == null) {
+			tuneViewPanel = super.getTuneViewPanel();
+			tuneViewPanel.remove(getCurveSplitPane());
+		}
+		return tuneViewPanel;
 	}
 
 	@Override protected JToolBar getJToolBar() {
-		JToolBar toolBar = super.getJToolBar();
-		toolBar.remove(getScoreViewButton()); // Generated
-		toolBar.remove(getRealtimeViewButton()); // Generated
-		toolBar.remove(getAnalyzeButton()); // Generated
-		toolBar.remove(getTempoSettingPanel());
+		if (toolBar == null) {
+			toolBar = super.getJToolBar();
+			toolBar.remove(getScoreViewButton()); // Generated
+			toolBar.remove(getRealtimeViewButton()); // Generated
+			toolBar.remove(getAnalyzeButton()); // Generated
+			toolBar.remove(getTempoSettingPanel());
+		}
 		return toolBar;
 	}
 
