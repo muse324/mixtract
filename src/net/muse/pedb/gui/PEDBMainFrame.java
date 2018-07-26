@@ -2,9 +2,7 @@ package net.muse.pedb.gui;
 
 import java.io.IOException;
 
-import javax.swing.JDesktopPane;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
+import javax.swing.*;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
@@ -17,11 +15,36 @@ public class PEDBMainFrame extends MXMainFrame {
 	private JToolBar toolBar;
 	private JDesktopPane desktopPane;
 	private JPanel tuneViewPanel;
+	private JScrollPane pianorollPanel;
+	private JScrollPane structurePane;
 
 	public PEDBMainFrame(Mixtract mixtract) throws IOException {
 		super(mixtract);
 	}
-
+	protected JScrollPane getStructurePane() {
+		if (structurePane == null) {
+			structurePane = new JScrollPane();
+			structurePane.setRowHeaderView(getPartSelectorPanel());
+			structurePane.setViewportView(getGroupingPanel());
+//			structurePane.setHorizontalScrollBar(getTimeScrollBar());
+			structurePane.setVerticalScrollBarPolicy(
+					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}
+		return structurePane;
+	}
+	protected JScrollPane getPianorollPane() {
+		if (pianorollPanel == null) {
+			pianorollPanel = new JScrollPane();
+			pianorollPanel.setRowHeaderView(getKeyboard());
+			pianorollPanel.setViewportView(getPianoroll()); // Generated
+//			pianorollPanel.setHorizontalScrollBar(getTimeScrollBar());
+//			pianorollPanel.setHorizontalScrollBarPolicy(
+//					JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			pianorollPanel.setVerticalScrollBarPolicy(
+					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}
+		return pianorollPanel;
+	}
 	protected String getWindowTitle() {
 		return WINDOW_TITLE;
 	}

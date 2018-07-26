@@ -751,7 +751,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	private KeyBoard getKeyboard() {
+	public KeyBoard getKeyboard() {
 		if (keyboard == null) {
 			keyboard = new KeyBoard(main.getTicksPerBeat());
 			butler().addTuneDataListenerList(keyboard);
@@ -839,7 +839,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JPanel
 	 */
-	private JPanel getPartSelectorPanel() {
+	protected JPanel getPartSelectorPanel() {
 		if (partSelectorPanel == null) {
 			partSelectorPanel = new PartSelectorPanel();
 			partSelectorPanel.setPreferredSize(new Dimension(KeyBoard
