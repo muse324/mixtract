@@ -753,7 +753,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	public KeyBoard getKeyboard() {
 		if (keyboard == null) {
-			keyboard = new KeyBoard(main.getTicksPerBeat());
+			keyboard = new KeyBoard(main);
 			butler().addTuneDataListenerList(keyboard);
 		}
 		return keyboard;

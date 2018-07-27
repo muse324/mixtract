@@ -3,11 +3,11 @@ package net.muse.gui;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.util.List;
 
 import javax.swing.*;
 
 import net.muse.app.Mixtract;
+import net.muse.app.MuseApp;
 import net.muse.data.*;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.sound.MixtractMIDIController;
@@ -49,9 +49,6 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/** Y座標に対応するノートナンバーのマップ */
 	private final TreeMap<Integer, Integer> keyboardMap;
 
-	/** 音域（描画する鍵盤の数） */
-	private int keyRegister;
-
 	/** 押されている鍵盤のノート番号リスト（ソート済） */
 	private final TreeSet<Integer> noteNumberOfPushedKey;
 
@@ -60,6 +57,8 @@ public class KeyBoard extends JPanel implements MouseListener,
 	private MIDIController synthe; // @jve:decl-index=0:
 
 	private int ticksperbeat = 480;
+
+	private MuseApp main;
 
 	/**
 	 * @return
@@ -99,6 +98,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	public static void setKeyWidth(int w) {
 		keyWidth = w;
 	}
+
 	/**
 	 * 白鍵のピッチクラスをインスタンス化します．
 	 */
@@ -120,6 +120,11 @@ public class KeyBoard extends JPanel implements MouseListener,
 		noteNumberOfPushedKey = new TreeSet<Integer>();
 		ticksperbeat = tpb;
 		initialize();
+	}
+
+	public KeyBoard(MuseApp main) {
+		this(main.getTicksPerBeat());
+		this.main = main;
 	}
 
 	/*
@@ -170,13 +175,6 @@ public class KeyBoard extends JPanel implements MouseListener,
 	 * )
 	 */
 	public void editGroup(GroupLabel g) {}
-
-	/**
-	 * @return
-	 */
-	public int getKeyRegistar() {
-		return keyRegister;
-	}
 
 	/**
 	 * @return the selectedKey
@@ -284,9 +282,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 		repaint();
 	}
 
-	/**
-	 *
-	 */
+	@Deprecated
 	public void resetKeyRegister() {
 		topNoteNumber = 0;
 		bottomNoteNumber = 1000;
@@ -301,31 +297,13 @@ public class KeyBoard extends JPanel implements MouseListener,
 	public void selectGroup(GroupLabel g, boolean flg) {}
 
 	/**
-	 * @param beginNote
-	 */
-	public void setKeyRegister(GroupNote note) {
-		if (note == null)
-			return;
-		setKeyRegister(note.child());
-		setKeyRegister(note.next());
-		setKeyRegister(note.getNote());
-	}
-
-	/**
 	 * @param synthe the synthe to set
 	 */
 	public void setSynthe(MIDIController synthe) {
 		this.synthe = synthe;
 	}
 
-	public void setTarget(TuneData target) {
-		resetKeyRegister();
-
-		setKeyRegister(target.getRootGroup());
-		setKeyRegister(target.getMiscGroup());
-		// setKeyRegister(0, target.getRootGroup());
-		keyRegister = topNoteNumber - bottomNoteNumber;
-	}
+	public void setTarget(TuneData target) {}
 
 	/**
 	 * キーボードを薄く描画します．
@@ -445,19 +423,10 @@ public class KeyBoard extends JPanel implements MouseListener,
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createEtchedBorder());
 		setDoubleBuffered(true);
-		setPreferredSize(new Dimension(keyWidth, (keyHeight
-				* maximumKeyRegister)));
+		setSize(keyWidth, (keyHeight * maximumKeyRegister));
 
 		addMouseListener(this);
 		addMouseMotionListener(this);
-	}
-
-	/**
-	 * @param grouplist
-	 */
-	private void setKeyRegister(final List<Group> grouplist) {
-		for (Group g : grouplist)
-			setKeyRegister(g.getBeginNote());
 	}
 
 	/**
@@ -482,4 +451,5 @@ public class KeyBoard extends JPanel implements MouseListener,
 	public void setKeyHeight(int keyHeight) {
 		this.keyHeight = keyHeight;
 	}
+
 }
