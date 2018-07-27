@@ -132,7 +132,7 @@ class PianoRollSmall extends MXPianoroll {
 	 */
 	@Override
 	protected Rectangle getLabelBounds(NoteData nd, int offset) {
-		final int h = KeyBoard.keyHeight;
+		final int h = main().getFrame().getKeyboard().getKeyHeight();
 		final int y = KeyBoard.getYPositionOfPitch(nd.noteNumber()) * h;
 		double x, w;
 		switch (getViewerMode()) {

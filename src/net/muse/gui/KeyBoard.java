@@ -23,7 +23,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 		MouseMotionListener, TuneDataListener {
 
 	/** キーボード一音の描画の縦幅[pixel] */
-	public final static int keyHeight = 7;
+	private int keyHeight = 7;
 
 	/** 最大音域数 */
 	static final int maximumKeyRegister = 88;
@@ -64,7 +64,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/**
 	 * @return
 	 */
-	public static int getKeyboardHeight() {
+	public int getKeyboardHeight() {
 		return keyHeight * maximumKeyRegister;
 	}
 
@@ -353,7 +353,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/**
 	 * @return the keyHeight
 	 */
-	int getKeyHeight() {
+	public int getKeyHeight() {
 		return keyHeight;
 	}
 
@@ -474,5 +474,12 @@ public class KeyBoard extends JPanel implements MouseListener,
 			topNoteNumber = note.noteNumber();
 		if (note.noteNumber() < bottomNoteNumber)
 			bottomNoteNumber = note.noteNumber();
+	}
+
+	/**
+	 * @param keyHeight セットする keyHeight
+	 */
+	public void setKeyHeight(int keyHeight) {
+		this.keyHeight = keyHeight;
 	}
 }

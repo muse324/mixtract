@@ -32,23 +32,36 @@ public class PEDBStructureEditor extends Mixtract {
 	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
 	 */
-	@Override public void createTuneData(File in, File out) throws IOException {
+	@Override
+	public void createTuneData(File in, File out) throws IOException {
 		setData(new PEDBTuneData(in, out));
 	}
 
-	@Override protected void setupCommands() {
+	@Override
+	protected void setupCommands() {
 		super.setupCommands();
 		for (PEDBCommandType e : PEDBCommandType.values())
 			getCommandList().add((MuseAppCommandAction) e);
 	}
 
-	@Override protected MainFrame mainFrame() throws IOException {
+	@Override
+	protected MainFrame mainFrame() throws IOException {
 		if (getFrame() == null)
 			return new PEDBMainFrame(this);
 		return (MainFrame) getFrame();
 	}
 
-	@Override protected Concierge createConcierge() {
+	@Override
+	protected Concierge createConcierge() {
 		return new PEDBConcierge(this);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.MuseGUIObject#getFrame()
+	 */
+	@Override
+	public PEDBMainFrame getFrame() {
+		return (PEDBMainFrame) super.getFrame();
 	}
 }

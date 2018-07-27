@@ -87,7 +87,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mousePressed(MouseEvent e) {
+			@Override
+			public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (!SwingUtilities.isRightMouseButton(e))
 					main().butler().notifyDeselectGroup();
@@ -99,7 +100,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseReleased(MouseEvent e) {
+			@Override
+			public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (selectedGroup == null)
 					main().butler().notifyDeselectGroup();
@@ -112,7 +114,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java.
 			 * awt.event.MouseEvent)
 			 */
-			@Override public void mouseExited(MouseEvent e) {
+			@Override
+			public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
 				if (isGroupEditable()) {
 					setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
@@ -129,7 +132,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override protected void createPopupMenu(MouseEvent e) {
+			@Override
+			protected void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				MixtractCommandType.SET_TYPE_CRESC.command().setGroup(
 						getSelectedGroup());
@@ -176,7 +180,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override public void paintComponent(Graphics g) {
+	@Override
+	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		final Graphics2D g2 = (Graphics2D) g;
 
@@ -221,7 +226,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @deprecated Use {@link #readTuneData()} instead
 	 */
-	@Deprecated public void readTuneData(MXTuneData target) {
+	@Deprecated
+	public void readTuneData(MXTuneData target) {
 		readTuneData();
 		repaint();
 	}
@@ -420,10 +426,11 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			g2.setStroke(stroke);
 			g2.setColor(Color.black);
 			final int x1 = child.getX() + child.getWidth() / 2;
-			final int y1 = child.getY() + child.getHeight()
-					- KeyBoard.keyHeight;
+			int keyHeight = ((MainFrame) main.getFrame()).getKeyboard()
+					.getKeyHeight();
+			final int y1 = child.getY() + child.getHeight() - keyHeight;
 			final int x2 = parent.getX() + parent.getWidth() / 2;
-			final int y2 = parent.getY() + KeyBoard.keyHeight;
+			final int y2 = parent.getY() + keyHeight;
 			g2.drawLine(x1, y1, x2, y2);
 		}
 	}

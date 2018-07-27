@@ -4,14 +4,14 @@ import java.awt.Graphics2D;
 
 import net.muse.app.Mixtract;
 import net.muse.data.NoteData;
-import net.muse.gui.KeyBoard;
 import net.muse.gui.NoteLabel;
 import net.muse.mixtract.gui.MXPianoroll;
 import net.muse.mixtract.gui.ViewerMode;
 
 public class PEDBPianoroll extends MXPianoroll {
 
-	@Override protected void drawMouseOveredNoteInfo(Graphics2D g2) {
+	@Override
+	protected void drawMouseOveredNoteInfo(Graphics2D g2) {
 		if (mouseOveredNoteLabel == null)
 			return;
 		final NoteData nd = mouseOveredNoteLabel.getScoreNote();
@@ -21,7 +21,8 @@ public class PEDBPianoroll extends MXPianoroll {
 				.onset(), nd.offset());
 		System.out.println(str + " at " + getMouseActions().getMousePoint());
 		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
-				getMouseActions().getMousePoint().y - KeyBoard.keyHeight);
+				getMouseActions().getMousePoint().y - main().getFrame()
+						.getKeyboard().getKeyHeight());
 	}
 
 	private static final long serialVersionUID = 1L;

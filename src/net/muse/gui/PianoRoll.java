@@ -361,7 +361,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	protected Rectangle getLabelBounds(final NoteData nd, final int offset) {
 		if (nd == null)
 			return null;
-		final int h = KeyBoard.keyHeight;
+		final int h = main.getFrame().getKeyboard().getKeyHeight();
 		final int y = KeyBoard.getYPositionOfPitch(nd.noteNumber()) * h;
 		int x, w;
 		switch (viewerMode) {
@@ -493,9 +493,9 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				// 黒鍵
 				g.setColor(Color.getHSBColor((float) 0.5, (float) 0.,
 						(float) 0.9));
-				g.fillRect(0, curHeight, width, KeyBoard.keyHeight);
+				g.fillRect(0, curHeight, width, main.getFrame().getKeyboard().getKeyHeight());
 			}
-			curHeight += KeyBoard.keyHeight;
+			curHeight += main.getFrame().getKeyboard().getKeyHeight();
 		}
 	}
 
@@ -537,7 +537,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		final Note n2 = selectedGroup.group().getMelodyFlagment()
 				.getLatterFirstNote();
 		// final Note ed = group.getEndNote();
-		final int keyheight = KeyBoard.keyHeight;
+		final int keyheight = main.getFrame().getKeyboard().getKeyHeight();
 		// final int y1 = KeyBoard.getYPositionOfPitch(bg.notenum()) *
 		// keyheight;
 		final int y2 = KeyBoard.getYPositionOfPitch(n1.notenum()) * keyheight;
@@ -574,7 +574,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		}
 		System.out.println(str + " at " + getMouseActions().getMousePoint());
 		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
-				getMouseActions().getMousePoint().y - KeyBoard.keyHeight);
+				getMouseActions().getMousePoint().y - main.getFrame().getKeyboard().getKeyHeight());
 	}
 
 	/**
@@ -815,6 +815,13 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	public void setSelectedVoice(int selectedVoice) {
 		this.selectedVoice = selectedVoice;
+	}
+
+	/**
+	 * @return main
+	 */
+	protected MuseApp main() {
+		return main;
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

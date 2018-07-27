@@ -451,4 +451,12 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		return c.command();
 	}
 
+	/* (非 Javadoc)
+	 * @see net.muse.gui.MuseGUIObject#getFrame()
+	 */
+	@Override
+	public MainFrame getFrame() {
+		return (MainFrame) super.getFrame();
+	}
+
 }

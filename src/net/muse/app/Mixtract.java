@@ -45,7 +45,8 @@ public class Mixtract extends MuseApp {
 		super(args);
 	}
 
-	@Override public void analyzeStructure(TuneData data, Group group) {
+	@Override
+	public void analyzeStructure(TuneData data, Group group) {
 		assert data != null && data instanceof MXTuneData;
 		if (group == null)
 			return;
@@ -60,7 +61,8 @@ public class Mixtract extends MuseApp {
 	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
 	 */
-	@Override public void createTuneData(File in, File out) throws IOException {
+	@Override
+	public void createTuneData(File in, File out) throws IOException {
 		setData(new MXTuneData(in, out));
 	}
 
@@ -87,19 +89,22 @@ public class Mixtract extends MuseApp {
 	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#initialize()
 	 */
-	@Override protected void initialize() {
+	@Override
+	protected void initialize() {
 		setAppImageFile("mixtract-logo.png");
 		PROPERTY_FILENAME = "Mixtract.properties";
 		projectFileExtension = ".mxt";
 	}
 
-	@Override protected MainFrame mainFrame() throws IOException {
+	@Override
+	protected MainFrame mainFrame() throws IOException {
 		if (getFrame() == null)
 			return new MXMainFrame(this);
 		return (MainFrame) getFrame();
 	}
 
-	@Override protected void setup() throws Exception {
+	@Override
+	protected void setup() throws Exception {
 		if (!isShowGUI()) {
 			butler().readfile();
 			return;
@@ -147,5 +152,14 @@ public class Mixtract extends MuseApp {
 		super.setupCommands();
 		for (MixtractCommandType e : MixtractCommandType.values())
 			getCommandList().add((MuseAppCommandAction) e);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.MuseGUIObject#getFrame()
+	 */
+	@Override
+	public MXMainFrame getFrame() {
+		return (MXMainFrame) super.getFrame();
 	}
 }

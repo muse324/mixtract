@@ -16,7 +16,6 @@ import net.muse.mixtract.data.MXGroup;
 public class MXPianoroll extends PianoRoll {
 
 	private static final long serialVersionUID = 1L;
-
 	boolean displayApex = false;
 
 	protected MXPianoroll(Mixtract main) {
