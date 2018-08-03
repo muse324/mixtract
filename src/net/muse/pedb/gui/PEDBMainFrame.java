@@ -2,7 +2,10 @@ package net.muse.pedb.gui;
 
 import java.io.IOException;
 
-import javax.swing.*;
+import javax.swing.JDesktopPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
@@ -21,30 +24,33 @@ public class PEDBMainFrame extends MXMainFrame {
 	public PEDBMainFrame(Mixtract mixtract) throws IOException {
 		super(mixtract);
 	}
+
 	protected JScrollPane getStructurePane() {
 		if (structurePane == null) {
 			structurePane = new JScrollPane();
 			structurePane.setRowHeaderView(getPartSelectorPanel());
 			structurePane.setViewportView(getGroupingPanel());
-//			structurePane.setHorizontalScrollBar(getTimeScrollBar());
+			// structurePane.setHorizontalScrollBar(getTimeScrollBar());
 			structurePane.setVerticalScrollBarPolicy(
 					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		}
 		return structurePane;
 	}
+
 	protected JScrollPane getPianorollPane() {
 		if (pianorollPanel == null) {
 			pianorollPanel = new JScrollPane();
 			pianorollPanel.setRowHeaderView(getKeyboard());
 			pianorollPanel.setViewportView(getPianoroll()); // Generated
-//			pianorollPanel.setHorizontalScrollBar(getTimeScrollBar());
-//			pianorollPanel.setHorizontalScrollBarPolicy(
-//					JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			// pianorollPanel.setHorizontalScrollBar(getTimeScrollBar());
+			// pianorollPanel.setHorizontalScrollBarPolicy(
+			// JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			pianorollPanel.setVerticalScrollBarPolicy(
 					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		}
 		return pianorollPanel;
 	}
+
 	protected String getWindowTitle() {
 		return WINDOW_TITLE;
 	}
@@ -59,8 +65,9 @@ public class PEDBMainFrame extends MXMainFrame {
 
 	@Override protected JPanel getTuneViewPanel() {
 		if (tuneViewPanel == null) {
-//			tuneViewPanel = super.getTuneViewPanel();
-			tuneViewPanel = new MainPanel(getStructurePane(),getPianorollPane());
+			// tuneViewPanel = super.getTuneViewPanel();
+			tuneViewPanel = new MainPanel(getPartSelectorPanel(),
+					getGroupingPanel(), getKeyboard(), getPianoroll());
 		}
 		return tuneViewPanel;
 	}
@@ -76,11 +83,12 @@ public class PEDBMainFrame extends MXMainFrame {
 		return toolBar;
 	}
 
-	/* (非 Javadoc)
-	 * @see net.muse.mixtract.gui.MXMainFrame#createPianoRoll(net.muse.app.MuseApp)
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.mixtract.gui.MXMainFrame#createPianoRoll(net.muse.app.MuseApp)
 	 */
-	@Override
-	protected PianoRoll createPianoRoll(MuseApp main) {
+	@Override protected PianoRoll createPianoRoll(MuseApp main) {
 		assert main instanceof Mixtract;
 		return (PEDBPianoroll) new PEDBPianoroll((Mixtract) main);
 	}

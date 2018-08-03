@@ -1,30 +1,63 @@
 package net.muse.pedb.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.GridLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-import javax.swing.Box;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayer;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
+import net.muse.gui.GroupingPanel;
+import net.muse.gui.KeyBoard;
+import net.muse.gui.PianoRoll;
+import net.muse.mixtract.gui.PartSelectorPanel;
+
 public class MainPanel extends JPanel {
 	public MainPanel(JComponent... c) {
-		super(new GridLayout(1, 2, 5, 5));
-		Box box = Box.createVerticalBox();
+		super(new BorderLayout());
+
+
+		JSplitPane header = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		JSplitPane main = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		for (JComponent o : c) {
-			Box b = Box.createVerticalBox();
-			b.add(o);
-			b.add(Box.createVerticalStrut(5));
-			box.add(b);
+			if (o instanceof GroupingPanel) {
+				main.setTopComponent(o);
+			} else if (o instanceof PianoRoll) {
+				main.setBottomComponent(o);
+			} else if (o instanceof PartSelectorPanel) {
+				header.setTopComponent(o);
+			} else if (o instanceof KeyBoard) {
+				header.setBottomComponent(o);
+			}
 		}
-		add(new JLayer<>(new JScrollPane(box), new DragScrollLayerUI()));
+		PropertyChangeListener pcl = new PropertyChangeListener() {
+			  @Override public void propertyChange(PropertyChangeEvent e) {
+			    if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(e.getPropertyName())) {
+			      JSplitPane source = (JSplitPane) e.getSource();
+			      int location = ((Integer) e.getNewValue()).intValue();
+			      JSplitPane target = (source == header) ? main : header;
+			      if (location != target.getDividerLocation())
+			          target.setDividerLocation(location);
+			    }
+			  }
+			};
+			header.addPropertyChangeListener(pcl);
+			main.addPropertyChangeListener(pcl);
+
+		header.setDividerLocation(150);
+		main.setDividerLocation(150);
+		add(header, BorderLayout.WEST);
+		add(new JLayer<>(new JScrollPane(main), new DragScrollLayerUI()),
+				BorderLayout.CENTER);
 		setPreferredSize(new Dimension(640, 480));
 	}
 
