@@ -1,10 +1,10 @@
 package net.muse.mixtract.gui;
 
-import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
@@ -103,8 +103,9 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 	 * This method initializes this
 	 */
 	private void initialize() {
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		this.setSize(new Dimension(58, 89));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+//		setSize(new Dimension(58, 89));
+		setBorder(BorderFactory.createTitledBorder("MusicXML"));
 	}
 
 	@Override
