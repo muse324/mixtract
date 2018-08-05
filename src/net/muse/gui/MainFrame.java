@@ -73,7 +73,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		MIDIEventListener, ActionListener {
 
 	private static String WINDOW_TITLE = "MuseApp";
-	private static int pixelperbeat = 30;
+	protected static int pixelperbeat = 30;
 	private static final long serialVersionUID = 1L;
 
 	public TuneData data; // @jve:decl-index=0:
@@ -379,7 +379,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		return dataSetButton;
 	}
 
-	protected JToolBar getJToolBar() {
+	protected JToolBar getToolBar() {
 		if (toolBar == null) {
 			tempoValueLabel = new JLabel();
 			tempoValueLabel.setText("   BPM:");
@@ -1038,7 +1038,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			g.anchor = GridBagConstraints.NORTHWEST; // Generated
 			toolBarPanel = new JPanel();
 			toolBarPanel.setLayout(new GridBagLayout()); // Generated
-			toolBarPanel.add(getJToolBar(), g); // Generated
+			toolBarPanel.add(getToolBar(), g); // Generated
 		}
 		return toolBarPanel;
 	}

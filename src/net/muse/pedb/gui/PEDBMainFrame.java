@@ -5,11 +5,16 @@ import java.io.IOException;
 import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
+import net.muse.data.TuneData;
 import net.muse.gui.PianoRoll;
+import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.MXMainFrame;
 
 public class PEDBMainFrame extends MXMainFrame {
@@ -20,6 +25,7 @@ public class PEDBMainFrame extends MXMainFrame {
 	private JPanel tuneViewPanel;
 	private JScrollPane pianorollPanel;
 	private JScrollPane structurePane;
+	private JSlider zoomBar;
 
 	public PEDBMainFrame(Mixtract mixtract) throws IOException {
 		super(mixtract);
@@ -72,15 +78,42 @@ public class PEDBMainFrame extends MXMainFrame {
 		return tuneViewPanel;
 	}
 
-	@Override protected JToolBar getJToolBar() {
+	@Override protected JToolBar getToolBar() {
 		if (toolBar == null) {
-			toolBar = super.getJToolBar();
+			toolBar = super.getToolBar();
 			toolBar.remove(getScoreViewButton()); // Generated
 			toolBar.remove(getRealtimeViewButton()); // Generated
 			toolBar.remove(getAnalyzeButton()); // Generated
 			toolBar.remove(getTempoSettingPanel());
+			toolBar.add(getZoomBar());
 		}
 		return toolBar;
+	}
+
+	private JSlider getZoomBar() {
+		if (zoomBar == null) {
+			zoomBar = new JSlider();
+			zoomBar.addChangeListener(new ChangeListener() {
+
+				@Override public void stateChanged(ChangeEvent e) {
+					JSlider s = (JSlider) e.getSource();
+					int v = s.getValue();
+					pixelperbeat=v;
+					getGroupingPanel().changeExpression(PhraseCurveType.TEMPO);
+					getPianoroll().changeExpression(PhraseCurveType.TEMPO);
+				}
+			});
+		}
+		return zoomBar;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.mixtract.gui.MXMainFrame#setTarget(net.muse.data.TuneData)
+	 */
+	@Override public void setTarget(TuneData target) {
+		super.setTarget(target);
+		getZoomBar().setValue(pixelperbeat);
 	}
 
 	/*

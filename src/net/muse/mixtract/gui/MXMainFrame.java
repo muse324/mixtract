@@ -98,9 +98,9 @@ public class MXMainFrame extends MainFrame {
 		return new MXPianoroll((Mixtract) main);
 	}
 
-	@Override protected JToolBar getJToolBar() {
+	@Override protected JToolBar getToolBar() {
 		if (toolBar == null) {
-			toolBar = super.getJToolBar();
+			toolBar = super.getToolBar();
 			toolBar.add(getScoreViewButton()); // Generated
 			toolBar.add(getRealtimeViewButton()); // Generated
 			toolBar.add(getAnalyzeButton()); // Generated
