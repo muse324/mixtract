@@ -6,6 +6,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -26,6 +27,7 @@ public class PEDBMainFrame extends MXMainFrame {
 	private JScrollPane pianorollPanel;
 	private JScrollPane structurePane;
 	private JSlider zoomBar;
+	private JTextField zoomText;
 
 	public PEDBMainFrame(Mixtract mixtract) throws IOException {
 		super(mixtract);
@@ -85,9 +87,19 @@ public class PEDBMainFrame extends MXMainFrame {
 			toolBar.remove(getRealtimeViewButton()); // Generated
 			toolBar.remove(getAnalyzeButton()); // Generated
 			toolBar.remove(getTempoSettingPanel());
+			toolBar.add(getZoomText());
 			toolBar.add(getZoomBar());
 		}
 		return toolBar;
+	}
+
+	private JTextField getZoomText() {
+		if (zoomText == null) {
+			zoomText = new JTextField();
+			zoomText.setText(String.format("%d", pixelperbeat));
+			zoomText.setEditable(false);
+		}
+		return zoomText;
 	}
 
 	/*
@@ -109,6 +121,7 @@ public class PEDBMainFrame extends MXMainFrame {
 					pixelperbeat = v;
 					getGroupingPanel().changeExpression(PhraseCurveType.TEMPO);
 					getPianoroll().changeExpression(PhraseCurveType.TEMPO);
+					getZoomText().setText(String.format("%d", v));
 				}
 			});
 		}
