@@ -326,8 +326,25 @@ public class MXTuneData extends TuneData {
 					strfile = s;
 				continue;
 			}
-			if (files[i].getName().equals(strfile))
+			if (files[i].getName().equals(strfile)) {
 				readStructureData(files[i]);
+				continue;
+			}
+			String fileType = butler().getInputFileType(files[i]);
+			CMXImporter cmx = new CMXImporter(files[i], fileType, this) {
+				@Override public void run() {
+					// XMLならCMX形式でインポート
+					if (fileType.equals("xml")) {
+						readCMXFile();
+					} else if (fileType.equals("midi") || fileType.equals("x-midi")) {
+						// MIDIファイル
+						readMIDIFile();
+					}
+					// 楽曲データに代入
+					data().importCMXobjects(dev, xml, scc);
+				}
+			};
+			cmx.run();
 		}
 	}
 
@@ -491,7 +508,7 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	private MXGroup parseGroupInfo(List<MXGroup> glist, MXNoteData note,
+	protected MXGroup parseGroupInfo(List<MXGroup> glist, MXNoteData note,
 			String name, int partNumber, String groupInfo) {
 		MXGroup g = null;
 		final int id = Integer.parseInt(name.substring(1));
@@ -540,8 +557,8 @@ public class MXTuneData extends TuneData {
 			note = parseNotelist(note.child(), args, idx, size, fromPrevious);
 			break;
 		case ')':
-			note = parseNotelist(note.parent(), args, ++idx, size,
-					fromPrevious);
+			note = parseNotelist((note.hasParent()) ? note.parent() : note,
+					args, ++idx, size, fromPrevious);
 			break;
 		case ',':
 			fromPrevious = true;
@@ -704,7 +721,7 @@ public class MXTuneData extends TuneData {
 	 *
 	 * @param file
 	 */
-	private void readStructureData(File file) {
+	protected void readStructureData(File file) {
 		try {
 			getRootGroup().clear();
 			BufferedReader in = new BufferedReader(new FileReader(file));
@@ -766,7 +783,8 @@ public class MXTuneData extends TuneData {
 			setNoteScheduleEvent(g.getChildFormerGroup());
 			setNoteScheduleEvent(g.getChildLatterGroup());
 		} else {
-			setNoteScheduleEvent(g.getBeginNote(),g.getBeginNote().onset(), g.getEndNote().offset());
+			setNoteScheduleEvent(g.getBeginNote(), g.getBeginNote().onset(), g
+					.getEndNote().offset());
 		}
 	}
 

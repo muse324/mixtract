@@ -3,6 +3,7 @@ package net.muse.pedb.data;
 import java.awt.event.KeyEvent;
 
 import net.muse.app.MuseApp;
+import net.muse.app.PEDBStructureEditor;
 import net.muse.command.MuseAppCommandType;
 import net.muse.data.Concierge;
 import net.muse.gui.MainFrame;
@@ -16,9 +17,12 @@ public class PEDBConcierge extends Concierge {
 		super(obj);
 	}
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-		c=null;
+	@Override protected PEDBStructureEditor app() {
+		return (PEDBStructureEditor) super.app();
+	}
+
+	@Override public void keyPressed(KeyEvent e) {
+		c = null;
 		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
 				+ obj.getClass().getSimpleName();
 		MuseApp main = (MuseApp) obj;

@@ -422,8 +422,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			playButton.setIcon(new ImageIcon(getClass().getResource(
 					"images/Play16.gif"))); // Generated
 			playButton.setMnemonic(KeyEvent.VK_SPACE);
-			MuseAppCommand cmd = main.searchCommand(
-					MuseAppCommandType.PLAY);
+			MuseAppCommand cmd = main.searchCommand(MuseAppCommandType.PLAY);
 			playButton.setActionCommand(cmd.name());
 			playButton.setToolTipText("Play");
 			playButton.setEnabled(false); // Generated
@@ -823,8 +822,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					int res = fc.showOpenDialog(null);
 					if (res == JFileChooser.APPROVE_OPTION) {
-						butler().readfile(fc.getSelectedFile(), main
-								.getProjectDirectory());
+						readfile(fc.getSelectedFile());
 					}
 				} catch (IOException e1) {
 					e1.printStackTrace();
@@ -1099,6 +1097,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			butler().notifyStartPlaying(data);
 		else if (e.getActionCommand().equals(MuseAppCommandType.STOP.name()))
 			butler().notifyStopPlaying();
+	}
+
+	protected void readfile(File f) throws IOException {
+		butler().readfile(f, main.getProjectDirectory());
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

@@ -19,9 +19,9 @@ public class CMXImporter extends Concierge implements Runnable {
 
 	private File inputFile;
 	private String fileType;
-	private DeviationInstanceWrapper dev;
-	private MusicXMLWrapper xml;
-	private SCCXMLWrapper scc;
+	protected DeviationInstanceWrapper dev;
+	protected MusicXMLWrapper xml;
+	protected SCCXMLWrapper scc;
 
 	public CMXImporter(File in, String fileType, TuneData data) {
 		super(data);
@@ -64,7 +64,7 @@ public class CMXImporter extends Concierge implements Runnable {
 		}
 	}
 
-	private void readCMXFile() {
+	protected void readCMXFile() {
 		try {
 			printConsole("import CMX file");
 			CMXFileWrapper cmx = CMXController.readfile(inputFile
@@ -97,7 +97,7 @@ public class CMXImporter extends Concierge implements Runnable {
 	 */
 	private void readCMXFile(CMXFileWrapper cmx) {}
 
-	private void readMIDIFile() {
+	protected void readMIDIFile() {
 		try {
 			MIDIXMLWrapper mid = CMXController.readSMFAsMIDIXML(in()
 					.getAbsolutePath());

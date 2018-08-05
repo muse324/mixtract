@@ -175,12 +175,11 @@ public class Concierge extends MuseObject implements TuneDataController {
 	 * @throws InvalidMidiDataException
 	 */
 	public void readfile(File in, File out) throws IOException {
-		MuseApp app = app();
-		app.createTuneData(in, out);
-		readfile(in, app.data());
+		app().createTuneData(in, out);
+		readfile(in, app().data());
 		printConsole(String.format("Open file: %s", in));
 		if (MuseApp.isShowGUI()) {
-			notifySetTarget(app.data());
+			notifySetTarget(app().data());
 		}
 	}
 

@@ -45,7 +45,8 @@ public class NoteScheduleEvent {
 		this.onset = (long) onset;
 		this.type = NoteType.is(shortMessageType);
 		message = new ShortMessage();
-		message.setMessage(shortMessageType, parent.musePhony() - 1, (!parent
+		int v = parent.musePhony();
+		message.setMessage(shortMessageType, (v <= 0) ? 0 : v - 1, (!parent
 				.rest()) ? parent.noteNumber() : 0, velocity);
 	}
 

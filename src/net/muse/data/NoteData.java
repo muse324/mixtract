@@ -424,7 +424,7 @@ public class NoteData extends SequenceData {
 					ShortMessage.NOTE_OFF, vel);
 		} catch (InvalidMidiDataException e) {
 			JOptionPane.showMessageDialog(null, String.format(
-					"invalid MIDI data for %s", this));
+					"invalid MIDI data for %d", this.id()));
 		}
 	}
 

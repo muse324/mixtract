@@ -1,5 +1,6 @@
 package net.muse.pedb.gui;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JDesktopPane;
@@ -17,6 +18,7 @@ import net.muse.data.TuneData;
 import net.muse.gui.PianoRoll;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.MXMainFrame;
+import net.muse.pedb.data.PEDBConcierge;
 
 public class PEDBMainFrame extends MXMainFrame {
 	private static final long serialVersionUID = 1L;
@@ -31,6 +33,10 @@ public class PEDBMainFrame extends MXMainFrame {
 
 	public PEDBMainFrame(Mixtract mixtract) throws IOException {
 		super(mixtract);
+	}
+
+	protected PEDBConcierge butler() {
+		return (PEDBConcierge) main.butler();
 	}
 
 	protected JScrollPane getStructurePane() {
@@ -146,4 +152,9 @@ public class PEDBMainFrame extends MXMainFrame {
 		assert main instanceof Mixtract;
 		return (PEDBPianoroll) new PEDBPianoroll((Mixtract) main);
 	}
+
+	@Override protected void readfile(File f) throws IOException {
+		butler().readfile(f, main.getProjectDirectory());
+	}
+
 }

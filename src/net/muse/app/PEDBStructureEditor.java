@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import net.muse.command.MuseAppCommandAction;
-import net.muse.data.Concierge;
 import net.muse.gui.MainFrame;
 import net.muse.pedb.command.PEDBCommandType;
 import net.muse.pedb.data.PEDBConcierge;
@@ -52,7 +51,7 @@ public class PEDBStructureEditor extends Mixtract {
 	}
 
 	@Override
-	protected Concierge createConcierge() {
+	protected PEDBConcierge createConcierge() {
 		return new PEDBConcierge(this);
 	}
 
