@@ -90,6 +90,14 @@ public class PEDBMainFrame extends MXMainFrame {
 		return toolBar;
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.MainFrame#quit()
+	 */
+	protected void quit() {
+		System.exit(0);
+	}
+
 	private JSlider getZoomBar() {
 		if (zoomBar == null) {
 			zoomBar = new JSlider();
@@ -98,7 +106,7 @@ public class PEDBMainFrame extends MXMainFrame {
 				@Override public void stateChanged(ChangeEvent e) {
 					JSlider s = (JSlider) e.getSource();
 					int v = s.getValue();
-					pixelperbeat=v;
+					pixelperbeat = v;
 					getGroupingPanel().changeExpression(PhraseCurveType.TEMPO);
 					getPianoroll().changeExpression(PhraseCurveType.TEMPO);
 				}
