@@ -17,6 +17,7 @@ import net.muse.data.TuneData;
 import net.muse.gui.PianoRoll;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.MXMainFrame;
+import net.muse.pedb.data.PEDBConcierge;
 
 public class PEDBMainFrame extends MXMainFrame {
 	private static final long serialVersionUID = 1L;
@@ -145,5 +146,13 @@ public class PEDBMainFrame extends MXMainFrame {
 	@Override protected PianoRoll createPianoRoll(MuseApp main) {
 		assert main instanceof Mixtract;
 		return (PEDBPianoroll) new PEDBPianoroll((Mixtract) main);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.misc.MuseObject#butler()
+	 */
+	@Override public PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
 	}
 }

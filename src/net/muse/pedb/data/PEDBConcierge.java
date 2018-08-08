@@ -16,9 +16,8 @@ public class PEDBConcierge extends Concierge {
 		super(obj);
 	}
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-		c=null;
+	@Override public void keyPressed(KeyEvent e) {
+		c = null;
 		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
 				+ obj.getClass().getSimpleName();
 		MuseApp main = (MuseApp) obj;

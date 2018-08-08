@@ -1,7 +1,6 @@
 package net.muse.pedb.data;
 
-import net.muse.data.GroupType;
-import net.muse.data.NoteData;
+import net.muse.data.*;
 import net.muse.mixtract.data.MXGroup;
 
 public class PEDBGroup extends MXGroup {
@@ -10,11 +9,21 @@ public class PEDBGroup extends MXGroup {
 		super(beginNote, endNote, type);
 	}
 
-	@Override public void extractApex() {
+	@Override
+	public void extractApex() {
 		if (!isModified())
 			return;
 		setModified(false);
 		// do nothing
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.misc.MuseObject#butler()
+	 */
+	@Override
+	public PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
 	}
 
 }

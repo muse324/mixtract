@@ -7,11 +7,11 @@ import net.muse.data.NoteData;
 import net.muse.gui.NoteLabel;
 import net.muse.mixtract.gui.MXPianoroll;
 import net.muse.mixtract.gui.ViewerMode;
+import net.muse.pedb.data.PEDBConcierge;
 
 public class PEDBPianoroll extends MXPianoroll {
 
-	@Override
-	protected void drawMouseOveredNoteInfo(Graphics2D g2) {
+	@Override protected void drawMouseOveredNoteInfo(Graphics2D g2) {
 		if (mouseOveredNoteLabel == null)
 			return;
 		final NoteData nd = mouseOveredNoteLabel.getScoreNote();
@@ -40,4 +40,13 @@ public class PEDBPianoroll extends MXPianoroll {
 
 		getSelectedNoteLabels().add(l);
 	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.misc.MuseObject#butler()
+	 */
+	@Override public PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
+	}
+
 }

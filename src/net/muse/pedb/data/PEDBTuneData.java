@@ -22,4 +22,13 @@ public class PEDBTuneData extends MXTuneData {
 				.id() : "null");
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.misc.MuseObject#butler()
+	 */
+	@Override
+	public PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
+	}
+
 }
