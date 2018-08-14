@@ -43,7 +43,7 @@ public class Group extends SequenceData {
 	/** 終了音 */
 	private NoteData endNote = null;
 	/** 頂点音 TODO Mixtract用にプッシュダウンする */
-	private NoteData topNote = null;
+	protected NoteData topNote = null;
 	/** フレーズ（グループ）の詳細情報を格納します。 */
 	private PhraseFeature detail;
 
