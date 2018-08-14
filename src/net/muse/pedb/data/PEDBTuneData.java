@@ -9,6 +9,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.muse.data.CMXNoteHandler;
+import net.muse.data.GroupType;
+import net.muse.data.NoteData;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXNoteData;
 import net.muse.mixtract.data.MXTuneData;
@@ -66,6 +69,18 @@ public class PEDBTuneData extends MXTuneData {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override protected CMXNoteHandler createCMXNoteHandler() {
+		return new CMXNoteHandler(this) {
+			protected PEDBGroup createGroup(NoteData n, int i, GroupType type) {
+				return new PEDBGroup(n, i, type);
+			}
+
+			protected PEDBTuneData data() {
+				return (PEDBTuneData) data;
+			}
+		};
 	}
 
 	/*

@@ -73,7 +73,7 @@ public class MXGroup extends Group {
 	 * @param partIndex
 	 * @param type
 	 */
-	MXGroup(NoteData notelist, int partIndex, GroupType type) {
+	protected MXGroup(NoteData notelist, int partIndex, GroupType type) {
 		super(notelist, partIndex, type);
 		apexNotelist = new ArrayList<MXNoteData>();
 	}
