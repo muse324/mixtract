@@ -67,5 +67,13 @@ public class PEDBTuneData extends MXTuneData {
 			e.printStackTrace();
 		}
 	}
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.misc.MuseObject#butler()
+	 */
+	@Override
+	public PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
+	}
 
 }

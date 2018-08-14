@@ -16,6 +16,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.plaf.LayerUI;
 
 public class DragScrollLayerUI extends LayerUI<JScrollPane> {
+	private static final long serialVersionUID = 1L;
 	private final Point pp = new Point();
 
 	@Override public void installUI(JComponent c) {

@@ -22,6 +22,8 @@ import net.muse.gui.PianoRoll;
 import net.muse.mixtract.gui.PartSelectorPanel;
 
 public class MainPanel extends JPanel {
+	private static final long serialVersionUID = 1L;
+
 	public MainPanel(JComponent... c) {
 		super(new BorderLayout());
 

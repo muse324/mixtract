@@ -35,7 +35,7 @@ public class PEDBMainFrame extends MXMainFrame {
 		super(mixtract);
 	}
 
-	protected PEDBConcierge butler() {
+	public PEDBConcierge butler() {
 		return (PEDBConcierge) main.butler();
 	}
 
