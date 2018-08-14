@@ -1,5 +1,7 @@
 package net.muse.data;
 
+import java.util.ArrayList;
+
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Attributes;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Direction;
@@ -21,6 +23,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	private int currentBPM = 120;
 	private int currentDefaultVelocity;
 
+	private ArrayList<NoteData> tiedNote = new ArrayList<NoteData>();;
+
 	public CMXNoteHandler(TuneData tuneData) {
 		super(tuneData);
 	}
@@ -39,8 +43,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			if (currentPartNumber == 1 && measure.number() == 1) {
 				setDefaultBPM(currentBPM);
 			}
-				butler().printConsole("-----measure " + measure.number()
-						+ ", tempo=" + currentBPM);
+			butler().printConsole("-----measure " + measure.number()
+					+ ", tempo=" + currentBPM);
 		}
 	}
 
@@ -172,7 +176,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	private void createGroup() {
 		Group g = createGroup(data().getPartwiseNotelist().get(partIndex),
 				partIndex + 1, GroupType.NOTE);
-//		data().getPartwiseNotelist().add(g.getBeginNote());
+		// data().getPartwiseNotelist().add(g.getBeginNote());
 		if (primaryGrouplist == null) {
 			primaryGrouplist = g;
 			data().setGrouplist(partIndex, g);
@@ -189,7 +193,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		int beat = note.onset() / getTicksPerBeat() % ((b != null) ? b.beat()
 				: 4) + 1;
 		currentMeasureNumber = note.onset() / getTicksPerBeat() / ((b != null)
-				? b.beat() : 4) + 1;
+				? b.beat()
+				: 4) + 1;
 		return beat;
 	}
 
@@ -229,6 +234,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		nd.setKeyMode(keyMode, fifths);
 		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
 		butler().printConsole(nd.toString());
+		if (note.tiedTo() != null)
+			tiedNote.add(nd);
 		if (cur == null) {
 			// 冒頭音
 			cur = nd;
@@ -244,8 +251,17 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				data().setPartwiseNotelist(partIndex, nd);
 			cur = nd;
 		} else if (note.containsTieType("stop")) {
+			NoteData tgt = null;
 			// タイ
-			cur.setOffset(nd.offset());
+			for (NoteData t : tiedNote) {
+				if (t.getXMLNote().tiedTo().equals(note)) {
+					tgt = t;
+					t.setOffset(nd.offset());
+					break;
+				}
+			}
+			if (tgt != null)
+				tiedNote.remove(tgt);
 		} else {
 			cur.setNext(nd);
 			cur = nd;

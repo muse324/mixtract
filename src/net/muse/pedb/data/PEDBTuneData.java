@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
+import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.data.CMXNoteHandler;
 import net.muse.data.GroupType;
 import net.muse.data.NoteData;
@@ -75,6 +77,16 @@ public class PEDBTuneData extends MXTuneData {
 		return new CMXNoteHandler(this) {
 			protected PEDBGroup createGroup(NoteData n, int i, GroupType type) {
 				return new PEDBGroup(n, i, type);
+			}
+
+			protected NoteData createNoteData(MusicXMLWrapper.Note note,
+					int partNumber, int idx, Integer bpm, int vel) {
+				return new MXNoteData(note, partNumber, idx, bpm, vel);
+			}
+
+			protected NoteData createNoteData(SCCXMLWrapper.Note note,
+					int partNumber, int idx, Integer bpm, int beat, int vel) {
+				return new MXNoteData(note, partNumber, idx, bpm, beat, vel);
 			}
 
 			protected PEDBTuneData data() {
