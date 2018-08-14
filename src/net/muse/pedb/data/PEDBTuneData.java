@@ -46,18 +46,18 @@ public class PEDBTuneData extends MXTuneData {
 				MXGroup g = parseGroupInfo(glist, note, groupName, partNumber,
 						groupInfo);
 
-				//TODO setTopNote をパースする
+				// TODO setTopNote をパースする
 
-//				parseCurvePoints(curvePoints, 0, g.getDynamicsCurve());
-//				parseCurvePoints(curvePoints, 6, g.getTempoCurve());
-//				parseCurvePoints(curvePoints, 12, g.getArticulationCurve());
-//				try {
-//					parsePhraseProfile(dynCurveInfo, g.getDynamicsCurve());
-//					parsePhraseProfile(tmpCurveInfo, g.getTempoCurve());
-//					parsePhraseProfile(artCurveInfo, g.getArticulationCurve());
-//				} catch (NullPointerException e) {
-//					System.err.println("Irregal file format");
-//				}
+				// parseCurvePoints(curvePoints, 0, g.getDynamicsCurve());
+				// parseCurvePoints(curvePoints, 6, g.getTempoCurve());
+				// parseCurvePoints(curvePoints, 12, g.getArticulationCurve());
+				// try {
+				// parsePhraseProfile(dynCurveInfo, g.getDynamicsCurve());
+				// parsePhraseProfile(tmpCurveInfo, g.getTempoCurve());
+				// parsePhraseProfile(artCurveInfo, g.getArticulationCurve());
+				// } catch (NullPointerException e) {
+				// System.err.println("Irregal file format");
+				// }
 			}
 			in.close();
 			++hierarchicalGroupCount;
@@ -67,13 +67,17 @@ public class PEDBTuneData extends MXTuneData {
 			e.printStackTrace();
 		}
 	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.misc.MuseObject#butler()
 	 */
-	@Override
-	public PEDBConcierge butler() {
+	@Override public PEDBConcierge butler() {
 		return (PEDBConcierge) super.butler();
+	}
+
+	@Override protected PEDBConcierge createConcierge() {
+		return new PEDBConcierge(this);
 	}
 
 }
