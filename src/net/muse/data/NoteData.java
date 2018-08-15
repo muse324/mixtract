@@ -540,7 +540,7 @@ public class NoteData extends SequenceData {
 			tiedFrom.setTiedTo(this);
 	}
 
-	private boolean hasTiedTo() {
+	public boolean hasTiedTo() {
 		return tiedTo != null;
 	}
 

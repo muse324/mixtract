@@ -184,6 +184,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			/* 和声カラーを表示 */
 			drawHarmonyGround(g2, notelist, null);
 
+			/* その他カスタマイズ描画 */
+			drawOptionalInfo(g2);
 			/* TODO（実装中）タイムライン表示 */
 			drawTimeline(g2);
 			// 以下コメントアウト中
@@ -211,6 +213,13 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			drawTooltips();
 		}
 	}
+
+	/**
+	 * ピアノロール画面にオリジナル情報を描画します。サブクラスで実装してください。
+	 *
+	 * @param g2
+	 */
+	protected void drawOptionalInfo(Graphics2D g2) {}
 
 	/*
 	 * (non-Javadoc)
@@ -493,7 +502,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				// 黒鍵
 				g.setColor(Color.getHSBColor((float) 0.5, (float) 0.,
 						(float) 0.9));
-				g.fillRect(0, curHeight, width, main.getFrame().getKeyboard().getKeyHeight());
+				g.fillRect(0, curHeight, width, main.getFrame().getKeyboard()
+						.getKeyHeight());
 			}
 			curHeight += main.getFrame().getKeyboard().getKeyHeight();
 		}
@@ -574,7 +584,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		}
 		System.out.println(str + " at " + getMouseActions().getMousePoint());
 		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
-				getMouseActions().getMousePoint().y - main.getFrame().getKeyboard().getKeyHeight());
+				getMouseActions().getMousePoint().y - main.getFrame()
+						.getKeyboard().getKeyHeight());
 	}
 
 	/**

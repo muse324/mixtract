@@ -141,7 +141,7 @@ public class NoteLabel extends GroupLabel {
 				next());
 	}
 
-	boolean hasNext() {
+	public boolean hasNext() {
 		return next != null;
 	}
 

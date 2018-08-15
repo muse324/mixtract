@@ -233,7 +233,6 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				.getBPM().get(0), currentDefaultVelocity);
 		nd.setKeyMode(keyMode, fifths);
 		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
-		butler().printConsole(nd.toString());
 		if (note.containsTieType("start"))
 			tiedNote.add(nd);
 		if (cur == null) {
@@ -271,6 +270,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			cur.setNext(nd);
 			cur = nd;
 		}
+		butler().printConsole(nd.toString());
 	}
 
 	private void setChild(NoteData parent, NoteData note) {

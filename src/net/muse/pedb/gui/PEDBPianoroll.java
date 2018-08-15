@@ -1,6 +1,8 @@
 package net.muse.pedb.gui;
 
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.Path2D;
 
 import net.muse.app.Mixtract;
 import net.muse.data.NoteData;
@@ -55,6 +57,38 @@ public class PEDBPianoroll extends MXPianoroll {
 		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
 				getMouseActions().getMousePoint().y - main().getFrame()
 						.getKeyboard().getKeyHeight());
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#drawOptionalInfo(java.awt.Graphics2D)
+	 */
+	protected void drawOptionalInfo(Graphics2D g2) {
+		NoteLabel l = getNotelist();
+		while (l.hasNext()) {
+			if (l.getScoreNote().hasTiedTo()) {
+				drawTiedNotesConnection(g2, l, l.next());
+			}
+			l = l.next();
+		}
+	}
+
+	private void drawTiedNotesConnection(Graphics2D g2, NoteLabel from,
+			NoteLabel to) {
+		if (to == null)
+			return;
+		if (from.getScoreNote().tiedTo().equals(to.getScoreNote())) {
+			// draw connected line
+			Rectangle r1 = from.getBounds();
+			Rectangle r2 = to.getBounds();
+			Path2D.Double p = new Path2D.Double();
+			p.moveTo(r1.getCenterX(), r1.getY());
+			p.quadTo(r1.getCenterX(), r1.getY() + 10, r2.getCenterX(), r2
+					.getY());
+			g2.draw(p);
+			return;
+		}
+		drawTiedNotesConnection(g2, from, to.next());
 	}
 
 }
