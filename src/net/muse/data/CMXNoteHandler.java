@@ -256,7 +256,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			for (NoteData t : tiedNote) {
 				if (t.getXMLNote().tiedTo().equals(note)) {
 					tgt = t;
-					t.setOffset(nd.offset()); // TODO タイ音符のオフセットの扱い。MIDI再生時に計算させる
+					 // TODO タイ音符のオフセットの扱い。MIDI再生時に計算させる
+//					t.setOffset(nd.offset());
 					t.setTiedTo(nd);
 					break;
 				}

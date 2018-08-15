@@ -635,27 +635,26 @@ public class MXTuneData extends TuneData {
 		boolean rest = Boolean.parseBoolean(getValue(keys, 2));
 		boolean chord = Boolean.parseBoolean(getValue(keys, 3));
 		boolean grace = Boolean.parseBoolean(getValue(keys, 4));
-		boolean tie = Boolean.parseBoolean(getValue(keys, 5));
+		int tiedFrom = Integer.parseInt(getValue(keys, 5));
 		int fifths = Integer.parseInt(getValue(keys, 6));
 		Harmony chordName = Harmony.valueOf(getValue(keys, 7));
 
 		MXNoteData nd = new MXNoteData(++idx, xmlPartNumber, onset, offset,
-				noteName, rest, grace, tie, tval, beat);
+				noteName, rest, grace, tiedFrom > NoteData.NO_TIED, tval, beat);
 		nd.setMeasureNumber(measureNumber);
 		nd.setXMLVoice(xmlVoice);
 		nd.setMusePhony(musePhony);
 		nd.setVelocity(vel);
 		nd.setFifths(fifths);
 		nd.setChord(chordName);
-
-		// if (pre == null || pre.partNumber() != partNumber) {
-		// setPartwiseNotelist(partNumber, nd);
-		// } else if (chord || preChord) {
-		// nd.setPrevious(pre.previous(), false);
-		// nd.setChild(pre);
-		// } else {
-		// pre.setNext(nd);
-		// }
+		if (tiedFrom > NoteData.NO_TIED) {
+			for (NoteData from : getTempralNotelist()) {
+				if (from.index() == tiedFrom) {
+					from.setTiedTo(nd);
+					break;
+				}
+			}
+		}
 		setTempoListEndtime(nd.offset(), false);
 		getTempralNotelist().add(nd);
 		log().println(nd);

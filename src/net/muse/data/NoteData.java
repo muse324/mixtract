@@ -13,6 +13,8 @@ public class NoteData extends SequenceData {
 	/** 音価の最小値。TODO 単位系は各プログラムで確認してください。 */
 	private static final int minimumDuration = 50;
 
+	public static final int NO_TIED = -1;
+
 	/**
 	 * MusicXMLWrapeer.Note クラスでの音符情報。改めてCMXからの情報を取得したい時に getXMLNote()
 	 * を通じて呼び出してください。
@@ -500,7 +502,7 @@ public class NoteData extends SequenceData {
 				index(), onset(), noteName(), beat(), timeValue(),
 				xmlPartNumber(), measureNumber(), xmlVoice(), musePhony(),
 				offset(), velocity(), rest(), child() != null, isGrace(),
-				(hasTiedFrom()) ? tiedFrom().index() : null, fifths(), chord());
+				(hasTiedFrom()) ? tiedFrom().index() : NO_TIED, fifths(), chord());
 	}
 
 	public void setTiedTo(NoteData nd) {
@@ -526,12 +528,12 @@ public class NoteData extends SequenceData {
 		// タイを切る
 		if (nd == null) {
 			tiedFrom.setTiedTo(null);
-			tied = false;
 		}
 		// 代入
 		tiedFrom = nd;
 
 		// 整合性チェック
+		tied = false;
 		if (!hasTiedFrom())
 			return;// タイが切れてれるなら終了
 		if (!tiedFrom.hasTiedTo() || !tiedFrom.tiedTo().equals(this))
