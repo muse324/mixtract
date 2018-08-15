@@ -28,6 +28,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class TuneData extends MuseObject implements TuneDataController {
 	private static int MAXIMUM_MIDICHANNEL = 16;
+
 	public static int getMaxmimumMIDICchannel() {
 		return MAXIMUM_MIDICHANNEL;
 	}
@@ -290,7 +291,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	}
 
 	public void setNoteScheduleEvent() {
-		noteScheduleEventList.clear();
+		getNoteScheduleEventList().clear();
 		if (selectedGroup != null)
 			setNoteScheduleEvent(selectedGroup);
 		else {
@@ -300,7 +301,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 		}
 		// log print
 		log().println("---- noteScheduleEventList: ");
-		for (NoteScheduleEvent ev : noteScheduleEventList)
+		for (NoteScheduleEvent ev : getNoteScheduleEventList())
 			log().println(ev.toString());
 		log().println("----------------------------");
 	}
@@ -385,7 +386,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 				track.add(new MidiEvent(message, 0));
 			}
 			// MIDI イベントを書き込んでいく
-			for (NoteScheduleEvent ev : noteScheduleEventList) {
+			for (NoteScheduleEvent ev : getNoteScheduleEventList()) {
 				track.add(new MidiEvent((ShortMessage) ev.getMidiMessage(), ev
 						.onset() + offset));
 			}
@@ -551,17 +552,19 @@ public class TuneData extends MuseObject implements TuneDataController {
 			partwiseNoteList.set(partIndex, root);
 	}
 
-	protected void setNoteScheduleEvent(NoteData note, int beginOnset, int endOffset) {
+	protected void setNoteScheduleEvent(NoteData note, int beginOnset,
+			int endOffset) {
 		if (note == null)
 			return;
-		if(note.onset()>endOffset)return;
-		if(note.offset()<beginOnset)
-			setNoteScheduleEvent(note.next(),beginOnset, endOffset);
-		if (!note.rest()) {
+		if (note.onset() > endOffset)
+			return;
+		if (note.offset() < beginOnset)
+			setNoteScheduleEvent(note.next(), beginOnset, endOffset);
+		if (!note.rest() && !note.hasTiedFrom()) {
 			addNoteScheduleEventList(note);
 		}
-		setNoteScheduleEvent(note.child(),beginOnset, endOffset);
-		setNoteScheduleEvent(note.next(),beginOnset, endOffset);
+		setNoteScheduleEvent(note.child(), beginOnset, endOffset);
+		setNoteScheduleEvent(note.next(), beginOnset, endOffset);
 	}
 
 	/**
@@ -649,7 +652,8 @@ public class TuneData extends MuseObject implements TuneDataController {
 		if (g == null)
 			return;
 		setNoteScheduleEvent(g.child());
-		setNoteScheduleEvent(g.getBeginNote(),g.getBeginNote().onset(), g.getEndNote().offset());
+		setNoteScheduleEvent(g.getBeginNote(), g.getBeginNote().onset(), g
+				.getEndNote().offset());
 	}
 
 	/**
