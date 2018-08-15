@@ -16,6 +16,12 @@ public class PEDBPianoRollActionLisner extends PianoRollActionListener {
 		super(main, owner);
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.PianoRollActionListener#createCustomPopupMenu(java.awt.event
+	 * .MouseEvent)
+	 */
 	@Override public void createCustomPopupMenu(MouseEvent e) {
 		boolean enabled = self().getSelectedNoteLabels().size() > 0;
 		getPopup().add(addMenuItem(PEDBCommandType.MAKE_GROUP, enabled));
@@ -25,8 +31,7 @@ public class PEDBPianoRollActionLisner extends PianoRollActionListener {
 		JMenu partSelectMenu = new JMenu("Change part");
 		for (int i = 0; i < ChangePartCommand.partSize; i++) {
 			JMenuItem item = new JMenuItem(String.valueOf(i + 1));
-			item.setActionCommand(PEDBCommandType.CHANGE_PART.command()
-					.name());
+			item.setActionCommand(PEDBCommandType.CHANGE_PART.command().name());
 			item.addActionListener(self().getMouseActions());
 			item.setEnabled(i + 1 != self().getSelectedVoice());
 			partSelectMenu.add(item);

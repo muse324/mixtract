@@ -7,12 +7,20 @@ import net.muse.mixtract.data.MXNoteData;
 
 public class PEDBGroup extends MXGroup {
 
+	public PEDBGroup(NoteData n, int i, GroupType type) {
+		super(n, i, type);
+	}
+
 	public PEDBGroup(NoteData beginNote, NoteData endNote, GroupType type) {
 		super(beginNote, endNote, type);
 	}
 
-	public PEDBGroup(NoteData n, int i, GroupType type) {
-		super(n, i, type);
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.misc.MuseObject#butler()
+	 */
+	@Override public PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
 	}
 
 	@Override public void extractApex() {
@@ -24,14 +32,6 @@ public class PEDBGroup extends MXGroup {
 
 	public void setTopNote(MXNoteData n) {
 		topNote = n;
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.misc.MuseObject#butler()
-	 */
-	@Override public PEDBConcierge butler() {
-		return (PEDBConcierge) super.butler();
 	}
 
 }

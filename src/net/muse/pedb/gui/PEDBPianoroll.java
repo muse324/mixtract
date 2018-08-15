@@ -10,7 +10,39 @@ import net.muse.mixtract.gui.ViewerMode;
 import net.muse.pedb.data.PEDBConcierge;
 
 public class PEDBPianoroll extends MXPianoroll {
+	private static final long serialVersionUID = 1L;
 
+	PEDBPianoroll(Mixtract main) {
+		super(main);
+		setViewMode(ViewerMode.SCORE_VIEW);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.misc.MuseObject#butler()
+	 */
+	@Override public PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#selectNote(net.muse.gui.NoteLabel,
+	 * net.muse.data.NoteData, net.muse.data.NoteData)
+	 */
+	@Override public void selectNote(NoteLabel l, NoteData note, NoteData end) {
+		if (note == null)
+			return;
+		NoteData s = l.getScoreNote();
+		l.setSelected(s.onset() >= note.onset() && s.onset() <= end.onset());
+
+		getSelectedNoteLabels().add(l);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#drawMouseOveredNoteInfo(java.awt.Graphics2D)
+	 */
 	@Override protected void drawMouseOveredNoteInfo(Graphics2D g2) {
 		if (mouseOveredNoteLabel == null)
 			return;
@@ -23,30 +55,6 @@ public class PEDBPianoroll extends MXPianoroll {
 		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
 				getMouseActions().getMousePoint().y - main().getFrame()
 						.getKeyboard().getKeyHeight());
-	}
-
-	private static final long serialVersionUID = 1L;
-
-	PEDBPianoroll(Mixtract main) {
-		super(main);
-		setViewMode(ViewerMode.SCORE_VIEW);
-	}
-
-	public void selectNote(NoteLabel l, NoteData note, NoteData end) {
-		if (note == null)
-			return;
-		NoteData s = l.getScoreNote();
-		l.setSelected(s.onset() >= note.onset() && s.onset() <= end.onset());
-
-		getSelectedNoteLabels().add(l);
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.misc.MuseObject#butler()
-	 */
-	@Override public PEDBConcierge butler() {
-		return (PEDBConcierge) super.butler();
 	}
 
 }

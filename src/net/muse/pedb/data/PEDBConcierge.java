@@ -6,7 +6,6 @@ import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.command.MuseAppCommandType;
 import net.muse.data.Concierge;
-import net.muse.gui.MainFrame;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.pedb.command.PEDBCommandType;
@@ -17,10 +16,9 @@ public class PEDBConcierge extends Concierge {
 		super(obj);
 	}
 
-	@Override protected PEDBStructureEditor app() {
-		return (PEDBStructureEditor) super.app();
-	}
-
+	/* (非 Javadoc)
+	 * @see net.muse.data.Concierge#keyPressed(java.awt.event.KeyEvent)
+	 */
 	@Override public void keyPressed(KeyEvent e) {
 		c = null;
 		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
@@ -45,11 +43,18 @@ public class PEDBConcierge extends Concierge {
 					+ ": key pressed: ");
 		}
 		if (c != null) {
-			c.setFrame((MainFrame) app().getFrame());
+			c.setFrame(app().getFrame());
 			c.setMain(app());
 			c.setTarget(app().data());
 			c.run();
 		}
+	}
+
+	/* (非 Javadoc)
+	 * @see net.muse.data.Concierge#app()
+	 */
+	@Override protected PEDBStructureEditor app() {
+		return (PEDBStructureEditor) super.app();
 	}
 
 }

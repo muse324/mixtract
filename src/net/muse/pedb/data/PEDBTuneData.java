@@ -20,20 +20,60 @@ import net.muse.mixtract.data.MXTuneData;
 
 public class PEDBTuneData extends MXTuneData {
 
+	/**
+	 * @param in - File
+	 * @param out - File
+	 * @throws IOException
+	 */
 	public PEDBTuneData(File in, File out) throws IOException {
 		super(in, out);
 	}
 
-	protected void writeGroupStructureData(PrintWriter out, MXGroup group) {
-		if (group == null)
-			return;
-		writeGroupStructureData(out, (PEDBGroup) group.getChildFormerGroup());
-		writeGroupStructureData(out, (PEDBGroup) group.getChildLatterGroup());
-		out.format("%s;%s\n", group, (group.hasTopNote()) ? group.getTopNote()
-				.id() : "null");
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.misc.MuseObject#butler()
+	 */
+	@Override public PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
 	}
 
-	protected void readStructureData(File file) {
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.mixtract.data.MXTuneData#createCMXNoteHandler()
+	 */
+	@Override protected CMXNoteHandler createCMXNoteHandler() {
+		return new CMXNoteHandler(this) {
+			@Override protected PEDBGroup createGroup(NoteData n, int i,
+					GroupType type) {
+				return new PEDBGroup(n, i, type);
+			}
+
+			@Override protected NoteData createNoteData(
+					MusicXMLWrapper.Note note, int partNumber, int idx,
+					Integer bpm, int vel) {
+				return new MXNoteData(note, partNumber, idx, bpm, vel);
+			}
+
+			@Override protected NoteData createNoteData(SCCXMLWrapper.Note note,
+					int partNumber, int idx, Integer bpm, int beat, int vel) {
+				return new MXNoteData(note, partNumber, idx, bpm, beat, vel);
+			}
+
+			@Override protected PEDBTuneData data() {
+				return (PEDBTuneData) data;
+			}
+		};
+	}
+
+	@Override protected PEDBConcierge createConcierge() {
+		return new PEDBConcierge(this);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.mixtract.data.MXTuneData#readStructureData(java.io.File)
+	 */
+	@Override protected void readStructureData(File file) {
 		try {
 			getRootGroup().clear();
 			BufferedReader in = new BufferedReader(new FileReader(file));
@@ -52,17 +92,6 @@ public class PEDBTuneData extends MXTuneData {
 						groupInfo);
 
 				// TODO setTopNote をパースする
-
-				// parseCurvePoints(curvePoints, 0, g.getDynamicsCurve());
-				// parseCurvePoints(curvePoints, 6, g.getTempoCurve());
-				// parseCurvePoints(curvePoints, 12, g.getArticulationCurve());
-				// try {
-				// parsePhraseProfile(dynCurveInfo, g.getDynamicsCurve());
-				// parsePhraseProfile(tmpCurveInfo, g.getTempoCurve());
-				// parsePhraseProfile(artCurveInfo, g.getArticulationCurve());
-				// } catch (NullPointerException e) {
-				// System.err.println("Irregal file format");
-				// }
 			}
 			in.close();
 			++hierarchicalGroupCount;
@@ -73,38 +102,19 @@ public class PEDBTuneData extends MXTuneData {
 		}
 	}
 
-	@Override protected CMXNoteHandler createCMXNoteHandler() {
-		return new CMXNoteHandler(this) {
-			protected PEDBGroup createGroup(NoteData n, int i, GroupType type) {
-				return new PEDBGroup(n, i, type);
-			}
-
-			protected NoteData createNoteData(MusicXMLWrapper.Note note,
-					int partNumber, int idx, Integer bpm, int vel) {
-				return new MXNoteData(note, partNumber, idx, bpm, vel);
-			}
-
-			protected NoteData createNoteData(SCCXMLWrapper.Note note,
-					int partNumber, int idx, Integer bpm, int beat, int vel) {
-				return new MXNoteData(note, partNumber, idx, bpm, beat, vel);
-			}
-
-			protected PEDBTuneData data() {
-				return (PEDBTuneData) data;
-			}
-		};
-	}
-
 	/*
 	 * (非 Javadoc)
-	 * @see net.muse.misc.MuseObject#butler()
+	 * @see net.muse.mixtract.data.MXTuneData#writeGroupStructureData(java.io.
+	 * PrintWriter, net.muse.mixtract.data.MXGroup)
 	 */
-	@Override public PEDBConcierge butler() {
-		return (PEDBConcierge) super.butler();
-	}
-
-	@Override protected PEDBConcierge createConcierge() {
-		return new PEDBConcierge(this);
+	@Override protected void writeGroupStructureData(PrintWriter out,
+			MXGroup group) {
+		if (group == null)
+			return;
+		writeGroupStructureData(out, group.getChildFormerGroup());
+		writeGroupStructureData(out, group.getChildLatterGroup());
+		out.format("%s;%s\n", group, (group.hasTopNote()) ? group.getTopNote()
+				.id() : "null");
 	}
 
 }

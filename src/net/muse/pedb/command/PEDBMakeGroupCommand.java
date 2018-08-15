@@ -16,8 +16,7 @@ public class PEDBMakeGroupCommand extends MakeGroupCommand {
 	 * (非 Javadoc)
 	 * @see net.muse.command.MuseAppCommand#run()
 	 */
-	@Override
-	public void run() {
+	@Override public void run() {
 		LinkedList<NoteLabel> notes = frame().getPianoroll()
 				.getSelectedNoteLabels();
 		NoteLabel begin = notes.get(0);

@@ -24,9 +24,31 @@ import net.muse.mixtract.gui.PartSelectorPanel;
 public class MainPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
+	public static void createAndShowGui() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException ex) {
+			ex.printStackTrace();
+		}
+		JFrame frame = new JFrame("@title@");
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.getContentPane().add(new MainPanel());
+		frame.pack();
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+	}
+
+	public static void main(String... args) {
+		EventQueue.invokeLater(new Runnable() {
+			@Override public void run() {
+				createAndShowGui();
+			}
+		});
+	}
+
 	public MainPanel(JComponent... c) {
 		super(new BorderLayout());
-
 
 		JSplitPane header = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		JSplitPane main = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -42,18 +64,19 @@ public class MainPanel extends JPanel {
 			}
 		}
 		PropertyChangeListener pcl = new PropertyChangeListener() {
-			  @Override public void propertyChange(PropertyChangeEvent e) {
-			    if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(e.getPropertyName())) {
-			      JSplitPane source = (JSplitPane) e.getSource();
-			      int location = ((Integer) e.getNewValue()).intValue();
-			      JSplitPane target = (source == header) ? main : header;
-			      if (location != target.getDividerLocation())
-			          target.setDividerLocation(location);
-			    }
-			  }
-			};
-			header.addPropertyChangeListener(pcl);
-			main.addPropertyChangeListener(pcl);
+			@Override public void propertyChange(PropertyChangeEvent e) {
+				if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(e
+						.getPropertyName())) {
+					JSplitPane source = (JSplitPane) e.getSource();
+					int location = ((Integer) e.getNewValue()).intValue();
+					JSplitPane target = (source == header) ? main : header;
+					if (location != target.getDividerLocation())
+						target.setDividerLocation(location);
+				}
+			}
+		};
+		header.addPropertyChangeListener(pcl);
+		main.addPropertyChangeListener(pcl);
 
 		header.setDividerLocation(150);
 		main.setDividerLocation(150);
@@ -61,29 +84,6 @@ public class MainPanel extends JPanel {
 		add(new JLayer<>(new JScrollPane(main), new DragScrollLayerUI()),
 				BorderLayout.CENTER);
 		setPreferredSize(new Dimension(640, 480));
-	}
-
-	public static void main(String... args) {
-		EventQueue.invokeLater(new Runnable() {
-			@Override public void run() {
-				createAndShowGui();
-			}
-		});
-	}
-
-	public static void createAndShowGui() {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException | UnsupportedLookAndFeelException ex) {
-			ex.printStackTrace();
-		}
-		JFrame frame = new JFrame("@title@");
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		frame.getContentPane().add(new MainPanel());
-		frame.pack();
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
 	}
 
 }
