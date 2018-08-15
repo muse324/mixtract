@@ -48,13 +48,13 @@ public class CMXImporter extends Concierge implements Runnable {
 		data().importCMXobjects(dev, xml, scc);
 	}
 
-	private void parseMusicXMLFile() {
+	protected void parseMusicXMLFile() {
 		if (xml == null)
 			return;
 		xml.processNotePartwise(data().createCMXNoteHandler());
 	}
 
-	private void parseSCCXMLFile() {
+	protected void parseSCCXMLFile() {
 		if (scc == null)
 			return;
 		try {

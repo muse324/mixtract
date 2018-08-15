@@ -316,33 +316,33 @@ public class MXTuneData extends TuneData {
 
 	@Override protected void readOriginalFile() throws IOException {
 		butler().printConsole("reading original format...");
-		super.readOriginalFile();
+		super.readOriginalFile(); // 代入
+
 		String strfile = STRUCTURE_FILENAME;
 		File[] files = in().listFiles();
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].getName().equals(SCOREDATA_FILENAME)) {
-				String s = readScoreData(files[i]);
+		// 楽譜情報の読込
+		for (File f : files) {
+			if (f.getName().equals(SCOREDATA_FILENAME)) {
+				String s = readScoreData(f);
 				if (s.length() == 0)
 					strfile = s;
+				break;
+			}
+		}
+		// 関連ファイルの読込
+		for (File f : files) {
+			// フレーズ構想情報
+			if (f.getName().equals(strfile)) {
+				readStructureData(f);
 				continue;
 			}
-			if (files[i].getName().equals(strfile)) {
-				readStructureData(files[i]);
-				continue;
-			}
-			String fileType = butler().getInputFileType(files[i]);
-			CMXImporter cmx = new CMXImporter(files[i], fileType, this) {
-				@Override public void run() {
-					// XMLならCMX形式でインポート
-					if (fileType.equals("xml")) {
-						readCMXFile();
-					} else if (fileType.equals("midi") || fileType.equals("x-midi")) {
-						// MIDIファイル
-						readMIDIFile();
-					}
-					// 楽曲データに代入
-					data().importCMXobjects(dev, xml, scc);
-				}
+			// その他（CMXファイル）
+			String fileType = butler().getInputFileType(f);
+			// CMXファイルについては読込のみ行い、パースはしない
+			CMXImporter cmx = new CMXImporter(f, fileType, this) {
+				@Override protected void parseMusicXMLFile() {}
+
+				@Override protected void parseSCCXMLFile() {}
 			};
 			cmx.run();
 		}
@@ -675,10 +675,14 @@ public class MXTuneData extends TuneData {
 				throw new InvalidObjectException(xmlFilename);
 			if (xmlFilename != null && xmlFilename.length() > 0) {
 				File fp = new File(file.getParentFile(), xmlFilename);
-				CMXImporter cmx = new CMXImporter(fp, xmlFilename, this);
+				// パースはしない
+				CMXImporter cmx = new CMXImporter(fp, xmlFilename, this) {
+					@Override protected void parseMusicXMLFile() {}
+
+					@Override protected void parseSCCXMLFile() {}
+
+				};
 				cmx.run();
-				// readCMXFile(in.getAbsolutePath());
-				// parseMusicXMLFile();
 			}
 			// 2行目：構造ファイル名取得
 			strfile = in.readLine().split("=")[1];
