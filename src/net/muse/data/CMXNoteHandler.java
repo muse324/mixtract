@@ -234,7 +234,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		nd.setKeyMode(keyMode, fifths);
 		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
 		butler().printConsole(nd.toString());
-		if (note.tiedTo() != null)
+		if (note.containsTieType("start"))
 			tiedNote.add(nd);
 		if (cur == null) {
 			// 冒頭音
@@ -256,7 +256,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			for (NoteData t : tiedNote) {
 				if (t.getXMLNote().tiedTo().equals(note)) {
 					tgt = t;
-					t.setOffset(nd.offset());
+					t.setOffset(nd.offset()); // TODO タイ音符のオフセットの扱い。MIDI再生時に計算させる
+					t.setTiedTo(nd);
 					break;
 				}
 			}

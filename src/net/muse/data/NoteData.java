@@ -87,6 +87,10 @@ public class NoteData extends SequenceData {
 	/** タイであるかどうかを判別します。 */
 	private boolean tied;
 
+	private NoteData tiedTo = null;
+
+	private NoteData tiedFrom;
+
 	/**
 	 * @return
 	 */
@@ -105,7 +109,8 @@ public class NoteData extends SequenceData {
 		setXMLNote(note);
 		initialize(partNumber, note.noteName(), (note.rest()) ? -1
 				: note.notenum(), note.voice(), note.grace(), note
-						.tiedTo() != null, note.rest(), note.beat(), Harmony.I);
+						.containsTieType("start"), note.rest(), note.beat(),
+				Harmony.I);
 		setMusePhony(note.voice());
 		setMeasureNumber(note.measure().number());
 		setOnset(note.onset(getTicksPerBeat()));
@@ -496,5 +501,56 @@ public class NoteData extends SequenceData {
 				xmlPartNumber(), measureNumber(), xmlVoice(), musePhony(),
 				offset(), velocity(), rest(), child() != null, isGrace(),
 				isTied(), fifths(), chord());
+	}
+
+	public void setTiedTo(NoteData nd) {
+		// タイを切る
+		if (nd == null) {
+			tiedTo.setTiedFrom(null);
+			tied = false;
+		}
+		// 代入
+		tiedTo = nd;
+
+		// 整合性チェック
+		tied = hasTiedTo();
+		if (!hasTiedTo())
+			return; // タイが切れてれるなら終了
+
+		// tiedFromを持ってないか、nd と異なる場合
+		if (!tiedTo.hasTiedFrom() || tiedTo.tiedFrom().equals(this))
+			tiedTo.setTiedFrom(this);
+	}
+
+	public void setTiedFrom(NoteData nd) {
+		// タイを切る
+		if (nd == null) {
+			tiedFrom.setTiedTo(null);
+			tied = false;
+		}
+		// 代入
+		tiedFrom = nd;
+
+		// 整合性チェック
+		if (!hasTiedFrom())
+			return;// タイが切れてれるなら終了
+		if (!tiedFrom.hasTiedTo() || !tiedFrom.tiedTo().equals(this))
+			tiedFrom.setTiedTo(this);
+	}
+
+	private boolean hasTiedTo() {
+		return tiedTo != null;
+	}
+
+	public boolean hasTiedFrom() {
+		return tiedFrom != null;
+	}
+
+	public NoteData tiedFrom() {
+		return tiedFrom;
+	}
+
+	public NoteData tiedTo() {
+		return tiedTo;
 	}
 }
