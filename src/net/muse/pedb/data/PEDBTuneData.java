@@ -51,12 +51,12 @@ public class PEDBTuneData extends MXTuneData {
 			@Override protected NoteData createNoteData(
 					MusicXMLWrapper.Note note, int partNumber, int idx,
 					Integer bpm, int vel) {
-				return new MXNoteData(note, partNumber, idx, bpm, vel);
+				return new PEDBNoteData(note, partNumber, idx, bpm, vel);
 			}
 
 			@Override protected NoteData createNoteData(SCCXMLWrapper.Note note,
 					int partNumber, int idx, Integer bpm, int beat, int vel) {
-				return new MXNoteData(note, partNumber, idx, bpm, beat, vel);
+				return new PEDBNoteData(note, partNumber, idx, bpm, beat, vel);
 			}
 
 			@Override protected PEDBTuneData data() {
