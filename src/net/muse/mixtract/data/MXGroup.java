@@ -104,7 +104,7 @@ public class MXGroup extends Group {
 	public void extractApex() {
 		if (!isModified)
 			return;
-		isModified=false;
+		isModified = false;
 		apexNotelist.clear();
 		extractNotes();
 		// score clear
@@ -152,8 +152,7 @@ public class MXGroup extends Group {
 		}
 		double range = max - min;
 		for (int i = 0; i < sz; i++) {
-			((MXNoteData) apexNotelist.get(i)).setApexScore((scoreList.get(i) - min)
-					/ range);
+			apexNotelist.get(i).setApexScore((scoreList.get(i) - min) / range);
 		}
 	}
 
@@ -206,6 +205,10 @@ public class MXGroup extends Group {
 		return childLatterGroup != null;
 	}
 
+	public boolean isModified() {
+		return isModified;
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.data.Group#printInfo()
@@ -224,7 +227,11 @@ public class MXGroup extends Group {
 			g2.getBeginNote().setPrevious(null);
 	}
 
-	public int timeValue() {
+	public void setModified(boolean isModified) {
+		this.isModified = isModified;
+	}
+
+	@Override public int timeValue() {
 		int len = 0;
 		if (!hasChild())
 			return timevalue(getBeginNote());
@@ -247,6 +254,28 @@ public class MXGroup extends Group {
 		str += ",";
 		str += (hasChildLatter()) ? getChildLatterGroup().name() : "null";
 		return str;
+	}
+
+	NoteData getCenterGroupNote() {
+		if (centerNote == null) {
+			// onset length
+			int len = getEndNote().onset() - onsetInTicks();
+			int targetTime = len / 2;
+			searchCenterGroupNote(targetTime, getBeginNote());
+			if (hasChild())
+				searchCenterGroupNote(targetTime, getChildLatterGroup()
+						.getBeginNote());
+		}
+		return centerNote;
+	}
+
+	@Override protected void initialize() {
+		dynamicsCurve = (DynamicsCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.DYNAMICS);
+		tempoCurve = (TempoCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.TEMPO);
+		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
+				PhraseCurveType.ARTICULATION);
 	}
 
 	private void addNote(MXNoteData n) {
@@ -272,19 +301,6 @@ public class MXGroup extends Group {
 			getChildFormerGroup().extractNotes();
 		if (hasChildLatter())
 			getChildLatterGroup().extractNotes();
-	}
-
-	NoteData getCenterGroupNote() {
-		if (centerNote == null) {
-			// onset length
-			int len = getEndNote().onset() - onsetInTicks();
-			int targetTime = len / 2;
-			searchCenterGroupNote(targetTime, getBeginNote());
-			if (hasChild())
-				searchCenterGroupNote(targetTime, getChildLatterGroup()
-						.getBeginNote());
-		}
-		return centerNote;
 	}
 
 	private final boolean hasPhraseCurve() {
@@ -321,22 +337,5 @@ public class MXGroup extends Group {
 			childLatterGroup.setParent(this);
 			setEndNote(g.getEndNote());
 		}
-	}
-
-	protected void initialize() {
-		dynamicsCurve = (DynamicsCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.DYNAMICS);
-		tempoCurve = (TempoCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.TEMPO);
-		articulationCurve = (ArticulationCurve) PhraseCurve.createPhraseProfile(
-				PhraseCurveType.ARTICULATION);
-	}
-
-	public boolean isModified() {
-		return isModified;
-	}
-
-	public void setModified(boolean isModified) {
-		this.isModified = isModified;
 	}
 }
