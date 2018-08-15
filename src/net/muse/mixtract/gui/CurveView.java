@@ -6,15 +6,19 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.*;
+import net.muse.app.Mixtract;
+import net.muse.data.Group;
+import net.muse.data.TuneData;
+import net.muse.gui.GroupLabel;
+import net.muse.gui.TuneDataListener;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 
 public class CurveView extends JScrollPane implements TuneDataListener {
 	private static final long serialVersionUID = 1L;
 	static final int DEFAULT_HEIGHT = 140;
 	private CurvePanel curvePanel = null;
-	private TuneData data; // @jve:decl-index=0:
+	private MXTuneData data; // @jve:decl-index=0:
 	private int bpmTick;
 	private PhraseCurveType type;
 
@@ -65,10 +69,11 @@ public class CurveView extends JScrollPane implements TuneDataListener {
 	}
 
 	public void setTarget(TuneData target) {
-		data = target;
+		assert target instanceof MXTuneData;
+		data = (MXTuneData) target;
 		if (Mixtract.isAssertion())
 			assert data != null : "data is null";
-		curvePanel.setCurvelist(target);
+		curvePanel.setCurvelist(data);
 		repaint();
 	}
 

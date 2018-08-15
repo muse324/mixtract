@@ -1,16 +1,16 @@
 package net.muse.mixtract.data.curve;
 
-
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import net.muse.app.Mixtract;
 import net.muse.misc.MuseObject;
 import net.muse.misc.Util;
-import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.Group;
-import net.muse.mixtract.data.TuneData;
+import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.MXTuneData;
 
 public abstract class PhraseCurve extends MuseObject {
 
@@ -89,6 +89,9 @@ public abstract class PhraseCurve extends MuseObject {
 	private int yoffset;
 
 	private final ArrayList<Double> paramlist;
+	private Point2D.Double paramST = null;
+	private Point2D.Double paramTP = null;
+	private Point2D.Double paramED = null;
 
 	protected PhraseCurve() {
 		super();
@@ -104,7 +107,7 @@ public abstract class PhraseCurve extends MuseObject {
 	 * @param target
 	 * @param gr
 	 */
-	public abstract void apply(TuneData target, Group gr);
+	public abstract void apply(MXTuneData target, MXGroup gr);
 
 	public void calculate(double height) {
 		System.out.println("paramlist:");
@@ -126,7 +129,8 @@ public abstract class PhraseCurve extends MuseObject {
 	 * @param ed
 	 * @param height
 	 */
-	public synchronized void fit2DCurve(Point st, Point tp, Point ed, int height) {
+	public synchronized void fit2DCurve(Point st, Point tp, Point ed,
+			int height) {
 		graphicRectangleData.clear();
 		unitLength = Math.round(unitLength(st, ed));
 		/* 始点・頂点・終点の座標を取得する */
@@ -134,8 +138,7 @@ public abstract class PhraseCurve extends MuseObject {
 
 		dynamicSlope = slope(xs, ys, xa, ya, ys - ya);
 		// int den = (100 - d) / (xs - xa) + d - 100;
-		double densitySlope = slope(xs, 100, ya, density,
-				100 - density);
+		double densitySlope = slope(xs, 100, ya, density, 100 - density);
 		System.out.println("densitySlope:" + densitySlope);
 		/* st-top, top-edをそれぞれ通過する直線 py1 と 二次曲線 py2 を求める */
 		// y = a * Math.pow(x - ta, 2) + q;
@@ -170,17 +173,9 @@ public abstract class PhraseCurve extends MuseObject {
 					(int) py + height));
 
 		}
-		System.out.println("len:" + getGraphicLength(st, ed)
-							+ ", val:"
-							+ division
-							+ ", res:"
-							+ division
-							+ ", div:"
-							+ division
-							+ ", w:"
-							+ unitLength
-							+ ", dynamicSlope:"
-							+ dynamicSlope);
+		System.out.println("len:" + getGraphicLength(st, ed) + ", val:"
+				+ division + ", res:" + division + ", div:" + division + ", w:"
+				+ unitLength + ", dynamicSlope:" + dynamicSlope);
 	}
 
 	/**
@@ -218,7 +213,7 @@ public abstract class PhraseCurve extends MuseObject {
 	}
 
 	public void initializeGraphicValue(int axisX, int axisY, double length,
-										double height) {
+			double height) {
 		graphicData.clear();
 		setDivision(paramlist.size());
 		final double w = length / division;
@@ -270,8 +265,7 @@ public abstract class PhraseCurve extends MuseObject {
 	 * (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
-	public String toString() {
+	@Override public String toString() {
 		return paramlist + ", " + graphicData;
 	}
 
@@ -339,11 +333,8 @@ public abstract class PhraseCurve extends MuseObject {
 		final Point st = new Point(xs, ys);
 		final Point ed = new Point(xe, ye);
 		final long unit = Math.round(unitLength(st, ed));
-		System.out.print(" unit=" + graphicRectangleData.get(0).width
-							+ "->"
-							+ unit
-							+ ", div="
-							+ division);
+		System.out.print(" unit=" + graphicRectangleData.get(0).width + "->"
+				+ unit + ", div=" + division);
 
 		if (unit == graphicRectangleData.get(0).width) {
 			System.out.println("\n\t>>skipped.");
@@ -425,7 +416,8 @@ public abstract class PhraseCurve extends MuseObject {
 	 * @param x
 	 * @return
 	 */
-	private int quadraticCurve(double a1, double q1, double a2, double q2, int x) {
+	private int quadraticCurve(double a1, double q1, double a2, double q2,
+			int x) {
 		return (x <= xa) ? quad(a1, q1, x, xa, ys) : quad(a2, q2, x, xa, ys);
 	}
 
@@ -445,6 +437,52 @@ public abstract class PhraseCurve extends MuseObject {
 
 	private double unitLength(Point st, Point ed) {
 		return getGraphicLength(st, ed) / division;
+	}
+
+	public Point2D.Double start() {
+		if (paramST == null)
+			paramST = new Point2D.Double(0., 0.);
+		return paramST;
+	}
+
+	public Point2D.Double top() {
+		if (paramTP == null)
+			paramTP = new Point2D.Double(0.5, 0.);
+		return paramTP;
+	}
+
+	public Point2D.Double end() {
+		if (paramED == null)
+			paramED = new Point2D.Double(1., 0.);
+		return paramED;
+	}
+
+	public void setStart(Point2D.Double p) {
+		paramST = p;
+	}
+
+	public void setTop(Point2D.Double p) {
+		paramTP = p;
+	}
+
+	public void setEnd(Point2D.Double p) {
+		paramED = p;
+	}
+
+	public void rasterize() {
+		int size = paramlist.size();
+		int formerSize = (int) (size * paramTP.x);
+		int latterSize = size-formerSize;
+		for (int i = 0; i < formerSize; i++) {
+			double t = (double) i / formerSize;
+			double value = t * (paramTP.y - paramST.y) + paramST.y;
+			paramlist.set(i, value);
+		}
+		for (int i = 0; i < latterSize; i++) {
+			double t = (double) i /latterSize;
+			double value = t * (paramED.y - paramTP.y) + paramTP.y;
+			paramlist.set(i+formerSize, value);
+		}
 	}
 
 }

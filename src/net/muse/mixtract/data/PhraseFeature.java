@@ -1,24 +1,22 @@
 package net.muse.mixtract.data;
 
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
-import net.muse.misc.MuseObject;
+import net.muse.data.AbstractPhraseFeature;
+import net.muse.data.NoteData;
 
 /**
  * <h1>PhraseFeature</h1>
  * <p>
  * 旋律の特徴情報を格納するクラスです。
- * 
+ *
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
  *         <address>http://www.m-use.net/</address>
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2008/05/02
  */
-public class PhraseFeature extends MuseObject {
+public class PhraseFeature extends AbstractPhraseFeature {
 	/** subphrase A の音高推移の傾き */
 	private double slopeA;
 
@@ -53,13 +51,22 @@ public class PhraseFeature extends MuseObject {
 	/**
 	 * グループの旋律概形とリズムベクトルを求めます． グループの旋律概形は，前半開始音から頂点音の消音時刻までと，
 	 * 後半開始音から終了音の消音時刻までをそれぞれ結ぶ 2本の一次直線であらわされます．
-	 * 
+	 *
 	 * @param g
 	 *            音列グループ
 	 */
-	public PhraseFeature(Group group) {
-		setLineParameters(group);
-		makeRhythmVector(group);
+	public PhraseFeature(MXGroup group) {
+		super(group);
+		setLineParameters();
+		makeRhythmVector();
+	}
+
+	/* (非 Javadoc)
+	 * @see net.muse.data.AbstractPhraseFeature#group()
+	 */
+	@Override
+	public MXGroup group() {
+		return (MXGroup) group;
 	}
 
 	public final double getCt1() {
@@ -84,7 +91,7 @@ public class PhraseFeature extends MuseObject {
 
 	/**
 	 * 旋律外形の前半の最後の音符を返します．
-	 * 
+	 *
 	 * @return formerLastNote
 	 */
 	public final Note getFormerLastNote() {
@@ -93,7 +100,7 @@ public class PhraseFeature extends MuseObject {
 
 	/**
 	 * 後半の最初の音符を返します．
-	 * 
+	 *
 	 * @return latterFirstNote
 	 */
 	public final Note getLatterFirstNote() {
@@ -133,17 +140,17 @@ public class PhraseFeature extends MuseObject {
 	 * one. The cosine distance is exhaustively calculated. The system chooses
 	 * the largest cosine-distance obtained by this procedure as the
 	 * melodySimilarity of the surface rhythms simr.
-	 * 
+	 *
 	 * @param target
 	 *            音列グループ
 	 */
-	private void makeRhythmVector(Group group) {
-		// int unit = getMinimumDuration(group.getBeginGroupNote());
-		// int length = (int) group.length();
+	private void makeRhythmVector() {
+		// int unit = getMinimumDuration(group().getBeginGroupNote());
+		// int length = (int) group().length();
 		//
 		// ArrayList<Integer> vec = new ArrayList<Integer>();
-		// Note n = group.getBeginningNote(); // 開始音
-		// TreeView<Note> tv = group.getNotes();
+		// Note n = group().getBeginningNote(); // 開始音
+		// TreeView<Note> tv = group().getNotes();
 		// tv.jumpTo(n);// 最初が休符かもしれないから
 		// int onset = 0;
 		// int val = 0;
@@ -166,7 +173,7 @@ public class PhraseFeature extends MuseObject {
 		// }
 		// rhythmVector = vec;
 		// testPrintln(rhythmVector.toString());
-		// noteLevel = group.getMinimumNoteLevel();
+		// noteLevel = group().getMinimumNoteLevel();
 		// } catch (UnexpectedException e) {
 		// e.printStackTrace();
 		// }
@@ -189,36 +196,36 @@ public class PhraseFeature extends MuseObject {
 	 * using least squares fitting. If the user regards the boundary suggested
 	 * by the automatic fitting to be unsatisfactory, he/she can manually edit
 	 * the position by using the GUI.
-	 * 
+	 *
 	 * @param g
 	 *            音列グループ
 	 */
-	private synchronized void setLineParameters(Group group) {
+	private synchronized void setLineParameters() {
 
 		/*
 		 * 後半最初の音符を取得する。グループがもし頂点音を保有している場合は頂点音を、
-		 * そうでなければ時間長の半分の位置にあ音符を格納する。
+		 * そうでなければ時間長の半分の位置にある音符を格納する。
 		 */
-		latterFirstNoteData = (group.hasTopNote()) ? group.getTopGroupNote()
-				.getNote() : group.getCenterGroupNote().getNote();
+		latterFirstNoteData = (group().hasTopNote()) ? group().getTopNote()
+				 : group().getCenterGroupNote();
 
 		// 前半最後の音符を取得
 		formerLastNoteData = latterFirstNoteData.previous();
 
-		double st = group.onsetInTicks();
+		double st = group().onsetInTicks();
 		double tp = formerLastNoteData.offset();
 		double formarLength = (tp - st) / getTicksPerBeat();
-		slopeA = (formerLastNoteData.noteNumber() - group.getBeginGroupNote()
-				.getNote().noteNumber()) / formarLength;
-		double ed = group.getEndGroupNote().getNote().offset();
+		slopeA = (formerLastNoteData.noteNumber() - group().getBeginNote()
+				.noteNumber()) / formarLength;
+		double ed = group().getEndNote().offset();
 		double latterLength = ed - latterFirstNoteData.onset()
-								/ getTicksPerBeat();
-		slopeB = (group.getEndGroupNote().getNote().noteNumber() - latterFirstNoteData
-				.noteNumber()) / latterLength;
+				/ getTicksPerBeat();
+		slopeB = (group().getEndNote().noteNumber()
+				- latterFirstNoteData.noteNumber()) / latterLength;
 		timeValue = (ed - st) / getTicksPerBeat();
 		ratioOfMalodyA = formarLength / timeValue;
 		pitchInterval = latterFirstNoteData.noteNumber() - formerLastNoteData
-								.noteNumber();
+				.noteNumber();
 
 		testPrintln("slopeA=" + slopeA);
 		testPrintln("slopeB=" + slopeB);

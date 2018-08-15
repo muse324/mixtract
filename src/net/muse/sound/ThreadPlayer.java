@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 import javax.sound.midi.*;
 
-import net.muse.mixtract.data.NoteScheduleEvent;
+import net.muse.data.NoteScheduleEvent;
 import net.muse.mixtract.sound.MixtractMIDIController;
 
 /**

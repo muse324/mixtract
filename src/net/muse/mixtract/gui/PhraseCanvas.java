@@ -1,18 +1,37 @@
 package net.muse.mixtract.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 
+import net.muse.app.Mixtract;
+import net.muse.gui.CanvasMouseListener;
+import net.muse.gui.MainFrame;
+import net.muse.gui.MouseActionListener;
 import net.muse.gui.RoundedCornerButton;
 import net.muse.gui.RoundedCornerButton.RoundButton;
-import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.Group;
+import net.muse.mixtract.command.ApplyHierarchicalParamsCommand;
+import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.data.MXGroup;
+import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurve;
-import net.muse.mixtract.gui.command.ApplyHierarchicalParamsCommand;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -20,8 +39,8 @@ import net.muse.mixtract.gui.command.ApplyHierarchicalParamsCommand;
  *         <address>hashida@kwansei.ac.jp</address>
  * @since 2009/03/24
  */
-class PhraseCanvas extends JPanel implements MouseListener,
-		MouseMotionListener, CanvasMouseListener {
+class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
+		CanvasMouseListener {
 
 	private static final int handlerSize = 10;
 	private static int canvasSizeX = 300;
@@ -36,7 +55,7 @@ class PhraseCanvas extends JPanel implements MouseListener,
 
 	/* 制御データ */
 	protected Mixtract main; // @jve:decl-index=0:
-	protected Group group; // @jve:decl-index=0:
+	protected MXGroup group; // @jve:decl-index=0:
 
 	private PhraseCurve cv; // @jve:decl-index=0:
 	private int axisX;
@@ -68,7 +87,7 @@ class PhraseCanvas extends JPanel implements MouseListener,
 	 * @param group
 	 * @param phraseCurve
 	 */
-	PhraseCanvas(final Group group, PhraseCurve phraseCurve) {
+	PhraseCanvas(final MXGroup group, PhraseCurve phraseCurve) {
 		this();
 		this.group = group;
 		this.cv = phraseCurve;
@@ -85,7 +104,7 @@ class PhraseCanvas extends JPanel implements MouseListener,
 		// repaint();
 	}
 
-	private PhraseCanvas() {
+	protected PhraseCanvas() {
 		super();
 		initialize();
 		addMouseListener(this);
@@ -95,14 +114,13 @@ class PhraseCanvas extends JPanel implements MouseListener,
 		setAxises();
 
 		int w = (int) Math.round((endX - axisX) / (double) PhraseCurve
-											.getDefaultDivision());
+				.getDefaultDivision());
 		for (int i = 0; i <= PhraseCurve.getDefaultDivision(); i++) {
 			freehandStroke.add(new Point(i * w + axisX, axisY));
 		}
 	}
 
-	public void mouseClicked(MouseEvent e) {
-	}
+	public void mouseClicked(MouseEvent e) {}
 
 	public void mouseDragged(MouseEvent e) {
 		setMouseLocation(getMousePosition());
@@ -111,14 +129,11 @@ class PhraseCanvas extends JPanel implements MouseListener,
 		repaint();
 	}
 
-	public void mouseEntered(MouseEvent e) {
-	}
+	public void mouseEntered(MouseEvent e) {}
 
-	public void mouseExited(MouseEvent e) {
-	}
+	public void mouseExited(MouseEvent e) {}
 
-	public void mouseMoved(MouseEvent e) {
-	}
+	public void mouseMoved(MouseEvent e) {}
 
 	public void mousePressed(MouseEvent e) {
 		if (SwingUtilities.isRightMouseButton(e)) {
@@ -166,8 +181,8 @@ class PhraseCanvas extends JPanel implements MouseListener,
 			if (m != null && p != null && idx >= 0) {
 				// double l = cv.getLogValueData().get(idx);
 				double l = cv.getParamlist().get(idx);
-				g2.drawString(String.format("%d, %d (init:%d, val:%d), %f",
-						p.x, m.y, axisY, p.y, l), m.x, p.y - 10);
+				g2.drawString(String.format("%d, %d (init:%d, val:%d), %f", p.x,
+						m.y, axisY, p.y, l), m.x, p.y - 10);
 			}
 		} else {
 			// test
@@ -194,8 +209,7 @@ class PhraseCanvas extends JPanel implements MouseListener,
 		repaint();
 	}
 
-	public void setShowCurrentX(boolean showCurrentX, int x) {
-	}
+	public void setShowCurrentX(boolean showCurrentX, int x) {}
 
 	void setController(Mixtract main) {
 		this.main = main;
@@ -224,7 +238,7 @@ class PhraseCanvas extends JPanel implements MouseListener,
 	 * @param stroke カーブ線のストローク
 	 */
 	protected void drawCurve(Graphics2D g2, PhraseCurve curve, Color color,
-								BasicStroke stroke) {
+			BasicStroke stroke) {
 		if (curve == null)
 			return;
 		g2.setColor(color);
@@ -233,8 +247,8 @@ class PhraseCanvas extends JPanel implements MouseListener,
 		// 座標修正
 		// LinkedList<Point> graphicData = rescaleFreehandXPositions();
 		if (curve.getGraphicData().size() <= 0) {
-			curve.initializeGraphicValue(axisX, axisY, getRangeX(),
-					getRangeY() / 2.);
+			curve.initializeGraphicValue(axisX, axisY, getRangeX(), getRangeY()
+					/ 2.);
 			setFreehandStroke(curve);
 			//
 			// freehandStroke.clear();
@@ -316,8 +330,7 @@ class PhraseCanvas extends JPanel implements MouseListener,
 	/**
 	 * @param shiftDown
 	 */
-	private void editStroke(boolean shiftDown) {
-	}
+	private void editStroke(boolean shiftDown) {}
 
 	/**
 	 * This method initializes alignLinearMenuItem
@@ -327,20 +340,23 @@ class PhraseCanvas extends JPanel implements MouseListener,
 	private JMenuItem getAlignLinearMenuItem() {
 		if (alignLinearMenuItem == null) {
 			alignLinearMenuItem = new JMenuItem("Align linear line");
-			alignLinearMenuItem
-					.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(java.awt.event.ActionEvent e) {
+			alignLinearMenuItem.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
 							cv.setOffset(getStartButton().getWidth(),
 									getStartButton().getHeight());
 							cv.fit2DCurve(getStartButton().getLocation(),
-									getTopButton().getLocation(),
-									getEndButton().getLocation(),
+									getTopButton().getLocation(), getEndButton()
+											.getLocation(),
 									getDefaultRectangleHeight());
 							getApproximateCurveMenuItem().setSelected(true);
 							cv.calculate(getHalfRangeY());
 							paramApplicator.execute();
 							try {
-								main.getData().writeTempfileCurveParameters();
+								assert main.data() instanceof MXTuneData;
+								((MXTuneData) main.data())
+										.writeTempfileCurveParameters();
 							} catch (IOException e1) {
 								e1.printStackTrace();
 							}
@@ -359,9 +375,10 @@ class PhraseCanvas extends JPanel implements MouseListener,
 			approximateCurveMenuItem = new JCheckBoxMenuItem(
 					"Approximate curve");
 			approximateCurveMenuItem.setSelected(true);
-			approximateCurveMenuItem
-					.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(java.awt.event.ActionEvent e) {
+			approximateCurveMenuItem.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
 							System.out.println("actionPerformed()");
 						}
 					});
@@ -377,9 +394,10 @@ class PhraseCanvas extends JPanel implements MouseListener,
 	private JMenuItem getCalcRealTempoTimeItem() {
 		if (calcRealTempoTimeItem == null) {
 			calcRealTempoTimeItem = new JMenuItem();
-			calcRealTempoTimeItem
-					.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(java.awt.event.ActionEvent e) {
+			calcRealTempoTimeItem.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
 							cv.calculate(getHalfRangeY());
 						}
 					});
@@ -416,10 +434,8 @@ class PhraseCanvas extends JPanel implements MouseListener,
 	private JButton getEndButton() {
 		if (endButton == null) {
 			endButton = new RoundedCornerButton.RoundButton();
-			endButton.setBounds(new Rectangle(
-					getWidth() * 9 / 10 - handlerSize, canvasSizeY / 2
-														- handlerSize,
-					handlerSize, handlerSize));
+			endButton.setBounds(new Rectangle(getWidth() * 9 / 10 - handlerSize,
+					canvasSizeY / 2 - handlerSize, handlerSize, handlerSize));
 			endButton.addMouseListener(mouseActions);
 			endButton.addMouseMotionListener(mouseActions);
 			endButton.addMouseListener(this);
@@ -432,7 +448,7 @@ class PhraseCanvas extends JPanel implements MouseListener,
 	/**
 	 * @return
 	 */
-	private int getHalfRange() {
+	protected int getHalfRange() {
 		return (int) Math.round(getHeight() / 4.0);
 	}
 
@@ -459,9 +475,10 @@ class PhraseCanvas extends JPanel implements MouseListener,
 	private JMenuItem getResetStandardValueItem() {
 		if (resetStandardValueItem == null) {
 			resetStandardValueItem = new JMenuItem("Initialize values");
-			resetStandardValueItem
-					.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(java.awt.event.ActionEvent e) {
+			resetStandardValueItem.addActionListener(
+					new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent e) {
 							cv.setOffset(axisX, axisY);
 							// cv.setOffset(getStartButton());
 							// cv.setFreeCurve(true);
@@ -472,9 +489,9 @@ class PhraseCanvas extends JPanel implements MouseListener,
 							cv.calculate(getHeight());
 							paramApplicator.execute();
 							try {
-								// main.getData().initializeParameters();
-								// main.getData().initializeNoteEvents();
-								main.getData().writeTempfileCurveParameters();
+								assert main.data() instanceof MXTuneData;
+								((MXTuneData) main.data())
+										.writeTempfileCurveParameters();
 								((MainFrame) main.getFrame()).getTempoView()
 										.repaint();
 								((MainFrame) main.getFrame()).getDynamicsView()
@@ -532,7 +549,7 @@ class PhraseCanvas extends JPanel implements MouseListener,
 	/**
 	 *
 	 */
-	private void initialize() {
+	protected void initialize() {
 		setLayout(null);
 		setDoubleBuffered(true);
 		setBackground(Color.white);
@@ -609,8 +626,8 @@ class PhraseCanvas extends JPanel implements MouseListener,
 			resetTopButtonLocation();
 		}
 		setButtonLocation(getStartButton(), freehandStroke.get(0));
-		setButtonLocation(getEndButton(),
-				freehandStroke.get(getLastIndexOf(freehandStroke)));
+		setButtonLocation(getEndButton(), freehandStroke.get(getLastIndexOf(
+				freehandStroke)));
 		getTopButton().setVisible(true);
 
 		if (cv != null) {
@@ -653,24 +670,22 @@ class PhraseCanvas extends JPanel implements MouseListener,
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			super.mouseReleased(e);
+			// ポップアップメニューを表示する
 			if (SwingUtilities.isRightMouseButton(e)) {
 				createPopupMenu(e);
 				repaint();
 				return;
 			}
 			System.out.println("==== mouse released at PhraseCanvas =====");
-			System.out.println("group: " + ((group != null)	? group.name()
-															: "null"));
-			// System.out.println("graphic.data:   " + cv
-			// .getGraphicRectangleData());
-			// System.out.println("scoretime.data: " + cv.getScoretimeData());
-			// System.out.println("logvalue.data:  " + cv.getLogValueData());
+			System.out.println("group: " + ((group != null) ? group.name()
+					: "null"));
 
 			cv.calculate(getHeight());
 			// cv.calculate(getRangeY() / 2.);
 			paramApplicator.execute();
 			try {
-				_main.getData().writeTempfileCurveParameters();
+				assert _main.data() instanceof MXTuneData;
+				((MXTuneData) _main.data()).writeTempfileCurveParameters();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

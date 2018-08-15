@@ -1,8 +1,8 @@
 package net.muse.mixtract.data.curve;
 
-
 import java.util.LinkedList;
 
+import net.muse.data.*;
 import net.muse.mixtract.data.*;
 
 public class ArticulationCurve extends PhraseCurve {
@@ -22,11 +22,11 @@ public class ArticulationCurve extends PhraseCurve {
 	 * .data.TuneData)
 	 */
 	@Override
-	public void apply(TuneData target, Group gr) {
-		Group g = target.getRootGroup(0);
-		double bt = g.getBeginGroupNote().getNote()
-				.onsetInMsec(getDefaultBPM());
-		double et = g.getEndGroupNote().getNote().offsetInMsec(getDefaultBPM());
+	public void apply(MXTuneData target, MXGroup gr) {
+		assert target.getRootGroup(0) instanceof MXGroup;
+		MXGroup g = (MXGroup) target.getRootGroup(0);
+		double bt = g.getBeginNote().onsetInMsec(getDefaultBPM());
+		double et = g.getEndNote().offsetInMsec(getDefaultBPM());
 		articulationList = target.getArticulationList();
 		applyArticulationEvent(g, bt, et);
 	}
@@ -43,7 +43,7 @@ public class ArticulationCurve extends PhraseCurve {
 		// return super.firestGraphicYValue(i, axisY, height);
 	}
 
-	private void applyArticulationEvent(Group gr, double bt, double et) {
+	private void applyArticulationEvent(MXGroup gr, double bt, double et) {
 		if (gr == null)
 			return;
 		if (gr.hasChild()) {
@@ -52,25 +52,24 @@ public class ArticulationCurve extends PhraseCurve {
 		} else {
 			// target.applyArticulationEvent(this, gr.getBeginGroupNote(), bt,
 			// et);
-			applyArticulationEvent(gr.getBeginGroupNote(), bt, et);
+			applyArticulationEvent(gr.getBeginNote(), bt, et);
 		}
 	}
 
-	private void applyArticulationEvent(GroupNote gnote, double bt, double et) {
-		if (gnote == null)
+	private void applyArticulationEvent(NoteData nd, double bt, double et) {
+		if (nd == null)
 			return;
-		NoteData nd = gnote.getNote();
 		double on = nd.onsetInMsec(getDefaultBPM());
 		double tv = nd.timeValueInMsec(getDefaultBPM());
 		double t = on + tv; // current note の楽譜上のオフセット
 
 		int idx = (int) ((t - bt) / (et - bt) * articulationList.size()) - 1;
 
-		double artc = articulationList
-				.get((idx < articulationList.size()) ? idx : idx - 1);
+		double artc = articulationList.get((idx < articulationList.size()) ? idx
+				: idx - 1);
 		double newRealOffset = on + tv * artc;
 		nd.setRealOffset(newRealOffset);
-		applyArticulationEvent(gnote.child(), bt, et);
-		applyArticulationEvent(gnote.next(), bt, et);
+		applyArticulationEvent(nd.child(), bt, et);
+		applyArticulationEvent(nd.next(), bt, et);
 	}
 }
