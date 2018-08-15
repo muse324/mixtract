@@ -263,6 +263,9 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			}
 			if (tgt != null)
 				tiedNote.remove(tgt);
+			cur.setNext(nd);
+			cur=nd;
+			// TODO タイ情報のファイル出力、入力を修正する
 		} else {
 			cur.setNext(nd);
 			cur = nd;

@@ -496,11 +496,11 @@ public class NoteData extends SequenceData {
 	 */
 	@Override public String toString() {
 		return String.format(
-				"idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d, phony=%s/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tie=%b, fifths=%d, harmony=%s",
+				"idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d, phony=%s/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tiedFrom=%s, fifths=%d, harmony=%s",
 				index(), onset(), noteName(), beat(), timeValue(),
 				xmlPartNumber(), measureNumber(), xmlVoice(), musePhony(),
 				offset(), velocity(), rest(), child() != null, isGrace(),
-				isTied(), fifths(), chord());
+				(hasTiedFrom()) ? tiedFrom().index() : null, fifths(), chord());
 	}
 
 	public void setTiedTo(NoteData nd) {
