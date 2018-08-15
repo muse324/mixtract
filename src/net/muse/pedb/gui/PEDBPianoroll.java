@@ -1,6 +1,7 @@
 package net.muse.pedb.gui;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Path2D;
 
@@ -43,6 +44,16 @@ public class PEDBPianoroll extends MXPianoroll {
 
 	/*
 	 * (非 Javadoc)
+	 * @see
+	 * net.muse.mixtract.gui.MXPianoroll#createNoteLabel(net.muse.data.NoteData,
+	 * java.awt.Rectangle)
+	 */
+	@Override protected NoteLabel createNoteLabel(NoteData note, Rectangle r) {
+		return new PEDBNoteLabel(note, r);
+	}
+
+	/*
+	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#drawMouseOveredNoteInfo(java.awt.Graphics2D)
 	 */
 	@Override protected void drawMouseOveredNoteInfo(Graphics2D g2) {
@@ -63,7 +74,7 @@ public class PEDBPianoroll extends MXPianoroll {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#drawOptionalInfo(java.awt.Graphics2D)
 	 */
-	protected void drawOptionalInfo(Graphics2D g2) {
+	@Override protected void drawOptionalInfo(Graphics2D g2) {
 		NoteLabel l = getNotelist();
 		while (l.hasNext()) {
 			if (l.getScoreNote().hasTiedTo()) {
@@ -77,18 +88,23 @@ public class PEDBPianoroll extends MXPianoroll {
 			NoteLabel to) {
 		if (to == null)
 			return;
-		if (from.getScoreNote().tiedTo().equals(to.getScoreNote())) {
-			// draw connected line
-			Rectangle r1 = from.getBounds();
-			Rectangle r2 = to.getBounds();
-			Path2D.Double p = new Path2D.Double();
-			p.moveTo(r1.getCenterX(), r1.getY());
-			p.quadTo(r1.getCenterX(), r1.getY() + 10, r2.getCenterX(), r2
-					.getY());
-			g2.draw(p);
-			return;
-		}
-		drawTiedNotesConnection(g2, from, to.next());
+		if (!from.getScoreNote().tiedTo().equals(to.getScoreNote()))
+			drawTiedNotesConnection(g2, from, to.next());
+
+		// draw connected line
+		Rectangle r1 = from.getBounds();
+		Rectangle r2 = to.getBounds();
+		int sx = (int) (r1.width * 0.8);
+		int ex = (int) (r2.width * 0.2);
+		Point p1 = new Point(r1.x + sx, r1.y);
+		Point p2 = new Point(r2.x + ex, r2.y);
+		int cx = (p1.x + p2.x) / 2;
+		int cy = p1.y - 15;
+		Path2D.Double p = new Path2D.Double();
+		p.moveTo(p1.x, p1.y);
+		p.quadTo(cx, cy, p2.x, p2.y);
+		g2.draw(p);
+		return;
 	}
 
 }
