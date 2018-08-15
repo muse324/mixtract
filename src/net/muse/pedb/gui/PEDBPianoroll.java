@@ -76,35 +76,39 @@ public class PEDBPianoroll extends MXPianoroll {
 	 */
 	@Override protected void drawOptionalInfo(Graphics2D g2) {
 		NoteLabel l = getNotelist();
-		while (l.hasNext()) {
-			if (l.getScoreNote().hasTiedTo()) {
-				drawTiedNotesConnection(g2, l, l.next());
-			}
-			l = l.next();
-		}
+		drawTiedNotesConnection(g2, l, l.next());
 	}
 
 	private void drawTiedNotesConnection(Graphics2D g2, NoteLabel from,
 			NoteLabel to) {
+		if (from == null)
+			return;
 		if (to == null)
 			return;
-		if (!from.getScoreNote().tiedTo().equals(to.getScoreNote()))
+		drawTiedNotesConnection(g2, from.child(), to);
+		drawTiedNotesConnection(g2, from.child(), to.child());
+		NoteData n = from.getScoreNote();
+		if (n.hasTiedTo()) {
+			if (n.tiedTo().equals(to.getScoreNote())) {
+				// draw connected line
+				Rectangle r1 = from.getBounds();
+				Rectangle r2 = to.getBounds();
+				int sx = (int) (r1.width * 0.8);
+				int ex = (int) (r2.width * 0.2);
+				Point p1 = new Point(r1.x + sx, r1.y);
+				Point p2 = new Point(r2.x + ex, r2.y);
+				int cx = (p1.x + p2.x) / 2;
+				int cy = p1.y - 15;
+				Path2D.Double p = new Path2D.Double();
+				p.moveTo(p1.x, p1.y);
+				p.quadTo(cx, cy, p2.x, p2.y);
+				g2.draw(p);
+			}
+			drawTiedNotesConnection(g2, from, to.child());
 			drawTiedNotesConnection(g2, from, to.next());
-
-		// draw connected line
-		Rectangle r1 = from.getBounds();
-		Rectangle r2 = to.getBounds();
-		int sx = (int) (r1.width * 0.8);
-		int ex = (int) (r2.width * 0.2);
-		Point p1 = new Point(r1.x + sx, r1.y);
-		Point p2 = new Point(r2.x + ex, r2.y);
-		int cx = (p1.x + p2.x) / 2;
-		int cy = p1.y - 15;
-		Path2D.Double p = new Path2D.Double();
-		p.moveTo(p1.x, p1.y);
-		p.quadTo(cx, cy, p2.x, p2.y);
-		g2.draw(p);
-		return;
+		}
+		drawTiedNotesConnection(g2, from.next(), to.child());
+		drawTiedNotesConnection(g2, from.next(), to.next());
 	}
 
 }

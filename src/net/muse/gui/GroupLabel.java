@@ -242,7 +242,7 @@ public class GroupLabel extends JLabel {
 		return child;
 	}
 
-	private boolean hasChild() {
+	public boolean hasChild() {
 		return child != null;
 	}
 
