@@ -8,8 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import net.muse.mixtract.Mixtract;
-import net.muse.mixtract.data.AbstractNoteData;
 import net.muse.mixtract.data.Group;
+import net.muse.mixtract.data.NoteData;
 
 class PianoRollSmall extends PianoRoll {
 	private static final long serialVersionUID = 1L;
@@ -152,7 +152,7 @@ class PianoRollSmall extends PianoRoll {
 	 * jp.crestmuse.mixtract.gui.PianoRoll#getLabelBounds(jp.crestmuse.mixtract
 	 * .data.NoteData, int)
 	 */
-	@Override protected Rectangle getLabelBounds(AbstractNoteData nd, int offset) {
+	@Override protected Rectangle getLabelBounds(NoteData nd, int offset) {
 		final int h = KeyBoard.keyHeight;
 		final int y = KeyBoard.getYPositionOfPitch(nd.noteNumber()) * h;
 		double x, w;

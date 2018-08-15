@@ -46,9 +46,9 @@ public class PhraseFeature extends MuseObject {
 	 */
 	private Note formerLastNote;
 
-	private AbstractNoteData formerLastNoteData;
+	private NoteData formerLastNoteData;
 
-	private AbstractNoteData latterFirstNoteData;
+	private NoteData latterFirstNoteData;
 
 	/**
 	 * グループの旋律概形とリズムベクトルを求めます． グループの旋律概形は，前半開始音から頂点音の消音時刻までと，

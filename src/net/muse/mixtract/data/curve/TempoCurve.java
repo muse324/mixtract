@@ -8,7 +8,7 @@ import net.muse.mixtract.data.*;
 public class TempoCurve extends PhraseCurve {
 
 	private LinkedList<Double> tempolist;
-	private AbstractNoteData lastNote;
+	private NoteData lastNote;
 	private double musicLengthInRealtimeMsec;
 
 	TempoCurve() {
@@ -48,7 +48,7 @@ public class TempoCurve extends PhraseCurve {
 	private void applyTempoEvent(GroupNote note, ArrayList<Double> realtimeList) {
 		if (note == null)
 			return;
-		AbstractNoteData n = note.getNote();
+		NoteData n = note.getNote();
 		if (n != null && !n.rest()) {
 			final int size = realtimeList.size();
 			int idxOn = (int) getCurrentIndex(n, size, n.onset());
@@ -69,7 +69,7 @@ public class TempoCurve extends PhraseCurve {
 	 * @param size
 	 * @return
 	 */
-	private double getCurrentIndex(AbstractNoteData n, final int size, double onset) {
+	private double getCurrentIndex(NoteData n, final int size, double onset) {
 		return Math.round(size * onset / (double) lastNote.offset());
 	}
 

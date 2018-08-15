@@ -29,7 +29,7 @@ public class NoteScheduleEvent {
 	}
 
 	/** 参照元の {@link NoteData} */
-	private final AbstractNoteData parent;
+	private final NoteData parent;
 
 	/** MIDI メッセージ */
 	private ShortMessage message;
@@ -40,7 +40,7 @@ public class NoteScheduleEvent {
 	/** MIDI メッセージタイプ(ShortMessage.NOTE_ON, NOTE_OFF, ...) */
 	private NoteType type;
 
-	NoteScheduleEvent(AbstractNoteData note, double onset, int shortMessageType,
+	NoteScheduleEvent(NoteData note, double onset, int shortMessageType,
 			int velocity) throws InvalidMidiDataException {
 		this.parent = note;
 		this.onset = (long) onset;
