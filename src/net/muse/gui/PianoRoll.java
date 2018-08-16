@@ -38,39 +38,28 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		CanvasMouseListener {
 
 	private static final long serialVersionUID = 1L;
-	static final int DEFAULT_WIDTH = 1024;
+	private static final int DEFAULT_WIDTH = 1024;
 	private static int defaultAxisX = 10;
 
 	/**
 	 * @return defaultAxisX
 	 */
-	public static int getDefaultAxisX() {
+	static int getDefaultAxisX() {
 		return defaultAxisX;
-	}
-
-	public void selectNotes() {
-		selectedNoteLabels.clear();
-		for (Component c : getComponents()) {
-			if (!(c instanceof NoteLabel))
-				continue;
-			NoteLabel l = (NoteLabel) c;
-			if (l.isSelected()) {
-				selectedNoteLabels.addLast(l);
-			}
-		}
 	}
 
 	protected int axisX = 10;
 
 	private final MuseApp main; // @jve:decl-index=0:
+
 	/** 楽曲データ */
 	private TuneData data; // @jve:decl-index=0:
 	/* 各種描画モード */
 	private ViewerMode viewerMode; // @jve:decl-index=0:
 	private boolean isMouseSelectBoxDraw;
 	private boolean drawToolTips = true;
-
 	private boolean drawMelodyLine = false;
+
 	/* マウス制御 */
 	private MouseActionListener mouseActions; // @jve:decl-index=0:
 	private Point mouseEndPoint;
@@ -82,8 +71,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	protected NoteLabel mouseOveredNoteLabel = null;
 	private int selectedVoice;
 	final Cursor defCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR); // @jve:decl-index=0:
-
 	final Cursor hndCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); // @jve:decl-index=0:
+
 	private GroupLabel selectedGroup;
 	private KeyActionListener keyActions;
 
@@ -103,7 +92,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * net.muse.mixtract.gui.GroupEditListener#addGroup(net.muse.mixtract.data.
 	 * Group)
 	 */
-	public void addGroup(Group g) {
+	@Override public void addGroup(Group g) {
 		setFocusable(false);
 		repaint();
 	}
@@ -114,7 +103,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * net.muse.mixtract.gui.TuneDataListener#changeExpression(net.muse.mixtract
 	 * .data.curve.PhraseCurveType)
 	 */
-	public void changeExpression(PhraseCurveType type) {
+	@Override public void changeExpression(PhraseCurveType type) {
 		if (type == PhraseCurveType.DYNAMICS)
 			return;
 		resizeLabels(notelist);
@@ -126,7 +115,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @see
 	 * net.muse.mixtract.gui.GroupEditListener#deleteGroup(javax.swing.JLabel)
 	 */
-	public void deleteGroup(GroupLabel g) {
+	@Override public void deleteGroup(GroupLabel g) {
 		deselect(g);
 		repaint();
 	}
@@ -135,7 +124,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * (非 Javadoc)
 	 * @see net.muse.mixtract.gui.GroupEditListener#deselect(javax.swing.JLabel)
 	 */
-	public void deselect(GroupLabel g) {
+	@Override public void deselect(GroupLabel g) {
 		setMouseOveredNoteLabel(null);
 		clearSelection();
 		setFocusable(false);
@@ -147,8 +136,35 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @see
 	 * net.muse.mixtract.gui.GroupEditListener#editGroup(javax.swing.JLabel)
 	 */
-	public void editGroup(GroupLabel g) {
+	@Override public void editGroup(GroupLabel g) {
 		throw new UnsupportedOperationException(); // TODO 実装
+	}
+
+	public MouseActionListener getMouseActions() {
+		return mouseActions;
+	}
+
+	/**
+	 * @return selectedNoteLabels
+	 */
+	public final LinkedList<NoteLabel> getSelectedNoteLabels() {
+		return selectedNoteLabels;
+	}
+
+	public int getSelectedVoice() {
+		return selectedVoice;
+	}
+
+	public void makeNoteLabel() {
+		removeAll();
+		setNotelist(null);
+		if (data() == null)
+			return;
+		for (Group g : data().getRootGroup()) {
+			makeNoteLabel(g);
+		}
+		validate();
+		repaint();
 	}
 
 	/*
@@ -214,20 +230,13 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		}
 	}
 
-	/**
-	 * ピアノロール画面にオリジナル情報を描画します。サブクラスで実装してください。
-	 *
-	 * @param g2
-	 */
-	protected void drawOptionalInfo(Graphics2D g2) {}
-
 	/*
 	 * (non-Javadoc)
 	 * @see
 	 * jp.crestmuse.mixtract.gui.components.GroupEditListener#selectGroup(javax
 	 * .swing.JLabel, boolean)
 	 */
-	public void selectGroup(GroupLabel g, boolean flg) {
+	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		clearSelection();
 		setSelectedGroup(g);
 		selectGroup(g.group());
@@ -239,75 +248,13 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @see net.muse.mixtract.gui.CanvasMouseListener#setShowCurrentX(boolean,
 	 * int)
 	 */
-	public void setShowCurrentX(boolean showCurrentX, int x) {}
+	@Override public void setShowCurrentX(boolean showCurrentX, int x) {}
 
-	public void setTarget(TuneData target) {
+	@Override public void setTarget(TuneData target) {
 		this.setData(target);
 		ChangePartCommand.setPartSize(target.getRootGroup().size());
 		makeNoteLabel();
 		revalidate();
-		repaint();
-	}
-
-	public void makeNoteLabel() {
-		removeAll();
-		setNotelist(null);
-		if (data() == null)
-			return;
-		for (Group g : data().getRootGroup()) {
-			makeNoteLabel(g);
-		}
-		validate();
-		repaint();
-	}
-
-	/**
-	 * @param group
-	 */
-	public void selectGroup(Group group) {
-		if (group == null)
-			return;
-		selectGroup(group.child());
-		for (Component c : getComponents()) {
-			NoteLabel l = (NoteLabel) c;
-			selectNote(l, group.getBeginNote(), group.getEndNote());
-		}
-	}
-
-	protected void setController() {
-		butler().addTuneDataListenerList(this);
-		setMouseActions(createPianoRollMouseAction(main));
-		addMouseListener(getMouseActions());
-		addMouseMotionListener(getMouseActions());
-		keyActions = createKeyActions(main);
-		addKeyListener(keyActions);
-	}
-
-	protected Concierge butler() {
-		return main.butler();
-	}
-
-	protected KeyActionListener createKeyActions(MuseObject app) {
-		return new KeyActionListener(app, this) {
-
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
-			 */
-			@Override public void keyPressed(KeyEvent e) {
-				butler().keyPressed(e);
-			}
-
-		};
-	}
-
-	protected PianoRollActionListener createPianoRollMouseAction(MuseApp app) {
-		return new PianoRollActionListener(app, this);
-	}
-
-	void setMouseOveredNoteLabel(NoteLabel src) {
-		this.mouseOveredNoteLabel = src;
 		repaint();
 	}
 
@@ -321,6 +268,56 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			revalidate();
 		}
 		repaint();
+	}
+
+	/**
+	 * @param e
+	 */
+	void getLeftUpperCornerAxis(MouseEvent e) {
+		setMouseSelectBoxDraw(true);
+		setStartPositionOfMouseBox(e);
+	}
+
+	void selectNotes() {
+		selectedNoteLabels.clear();
+		for (Component c : getComponents()) {
+			if (!(c instanceof NoteLabel))
+				continue;
+			NoteLabel l = (NoteLabel) c;
+			if (l.isSelected()) {
+				selectedNoteLabels.addLast(l);
+			}
+		}
+	}
+
+	void setMouseEndPoint(MouseEvent e) {
+		mouseEndPoint = e.getPoint();
+	}
+
+	void setMouseOveredNoteLabel(NoteLabel src) {
+		this.mouseOveredNoteLabel = src;
+		repaint();
+	}
+
+	void setMouseSelectBoxDraw(boolean isMouseSelectBoxDraw) {
+		this.isMouseSelectBoxDraw = isMouseSelectBoxDraw;
+	}
+
+	void setSelectedVoice(int selectedVoice) {
+		this.selectedVoice = selectedVoice;
+	}
+
+	protected Concierge butler() {
+		return main.butler();
+	}
+
+	protected NoteLabel createNoteLabel(final NoteData note,
+			final Rectangle r) {
+		return new NoteLabel(note, r);
+	}
+
+	protected PianoRollActionListener createPianoRollMouseAction(MuseApp app) {
+		return new PianoRollActionListener(app, this);
 	}
 
 	/**
@@ -352,6 +349,74 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			}
 		}
 		drawHarmonyGround(g2, cur.next(), cur);
+	}
+
+	protected void drawMouseOveredNoteInfo(Graphics2D g2) {
+		if (mouseOveredNoteLabel == null)
+			return;
+		final NoteData nd = mouseOveredNoteLabel.getScoreNote();
+		String str = nd.noteName() + "(" + nd.velocity() + ")" + nd.onset()
+				+ "-" + nd.offset();
+		switch (viewerMode) {
+		case REALTIME_VIEW:
+			str = String.format("%s (%s): v%d / %.0f[%.0f-%.0f]", nd.noteName(),
+					nd.chord(), nd.velocity(), nd.realOffset() - nd.realOnset(),
+					nd.realOnset(), nd.realOffset());
+			break;
+		default:
+			str = String.format("%s (%s): %d-%d", nd.noteName(), nd.chord(), nd
+					.onset(), nd.offset());
+			break;
+		}
+		System.out.println(str + " at " + getMouseActions().getMousePoint());
+		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
+				getMouseActions().getMousePoint().y - main.getFrame()
+						.getKeyboard().getKeyHeight());
+	}
+
+	/**
+	 * ピアノロール画面にオリジナル情報を描画します。サブクラスで実装してください。
+	 *
+	 * @param g2
+	 */
+	protected void drawOptionalInfo(Graphics2D g2) {}
+
+	/**
+	 * マウスの選択範囲に収まる音符を色付けする．
+	 */
+	protected void encloseNotes() {
+		if (data() == null)
+			return;
+		final Rectangle mouseBox = getMouseActions().getMouseBox();
+		if (mouseBox == null)
+			return;
+
+		for (Component c : getComponents()) {
+			if (!(c instanceof NoteLabel))
+				continue;
+			final NoteLabel l = (NoteLabel) c;
+			final Rectangle r = l.getBounds();
+			// 横方向
+			if (r.x + r.width < mouseBox.x || mouseBox.x
+					+ mouseBox.width < r.x) {
+				l.setSelected(false);
+				continue;
+			}
+			// 縦方向
+			if (r.y + r.height < mouseBox.y || mouseBox.y
+					+ mouseBox.height < r.y) {
+				l.setSelected(false);
+				continue;
+			}
+			// ひとつめの音のvoiceで選択声部を制限する
+			if (getSelectedVoice() < 0) {
+				setSelectedVoice(l.getScoreNote().musePhony());
+				System.out.println("selected voice: " + getSelectedVoice());
+			}
+			if (l.getScoreNote().musePhony() != getSelectedVoice())
+				continue;
+			l.setSelected(true);
+		}
 	}
 
 	/**
@@ -394,26 +459,24 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	/**
-	 * @param g
-	 * @return
-	 */
-	protected double getPixelPerGroupLength(Group g) {
-		double len;
-		switch (viewerMode) {
-		case REALTIME_VIEW:
-			len = g.duration();
-			break;
-		default:
-			len = g.getTimeValue();
-		}
-		return len / getWidth() / 0.9;
-	}
-
-	/**
 	 * @return viewerMode
 	 */
 	protected final ViewerMode getViewerMode() {
 		return viewerMode;
+	}
+
+	/**
+	 * @return selectedGroup
+	 */
+	protected GroupLabel group() {
+		return selectedGroup;
+	}
+
+	/**
+	 * @return main
+	 */
+	protected MuseApp main() {
+		return main;
 	}
 
 	protected void makeNoteLabel(Group group) {
@@ -421,6 +484,16 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			makeNoteLabel(group.child());
 		} else
 			makeNoteLabel(group.getBeginNote(), false);
+	}
+
+	protected void makeNoteLabel(NoteData note, boolean isChild) {
+		if (note == null)
+			return;
+		int offset = (note.hasNext() && note.next() != null && note.next()
+				.noteNumber() == note.noteNumber()) ? 5 : 0;
+		makeNoteLabel(note, offset, isChild);
+		makeNoteLabel(note.child(), true);
+		makeNoteLabel(note.next(), false);
 	}
 
 	protected void rescaleNoteLabels() {}
@@ -435,41 +508,40 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	/**
-	 * マウスの選択範囲に収まる音符を色付けする．
+	 * @param group
 	 */
-	protected void encloseNotes() {
-		if (data() == null)
+	protected void selectGroup(Group group) {
+		if (group == null)
 			return;
-		final Rectangle mouseBox = getMouseActions().getMouseBox();
-		if (mouseBox == null)
-			return;
-
+		selectGroup(group.child());
 		for (Component c : getComponents()) {
-			if (!(c instanceof NoteLabel))
-				continue;
-			final NoteLabel l = (NoteLabel) c;
-			final Rectangle r = l.getBounds();
-			// 横方向
-			if (r.x + r.width < mouseBox.x || mouseBox.x
-					+ mouseBox.width < r.x) {
-				l.setSelected(false);
-				continue;
-			}
-			// 縦方向
-			if (r.y + r.height < mouseBox.y || mouseBox.y
-					+ mouseBox.height < r.y) {
-				l.setSelected(false);
-				continue;
-			}
-			// ひとつめの音のvoiceで選択声部を制限する
-			if (getSelectedVoice() < 0) {
-				setSelectedVoice(l.getScoreNote().musePhony());
-				System.out.println("selected voice: " + getSelectedVoice());
-			}
-			if (l.getScoreNote().musePhony() != getSelectedVoice())
-				continue;
-			l.setSelected(true);
+			NoteLabel l = (NoteLabel) c;
+			selectNote(l, group.getBeginNote(), group.getEndNote());
 		}
+	}
+
+	/**
+	 * @param notelist2
+	 * @param note
+	 * @param end
+	 */
+	protected void selectNote(NoteLabel l, NoteData note, NoteData end) {
+		if (note == null)
+			return;
+		if (l.getScoreNote().equals(note)) {
+			l.setSelected(true);
+			selectedNoteLabels.add(l);
+		}
+		selectNote(l, note.child(), end);
+		selectNote(l, note.next(), end);
+	}
+
+	/**
+	 * @param _notelist セットする _notelist
+	 */
+	protected NoteLabel setNotelist(NoteLabel _notelist) {
+		this._notelist = _notelist;
+		return _notelist;
 	}
 
 	/**
@@ -482,6 +554,32 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		setSelectedVoice(-1);
 		setSelectedGroup(null);
 		repaint();
+	}
+
+	private boolean contains(Group gr) {
+		return false;
+	}
+
+	private KeyActionListener createKeyActions(MuseObject app) {
+		return new KeyActionListener(app, this) {
+
+			/*
+			 * (非 Javadoc)
+			 * @see
+			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
+			 */
+			@Override public void keyPressed(KeyEvent e) {
+				butler().keyPressed(e);
+			}
+
+		};
+	}
+
+	/**
+	 * @return data
+	 */
+	private TuneData data() {
+		return data;
 	}
 
 	/**
@@ -565,29 +663,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		g2.drawLine(x3, y3, x4, y4);
 	}
 
-	protected void drawMouseOveredNoteInfo(Graphics2D g2) {
-		if (mouseOveredNoteLabel == null)
-			return;
-		final NoteData nd = mouseOveredNoteLabel.getScoreNote();
-		String str = nd.noteName() + "(" + nd.velocity() + ")" + nd.onset()
-				+ "-" + nd.offset();
-		switch (viewerMode) {
-		case REALTIME_VIEW:
-			str = String.format("%s (%s): v%d / %.0f[%.0f-%.0f]", nd.noteName(),
-					nd.chord(), nd.velocity(), nd.realOffset() - nd.realOnset(),
-					nd.realOnset(), nd.realOffset());
-			break;
-		default:
-			str = String.format("%s (%s): %d-%d", nd.noteName(), nd.chord(), nd
-					.onset(), nd.offset());
-			break;
-		}
-		System.out.println(str + " at " + getMouseActions().getMousePoint());
-		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
-				getMouseActions().getMousePoint().y - main.getFrame()
-						.getKeyboard().getKeyHeight());
-	}
-
 	/**
 	 * 一つの音符をピアノロールに描画します．
 	 *
@@ -650,18 +725,19 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	/**
-	 * @param e
+	 * @param g
+	 * @return
 	 */
-	void getLeftUpperCornerAxis(MouseEvent e) {
-		setMouseSelectBoxDraw(true);
-		setStartPositionOfMouseBox(e);
-	}
-
-	/**
-	 * @return selectedNoteLabels
-	 */
-	public final LinkedList<NoteLabel> getSelectedNoteLabels() {
-		return selectedNoteLabels;
+	private double getPixelPerGroupLength(Group g) {
+		double len;
+		switch (viewerMode) {
+		case REALTIME_VIEW:
+			len = g.duration();
+			break;
+		default:
+			len = g.getTimeValue();
+		}
+		return len / getWidth() / 0.9;
 	}
 
 	/**
@@ -673,16 +749,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		setBackground(Color.WHITE);
 		// this.setSize(new Dimension(700, 700));
 		setDoubleBuffered(true);
-	}
-
-	protected void makeNoteLabel(NoteData note, boolean isChild) {
-		if (note == null)
-			return;
-		int offset = (note.hasNext() && note.next() != null && note.next()
-				.noteNumber() == note.noteNumber()) ? 5 : 0;
-		makeNoteLabel(note, offset, isChild);
-		makeNoteLabel(note.child(), true);
-		makeNoteLabel(note.next(), false);
 	}
 
 	/**
@@ -732,107 +798,42 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		}
 	}
 
-	protected NoteLabel createNoteLabel(final NoteData note,
-			final Rectangle r) {
-		return new NoteLabel(note, r);
-	}
-
 	/**
-	 * @param notelist2
-	 * @param note
-	 * @param end
+	 * @return _notelist
 	 */
-	public void selectNote(NoteLabel l, NoteData note, NoteData end) {
-		if (note == null)
-			return;
-		if (l.getScoreNote().equals(note)) {
-			l.setSelected(true);
-			selectedNoteLabels.add(l);
-		}
-		selectNote(l, note.child(), end);
-		selectNote(l, note.next(), end);
+	private NoteLabel notelist() {
+		return _notelist;
 	}
 
-	void setMouseEndPoint(MouseEvent e) {
-		mouseEndPoint = e.getPoint();
-	}
-
-	void setMouseSelectBoxDraw(boolean isMouseSelectBoxDraw) {
-		this.isMouseSelectBoxDraw = isMouseSelectBoxDraw;
-	}
-
-	private void setStartPositionOfMouseBox(MouseEvent e) {
-		mouseEndPoint = mouseStartPoint = e.getPoint();
-	}
-
-	/**
-	 * @return data
-	 */
-	public TuneData data() {
-		return data;
+	private void setController() {
+		butler().addTuneDataListenerList(this);
+		setMouseActions(createPianoRollMouseAction(main));
+		addMouseListener(getMouseActions());
+		addMouseMotionListener(getMouseActions());
+		keyActions = createKeyActions(main);
+		addKeyListener(keyActions);
 	}
 
 	/**
 	 * @param target セットする data
 	 */
-	public void setData(TuneData target) {
+	private void setData(TuneData target) {
 		this.data = target;
 	}
 
-	/**
-	 * @return _notelist
-	 */
-	public NoteLabel notelist() {
-		return _notelist;
-	}
-
-	/**
-	 * @param _notelist セットする _notelist
-	 */
-	public NoteLabel setNotelist(NoteLabel _notelist) {
-		this._notelist = _notelist;
-		return _notelist;
-	}
-
-	public boolean contains(Group gr) {
-		return false;
-	}
-
-	/**
-	 * @return selectedGroup
-	 */
-	protected GroupLabel group() {
-		return selectedGroup;
+	private void setMouseActions(MouseActionListener mouseActions) {
+		this.mouseActions = mouseActions;
 	}
 
 	/**
 	 * @param selectedGroup セットする selectedGroup
 	 */
-	public void setSelectedGroup(GroupLabel selectedGroup) {
+	private void setSelectedGroup(GroupLabel selectedGroup) {
 		this.selectedGroup = selectedGroup;
 	}
 
-	public MouseActionListener getMouseActions() {
-		return mouseActions;
-	}
-
-	public void setMouseActions(MouseActionListener mouseActions) {
-		this.mouseActions = mouseActions;
-	}
-
-	public int getSelectedVoice() {
-		return selectedVoice;
-	}
-
-	public void setSelectedVoice(int selectedVoice) {
-		this.selectedVoice = selectedVoice;
-	}
-
-	/**
-	 * @return main
-	 */
-	protected MuseApp main() {
-		return main;
+	private void setStartPositionOfMouseBox(MouseEvent e) {
+		mouseEndPoint = mouseStartPoint = e.getPoint();
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"
