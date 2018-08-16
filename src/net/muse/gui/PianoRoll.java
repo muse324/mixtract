@@ -37,6 +37,7 @@ import net.muse.mixtract.gui.ViewerMode;
 public class PianoRoll extends JPanel implements TuneDataListener,
 		CanvasMouseListener {
 
+	private static final int DEFAULT_NOTELABEL_OFFSET = 5;
 	private static final long serialVersionUID = 1L;
 	private static final int DEFAULT_WIDTH = 1024;
 	private static int defaultAxisX = 10;
@@ -162,9 +163,9 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		for (Group g : data().getRootGroup()) {
 			makeNoteLabel(g);
 		}
-		//巻き戻す
-		while(notelist.hasPrevious())
-			notelist=notelist.prev();
+		// 巻き戻す
+		while (notelist.hasPrevious())
+			notelist = notelist.prev();
 		validate();
 		repaint();
 	}
@@ -484,11 +485,26 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	protected void makeNoteLabel(NoteData note, boolean isChild) {
 		if (note == null)
 			return;
-		int offset = (note.hasNext() && note.next() != null && note.next()
-				.noteNumber() == note.noteNumber()) ? 5 : 0;
+		int offset = existSamePitchNoteJustBefore(note)
+				? DEFAULT_NOTELABEL_OFFSET
+				: 0;
 		makeNoteLabel(note, offset, isChild);
 		makeNoteLabel(note.child(), true);
 		makeNoteLabel(note.next(), false);
+	}
+
+	private boolean existSamePitchNoteJustBefore(NoteData note) {
+		NoteLabel l = notelist();
+		if (l == null)
+			return false;
+		while (l.hasPrevious()) {
+			NoteData before = l.getScoreNote();
+			if (!before.rest() && before.noteNumber() == note.noteNumber()
+					&& before.offset() == note.onset())
+				return true;
+			l = l.prev();
+		}
+		return false;
 	}
 
 	protected void rescaleNoteLabels() {}
