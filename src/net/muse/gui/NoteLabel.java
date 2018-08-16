@@ -24,43 +24,6 @@ public class NoteLabel extends GroupLabel {
 	/* イベント制御 */
 	private MouseActionListener mouseActions;
 
-	/**
-	 * @return next
-	 */
-	public NoteLabel next() {
-		return next;
-	}
-
-	@Override protected void setSelectedOption(boolean isSelected) {
-		setBorder(!isSelected ? null
-				: BorderFactory.createLineBorder(PartColor.SELECTED_COLOR));
-	}
-
-	/**
-	 * @return prev
-	 */
-	public NoteLabel prev() {
-		return prev;
-	}
-
-	/**
-	 * @param l セットする next
-	 */
-	public final void setNext(NoteLabel l) {
-		this.next = l;
-		if (l != null && l.prev != this)
-			l.setPrev(this);
-	}
-
-	/**
-	 * @param l セットする prev
-	 */
-	final void setPrev(NoteLabel l) {
-		this.prev = l;
-		if (l != null && l.next != this)
-			l.setNext(this);
-	}
-
 	protected NoteLabel(NoteData note, Rectangle r) {
 		super();
 		this.note = note;
@@ -73,6 +36,94 @@ public class NoteLabel extends GroupLabel {
 		setDoubleBuffered(true);
 	}
 
+	/**
+	 * @return child
+	 */
+	public NoteLabel child() {
+		return child;
+	}
+
+	/**
+	 * @return offset
+	 */
+	public final int getOffset() {
+		return offset;
+	}
+
+	public NoteData getScoreNote() {
+		return note;
+	}
+
+	public boolean hasNext() {
+		return next != null;
+	}
+
+	public boolean hasParent() {
+		return parent != null;
+	}
+
+	public boolean hasPrevious() {
+		return prev != null;
+	}
+
+	public boolean isMeasureBeginning() {
+		return measureBeginning;
+	}
+
+	/**
+	 * @return next
+	 */
+	public NoteLabel next() {
+		return next;
+	}
+
+	/**
+	 * @return parent
+	 */
+	public NoteLabel parent() {
+		return parent;
+	}
+
+	/**
+	 * @return prev
+	 */
+	public NoteLabel prev() {
+		return prev;
+	}
+
+	/**
+	 * @param child セットする child
+	 */
+	public void setChild(NoteLabel child) {
+		this.child = child;
+	}
+
+	@Override public void setController(MuseApp main) {
+		mouseActions = new NLMouseActionListener(main, this);
+		addMouseListener(mouseActions);
+		addMouseWheelListener(mouseActions);
+	}
+
+	/**
+	 * @param l セットする next
+	 */
+	public final void setNext(NoteLabel l) {
+		this.next = l;
+		if (l != null && l.prev != this)
+			l.setPrev(this);
+	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	/**
+	 * @param parent セットする parent
+	 */
+	public void setParent(NoteLabel parent) {
+		this.parent = parent;
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.GroupLabel#setPartNumber(int)
@@ -83,88 +134,33 @@ public class NoteLabel extends GroupLabel {
 		note.setXMLPartNumber(partNumber);
 	}
 
-	private void setMeasureBeginning(boolean b) {
-		measureBeginning = b;
-	}
-
-	@Deprecated public NoteData getGroupNote() {
-		return note;
-	}
-
-	public NoteData getScoreNote() {
-		return note;
-	}
-
-	public boolean isMeasureBeginning() {
-		return measureBeginning;
-	}
-
-	@Override public void setController(MuseApp main) {
-		mouseActions = new NLMouseActionListener(main, this);
-		addMouseListener(mouseActions);
-		addMouseWheelListener(mouseActions);
-	}
-
-	public void setOffset(int offset) {
-		this.offset = offset;
-	}
-
-	/**
-	 * @return offset
-	 */
-	public final int getOffset() {
-		return offset;
-	}
-
-	/**
-	 * @param parent セットする parent
-	 */
-	public void setParent(NoteLabel parent) {
-		this.parent = parent;
-	}
-
-	/**
-	 * @return parent
-	 */
-	public NoteLabel parent() {
-		return parent;
-	}
-
 	/*
 	 * (非 Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.GroupLabel#toString()
 	 */
 	@Override public String toString() {
 		return String.format("(%s) %s (%s) -> %s", (parent != null) ? parent
-				.getGroupNote().noteName() : "null", note.noteName(),
-				(child != null) ? child.getGroupNote().noteName() : "null",
+				.getScoreNote().noteName() : "null", note.noteName(),
+				(child != null) ? child.getScoreNote().noteName() : "null",
 				next());
 	}
 
-	public boolean hasNext() {
-		return next != null;
-	}
-
 	/**
-	 * @param child セットする child
+	 * @param l セットする prev
 	 */
-	public void setChild(NoteLabel child) {
-		this.child = child;
+	final void setPrev(NoteLabel l) {
+		this.prev = l;
+		if (l != null && l.next != this)
+			l.setNext(this);
 	}
 
-	/**
-	 * @return child
-	 */
-	public NoteLabel child() {
-		return child;
+	@Override protected void setSelectedOption(boolean isSelected) {
+		setBorder(!isSelected ? null
+				: BorderFactory.createLineBorder(PartColor.SELECTED_COLOR));
 	}
 
-	public boolean hasParent() {
-		return parent != null;
-	}
-
-	public boolean hasPrevious() {
-		return prev != null;
+	private void setMeasureBeginning(boolean b) {
+		measureBeginning = b;
 	}
 
 }
