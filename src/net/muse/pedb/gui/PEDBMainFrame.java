@@ -195,4 +195,8 @@ public class PEDBMainFrame extends MXMainFrame {
 		return zoomText;
 	}
 
+	@Override protected PEDBGroupingPanel createGroupingPanel() {
+		return new PEDBGroupingPanel();
+	}
+
 }
