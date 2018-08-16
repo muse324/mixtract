@@ -270,4 +270,8 @@ public class MXMainFrame extends MainFrame {
 	protected String getWindowTitle() {
 		return WINDOW_TITLE;
 	}
+
+	@Override public MXGroupingPanel getGroupingPanel() {
+		return (MXGroupingPanel) super.getGroupingPanel();
+	}
 }

@@ -44,6 +44,10 @@ public class PEDBMainFrame extends MXMainFrame {
 		return (PEDBConcierge) main.butler();
 	}
 
+	@Override public PEDBGroupingPanel getGroupingPanel() {
+		return (PEDBGroupingPanel) super.getGroupingPanel();
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.mixtract.gui.MXMainFrame#setTarget(net.muse.data.TuneData)
@@ -51,6 +55,10 @@ public class PEDBMainFrame extends MXMainFrame {
 	@Override public void setTarget(TuneData target) {
 		super.setTarget(target);
 		getZoomBar().setValue(pixelperbeat);
+	}
+
+	@Override protected PEDBGroupingPanel createGroupingPanel() {
+		return new PEDBGroupingPanel();
 	}
 
 	/*
@@ -193,10 +201,6 @@ public class PEDBMainFrame extends MXMainFrame {
 			zoomText.setEditable(false);
 		}
 		return zoomText;
-	}
-
-	@Override protected PEDBGroupingPanel createGroupingPanel() {
-		return new PEDBGroupingPanel();
 	}
 
 }
