@@ -48,6 +48,10 @@ public class PEDBMainFrame extends MXMainFrame {
 		return (PEDBGroupingPanel) super.getGroupingPanel();
 	}
 
+	@Override public PEDBPianoroll getPianoroll() {
+		return (PEDBPianoroll) super.getPianoroll();
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.mixtract.gui.MXMainFrame#setTarget(net.muse.data.TuneData)
