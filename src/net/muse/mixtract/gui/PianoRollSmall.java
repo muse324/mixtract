@@ -33,8 +33,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * jp.crestmuse.mixtract.gui.PianoRoll#deleteGroup(jp.crestmuse.mixtract
 	 * .gui.GroupLabel)
 	 */
-	@Override
-	public void deleteGroup(GroupLabel g) {}
+	@Override public void deleteGroup(GroupLabel g) {}
 
 	/*
 	 * (non-Javadoc)
@@ -42,8 +41,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * jp.crestmuse.mixtract.gui.PianoRoll#deselect(jp.crestmuse.mixtract.
 	 * gui.GroupLabel)
 	 */
-	@Override
-	public void deselect(GroupLabel g) {
+	@Override public void deselect(GroupLabel g) {
 		setDisplayApex(true);
 		repaint();
 	}
@@ -52,10 +50,9 @@ class PianoRollSmall extends MXPianoroll {
 	 * (non-Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.PianoRoll#makeNoteLabel()
 	 */
-	@Override
-	public void makeNoteLabel() {
+	@Override public void makeNoteLabel() {
 		removeAll();
-		setNotelist(null);
+		this.notelist = null;
 		makeNoteLabel(group().group());
 		validate();
 		repaint();
@@ -66,8 +63,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * @see
 	 * jp.crestmuse.mixtract.gui.PianoRoll#paintComponent(java.awt.Graphics)
 	 */
-	@Override
-	public void paintComponent(Graphics g) {
+	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (showCurrentX) {
 			g.setColor(Color.magenta);
@@ -77,15 +73,7 @@ class PianoRollSmall extends MXPianoroll {
 		}
 	}
 
-	@Override
-	protected void rescaleNoteLabels() {
-		axisX = (int) Math.round(getWidth() * 0.1);
-		endX = (int) Math.round(getWidth() * 0.9);
-		resizeLabels(getNotelist());
-	}
-
-	@Override
-	public void setShowCurrentX(boolean showCurrentX, int x) {
+	@Override public void setShowCurrentX(boolean showCurrentX, int x) {
 		this.showCurrentX = showCurrentX;
 		this.currentMousePositionX = x;
 		repaint();
@@ -97,8 +85,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * jp.crestmuse.mixtract.gui.PianoRoll#setViewMode(jp.crestmuse.mixtract
 	 * .gui.ViewerMode)
 	 */
-	@Override
-	public void setViewMode(ViewerMode mode) {
+	@Override public void setViewMode(ViewerMode mode) {
 		super.setViewMode(ViewerMode.SCORE_VIEW); // 常に
 	}
 
@@ -109,8 +96,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * , jp.crestmuse.mixtract.gui.NoteLabel,
 	 * jp.crestmuse.mixtract.gui.NoteLabel)
 	 */
-	@Override
-	protected void drawFifthsKeyText(Graphics2D g2, NoteLabel cur,
+	@Override protected void drawFifthsKeyText(Graphics2D g2, NoteLabel cur,
 			NoteLabel pre) {}
 
 	/*
@@ -120,9 +106,16 @@ class PianoRollSmall extends MXPianoroll {
 	 * , jp.crestmuse.mixtract.gui.NoteLabel,
 	 * jp.crestmuse.mixtract.gui.NoteLabel)
 	 */
-	@Override
-	protected void drawHarmonyGround(Graphics2D g2, NoteLabel cur,
+	@Override protected void drawHarmonyGround(Graphics2D g2, NoteLabel cur,
 			NoteLabel pre) {}
+
+	/*
+	 * (non-Javadoc)
+	 * @see jp.crestmuse.mixtract.gui.PianoRoll#selectNotes()
+	 */
+	@Override protected void encloseNotes() {
+		setDisplayApex(true);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -130,8 +123,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * jp.crestmuse.mixtract.gui.PianoRoll#getLabelBounds(jp.crestmuse.mixtract
 	 * .data.NoteData, int)
 	 */
-	@Override
-	protected Rectangle getLabelBounds(NoteData nd, int offset) {
+	@Override protected Rectangle getLabelBounds(NoteData nd, int offset) {
 		final int h = main().getFrame().getKeyboard().getKeyHeight();
 		final int y = KeyBoard.getYPositionOfPitch(nd.noteNumber()) * h;
 		double x, w;
@@ -144,25 +136,23 @@ class PianoRollSmall extends MXPianoroll {
 			double len = endX - getAxisX();
 			x = getAxisX() + ((nd.onset() - group().group().getBeginNote()
 					.onset()) / (double) group().group().timeValue()) * len;
-			w = (nd.timeValue() / (double) group().group().timeValue()) * len - offset;
+			w = (nd.timeValue() / (double) group().group().timeValue()) * len
+					- offset;
 			break;
 		}
 		return new Rectangle((int) x, y, (int) w, h);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see jp.crestmuse.mixtract.gui.PianoRoll#selectNotes()
-	 */
-	@Override
-	protected void encloseNotes() {
-		setDisplayApex(true);
+	@Override protected void rescaleNoteLabels() {
+		axisX = (int) Math.round(getWidth() * 0.1);
+		endX = (int) Math.round(getWidth() * 0.9);
+		resizeLabels(notelist());
 	}
 
 	/**
 	 * This method initializes this
 	 */
-	private void initialize() {
+	protected void initialize() {
 		setOpaque(true);
 		setLayout(null);
 		setBackground(Color.WHITE);
