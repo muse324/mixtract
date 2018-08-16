@@ -27,7 +27,7 @@ public class NoteLabel extends GroupLabel {
 	/**
 	 * @return next
 	 */
-	public final NoteLabel next() {
+	public NoteLabel next() {
 		return next;
 	}
 
@@ -39,14 +39,14 @@ public class NoteLabel extends GroupLabel {
 	/**
 	 * @return prev
 	 */
-	public final NoteLabel prev() {
+	public NoteLabel prev() {
 		return prev;
 	}
 
 	/**
 	 * @param l セットする next
 	 */
-	final void setNext(NoteLabel l) {
+	public final void setNext(NoteLabel l) {
 		this.next = l;
 		if (l != null && l.prev != this)
 			l.setPrev(this);
@@ -99,7 +99,7 @@ public class NoteLabel extends GroupLabel {
 		return measureBeginning;
 	}
 
-	@Override void setController(MuseApp main) {
+	@Override public void setController(MuseApp main) {
 		mouseActions = new NLMouseActionListener(main, this);
 		addMouseListener(mouseActions);
 		addMouseWheelListener(mouseActions);
@@ -119,7 +119,7 @@ public class NoteLabel extends GroupLabel {
 	/**
 	 * @param parent セットする parent
 	 */
-	void setParent(NoteLabel parent) {
+	public void setParent(NoteLabel parent) {
 		this.parent = parent;
 	}
 
@@ -161,6 +161,10 @@ public class NoteLabel extends GroupLabel {
 
 	public boolean hasParent() {
 		return parent != null;
+	}
+
+	public boolean hasPrevious() {
+		return prev != null;
 	}
 
 }

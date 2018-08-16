@@ -52,7 +52,7 @@ class PianoRollSmall extends MXPianoroll {
 	 */
 	@Override public void makeNoteLabel() {
 		removeAll();
-		setNotelist(null);
+		this.notelist = null;
 		makeNoteLabel(group().group());
 		validate();
 		repaint();
@@ -146,13 +146,13 @@ class PianoRollSmall extends MXPianoroll {
 	@Override protected void rescaleNoteLabels() {
 		axisX = (int) Math.round(getWidth() * 0.1);
 		endX = (int) Math.round(getWidth() * 0.9);
-		resizeLabels(getNotelist());
+		resizeLabels(notelist());
 	}
 
 	/**
 	 * This method initializes this
 	 */
-	private void initialize() {
+	protected void initialize() {
 		setOpaque(true);
 		setLayout(null);
 		setBackground(Color.WHITE);

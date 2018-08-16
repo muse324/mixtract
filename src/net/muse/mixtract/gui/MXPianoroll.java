@@ -24,6 +24,14 @@ public class MXPianoroll extends PianoRoll {
 
 	/*
 	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#notelist()
+	 */
+	protected MXNoteLabel notelist() {
+		return (MXNoteLabel) super.notelist();
+	}
+
+	/*
+	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#deselect(net.muse.gui.GroupLabel)
 	 */
 	@Override public void deselect(GroupLabel g) {

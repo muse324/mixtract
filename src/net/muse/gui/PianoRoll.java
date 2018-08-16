@@ -66,8 +66,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	private Point mouseStartPoint;
 	/* 格納データ */
 	final LinkedList<NoteLabel> selectedNoteLabels;
-	private NoteLabel _notelist = null;
-	private NoteLabel notelist = null;
+	protected NoteLabel notelist = null;
 	protected NoteLabel mouseOveredNoteLabel = null;
 	private int selectedVoice;
 	final Cursor defCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR); // @jve:decl-index=0:
@@ -106,7 +105,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	@Override public void changeExpression(PhraseCurveType type) {
 		if (type == PhraseCurveType.DYNAMICS)
 			return;
-		resizeLabels(notelist);
+		resizeLabels(notelist());
 		repaint();
 	}
 
@@ -157,12 +156,15 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	public void makeNoteLabel() {
 		removeAll();
-		setNotelist(null);
+		this.notelist = null;
 		if (data() == null)
 			return;
 		for (Group g : data().getRootGroup()) {
 			makeNoteLabel(g);
 		}
+		//巻き戻す
+		while(notelist.hasPrevious())
+			notelist=notelist.prev();
 		validate();
 		repaint();
 	}
@@ -435,7 +437,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	protected Rectangle getLabelBounds(final NoteData nd, final int offset) {
 		if (nd == null)
 			return null;
-		final int h = main.getFrame().getKeyboard().getKeyHeight();
+		final int h = main().getFrame().getKeyboard().getKeyHeight();
 		final int y = KeyBoard.getYPositionOfPitch(nd.noteNumber()) * h;
 		int x, w;
 		switch (viewerMode) {
@@ -449,13 +451,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			break;
 		}
 		return new Rectangle(x + axisX, y, w, h);
-	}
-
-	/**
-	 * @return the notelist
-	 */
-	protected final NoteLabel getNotelist() {
-		return notelist;
 	}
 
 	/**
@@ -537,14 +532,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	/**
-	 * @param _notelist セットする _notelist
-	 */
-	protected NoteLabel setNotelist(NoteLabel _notelist) {
-		this._notelist = _notelist;
-		return _notelist;
-	}
-
-	/**
 	 *
 	 */
 	private void clearSelection() {
@@ -578,7 +565,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	/**
 	 * @return data
 	 */
-	private TuneData data() {
+	protected TuneData data() {
 		return data;
 	}
 
@@ -743,7 +730,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	/**
 	 *
 	 */
-	private void initialize() {
+	protected void initialize() {
 		setOpaque(true);
 		setLayout(null);
 		setBackground(Color.WHITE);
@@ -756,36 +743,32 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @param offset
 	 *            同音打鍵が続いた場合の描画間隔ピクセル
 	 */
-	private void makeNoteLabel(final NoteData note, int offset,
+	protected void makeNoteLabel(final NoteData note, int offset,
 			boolean isChild) {
 		if (note == null)
 			return;
-		// int offset = (note.hasNext() && note.next().getNote().noteNumber() ==
-		// nd
-		// .noteNumber()) ? 5 : 0;
 
 		final Rectangle r = getLabelBounds(note, offset);
 		final NoteLabel n = createNoteLabel(note, r);
-		n.setController(main);
-		n.setSelected(selectedNoteLabels.contains(n));
-		// n.setOffset(offset);
-		if (notelist() == null) {
-			notelist = setNotelist(n);
+		n.setController(main());
+		n.setSelected(getSelectedNoteLabels().contains(n));
+		if (notelist == null) {
+			notelist = n;
 		} else {
 			if (isChild) {
-				notelist().setChild(n);
-				n.setParent(notelist());
-				setNotelist(notelist().child());
+				notelist.setChild(n);
+				n.setParent(notelist);
+				this.notelist = notelist.child();
 			} else {
-				while (notelist().hasParent()) {
+				while (notelist.hasParent()) {
 					if (n.getScoreNote().hasPrevious() && n.getScoreNote()
-							.previous().equals(notelist().getScoreNote()))
+							.previous().equals(notelist.getScoreNote()))
 						break;
-					setNotelist(notelist().parent());
+					notelist = notelist.parent();
 				}
-				notelist().setNext(n);
-				n.setParent(notelist().parent());
-				setNotelist(notelist().next());
+				notelist.setNext(n);
+				n.setParent(notelist.parent());
+				notelist = notelist.next();
 			}
 		}
 		add(n);
@@ -799,10 +782,10 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	/**
-	 * @return _notelist
+	 * @return notelist
 	 */
-	private NoteLabel notelist() {
-		return _notelist;
+	protected NoteLabel notelist() {
+		return notelist;
 	}
 
 	private void setController() {
