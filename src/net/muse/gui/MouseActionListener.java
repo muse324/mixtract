@@ -52,7 +52,7 @@ public class MouseActionListener extends MouseAdapter implements
 		super();
 		_main = main;
 		_self = owner;
-		_frame = (MainFrame) main().getFrame();
+		_frame = main().getFrame();
 	}
 
 	/*
@@ -61,7 +61,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent
 	 * )
 	 */
-	public void actionPerformed(ActionEvent e) {
+	@Override public void actionPerformed(ActionEvent e) {
 		MuseAppCommand c = main().searchCommand(e.getActionCommand());
 		if (c == null)
 			return;
@@ -71,6 +71,8 @@ public class MouseActionListener extends MouseAdapter implements
 		c.setTarget(e.getSource());
 		c.run();
 	}
+
+	public void createCustomPopupMenu(MouseEvent e) {}
 
 	public Rectangle getMouseBox() {
 		return mouseBox;
@@ -88,6 +90,17 @@ public class MouseActionListener extends MouseAdapter implements
 	 */
 	public final JPopupMenu getPopup() {
 		return popup;
+	}
+
+	public boolean isAltKeyPressed() {
+		return altKeyPressed;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isGroupEditable() {
+		return groupEditable;
 	}
 
 	public boolean isMousePressed() {
@@ -116,14 +129,6 @@ public class MouseActionListener extends MouseAdapter implements
 		setShiftKeyPressed(e.isShiftDown());
 		setAltKeyPressed(e.isAltDown());
 		_self.repaint();
-	}
-
-	public void setAltKeyPressed(boolean altDown) {
-		this.altKeyPressed = altDown;
-	}
-
-	public boolean isAltKeyPressed() {
-		return altKeyPressed;
 	}
 
 	/*
@@ -187,6 +192,18 @@ public class MouseActionListener extends MouseAdapter implements
 		// _self.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		// }
 		_self.repaint();
+	}
+
+	public Container self() {
+		return _self;
+	}
+
+	public void setAltKeyPressed(boolean altDown) {
+		this.altKeyPressed = altDown;
+	}
+
+	public void setGroupEditable(boolean b) {
+		groupEditable = b;
 	}
 
 	/**
@@ -289,7 +306,12 @@ public class MouseActionListener extends MouseAdapter implements
 		popup.show((Component) e.getSource(), e.getX(), e.getY());
 	}
 
-	public void createCustomPopupMenu(MouseEvent e) {}
+	/**
+	 * @return _frame
+	 */
+	protected MainFrame frame() {
+		return _frame;
+	}
 
 	/**
 	 * @return isDragging
@@ -298,38 +320,16 @@ public class MouseActionListener extends MouseAdapter implements
 		return isDragging;
 	}
 
-	protected void setDragging(boolean b) {
-		isDragging = b;
-	}
-
-	private void setStartPoint(Point point) {
-		startPoint = point;
-	}
-
-	public Container self() {
-		return _self;
-	}
-
-	/**
-	 * @return _frame
-	 */
-	protected MainFrame frame() {
-		return _frame;
-	}
-
 	protected MuseApp main() {
 		return _main;
 	}
 
-	public void setGroupEditable(boolean b) {
-		groupEditable = b;
+	protected void setDragging(boolean b) {
+		isDragging = b;
 	}
 
-	/**
-	 * @return
-	 */
-	public boolean isGroupEditable() {
-		return groupEditable;
+	protected void setStartPoint(Point point) {
+		startPoint = point;
 	}
 
 }

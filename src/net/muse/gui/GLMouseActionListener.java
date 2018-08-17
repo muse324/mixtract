@@ -4,9 +4,17 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 
+import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
+import net.muse.mixtract.gui.MXMainFrame;
 
+/**
+ * GroupLabel クラスでの挙動に特化したMouseActionListenerです。
+ *
+ * @author hashida
+ *
+ */
 public class GLMouseActionListener extends MouseActionListener {
 
 	public GLMouseActionListener(MuseApp main, Container owner) {
@@ -30,16 +38,6 @@ public class GLMouseActionListener extends MouseActionListener {
 			doubleClicked(gr);
 		}
 		self().repaint();
-	}
-
-	protected void doubleClicked(Group gr) {
-		for (InfoViewer r : main().butler().getInfoViewList()) {
-			if (r.contains(gr)) {
-				r.setVisible(true);
-				return;
-			}
-		}
-		self().showInfoViewer(main(), gr);
 	}
 
 	/*
@@ -129,5 +127,23 @@ public class GLMouseActionListener extends MouseActionListener {
 	 */
 	@Override public GroupLabel self() {
 		return (GroupLabel) super.self();
+	}
+
+	protected void doubleClicked(Group gr) {
+		for (InfoViewer r : main().butler().getInfoViewList()) {
+			if (r.contains(gr)) {
+				r.setVisible(true);
+				return;
+			}
+		}
+		self().showInfoViewer(main(), gr);
+	}
+
+	@Override protected MXMainFrame frame() {
+		return (MXMainFrame) super.frame();
+	}
+
+	@Override protected Mixtract main() {
+		return (Mixtract) super.main();
 	}
 }
