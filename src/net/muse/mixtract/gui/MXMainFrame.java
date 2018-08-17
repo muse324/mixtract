@@ -18,7 +18,6 @@ import javax.swing.WindowConstants;
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.TuneData;
-import net.muse.gui.GroupingPanel;
 import net.muse.gui.MainFrame;
 import net.muse.gui.PianoRoll;
 import net.muse.mixtract.data.MXTuneData;
@@ -85,7 +84,7 @@ public class MXMainFrame extends MainFrame {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#createGroupingPanel()
 	 */
-	@Override protected GroupingPanel createGroupingPanel() {
+	@Override protected MXGroupingPanel createGroupingPanel() {
 		return new MXGroupingPanel();
 	}
 
@@ -270,5 +269,9 @@ public class MXMainFrame extends MainFrame {
 
 	protected String getWindowTitle() {
 		return WINDOW_TITLE;
+	}
+
+	@Override public MXGroupingPanel getGroupingPanel() {
+		return (MXGroupingPanel) super.getGroupingPanel();
 	}
 }

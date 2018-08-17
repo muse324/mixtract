@@ -4,9 +4,17 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 
+import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
+import net.muse.mixtract.gui.MXMainFrame;
 
+/**
+ * GroupLabel クラスでの挙動に特化したMouseActionListenerです。
+ *
+ * @author hashida
+ *
+ */
 public class GLMouseActionListener extends MouseActionListener {
 
 	public GLMouseActionListener(MuseApp main, Container owner) {
@@ -32,16 +40,6 @@ public class GLMouseActionListener extends MouseActionListener {
 		self().repaint();
 	}
 
-	protected void doubleClicked(Group gr) {
-		for (InfoViewer r : main().butler().getInfoViewList()) {
-			if (r.contains(gr)) {
-				r.setVisible(true);
-				return;
-			}
-		}
-		self().showInfoViewer(main(), gr);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see
@@ -50,7 +48,7 @@ public class GLMouseActionListener extends MouseActionListener {
 	 */
 	@Override public void mouseDragged(MouseEvent e) {
 		super.mouseDragged(e);
-		if (!frame().getGroupingPanel().isGroupEditable()) {
+		if (!isGroupEditable()) {
 			self().moveLabelVertical(e, getMousePoint(), self().getBounds(),
 					isShiftKeyPressed(), isMousePressed());
 		} else
@@ -104,7 +102,7 @@ public class GLMouseActionListener extends MouseActionListener {
 		super.mousePressed(e);
 		main().butler().notifySelectGroup(self(), true);
 		if (self().getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
-			frame().getGroupingPanel().setGroupEditable(true);
+			setGroupEditable(true);
 		}
 		self().repaint();
 	}
@@ -117,7 +115,7 @@ public class GLMouseActionListener extends MouseActionListener {
 	 */
 	@Override public void mouseReleased(MouseEvent e) {
 		super.mouseReleased(e);
-		frame().getGroupingPanel().setGroupEditable(false);
+		setGroupEditable(false);
 		frame().getGroupingPanel().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		frame().getPianoroll().repaint();
 		self().repaint();
@@ -129,5 +127,23 @@ public class GLMouseActionListener extends MouseActionListener {
 	 */
 	@Override public GroupLabel self() {
 		return (GroupLabel) super.self();
+	}
+
+	protected void doubleClicked(Group gr) {
+		for (InfoViewer r : main().butler().getInfoViewList()) {
+			if (r.contains(gr)) {
+				r.setVisible(true);
+				return;
+			}
+		}
+		self().showInfoViewer(main(), gr);
+	}
+
+	@Override protected MXMainFrame frame() {
+		return (MXMainFrame) super.frame();
+	}
+
+	@Override protected Mixtract main() {
+		return (Mixtract) super.main();
 	}
 }
