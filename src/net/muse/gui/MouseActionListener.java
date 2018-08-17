@@ -46,6 +46,8 @@ public class MouseActionListener extends MouseAdapter implements
 	private boolean isDragging;
 	private boolean altKeyPressed;
 
+	boolean groupEditable;
+
 	public MouseActionListener(MuseApp main, Container owner) {
 		super();
 		_main = main;
@@ -317,6 +319,17 @@ public class MouseActionListener extends MouseAdapter implements
 
 	protected MuseApp main() {
 		return _main;
+	}
+
+	public void setGroupEditable(boolean b) {
+		groupEditable = b;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isGroupEditable() {
+		return groupEditable;
 	}
 
 }

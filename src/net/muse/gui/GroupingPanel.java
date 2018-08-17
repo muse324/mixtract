@@ -61,11 +61,10 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/* 描画モード */
 	private ViewerMode viewerMode;
 	private boolean displayMousePointer;
-	private boolean groupEditable;
 	private boolean drawToolTips = true;
 
 	/** マウス制御 */
-	private MouseActionListener mouseActions = null;
+	MouseActionListener mouseActions = null;
 
 	protected GroupingPanel() {
 		super();
@@ -87,8 +86,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mousePressed(MouseEvent e) {
+			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (!SwingUtilities.isRightMouseButton(e))
 					main().butler().notifyDeselectGroup();
@@ -100,8 +98,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseReleased(MouseEvent e) {
+			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (selectedGroup == null)
 					main().butler().notifyDeselectGroup();
@@ -114,8 +111,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java.
 			 * awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseExited(MouseEvent e) {
+			@Override public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
 				if (isGroupEditable()) {
 					setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
@@ -132,8 +128,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			protected void createPopupMenu(MouseEvent e) {
+			@Override protected void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				MixtractCommandType.SET_TYPE_CRESC.command().setGroup(
 						getSelectedGroup());
@@ -169,19 +164,11 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		return displayMousePointer;
 	}
 
-	/**
-	 * @return
-	 */
-	public boolean isGroupEditable() {
-		return groupEditable;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override
-	public void paintComponent(Graphics g) {
+	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		final Graphics2D g2 = (Graphics2D) g;
 
@@ -202,8 +189,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			drawTooltips();
 		}
 
-		if (mouseActions != null && mouseActions.isMousePressed()
-				&& !mouseActions.isShiftKeyPressed() && groupEditable) {
+		if (mouseActions.isGroupEditable()) {
 			drawEditArea(g2);
 		}
 	}
@@ -226,8 +212,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @deprecated Use {@link #readTuneData()} instead
 	 */
-	@Deprecated
-	public void readTuneData(MXTuneData target) {
+	@Deprecated public void readTuneData(MXTuneData target) {
 		readTuneData();
 		repaint();
 	}
@@ -257,10 +242,6 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 */
 	public void setDisplayMousePointer(boolean displayMousePointer) {
 		this.displayMousePointer = displayMousePointer;
-	}
-
-	public void setGroupEditable(boolean groupEditable) {
-		this.groupEditable = groupEditable;
 	}
 
 	public void showDetailViewer() {
@@ -389,6 +370,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * @param g2
 	 */
 	private void drawEditArea(Graphics2D g2) {
+		main.butler().printConsole("eeee");
 		// if (!MixtractCommand.getSelectedObjects().isOveredGroup())
 		// editPointX = mouseActions.getMousePoint().x;
 		// final BasicStroke dashed2 = new BasicStroke(1.0f,

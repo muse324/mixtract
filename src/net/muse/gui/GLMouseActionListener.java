@@ -50,7 +50,7 @@ public class GLMouseActionListener extends MouseActionListener {
 	 */
 	@Override public void mouseDragged(MouseEvent e) {
 		super.mouseDragged(e);
-		if (!frame().getGroupingPanel().isGroupEditable()) {
+		if (!isGroupEditable()) {
 			self().moveLabelVertical(e, getMousePoint(), self().getBounds(),
 					isShiftKeyPressed(), isMousePressed());
 		} else
@@ -104,7 +104,7 @@ public class GLMouseActionListener extends MouseActionListener {
 		super.mousePressed(e);
 		main().butler().notifySelectGroup(self(), true);
 		if (self().getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
-			frame().getGroupingPanel().setGroupEditable(true);
+			setGroupEditable(true);
 		}
 		self().repaint();
 	}
@@ -117,7 +117,7 @@ public class GLMouseActionListener extends MouseActionListener {
 	 */
 	@Override public void mouseReleased(MouseEvent e) {
 		super.mouseReleased(e);
-		frame().getGroupingPanel().setGroupEditable(false);
+		setGroupEditable(false);
 		frame().getGroupingPanel().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		frame().getPianoroll().repaint();
 		self().repaint();
