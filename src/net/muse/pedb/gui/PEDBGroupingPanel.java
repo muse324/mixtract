@@ -17,6 +17,15 @@ import net.muse.pedb.data.PEDBTuneData;
 
 public class PEDBGroupingPanel extends MXGroupingPanel {
 
+	private PEDBGroupLabel higherGroup;
+
+	@Override public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		if (higherGroup != null) {
+			drawStructureEditLine(g);
+		}
+	}
+
 	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		super.selectGroup(g, flg);
 		if (higherGroup != null && g != null) {
@@ -29,44 +38,17 @@ public class PEDBGroupingPanel extends MXGroupingPanel {
 		}
 	}
 
-	@Override public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		if (higherGroup != null) {
-			drawStructureEditLine(g);
-		}
-	}
-
-	protected void drawHierarchyLine(final Graphics2D g2) {
-		for (GroupLabel l : getGrouplist()) {
-			drawHierarchyLine(g2, l, l.child(getGrouplist()));
-		}
-	}
-
-	private void drawStructureEditLine(Graphics g) {
-		MouseActionListener m = getMouseActions();
-		Rectangle r = higherGroup.getBounds();
-		int x = r.x + r.getSize().width / 2;
-		int y = (int) r.getMaxY();
-		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
-	}
-
-	private PEDBGroupLabel higherGroup;
-
-	@Override protected PEDBGroupLabel createGroupLabel(Group group,
-			Rectangle r) {
-		return new PEDBGroupLabel((MXGroup) group, r);
-	}
-
-	@Override protected PEDBTuneData data() {
-		return (PEDBTuneData) super.data();
-	}
-
 	public void setHigherGroup(PEDBGroupLabel l) {
 		higherGroup = l;
 		main().butler().printConsole(String.format("%s is set as higher group",
 				l));
 		repaint();
 
+	}
+
+	@Override protected PEDBGroupLabel createGroupLabel(Group group,
+			Rectangle r) {
+		return new PEDBGroupLabel((MXGroup) group, r);
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(
@@ -90,6 +72,24 @@ public class PEDBGroupingPanel extends MXGroupingPanel {
 			}
 
 		};
+	}
+
+	@Override protected PEDBTuneData data() {
+		return (PEDBTuneData) super.data();
+	}
+
+	@Override protected void drawHierarchyLine(final Graphics2D g2) {
+		for (GroupLabel l : getGrouplist()) {
+			drawHierarchyLine(g2, l, l.child(getGrouplist()));
+		}
+	}
+
+	private void drawStructureEditLine(Graphics g) {
+		MouseActionListener m = getMouseActions();
+		Rectangle r = higherGroup.getBounds();
+		int x = r.x + r.getSize().width / 2;
+		int y = (int) r.getMaxY();
+		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
 	}
 
 }
