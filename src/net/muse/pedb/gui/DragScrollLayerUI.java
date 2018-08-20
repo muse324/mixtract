@@ -37,8 +37,14 @@ public class DragScrollLayerUI extends LayerUI<JScrollPane> {
 	@Override protected void processMouseEvent(MouseEvent e,
 			JLayer<? extends JScrollPane> l) {
 		Component c = e.getComponent();
-		if (c instanceof JScrollBar || c instanceof JSlider) {
+		if (c instanceof JScrollBar || c instanceof JSlider
+				|| c instanceof PEDBGroupLabel) {
 			return;
+		}
+		if (c instanceof PEDBGroupingPanel) {
+			PEDBGroupingPanel p = (PEDBGroupingPanel) c;
+			if (p.hasSelectedGroup())
+				return;
 		}
 		if (e.getID() == MouseEvent.MOUSE_PRESSED) {
 			JViewport vport = l.getView().getViewport();
@@ -50,9 +56,16 @@ public class DragScrollLayerUI extends LayerUI<JScrollPane> {
 	@Override protected void processMouseMotionEvent(MouseEvent e,
 			JLayer<? extends JScrollPane> l) {
 		Component c = e.getComponent();
-		if (c instanceof JScrollBar || c instanceof JSlider) {
+		if (c instanceof JScrollBar || c instanceof JSlider
+				|| c instanceof PEDBGroupLabel) {
 			return;
 		}
+		if (c instanceof PEDBGroupingPanel) {
+			PEDBGroupingPanel p = (PEDBGroupingPanel) c;
+			if (p.hasSelectedGroup())
+				return;
+		}
+
 		if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
 			JViewport vport = l.getView().getViewport();
 			JComponent cmp = (JComponent) vport.getView();

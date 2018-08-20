@@ -9,7 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
@@ -74,7 +73,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	final Cursor hndCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); // @jve:decl-index=0:
 
 	private GroupLabel selectedGroup;
-	private KeyActionListener keyActions;
 
 	protected PianoRoll(MuseApp main) {
 		super();
@@ -563,19 +561,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		return false;
 	}
 
-	private KeyActionListener createKeyActions(MuseObject app) {
-		return new KeyActionListener(app, this) {
-
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
-			 */
-			@Override public void keyPressed(KeyEvent e) {
-				butler().keyPressed(e);
-			}
-
-		};
+	protected KeyActionListener createKeyActions(MuseObject app) {
+		return new KeyActionListener(app, this);
 	}
 
 	/**
@@ -809,8 +796,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		setMouseActions(createPianoRollMouseAction(main));
 		addMouseListener(getMouseActions());
 		addMouseMotionListener(getMouseActions());
-		keyActions = createKeyActions(main);
-		addKeyListener(keyActions);
+		addKeyListener(createKeyActions(main));
 	}
 
 	/**

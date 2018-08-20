@@ -39,16 +39,16 @@ import net.muse.mixtract.gui.ViewerMode;
  */
 public class GroupingPanel extends JPanel implements TuneDataListener {
 
-	private MuseAppCommand cmd = MixtractCommand.create(
-			MixtractCommandType.PRINT_GROUP_INFO);
-	private BasicStroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_ROUND,
-			BasicStroke.JOIN_ROUND, 10.0f, dashLineList, 0.0f);
 	private static final long serialVersionUID = 1L;
 	static float[] dashLineList = { 10.0f, 5.0f, 5.0f, 5.0f };
 	static final int LABEL_HEIGHT = 20;
 	private static final int DEFAULT_HEIGHT = 100;
 	private static final int LEVEL_PADDING = 3;
 	private static final int DEFAULT_WIDTH = 1024;
+	private MuseAppCommand cmd = MixtractCommand.create(
+			MixtractCommandType.PRINT_GROUP_INFO);
+	private BasicStroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_ROUND,
+			BasicStroke.JOIN_ROUND, 10.0f, dashLineList, 0.0f);
 
 	private MuseApp main;
 
@@ -64,7 +64,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	private boolean drawToolTips = true;
 
 	/** マウス制御 */
-	MouseActionListener mouseActions = null;
+	private MouseActionListener mouseActions = null;
 
 	protected GroupingPanel() {
 		super();
@@ -73,80 +73,26 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		initialize();
 	}
 
-	/**
-	 * @param main
-	 */
-	public void setController(MuseApp main) {
-		this.main = main;
-		mouseActions = new MouseActionListener(main, this) {
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mousePressed(MouseEvent e) {
-				super.mousePressed(e);
-				if (!SwingUtilities.isRightMouseButton(e))
-					main().butler().notifyDeselectGroup();
-			}
-
-			/*
-			 * (non-Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override public void mouseReleased(MouseEvent e) {
-				super.mouseReleased(e);
-				if (selectedGroup == null)
-					main().butler().notifyDeselectGroup();
-				repaint();
-			}
-
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java.
-			 * awt.event.MouseEvent)
-			 */
-			@Override public void mouseExited(MouseEvent e) {
-				super.mouseExited(e);
-				if (isGroupEditable()) {
-					setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
-					repaint();
-					return;
-				}
-				repaint();
-			}
-
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu(
-			 * java
-			 * .awt.event.MouseEvent)
-			 */
-			@Override protected void createPopupMenu(MouseEvent e) {
-				super.createPopupMenu(e);
-				MixtractCommandType.SET_TYPE_CRESC.command().setGroup(
-						getSelectedGroup());
-				MixtractCommandType.SET_TYPE_DIM.command().setGroup(
-						getSelectedGroup());
-				MixtractCommandType.PRINT_GROUP_INFO.command().setGroup(
-						getSelectedGroup());
-				addMenuItemOnGroupingPanel();
-				getPopup().show((Component) e.getSource(), e.getX(), e.getY());
-			}
-
-		};
-		addMouseListener(mouseActions);
-		addMouseMotionListener(mouseActions);
-	}
-
 	public void addGroup(Group g) {
 		readTuneData();
+		repaint();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see
+	 * jp.crestmuse.mixtract.gui.TuneDataListener#changeExpression(jp.crestmuse
+	 * .mixtract.data.PhraseProfile.PhraseCurveType)
+	 */
+	public void changeExpression(PhraseCurveType type) {
+		if (type == PhraseCurveType.DYNAMICS)
+			return;
+		for (GroupLabel l : getGrouplist()) {
+			Rectangle r = getLabelBounds(l.group(), l.group().getLevel());
+			l.setBounds(r);
+			// l.repaint();
+		}
+		// readTuneData();
 		repaint();
 	}
 
@@ -155,7 +101,33 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		repaint();
 	}
 
+	public void deselect(GroupLabel g) {
+		if (selectedGroup != null) {
+			selectedGroup.setSelected(false);
+			selectedGroup = null;
+		}
+	}
+
 	public void editGroup(GroupLabel g) {}
+
+	public MouseActionListener getMouseActions() {
+		return mouseActions;
+	}
+
+	/**
+	 * @return
+	 * @return
+	 */
+	public GroupLabel getSelectedGroup() {
+		return selectedGroup;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean hasSelectedGroup() {
+		return selectedGroup != null;
+	}
 
 	/**
 	 * @return the displayMousePointer
@@ -181,40 +153,18 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		if (selectedGroup != null)
 			selectedGroup.setBackground(PartColor.SELECTED_COLOR);
 
-		if (data == null || getGrouplist().size() == 0)
-			return;
-		drawHierarchyLine(g2);
-
 		if (drawToolTips) {
 			drawTooltips();
 		}
 
+		if (data == null || getGrouplist().size() == 0)
+			return;
+		drawHierarchyLine(g2);
+
+
 		if (mouseActions.isGroupEditable()) {
 			drawEditArea(g2);
 		}
-	}
-
-	protected void drawHierarchyLine(final Graphics2D g2) {
-		for (GroupLabel l : getGrouplist()) {
-			drawHierarchyLine(g2, l, l.child(getGrouplist()));
-		}
-	}
-
-	/**
-	 *
-	 */
-	private void drawTooltips() {
-		setToolTipText(
-				"<html>Click the right button to show the contect menu.<br>"
-						+ "Press `backspace': delete the selected group.");
-	}
-
-	/**
-	 * @deprecated Use {@link #readTuneData()} instead
-	 */
-	@Deprecated public void readTuneData(MXTuneData target) {
-		readTuneData();
-		repaint();
 	}
 
 	public void readTuneData() {
@@ -225,6 +175,14 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			return;
 		createHierarchicalGroupLabel(data.getRootGroup(), 0, 0);
 		createNonHierarchicalGroupLabel();
+	}
+
+	/**
+	 * @deprecated Use {@link #readTuneData()} instead
+	 */
+	@Deprecated public void readTuneData(MXTuneData target) {
+		readTuneData();
+		repaint();
 	}
 
 	public void selectGroup(GroupLabel g, boolean flg) {
@@ -238,10 +196,39 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	}
 
 	/**
+	 * @param main
+	 */
+	public void setController(MuseApp main) {
+		this.main = main;
+		mouseActions = createMouseActionListener(main);
+		addMouseListener(mouseActions);
+		addMouseMotionListener(mouseActions);
+		addKeyListener(createKeyActionListener(main));
+	}
+
+	/**
 	 * @param displayMousePointer the displayMousePointer to set
 	 */
 	public void setDisplayMousePointer(boolean displayMousePointer) {
 		this.displayMousePointer = displayMousePointer;
+	}
+
+	public void setTarget(TuneData target) {
+		if (data != target) {
+			data = target;
+		}
+		readTuneData();
+		repaint();
+	}
+
+	/**
+	 * @param scoreView
+	 */
+	public void setViewMode(ViewerMode mode) {
+		this.viewerMode = mode;
+		readTuneData();
+		revalidate();
+		repaint();
 	}
 
 	public void showDetailViewer() {
@@ -280,25 +267,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		// }
 	}
 
-	private void createHierarchicalGroupLabel(List<Group> glist, int index,
-			int level) {
-		if (index >= glist.size())
-			return;
-		// hierarchical group structure
-		createHierarchicalGroupLabel(glist.get(index), level);
-		// next part
-		createHierarchicalGroupLabel(glist, index + 1, level);
-	}
-
-	protected void createHierarchicalGroupLabel(Group group, int level) {
-		if (group == null)
-			return;
-
-		// create a new group-label
-		if (group.hasChild() || group.hasParent())
-			createGroupLabel(group, level);
-
-		createHierarchicalGroupLabel(group.child(), level + 1);
+	void setMouseActions(MouseActionListener mouseActions) {
+		this.mouseActions = mouseActions;
 	}
 
 	/**
@@ -327,30 +297,95 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		return label;
 	}
 
-	/**
-	 * @param group
-	 * @param level
-	 * @return
-	 */
-	private Rectangle getLabelBounds(Group group, int level) {
-		final int y = setLabelY(level);
-		int x, w;
-		switch (viewerMode) {
-		case REALTIME_VIEW:
-			x = MainFrame.getXOfNote(group.realOnset()) + PianoRoll
-					.getDefaultAxisX();
-			w = MainFrame.getXOfNote(group.duration()) - 2;
-			break;
-		default:
-			x = MainFrame.getXOfNote(group.onsetInTicks()) + PianoRoll
-					.getDefaultAxisX();
-			w = MainFrame.getXOfNote(group.offsetInTicks() - group
-					.onsetInTicks()) - 2;
-			break;
-		}
-		final Rectangle r = new Rectangle(x, y, w, LABEL_HEIGHT
-				- LEVEL_PADDING);
-		return r;
+	protected void createHierarchicalGroupLabel(Group group, int level) {
+		if (group == null)
+			return;
+
+		// create a new group-label
+		if (group.hasChild() || group.hasParent())
+			createGroupLabel(group, level);
+
+		createHierarchicalGroupLabel(group.child(), level + 1);
+	}
+
+	protected KeyActionListener createKeyActionListener(MuseApp main) {
+		return new KeyActionListener(main, this) {
+
+			@Override public MuseApp main() {
+				return (MuseApp) super.main();
+			}
+
+			@Override public GroupingPanel owner() {
+				return (GroupingPanel) super.owner();
+			}
+
+		};
+	}
+
+	protected MouseActionListener createMouseActionListener(MuseApp main) {
+		return new MouseActionListener(main, this) {
+
+			/*
+			 * (非 Javadoc)
+			 * @see
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java.
+			 * awt.event.MouseEvent)
+			 */
+			@Override public void mouseExited(MouseEvent e) {
+				super.mouseExited(e);
+				if (isGroupEditable()) {
+					setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
+					repaint();
+					return;
+				}
+				repaint();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
+			 * .awt.event.MouseEvent)
+			 */
+			@Override public void mousePressed(MouseEvent e) {
+				super.mousePressed(e);
+				if (!SwingUtilities.isRightMouseButton(e))
+					main().butler().notifyDeselectGroup();
+			}
+
+			/*
+			 * (non-Javadoc)
+			 * @see
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
+			 * .awt.event.MouseEvent)
+			 */
+			@Override public void mouseReleased(MouseEvent e) {
+				super.mouseReleased(e);
+				if (selectedGroup == null)
+					main().butler().notifyDeselectGroup();
+				repaint();
+			}
+
+			/*
+			 * (非 Javadoc)
+			 * @see
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu(
+			 * java
+			 * .awt.event.MouseEvent)
+			 */
+			@Override protected void createPopupMenu(MouseEvent e) {
+				super.createPopupMenu(e);
+				MixtractCommandType.SET_TYPE_CRESC.command().setGroup(
+						getSelectedGroup());
+				MixtractCommandType.SET_TYPE_DIM.command().setGroup(
+						getSelectedGroup());
+				MixtractCommandType.PRINT_GROUP_INFO.command().setGroup(
+						getSelectedGroup());
+				addMenuItemOnGroupingPanel();
+				getPopup().show((Component) e.getSource(), e.getX(), e.getY());
+			}
+
+		};
 	}
 
 	/**
@@ -366,10 +401,14 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		}
 	}
 
+	protected TuneData data() {
+		return data;
+	}
+
 	/**
 	 * @param g2
 	 */
-	private void drawEditArea(Graphics2D g2) {
+	protected void drawEditArea(Graphics2D g2) {
 		main.butler().printConsole("eeee");
 		// if (!MixtractCommand.getSelectedObjects().isOveredGroup())
 		// editPointX = mouseActions.getMousePoint().x;
@@ -378,6 +417,12 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		// BasicStroke.JOIN_MITER, 8.0f, dashLineList, 0.0f);
 		// g2.setStroke(dashed2);
 		// g2.drawLine(editPointX, 0, editPointX, getHeight());
+	}
+
+	protected void drawHierarchyLine(final Graphics2D g2) {
+		for (GroupLabel l : getGrouplist()) {
+			drawHierarchyLine(g2, l, l.child(getGrouplist()));
+		}
 	}
 
 	/**
@@ -417,6 +462,75 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		}
 	}
 
+	protected ArrayList<GroupLabel> getGrouplist() {
+		return grouplist;
+	}
+
+	protected int getMaximumGroupLevel() {
+		return maximumGroupLevel;
+	}
+
+	protected MuseApp main() {
+		return main;
+	}
+
+	protected void setData(TuneData data) {
+		this.data = data;
+	}
+
+	protected void setMain(MuseApp main) {
+		this.main = main;
+	}
+
+	protected void setMaximumGroupLevel(int maximumGroupLevel) {
+		this.maximumGroupLevel = maximumGroupLevel;
+	}
+
+	private void createHierarchicalGroupLabel(List<Group> glist, int index,
+			int level) {
+		if (index >= glist.size())
+			return;
+		// hierarchical group structure
+		createHierarchicalGroupLabel(glist.get(index), level);
+		// next part
+		createHierarchicalGroupLabel(glist, index + 1, level);
+	}
+
+	/**
+	 *
+	 */
+	private void drawTooltips() {
+		setToolTipText(
+				"<html>Click the right button to show the contect menu.<br>"
+						+ "Press `backspace': delete the selected group.");
+	}
+
+	/**
+	 * @param group
+	 * @param level
+	 * @return
+	 */
+	private Rectangle getLabelBounds(Group group, int level) {
+		final int y = setLabelY(level);
+		int x, w;
+		switch (viewerMode) {
+		case REALTIME_VIEW:
+			x = MainFrame.getXOfNote(group.realOnset()) + PianoRoll
+					.getDefaultAxisX();
+			w = MainFrame.getXOfNote(group.duration()) - 2;
+			break;
+		default:
+			x = MainFrame.getXOfNote(group.onsetInTicks()) + PianoRoll
+					.getDefaultAxisX();
+			w = MainFrame.getXOfNote(group.offsetInTicks() - group
+					.onsetInTicks()) - 2;
+			break;
+		}
+		final Rectangle r = new Rectangle(x, y, w, LABEL_HEIGHT
+				- LEVEL_PADDING);
+		return r;
+	}
+
 	private void initialize() {
 		setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 		setOpaque(true);
@@ -432,83 +546,5 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 */
 	private int setLabelY(int level) {
 		return LABEL_HEIGHT * level + 15;
-	}
-
-	public void setTarget(TuneData target) {
-		if (data != target) {
-			data = target;
-		}
-		readTuneData();
-		repaint();
-	}
-
-	public void deselect(GroupLabel g) {
-		if (selectedGroup != null) {
-			selectedGroup.setSelected(false);
-			selectedGroup = null;
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * jp.crestmuse.mixtract.gui.TuneDataListener#changeExpression(jp.crestmuse
-	 * .mixtract.data.PhraseProfile.PhraseCurveType)
-	 */
-	public void changeExpression(PhraseCurveType type) {
-		if (type == PhraseCurveType.DYNAMICS)
-			return;
-		for (GroupLabel l : getGrouplist()) {
-			Rectangle r = getLabelBounds(l.group(), l.group().getLevel());
-			l.setBounds(r);
-			// l.repaint();
-		}
-		// readTuneData();
-		repaint();
-	}
-
-	/**
-	 * @param scoreView
-	 */
-	public void setViewMode(ViewerMode mode) {
-		this.viewerMode = mode;
-		readTuneData();
-		revalidate();
-		repaint();
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean hasSelectedGroup() {
-		return selectedGroup != null;
-	}
-
-	/**
-	 * @return
-	 * @return
-	 */
-	public GroupLabel getSelectedGroup() {
-		return selectedGroup;
-	}
-
-	protected int getMaximumGroupLevel() {
-		return maximumGroupLevel;
-	}
-
-	protected void setMaximumGroupLevel(int maximumGroupLevel) {
-		this.maximumGroupLevel = maximumGroupLevel;
-	}
-
-	protected TuneData data() {
-		return data;
-	}
-
-	protected void setData(TuneData data) {
-		this.data = data;
-	}
-
-	protected ArrayList<GroupLabel> getGrouplist() {
-		return grouplist;
 	}
 }
