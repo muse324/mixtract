@@ -4,6 +4,7 @@ import java.awt.Container;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import net.muse.app.MuseApp;
 import net.muse.misc.MuseObject;
 
 public class KeyActionListener extends KeyAdapter {
@@ -29,8 +30,8 @@ public class KeyActionListener extends KeyAdapter {
 
 	protected void keyPressedOption(KeyEvent e) {}
 
-	public MuseObject main() {
-		return _main;
+	public MuseApp main() {
+		return (MuseApp) _main;
 	}
 
 	public Container owner() {

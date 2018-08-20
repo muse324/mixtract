@@ -64,7 +64,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	private boolean drawToolTips = true;
 
 	/** マウス制御 */
-	MouseActionListener mouseActions = null;
+	private MouseActionListener mouseActions = null;
 
 	protected GroupingPanel() {
 		super();
@@ -388,7 +388,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @param g2
 	 */
-	private void drawEditArea(Graphics2D g2) {
+	protected void drawEditArea(Graphics2D g2) {
 		main.butler().printConsole("eeee");
 		// if (!MixtractCommand.getSelectedObjects().isOveredGroup())
 		// editPointX = mouseActions.getMousePoint().x;
@@ -537,5 +537,13 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 
 	protected void setMain(MuseApp main) {
 		this.main = main;
+	}
+
+	public MouseActionListener getMouseActions() {
+		return mouseActions;
+	}
+
+	void setMouseActions(MouseActionListener mouseActions) {
+		this.mouseActions = mouseActions;
 	}
 }
