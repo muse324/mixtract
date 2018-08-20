@@ -8,9 +8,11 @@ import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.NoteData;
 import net.muse.gui.GroupLabel;
+import net.muse.gui.KeyActionListener;
 import net.muse.gui.NoteLabel;
 import net.muse.gui.PianoRoll;
 import net.muse.gui.PianoRollActionListener;
+import net.muse.misc.MuseObject;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXPianoroll extends PianoRoll {
@@ -21,15 +23,6 @@ public class MXPianoroll extends PianoRoll {
 	protected MXPianoroll(Mixtract main) {
 		super(main);
 	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.gui.PianoRoll#notelist()
-	 */
-	protected MXNoteLabel notelist() {
-		return (MXNoteLabel) super.notelist();
-	}
-
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#deselect(net.muse.gui.GroupLabel)
@@ -49,6 +42,23 @@ public class MXPianoroll extends PianoRoll {
 		setDisplayApex(true);
 		assert g.group() instanceof MXGroup;
 		((MXGroup) g.group()).extractApex();
+	}
+
+	/* (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#createKeyActions(net.muse.misc.MuseObject)
+	 */
+	protected KeyActionListener createKeyActions(MuseObject app) {
+		return new KeyActionListener(app, this) {
+
+			@Override public Mixtract main() {
+				return (Mixtract) super.main();
+			}
+
+			@Override public MXPianoroll owner() {
+				return (MXPianoroll) super.owner();
+			}
+
+		};
 	}
 
 	protected NoteLabel createNoteLabel(final NoteData note,
@@ -76,14 +86,6 @@ public class MXPianoroll extends PianoRoll {
 		return (MXGroupLabel) super.group();
 	}
 
-	// protected void makeNoteLabel(MXGroup group) {
-	// if (group.hasChild()) {
-	// makeNoteLabel(group.getChildFormerGroup());
-	// makeNoteLabel(group.getChildLatterGroup());
-	// } else
-	// makeNoteLabel(group.getBeginNote(), false);
-	// }
-
 	@Override protected void makeNoteLabel(Group group) {
 		if (group == null)
 			return;
@@ -92,6 +94,22 @@ public class MXPianoroll extends PianoRoll {
 		makeNoteLabel(g.getChildLatterGroup());
 
 		makeNoteLabel(g.getBeginNote(), false);
+	}
+
+	// protected void makeNoteLabel(MXGroup group) {
+	// if (group.hasChild()) {
+	// makeNoteLabel(group.getChildFormerGroup());
+	// makeNoteLabel(group.getChildLatterGroup());
+	// } else
+	// makeNoteLabel(group.getBeginNote(), false);
+	// }
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#notelist()
+	 */
+	protected MXNoteLabel notelist() {
+		return (MXNoteLabel) super.notelist();
 	}
 
 	/*

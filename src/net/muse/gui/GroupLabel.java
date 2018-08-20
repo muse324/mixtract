@@ -5,7 +5,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -102,19 +101,12 @@ public class GroupLabel extends JLabel {
 		mouseActions = createMouseActionListener(main);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
-		keyActions = new KeyActionListener(main, this) {
-
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
-			 */
-			@Override public void keyPressed(KeyEvent e) {
-				main().butler().keyPressed(e);
-			}
-
-		};
+		keyActions = createKeyActionListener(main);
 		addKeyListener(keyActions);
+	}
+
+	protected KeyActionListener createKeyActionListener(MuseApp main) {
+		return new KeyActionListener(main, this);
 	}
 
 	protected GLMouseActionListener createMouseActionListener(MuseApp main) {

@@ -6,9 +6,11 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
+import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.gui.GLMouseActionListener;
 import net.muse.gui.GroupLabel;
+import net.muse.gui.KeyActionListener;
 import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.mixtract.data.MXGroup;
 
@@ -47,6 +49,19 @@ public class MXGroupLabel extends GroupLabel {
 		throw new NoClassDefFoundError("MXGroupLabelでは使用できません．");
 	}
 
+	@Override protected KeyActionListener createKeyActionListener(
+			MuseApp main) {
+		return new KeyActionListener(main,this) {
+
+			@Override public Mixtract main() {
+				return (Mixtract) super.main();
+			}
+
+			@Override public MXGroupLabel owner() {
+				return (MXGroupLabel) super.owner();
+			}};
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see
@@ -55,14 +70,6 @@ public class MXGroupLabel extends GroupLabel {
 	@Override protected GLMouseActionListener createMouseActionListener(
 			MuseApp main) {
 		return new GLMouseActionListener(main, this) {
-
-			/*
-			 * (非 Javadoc)
-			 * @see net.muse.gui.GroupLabel.GLMouseActionListener#self()
-			 */
-			@Override public MXGroupLabel self() {
-				return (MXGroupLabel) super.self();
-			}
 
 			/*
 			 * (非 Javadoc)
@@ -78,6 +85,14 @@ public class MXGroupLabel extends GroupLabel {
 						self());
 				addMenuItemOnGroupingPanel();
 				getPopup().show((Component) e.getSource(), e.getX(), e.getY());
+			}
+
+			/*
+			 * (非 Javadoc)
+			 * @see net.muse.gui.GroupLabel.GLMouseActionListener#self()
+			 */
+			@Override public MXGroupLabel self() {
+				return (MXGroupLabel) super.self();
 			}
 		};
 	}

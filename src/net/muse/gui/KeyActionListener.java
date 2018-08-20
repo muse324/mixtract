@@ -2,6 +2,7 @@ package net.muse.gui;
 
 import java.awt.Container;
 import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import net.muse.misc.MuseObject;
 
@@ -16,6 +17,18 @@ public class KeyActionListener extends KeyAdapter {
 		_owner = owner;
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
+	 */
+	@Override public void keyPressed(KeyEvent e) {
+		main().butler().keyPressed(e);
+		keyPressedOption(e);
+	}
+
+	protected void keyPressedOption(KeyEvent e) {}
+
 	public MuseObject main() {
 		return _main;
 	}
@@ -23,5 +36,4 @@ public class KeyActionListener extends KeyAdapter {
 	public Container owner() {
 		return _owner;
 	}
-
 }

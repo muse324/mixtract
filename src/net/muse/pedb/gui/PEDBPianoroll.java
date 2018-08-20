@@ -7,9 +7,13 @@ import java.awt.Rectangle;
 import java.awt.geom.Path2D;
 
 import net.muse.app.Mixtract;
+import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.data.NoteData;
+import net.muse.gui.KeyActionListener;
 import net.muse.gui.NoteLabel;
+import net.muse.gui.PianoRollActionListener;
+import net.muse.misc.MuseObject;
 import net.muse.mixtract.gui.MXPianoroll;
 import net.muse.mixtract.gui.ViewerMode;
 import net.muse.pedb.data.PEDBConcierge;
@@ -46,6 +50,24 @@ public class PEDBPianoroll extends MXPianoroll {
 
 	/*
 	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#createKeyActions(net.muse.misc.MuseObject)
+	 */
+	protected KeyActionListener createKeyActions(MuseObject app) {
+		return new KeyActionListener(app, this) {
+
+			@Override public PEDBStructureEditor main() {
+				return (PEDBStructureEditor) super.main();
+			}
+
+			@Override public PEDBPianoroll owner() {
+				return (PEDBPianoroll) super.owner();
+			}
+
+		};
+	}
+
+	/*
+	 * (非 Javadoc)
 	 * @see
 	 * net.muse.mixtract.gui.MXPianoroll#createNoteLabel(net.muse.data.NoteData,
 	 * java.awt.Rectangle)
@@ -53,6 +75,25 @@ public class PEDBPianoroll extends MXPianoroll {
 	@Override protected PEDBNoteLabel createNoteLabel(NoteData note,
 			Rectangle r) {
 		return new PEDBNoteLabel(note, r);
+	}
+
+	@Override protected PianoRollActionListener createPianoRollMouseAction(
+			MuseApp app) {
+		return new PianoRollActionListener(app, this) {
+
+			@Override public PEDBPianoroll self() {
+				return (PEDBPianoroll) super.self();
+			}
+
+			@Override protected PEDBMainFrame frame() {
+				return (PEDBMainFrame) super.frame();
+			}
+
+			@Override protected PEDBStructureEditor main() {
+				return (PEDBStructureEditor) super.main();
+			}
+
+		};
 	}
 
 	/*
@@ -82,6 +123,44 @@ public class PEDBPianoroll extends MXPianoroll {
 		while (l.hasNext()) {
 			drawTiedNotesConnection(g2, l, l.next());
 			l = l.next();
+		}
+	}
+
+	@Override protected PEDBGroupLabel group() {
+		return (PEDBGroupLabel) super.group();
+	}
+
+	@Override protected PEDBStructureEditor main() {
+		return (PEDBStructureEditor) super.main();
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#makeNoteLabel(net.muse.data.NoteData, int,
+	 * boolean)
+	 */
+	@Override protected void makeNoteLabel(final NoteData note, int offset,
+			boolean isChild) {
+		if (note == null)
+			return;
+
+		final Rectangle r = getLabelBounds(note, offset);
+		PEDBNoteLabel n = createNoteLabel(note, r);
+		n.setController(main());
+		n.setSelected(getSelectedNoteLabels().contains(n));
+		if (notelist == null) {
+			notelist = n;
+		} else {
+			notelist.setNext(n);
+			notelist = notelist.next();
+		}
+		add(n);
+
+		if (r.x + r.width > getWidth()) {
+			Dimension sz = getPreferredSize();
+			sz.width = r.x + r.width + 10;
+			setPreferredSize(sz);
+			repaint();
 		}
 	}
 
@@ -118,39 +197,5 @@ public class PEDBPianoroll extends MXPianoroll {
 			g2.draw(p);
 		}
 		drawTiedNotesConnection(g2, from, to.next());
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.gui.PianoRoll#makeNoteLabel(net.muse.data.NoteData, int,
-	 * boolean)
-	 */
-	@Override protected void makeNoteLabel(final NoteData note, int offset,
-			boolean isChild) {
-		if (note == null)
-			return;
-
-		final Rectangle r = getLabelBounds(note, offset);
-		PEDBNoteLabel n = createNoteLabel(note, r);
-		n.setController(main());
-		n.setSelected(getSelectedNoteLabels().contains(n));
-		if (notelist == null) {
-			notelist = n;
-		} else {
-			notelist.setNext(n);
-			notelist = notelist.next();
-		}
-		add(n);
-
-		if (r.x + r.width > getWidth()) {
-			Dimension sz = getPreferredSize();
-			sz.width = r.x + r.width + 10;
-			setPreferredSize(sz);
-			repaint();
-		}
-	}
-
-	@Override protected PEDBStructureEditor main() {
-		return (PEDBStructureEditor) super.main();
 	}
 }

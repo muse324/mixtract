@@ -78,7 +78,14 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 */
 	public void setController(MuseApp main) {
 		this.main = main;
-		mouseActions = new MouseActionListener(main, this) {
+		mouseActions = createMouseActionListener(main);
+		addMouseListener(mouseActions);
+		addMouseMotionListener(mouseActions);
+		addKeyListener(createKeyActionListener(main));
+	}
+
+	protected MouseActionListener createMouseActionListener(MuseApp main) {
+		return new MouseActionListener(main, this) {
 
 			/*
 			 * (non-Javadoc)
@@ -141,8 +148,20 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			}
 
 		};
-		addMouseListener(mouseActions);
-		addMouseMotionListener(mouseActions);
+	}
+
+	protected KeyActionListener createKeyActionListener(MuseApp main) {
+		return new KeyActionListener(main, this) {
+
+			@Override public MuseApp main() {
+				return (MuseApp) super.main();
+			}
+
+			@Override public GroupingPanel owner() {
+				return (GroupingPanel) super.owner();
+			}
+
+		};
 	}
 
 	public void addGroup(Group g) {
@@ -510,5 +529,13 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 
 	protected ArrayList<GroupLabel> getGrouplist() {
 		return grouplist;
+	}
+
+	protected MuseApp main() {
+		return main;
+	}
+
+	protected void setMain(MuseApp main) {
+		this.main = main;
 	}
 }

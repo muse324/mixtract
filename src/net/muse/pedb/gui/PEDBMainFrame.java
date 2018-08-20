@@ -41,7 +41,7 @@ public class PEDBMainFrame extends MXMainFrame {
 	 * @see net.muse.gui.MainFrame#butler()
 	 */
 	@Override public PEDBConcierge butler() {
-		return (PEDBConcierge) main.butler();
+		return (PEDBConcierge) super.butler();
 	}
 
 	@Override public PEDBGroupingPanel getGroupingPanel() {
