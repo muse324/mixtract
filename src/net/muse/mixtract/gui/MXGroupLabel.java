@@ -45,7 +45,7 @@ public class MXGroupLabel extends GroupLabel {
 		return childLatter;
 	}
 
-	protected GroupLabel child(ArrayList<GroupLabel> grouplist) {
+	public GroupLabel child(ArrayList<GroupLabel> grouplist) {
 		throw new NoClassDefFoundError("MXGroupLabelでは使用できません．");
 	}
 

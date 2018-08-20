@@ -36,6 +36,8 @@ public class GroupLabel extends JLabel {
 	private boolean startEdit;
 	private boolean endEdit;
 
+	private GroupLabel parent;
+
 	protected GroupLabel() {
 		super();
 		initialize();
@@ -85,7 +87,7 @@ public class GroupLabel extends JLabel {
 		return group.name();
 	}
 
-	protected GroupLabel child(ArrayList<GroupLabel> grouplist) {
+	public GroupLabel child(ArrayList<GroupLabel> grouplist) {
 		if (child == null) {
 			for (GroupLabel l : grouplist) {
 				if (group().hasChild() && group().child().equals(l.group())) {
@@ -230,12 +232,12 @@ public class GroupLabel extends JLabel {
 		this.startEdit = startEdit;
 	}
 
-	private GroupLabel child() {
+	protected GroupLabel child() {
 		return child;
 	}
 
 	public boolean hasChild() {
-		return child != null;
+		return child() != null;
 	}
 
 	/**
@@ -301,6 +303,24 @@ public class GroupLabel extends JLabel {
 		pv.pack();
 		pv.setVisible(true);
 		pv.preset();
+	}
+
+	public void setChild(GroupLabel child) {
+		this.child = child;
+		if (child.parent() == null || !child.parent().equals(this)) {
+			child.setParent(this);
+		}
+	}
+
+	private GroupLabel parent() {
+		return parent;
+	}
+
+	private void setParent(GroupLabel label) {
+		parent = label;
+		if (!parent.hasChild() || !parent.child().equals(this)) {
+			parent.setChild(this);
+		}
 	}
 
 }
