@@ -80,7 +80,7 @@ public class MakeGroupCommand extends MixtractCommand {
 		main().butler().notifySetTarget(main().data());
 	}
 
-	private Group searchGroup(MXGroup g, NoteData beginNote, NoteData endNote) {
+	protected Group searchGroup(MXGroup g, NoteData beginNote, NoteData endNote) {
 		if (g == null)
 			return null;
 
@@ -97,7 +97,7 @@ public class MakeGroupCommand extends MixtractCommand {
 		return g;
 	}
 
-	private Group createAutoGroupAfterUserGroup(NoteLabel end) {
+	protected Group createAutoGroupAfterUserGroup(NoteLabel end) {
 		Group g = null;
 		if (end.next() != null) {
 			NoteLabel b = end.next();
@@ -111,7 +111,7 @@ public class MakeGroupCommand extends MixtractCommand {
 		return g;
 	}
 
-	private Group createAutoGroupBeforUserGroup(NoteLabel begin) {
+	protected Group createAutoGroupBeforUserGroup(NoteLabel begin) {
 		Group g0 = null;
 		if (begin.prev() != null) {
 			NoteLabel e = begin.prev();
@@ -125,7 +125,7 @@ public class MakeGroupCommand extends MixtractCommand {
 		return g0;
 	}
 
-	private Group combineGroups(Group conditionGroup, Group former,
+	protected Group combineGroups(Group conditionGroup, Group former,
 			Group latter) {
 		if (conditionGroup != null)
 			return null;
@@ -139,7 +139,7 @@ public class MakeGroupCommand extends MixtractCommand {
 		return p;
 	}
 
-	private Group createGroup(NoteData b, NoteData e, GroupType type) {
+	protected Group createGroup(NoteData b, NoteData e, GroupType type) {
 		if (main() instanceof Mixtract)
 			return new MXGroup(b, e, type);
 		return new Group(b, e, type);

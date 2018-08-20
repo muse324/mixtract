@@ -12,6 +12,7 @@ import java.util.List;
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.data.CMXNoteHandler;
+import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.data.NoteData;
 import net.muse.mixtract.data.MXGroup;
@@ -27,6 +28,24 @@ public class PEDBTuneData extends MXTuneData {
 	 */
 	public PEDBTuneData(File in, File out) throws IOException {
 		super(in, out);
+	}
+	@Override public void analyze(Group rootGroup) {
+		if (rootGroup == null)
+			return;
+		assert rootGroup instanceof PEDBGroup;
+		PEDBGroup root = (PEDBGroup) rootGroup;
+		analyze(root.child());
+
+		PEDBGroup g = null;
+		for (Group group : getMiscGroup()) {
+			if (root.nearlyEquals(group)) {
+				g = (PEDBGroup) group;
+				break;
+			}
+		}
+		if (g != null)
+			root.setChild(g.child());
+		getMiscGroup().remove(g);
 	}
 
 	/*

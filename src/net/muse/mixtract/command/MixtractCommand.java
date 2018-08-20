@@ -93,7 +93,7 @@ public class MixtractCommand extends MuseAppCommand {
 		return (Mixtract) _main;
 	}
 
-	protected final MXTuneData data() {
+	protected MXTuneData data() {
 		return (MXTuneData) super.data();
 	}
 

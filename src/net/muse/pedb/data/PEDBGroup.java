@@ -15,6 +15,10 @@ public class PEDBGroup extends MXGroup {
 		super(beginNote, endNote, type);
 	}
 
+	@Override public PEDBGroup child() {
+		return (PEDBGroup) super.child();
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.misc.MuseObject#butler()
