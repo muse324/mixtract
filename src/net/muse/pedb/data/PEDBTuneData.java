@@ -29,6 +29,28 @@ public class PEDBTuneData extends MXTuneData {
 	public PEDBTuneData(File in, File out) throws IOException {
 		super(in, out);
 	}
+
+	@Override protected void setNoteScheduleEvent(final Group group) {
+		if (group == null)
+			return;
+		assert group instanceof PEDBGroup;
+		PEDBGroup g = (PEDBGroup) group;
+		setNoteScheduleEvent(g.child());
+		setNoteScheduleEvent(g.getBeginNote(), g.getBeginNote().onset(), g
+				.getEndNote().offset());
+	}
+
+	protected void getUniqueGroupIndex(Group glist,
+			ArrayList<Integer> idxlist) {
+		if (glist == null)
+			return;
+		assert glist instanceof PEDBGroup;
+		PEDBGroup g = (PEDBGroup) glist;
+		getUniqueGroupIndex(g.child(), idxlist);
+		if (!idxlist.contains(g.index()))
+			idxlist.add(g.index());
+	}
+
 	@Override public void analyze(Group rootGroup) {
 		if (rootGroup == null)
 			return;
@@ -127,13 +149,20 @@ public class PEDBTuneData extends MXTuneData {
 	 * PrintWriter, net.muse.mixtract.data.MXGroup)
 	 */
 	@Override protected void writeGroupStructureData(PrintWriter out,
-			MXGroup group) {
+			Group group) {
 		if (group == null)
 			return;
-		writeGroupStructureData(out, group.getChildFormerGroup());
-		writeGroupStructureData(out, group.getChildLatterGroup());
+		writeGroupStructureData(out, group.child());
 		out.format("%s;%s\n", group, (group.hasTopNote()) ? group.getTopNote()
 				.id() : "null");
+	}
+
+	@Override protected void writeNoteData(PrintWriter out, Group g) {
+		if (g == null)
+			return;
+		if (!g.hasChild())
+			writeNoteData(out, g.getBeginNote());
+		writeNoteData(out, g.child());
 	}
 
 }

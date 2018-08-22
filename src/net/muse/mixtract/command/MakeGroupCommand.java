@@ -77,10 +77,11 @@ public class MakeGroupCommand extends MixtractCommand {
 		for (Group g : data().getRootGroup()) {
 			data().analyze(g);
 		}
-		main().butler().notifySetTarget(main().data());
+		app().butler().notifySetTarget(app().data());
 	}
 
-	protected Group searchGroup(MXGroup g, NoteData beginNote, NoteData endNote) {
+	protected Group searchGroup(MXGroup g, NoteData beginNote,
+			NoteData endNote) {
 		if (g == null)
 			return null;
 
@@ -106,7 +107,7 @@ public class MakeGroupCommand extends MixtractCommand {
 				e = e.next();
 			g = createGroup(b, e, GroupType.AUTO);
 			data().addMiscGroupList(g);
-			main().notifyAddGroup(g);
+			app().notifyAddGroup(g);
 		}
 		return g;
 	}
@@ -120,7 +121,7 @@ public class MakeGroupCommand extends MixtractCommand {
 				b = b.prev();
 			g0 = createGroup(b, e, GroupType.AUTO);
 			data().addMiscGroupList(g0);
-			main().notifyAddGroup(g0);
+			app().notifyAddGroup(g0);
 		}
 		return g0;
 	}
@@ -140,7 +141,7 @@ public class MakeGroupCommand extends MixtractCommand {
 	}
 
 	protected Group createGroup(NoteData b, NoteData e, GroupType type) {
-		if (main() instanceof Mixtract)
+		if (app() instanceof Mixtract)
 			return new MXGroup(b, e, type);
 		return new Group(b, e, type);
 	}
@@ -157,7 +158,8 @@ public class MakeGroupCommand extends MixtractCommand {
 	 * @return
 	 * @see combineGroups()
 	 */
-	protected Group createGroup(NoteLabel begin, NoteLabel end, GroupType type) {
+	protected Group createGroup(NoteLabel begin, NoteLabel end,
+			GroupType type) {
 		Group g = null;
 		if (begin instanceof MXNoteLabel)
 			g = new MXGroup(begin.getScoreNote(), end.getScoreNote(), type);

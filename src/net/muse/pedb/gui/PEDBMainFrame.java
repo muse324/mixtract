@@ -13,15 +13,15 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
+import net.muse.app.PEDBStructureEditor;
 import net.muse.data.TuneData;
+import net.muse.gui.MainFrame;
 import net.muse.gui.PianoRoll;
 import net.muse.mixtract.data.curve.PhraseCurveType;
-import net.muse.mixtract.gui.MXMainFrame;
 import net.muse.pedb.data.PEDBConcierge;
 
-public class PEDBMainFrame extends MXMainFrame {
+public class PEDBMainFrame extends MainFrame {
 	private static final long serialVersionUID = 1L;
 	private static String WINDOW_TITLE = "PEDB Structure Editor";
 	private JToolBar toolBar;
@@ -32,8 +32,8 @@ public class PEDBMainFrame extends MXMainFrame {
 	private JSlider zoomBar;
 	private JTextField zoomText;
 
-	public PEDBMainFrame(Mixtract mixtract) throws IOException {
-		super(mixtract);
+	public PEDBMainFrame(PEDBStructureEditor app) throws IOException {
+		super(app);
 	}
 
 	/*
@@ -71,8 +71,7 @@ public class PEDBMainFrame extends MXMainFrame {
 	 * net.muse.mixtract.gui.MXMainFrame#createPianoRoll(net.muse.app.MuseApp)
 	 */
 	@Override protected PianoRoll createPianoRoll(MuseApp main) {
-		assert main instanceof Mixtract;
-		return new PEDBPianoroll((Mixtract) main);
+		return new PEDBPianoroll(main);
 	}
 
 	/*
@@ -82,7 +81,6 @@ public class PEDBMainFrame extends MXMainFrame {
 	@Override protected JDesktopPane getDesktop() {
 		if (desktopPane == null) {
 			desktopPane = super.getDesktop();
-			desktopPane.remove(getPhraseEditorPanel());
 		}
 		return desktopPane;
 	}
@@ -124,9 +122,6 @@ public class PEDBMainFrame extends MXMainFrame {
 	@Override protected JToolBar getToolBar() {
 		if (toolBar == null) {
 			toolBar = super.getToolBar();
-			toolBar.remove(getScoreViewButton()); // Generated
-			toolBar.remove(getRealtimeViewButton()); // Generated
-			toolBar.remove(getAnalyzeButton()); // Generated
 			toolBar.remove(getTempoSettingPanel());
 			toolBar.add(getZoomText());
 			toolBar.add(getZoomBar());

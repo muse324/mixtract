@@ -6,22 +6,21 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Path2D;
 
-import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.data.NoteData;
 import net.muse.gui.KeyActionListener;
 import net.muse.gui.NoteLabel;
+import net.muse.gui.PianoRoll;
 import net.muse.gui.PianoRollActionListener;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.gui.MXPianoroll;
 import net.muse.mixtract.gui.ViewerMode;
 import net.muse.pedb.data.PEDBConcierge;
 
-public class PEDBPianoroll extends MXPianoroll {
+public class PEDBPianoroll extends PianoRoll {
 	private static final long serialVersionUID = 1L;
 
-	PEDBPianoroll(Mixtract main) {
+	PEDBPianoroll(MuseApp main) {
 		super(main);
 		setViewMode(ViewerMode.SCORE_VIEW);
 	}

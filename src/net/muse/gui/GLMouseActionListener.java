@@ -4,10 +4,8 @@ import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 
-import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
-import net.muse.mixtract.gui.MXMainFrame;
 
 /**
  * GroupLabel クラスでの挙動に特化したMouseActionListenerです。
@@ -139,11 +137,4 @@ public class GLMouseActionListener extends MouseActionListener {
 		self().showInfoViewer(main(), gr);
 	}
 
-	@Override protected MXMainFrame frame() {
-		return (MXMainFrame) super.frame();
-	}
-
-	@Override protected Mixtract main() {
-		return (Mixtract) super.main();
-	}
 }

@@ -1,13 +1,10 @@
 package net.muse.mixtract.command;
 
-import net.muse.app.Mixtract;
 import net.muse.command.MuseAppCommand;
 import net.muse.command.MuseAppCommandType;
 import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
-import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXTuneData;
-import net.muse.mixtract.gui.MXGroupLabel;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -16,6 +13,7 @@ import net.muse.mixtract.gui.MXGroupLabel;
  * @since 2008/04/21
  */
 public class MixtractCommand extends MuseAppCommand {
+
 	protected static final Group _selectedObjects = null;
 
 	/**
@@ -44,9 +42,7 @@ public class MixtractCommand extends MuseAppCommand {
 		return _selectedObjects;
 	}
 
-	private MXGroup _group;
-
-	private MXGroupLabel _groupLabel;
+	private GroupLabel _groupLabel;
 
 	protected MixtractCommand(String... lang) {
 		super(lang);
@@ -55,11 +51,9 @@ public class MixtractCommand extends MuseAppCommand {
 	@Override public void setGroup(GroupLabel groupLabel) {
 		setGroupLabel(groupLabel);
 		if (groupLabel == null) {
-			_group = null;
 			return;
 		}
-		assert groupLabel instanceof MXGroupLabel;
-		_group = (MXGroup) groupLabel.group();
+		groupLabel.group();
 	}
 
 	/*
@@ -78,8 +72,7 @@ public class MixtractCommand extends MuseAppCommand {
 			this._groupLabel = null;
 			return;
 		}
-		assert _groupLabel instanceof MXGroupLabel;
-		this._groupLabel = (MXGroupLabel) _groupLabel;
+		this._groupLabel = _groupLabel;
 	}
 
 	/**
@@ -87,10 +80,6 @@ public class MixtractCommand extends MuseAppCommand {
 	 */
 	protected GroupLabel getGroupLabel() {
 		return _groupLabel;
-	}
-
-	protected Mixtract main() {
-		return (Mixtract) _main;
 	}
 
 	protected MXTuneData data() {

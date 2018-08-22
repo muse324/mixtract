@@ -161,7 +161,6 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			return;
 		drawHierarchyLine(g2);
 
-
 		if (mouseActions.isGroupEditable()) {
 			drawEditArea(g2);
 		}
@@ -302,8 +301,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			return;
 
 		// create a new group-label
-		if (group.hasChild() || group.hasParent())
-			createGroupLabel(group, level);
+		createGroupLabel(group, level);
 
 		createHierarchicalGroupLabel(group.child(), level + 1);
 	}

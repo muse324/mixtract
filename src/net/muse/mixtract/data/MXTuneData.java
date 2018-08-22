@@ -119,15 +119,11 @@ public class MXTuneData extends TuneData {
 		return (MXNoteData) getRootGroup(partIndex).getEndNote();
 	}
 
-	public MXGroup getRootGroup(int partIndex) {
-		assert super.getRootGroup(partIndex) instanceof MXGroup;
-		return (MXGroup) super.getRootGroup(partIndex);
-	}
-
 	public void setBPM(int idx, int value) {
 		super.setBPM(idx, value);
-		if (getRootGroup() != null) {
-			assert getRootGroup(0) instanceof MXGroup;
+		if (getRootGroup(0) == null)
+			return;
+		if (getRootGroup(0) instanceof MXGroup) {
 			MXGroup g = (MXGroup) getRootGroup(0);
 			g.getTempoCurve().apply(this, g);
 		}
@@ -164,7 +160,7 @@ public class MXTuneData extends TuneData {
 		out.format("bpm=%s\n", getBPM().toString().subSequence(1, getBPM()
 				.toString().length() - 1));
 		for (Group g : getRootGroup()) {
-			writeNoteData(out, (MXGroup) g);
+			writeNoteData(out, g);
 		}
 		// for (int i = 0; i < getPartwiseNotelist().size(); i++)
 		// writeNoteData(out, (MXNoteData) getPartwiseNotelist().get(i));
@@ -495,14 +491,14 @@ public class MXTuneData extends TuneData {
 		}
 	}
 
-	protected void writeGroupStructureData(PrintWriter out, MXGroup group) {
+	protected void writeGroupStructureData(PrintWriter out, Group group) {
 		if (group == null)
 			return;
-		writeGroupStructureData(out, (MXGroup) group.getChildFormerGroup());
-		writeGroupStructureData(out, (MXGroup) group.getChildLatterGroup());
+		writeGroupStructureData(out, ((MXGroup) group).getChildFormerGroup());
+		writeGroupStructureData(out, ((MXGroup) group).getChildLatterGroup());
 		out.format("%s;%s;%s;%s\n", group, (group.hasTopNote()) ? group
-				.getTopNote().id() : "null", writeCurvePointParam(group),
-				writeCurveParam(group));
+				.getTopNote().id() : "null", writeCurvePointParam(
+						(MXGroup) group), writeCurveParam((MXGroup) group));
 	}
 
 	/**
@@ -517,10 +513,10 @@ public class MXTuneData extends TuneData {
 				fp)));
 		// hierarchical groups
 		for (int i = 0; i < getRootGroup().size(); i++)
-			writeGroupStructureData(out, (MXGroup) getRootGroup().get(i));
+			writeGroupStructureData(out, getRootGroup().get(i));
 		// non-hierarchical groups
 		for (int i = 0; i < getMiscGroup().size(); i++)
-			writeGroupStructureData(out, (MXGroup) getMiscGroup().get(i));
+			writeGroupStructureData(out, getMiscGroup().get(i));
 		out.close();
 	}
 
@@ -897,16 +893,16 @@ public class MXTuneData extends TuneData {
 		return str;
 	}
 
-	private void writeNoteData(PrintWriter out, MXGroup g) {
+	protected void writeNoteData(PrintWriter out, Group g) {
 		if (g == null)
 			return;
 		if (!g.hasChild())
 			writeNoteData(out, (MXNoteData) g.getBeginNote());
-		writeNoteData(out, g.getChildFormerGroup());
-		writeNoteData(out, g.getChildLatterGroup());
+		writeNoteData(out, ((MXGroup) g).getChildFormerGroup());
+		writeNoteData(out, ((MXGroup) g).getChildLatterGroup());
 	}
 
-	private void writeNoteData(PrintWriter out, MXNoteData note) {
+	protected void writeNoteData(PrintWriter out, NoteData note) {
 		if (note == null)
 			return;
 		writeNoteData(out, note.child());

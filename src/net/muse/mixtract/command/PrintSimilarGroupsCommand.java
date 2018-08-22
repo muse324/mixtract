@@ -12,7 +12,7 @@ final class PrintSimilarGroupsCommand extends
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override public void run() {
-		main().printSimilarList();
+		app().printSimilarList();
 	}
 
 }
