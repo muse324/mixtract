@@ -30,8 +30,7 @@ public class OpenMusicXMLCommand extends MuseAppCommand {
 	 */
 	@Override public void run() {
 		try {
-			JFileChooser fc = (app() != null) ? new JFileChooser(app()
-					.getMusicXMLDirectory()) : new JFileChooser();
+			JFileChooser fc = (app() != null) ? new JFileChooser(app().getMusicXMLDir()) : new JFileChooser();
 			int res = fc.showOpenDialog(null);
 			if (res == JFileChooser.APPROVE_OPTION) {
 				app().butler().readfile(fc.getSelectedFile(), new File(_main

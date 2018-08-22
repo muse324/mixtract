@@ -23,7 +23,7 @@ import net.muse.pedb.gui.PEDBMainFrame;
 
 public class PEDBStructureEditor extends MuseApp {
 
-	public PEDBStructureEditor(String[] args) throws FileNotFoundException,
+	private PEDBStructureEditor(String[] args) throws FileNotFoundException,
 			IOException {
 		super(args);
 	}
@@ -37,30 +37,23 @@ public class PEDBStructureEditor extends MuseApp {
 		}
 	}
 
+	@Override public void analyzeStructure(TuneData data, Group group) {
+		assert data != null && data instanceof MXTuneData;
+		if (group == null)
+			return;
+		assert group instanceof MXGroup;
+		MXGroupAnalyzer ana = new MXGroupAnalyzer((MXTuneData) data, false);
+		ana.setRootGroup((MXGroup) group);
+		ana.run();
+		getAnalyzer().add(ana);
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
 	 */
 	@Override public void createTuneData(File in, File out) throws IOException {
 		setData(new PEDBTuneData(in, out));
-	}
-
-	@Override protected void setupCommands() {
-		super.setupCommands();
-		for (MixtractCommandType e : MixtractCommandType.values())
-			getCommandList().add(e);
-		for (PEDBCommandType e : PEDBCommandType.values())
-			getCommandList().add(e);
-	}
-
-	@Override protected MainFrame mainFrame() throws IOException {
-		if (getFrame() == null)
-			return new PEDBMainFrame(this);
-		return (MainFrame) getFrame();
-	}
-
-	@Override protected PEDBConcierge createConcierge() {
-		return new PEDBConcierge(this);
 	}
 
 	/*
@@ -71,15 +64,14 @@ public class PEDBStructureEditor extends MuseApp {
 		return (PEDBMainFrame) super.getFrame();
 	}
 
-	@Override public void analyzeStructure(TuneData data, Group group) {
-		assert data != null && data instanceof MXTuneData;
-		if (group == null)
-			return;
-		assert group instanceof MXGroup;
-		MXGroupAnalyzer ana = new MXGroupAnalyzer((MXTuneData) data, false);
-		ana.setRootGroup((MXGroup) group);
-		ana.run();
-		analyzer.add(ana);
+	@Override public MainFrame mainFrame() throws IOException {
+		if (getFrame() == null)
+			return new PEDBMainFrame(this);
+		return getFrame();
+	}
+
+	@Override protected PEDBConcierge createConcierge() {
+		return new PEDBConcierge(this);
 	}
 
 	@Override protected void initialize() {
@@ -106,7 +98,7 @@ public class PEDBStructureEditor extends MuseApp {
 		/* sprash screen */
 		createSplashScreen(getAppImageFile());
 		EventQueue.invokeLater(new Runnable() {
-			public void run() {
+			@Override public void run() {
 				showSplashScreen();
 			}
 		});
@@ -125,10 +117,18 @@ public class PEDBStructureEditor extends MuseApp {
 			butler().printConsole(e.getMessage());
 		}
 		EventQueue.invokeLater(new Runnable() {
-			public void run() {
+			@Override public void run() {
 				// showPanel();
 				hideSplash();
 			}
 		});
+	}
+
+	@Override protected void setupCommands() {
+		super.setupCommands();
+		for (MixtractCommandType e : MixtractCommandType.values())
+			getCommandList().add(e);
+		for (PEDBCommandType e : PEDBCommandType.values())
+			getCommandList().add(e);
 	}
 }

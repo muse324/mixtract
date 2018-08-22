@@ -24,6 +24,10 @@ import net.muse.gui.MainFrame;
  */
 public class TestApp extends MuseApp {
 
+	private TestApp(String[] args) throws FileNotFoundException, IOException {
+		super(args);
+	}
+
 	public static void main(String[] args) {
 		try {
 			TestApp main = new TestApp(args);
@@ -33,8 +37,22 @@ public class TestApp extends MuseApp {
 		}
 	}
 
-	public TestApp(String[] args) throws FileNotFoundException, IOException {
-		super(args);
+	@Override public void analyzeStructure(TuneData data, Group group) {
+		throw new UnsupportedOperationException("実装してください");
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.app.MuseApp#mainFrame()
+	 */
+	@Override public MainFrame mainFrame() throws IOException {
+		// GUIのメインフレーム(JFrameのサブクラス)を生成し、frameに格納します。
+		// MainFrameはJFrameのサブクラスです。
+		// 独自GUIクラスを作成することになりますので、独自にMainFrameのサブクラスを実装し、
+		// ここでそのクラスをインスタンス化してください。
+		if (getFrame() == null)
+			return new MainFrame(this); // 独自クラスを定義したらここでそれを返す。
+		return getFrame(); // このキャストは MainFrame のままで良い
 	}
 
 	/*
@@ -45,24 +63,6 @@ public class TestApp extends MuseApp {
 		setAppImageFile("mixtract-logo.png");
 		PROPERTY_FILENAME = "Mixtract.properties";
 		projectFileExtension = ".mxt";
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.app.MuseApp#mainFrame()
-	 */
-	@Override protected MainFrame mainFrame() throws IOException {
-		// GUIのメインフレーム(JFrameのサブクラス)を生成し、frameに格納します。
-		// MainFrameはJFrameのサブクラスです。
-		// 独自GUIクラスを作成することになりますので、独自にMainFrameのサブクラスを実装し、
-		// ここでそのクラスをインスタンス化してください。
-		if (getFrame() == null)
-			return new MainFrame(this); // 独自クラスを定義したらここでそれを返す。
-		return (MainFrame) getFrame(); // このキャストは MainFrame のままで良い
-	}
-
-	@Override public void analyzeStructure(TuneData data, Group group) {
-		throw new UnsupportedOperationException("実装してください");
 	}
 
 	@Override protected void setup() throws Exception {
@@ -86,15 +86,14 @@ public class TestApp extends MuseApp {
 		/* sprash screen */
 		createSplashScreen(getAppImageFile());
 		EventQueue.invokeLater(new Runnable() {
-			public void run() {
+			@Override public void run() {
 				showSplashScreen();
 			}
 		});
 
 		// create main frame
 		createNewFrame();
-		getFrame().setDefaultCloseOperation(
-				WindowConstants.EXIT_ON_CLOSE);
+		getFrame().setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		JFrame.setDefaultLookAndFeelDecorated(false);
 		getFrame().pack(); // ウィンドウサイズを最適化
 		getFrame().setVisible(true); // ウィンドウを表示させる
@@ -106,8 +105,9 @@ public class TestApp extends MuseApp {
 			butler().printConsole(e.getMessage());
 		}
 		EventQueue.invokeLater(new Runnable() {
-			public void run() {
+			@Override public void run() {
 				hideSplash();
 			}
-		});	}
+		});
+	}
 }

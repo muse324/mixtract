@@ -9,7 +9,6 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import net.muse.command.MuseAppCommandAction;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.InfoViewer;
@@ -32,6 +31,10 @@ import net.muse.mixtract.gui.MXMainFrame;
  */
 public class Mixtract extends MuseApp {
 
+	private Mixtract(String[] args) throws FileNotFoundException, IOException {
+		super(args);
+	}
+
 	public static void main(String[] args) {
 		try {
 			final Mixtract main = new Mixtract(args);
@@ -41,12 +44,7 @@ public class Mixtract extends MuseApp {
 		}
 	}
 
-	public Mixtract(String[] args) throws FileNotFoundException, IOException {
-		super(args);
-	}
-
-	@Override
-	public void analyzeStructure(TuneData data, Group group) {
+	@Override public void analyzeStructure(TuneData data, Group group) {
 		assert data != null && data instanceof MXTuneData;
 		if (group == null)
 			return;
@@ -54,57 +52,42 @@ public class Mixtract extends MuseApp {
 		MXGroupAnalyzer ana = new MXGroupAnalyzer((MXTuneData) data, false);
 		ana.setRootGroup((MXGroup) group);
 		ana.run();
-		analyzer.add(ana);
+		getAnalyzer().add(ana);
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
 	 */
-	@Override
-	public void createTuneData(File in, File out) throws IOException {
+	@Override public void createTuneData(File in, File out) throws IOException {
 		setData(new MXTuneData(in, out));
 	}
 
-	protected void deleteGroup(final MXGroup g) {
-		if (g == null)
-			return;
-		deleteGroup(g.getChildFormerGroup());
-		deleteGroup(g.getChildLatterGroup());
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.MuseGUIObject#getFrame()
+	 */
+	@Override public MXMainFrame getFrame() {
+		return (MXMainFrame) super.getFrame();
+	}
 
-		InfoViewer d = null;
-		for (InfoViewer pv : butler().getInfoViewList()) {
-			if (pv.group() == g) {
-				d = pv;
-				break;
-			}
-		}
-		if (d != null) {
-			d.setVisible(false);
-			butler().getInfoViewList().remove(d);
-		}
+	@Override public MainFrame mainFrame() throws IOException {
+		if (getFrame() == null)
+			return new MXMainFrame(this);
+		return getFrame();
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.app.MuseApp#initialize()
 	 */
-	@Override
-	protected void initialize() {
+	@Override protected void initialize() {
 		setAppImageFile("mixtract-logo.png");
 		PROPERTY_FILENAME = "Mixtract.properties";
 		projectFileExtension = ".mxt";
 	}
 
-	@Override
-	protected MainFrame mainFrame() throws IOException {
-		if (getFrame() == null)
-			return new MXMainFrame(this);
-		return (MainFrame) getFrame();
-	}
-
-	@Override
-	protected void setup() throws Exception {
+	@Override protected void setup() throws Exception {
 		if (!isShowGUI()) {
 			butler().readfile();
 			return;
@@ -122,6 +105,7 @@ public class Mixtract extends MuseApp {
 		/* sprash screen */
 		createSplashScreen(getAppImageFile());
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				showSplashScreen();
 			}
@@ -141,6 +125,7 @@ public class Mixtract extends MuseApp {
 			butler().printConsole(e.getMessage());
 		}
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				// showPanel();
 				hideSplash();
@@ -148,18 +133,29 @@ public class Mixtract extends MuseApp {
 		});
 	}
 
+	@Override
 	protected void setupCommands() {
 		super.setupCommands();
 		for (MixtractCommandType e : MixtractCommandType.values())
-			getCommandList().add((MuseAppCommandAction) e);
+			getCommandList().add(e);
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.gui.MuseGUIObject#getFrame()
-	 */
-	@Override
-	public MXMainFrame getFrame() {
-		return (MXMainFrame) super.getFrame();
+	private void deleteGroup(final MXGroup g) {
+		if (g == null)
+			return;
+		deleteGroup(g.getChildFormerGroup());
+		deleteGroup(g.getChildLatterGroup());
+
+		InfoViewer d = null;
+		for (InfoViewer pv : butler().getInfoViewList()) {
+			if (pv.group() == g) {
+				d = pv;
+				break;
+			}
+		}
+		if (d != null) {
+			d.setVisible(false);
+			butler().getInfoViewList().remove(d);
+		}
 	}
 }

@@ -28,10 +28,9 @@ import net.muse.mixtract.sound.MixtractMIDIController;
 public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	protected static String PROPERTY_FILENAME = "Mixtract.properties";
 	protected static String projectFileExtension = ".mxt";
+
 	private String appImageFile;
 
-	/** 各種設定 */
-	private boolean isReadingStructureData;
 	private String midiDeviceName;
 	private boolean doSimilaritySearch = false;
 
@@ -40,25 +39,17 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	private String outputFileName;
 
 	/** ファイル格納場所 */
-	public File musicXMLDir;
+	private File musicXMLDir;
 	private File outputDir;
-	public File projectDir;
-
+	private File projectDir;
 	/** 楽曲情報 */
 	private TuneData data;
 	/** 階層的フレーズ構造の分析履歴 */
-	protected final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
+	private final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
 	private final MixtractMIDIController synthe;
 	private final ArrayList<MuseAppCommandAction> commandList = new ArrayList<MuseAppCommandAction>();
 
-	/**
-	 * @return projectfileextension
-	 */
-	public static String getProjectFileExtension() {
-		return projectFileExtension;
-	}
-
-	public MuseApp(String[] args) throws FileNotFoundException, IOException {
+	protected MuseApp(String[] args) throws FileNotFoundException, IOException {
 		/* 初期化 */
 		super();
 		synthe = new MixtractMIDIController(getMidiDeviceName(),
@@ -70,9 +61,11 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		setOption(args);
 	}
 
-	protected void setupCommands() {
-		for (MuseAppCommandType e : MuseAppCommandType.values())
-			commandList.add((MuseAppCommandAction) e);
+	/**
+	 * @return projectfileextension
+	 */
+	public static String getProjectFileExtension() {
+		return projectFileExtension;
 	}
 
 	/**
@@ -80,6 +73,10 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param object
 	 */
 	public abstract void analyzeStructure(TuneData data, Group group);
+
+	public void createTuneData(File in, File out) throws IOException {
+		setData(new TuneData(in, out));
+	}
 
 	/**
 	 * @return
@@ -90,16 +87,12 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		return data;
 	}
 
-	/**
-	 * @return the doSimilaritySearch
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.MuseGUIObject#getFrame()
 	 */
-	public final boolean doSimilaritySearch() {
-		return doSimilaritySearch;
-	}
-
-	public String getAppImageFile() {
-		assert appImageFile != null;
-		return appImageFile;
+	@Override public MainFrame getFrame() {
+		return (MainFrame) super.getFrame();
 	}
 
 	/**
@@ -109,18 +102,12 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		return inputFileName;
 	}
 
-	/**
-	 * @return midiDeviceName
-	 */
-	public final String getMidiDeviceName() {
-		return midiDeviceName;
+	public File getMusicXMLDir() {
+		return musicXMLDir;
 	}
 
-	/**
-	 * @return musicXMLDir
-	 */
-	public File getMusicXMLDirectory() {
-		return musicXMLDir;
+	public File getOutputDirectory() {
+		return outputDir;
 	}
 
 	/**
@@ -130,11 +117,15 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		return outputFileName;
 	}
 
+	public File getProjectDir() {
+		return projectDir;
+	}
+
 	/**
 	 * @return projectDir
 	 */
 	public File getProjectDirectory() {
-		return projectDir;
+		return getProjectDir();
 	}
 
 	/**
@@ -151,6 +142,8 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		String lcOSName = System.getProperty("os.name").toLowerCase();
 		return lcOSName.startsWith("mac os x");
 	}
+
+	public abstract MainFrame mainFrame() throws IOException;
 
 	/**
 	 * @param g
@@ -217,6 +210,28 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		}
 	}
 
+	public MuseAppCommand searchCommand(MuseAppCommandAction type) {
+		MuseAppCommandAction t = null;
+		Iterator<MuseAppCommandAction> c = getCommandList().iterator();
+		while (c.hasNext()) {
+			t = c.next();
+			if (t == type)
+				break;
+		}
+		return t.command();
+	}
+
+	public MuseAppCommand searchCommand(String actionCommand) {
+		MuseAppCommandType c = null;
+		Iterator<MuseAppCommandAction> i = getCommandList().iterator();
+		while (i.hasNext()) {
+			c = (MuseAppCommandType) i.next();
+			if (c.name().equals(actionCommand))
+				break;
+		}
+		return c.command();
+	}
+
 	public void setAppImageFile(String imgFileName) {
 		appImageFile = imgFileName;
 	}
@@ -241,7 +256,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param dir セットする musicXMLDir
 	 */
 	public void setMusicXMLDirectory(File dir) {
-		this.musicXMLDir = dir;
+		this.setMusicXMLDir(dir);
 	}
 
 	/**
@@ -262,36 +277,23 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	 * @param dir プロジェクトデータを格納するディレクトリ
 	 */
 	public void setProjectDirectory(File dir) {
-		this.projectDir = dir;
+		this.setProjectDir(dir);
 	}
 
 	/**
 	 * @param isReadingStructureData セットする isReadingStructureData
 	 */
-	public final void setReadingStructureData(boolean isReadingStructureData) {
-		this.isReadingStructureData = isReadingStructureData;
-	}
+	public final void setReadingStructureData(boolean isReadingStructureData) {}
 
 	/**
-	 *
+	 * @param doSimilaritySearch the doSimilaritySearch to set
 	 */
-	public void setupSystemPropertiesForMacOSX() {
-		if (isMac()) {
-			// JFrameにメニューをつけるのではなく、一般的なOSXアプリ同様に画面上端のスクリーンメニューにする.
-			System.setProperty("apple.laf.useScreenMenuBar", "true");
+	public final void setSimilaritySearch(boolean doSimilaritySearch) {
+		this.doSimilaritySearch = doSimilaritySearch;
+	}
 
-			// スクリーンメニュー左端に表記されるアプリケーション名を設定する
-			// (何も設定しないとクラス名になる。)
-			System.setProperty(
-					"com.apple.mrj.application.apple.menu.about.name",
-					"Mixtract");
-
-			// これらのプロパティは「Jar Bundler」を使用してappとしてバンドル化すれば、
-			// info.plistファイルの中で直接指定できる.
-			// 上記の他、JavaVMへの起動パラメータ(例えば-Xmxとか。)も指定できるうえ、
-			// 依存jarファイルや各種ファイルも一緒にバンドルできるので、
-			// 手間を惜しまなければ、jar化したのちに、さらにapp化するとよいかもしれない.
-		}
+	public MixtractMIDIController synthe() {
+		return synthe;
 	}
 
 	protected void createNewFrame() throws Exception {
@@ -310,12 +312,17 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		mtd.invoke(null, new Object[] { this.getFrame() });
 	}
 
-	public void createTuneData(File in, File out) throws IOException {
-		setData(new TuneData(in, out));
+	protected ArrayList<MXGroupAnalyzer> getAnalyzer() {
+		return analyzer;
 	}
 
-	public File getOutputDirectory() {
-		return outputDir;
+	protected String getAppImageFile() {
+		assert appImageFile != null;
+		return appImageFile;
+	}
+
+	protected ArrayList<MuseAppCommandAction> getCommandList() {
+		return commandList;
 	}
 
 	/**
@@ -331,22 +338,11 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	protected abstract void initialize();
 
 	/**
-	 * アプリケーションを起動するmain関数で実行するセットアップを記述します。
-	 *
-	 * @throws Exception
-	 */
-	protected abstract void setup() throws Exception;
-
-	abstract protected MainFrame mainFrame() throws IOException;
-
-	/**
 	 * @param data セットする data
 	 */
 	protected void setData(TuneData data) {
 		this.data = data;
 	}
-
-	protected void setMaximumMIDIChannel(int ch) {}
 
 	/*
 	 * (non-Javadoc)
@@ -368,16 +364,43 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	/**
-	 * @param doSimilaritySearch the doSimilaritySearch to set
+	 * アプリケーションを起動するmain関数で実行するセットアップを記述します。
+	 *
+	 * @throws Exception
 	 */
-	protected final void setSimilaritySearch(boolean doSimilaritySearch) {
-		this.doSimilaritySearch = doSimilaritySearch;
+	protected abstract void setup() throws Exception;
+
+	protected void setupCommands() {
+		for (MuseAppCommandType e : MuseAppCommandType.values())
+			commandList.add((MuseAppCommandAction) e);
+	}
+
+	/**
+	 *
+	 */
+	protected void setupSystemPropertiesForMacOSX() {
+		if (isMac()) {
+			// JFrameにメニューをつけるのではなく、一般的なOSXアプリ同様に画面上端のスクリーンメニューにする.
+			System.setProperty("apple.laf.useScreenMenuBar", "true");
+
+			// スクリーンメニュー左端に表記されるアプリケーション名を設定する
+			// (何も設定しないとクラス名になる。)
+			System.setProperty(
+					"com.apple.mrj.application.apple.menu.about.name",
+					"Mixtract");
+
+			// これらのプロパティは「Jar Bundler」を使用してappとしてバンドル化すれば、
+			// info.plistファイルの中で直接指定できる.
+			// 上記の他、JavaVMへの起動パラメータ(例えば-Xmxとか。)も指定できるうえ、
+			// 依存jarファイルや各種ファイルも一緒にバンドルできるので、
+			// 手間を惜しまなければ、jar化したのちに、さらにapp化するとよいかもしれない.
+		}
 	}
 
 	/**
 	 * @param g
 	 */
-	protected void deleteGroup(final Group g) {
+	private void deleteGroup(final Group g) {
 		if (g == null)
 			return;
 		deleteGroup(g.child());
@@ -393,6 +416,26 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 			d.setVisible(false);
 			butler().getInfoViewList().remove(d);
 		}
+	}
+
+	/**
+	 * @return the doSimilaritySearch
+	 */
+	private final boolean doSimilaritySearch() {
+		return doSimilaritySearch;
+	}
+
+	/**
+	 * @return midiDeviceName
+	 */
+	private final String getMidiDeviceName() {
+		return midiDeviceName;
+	}
+
+	private void setMaximumMIDIChannel(int ch) {}
+
+	private void setMusicXMLDir(File musicXMLDir) {
+		this.musicXMLDir = musicXMLDir;
 	}
 
 	/**
@@ -421,42 +464,8 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		}
 	}
 
-	public MixtractMIDIController synthe() {
-		return synthe;
-	}
-
-	public ArrayList<MuseAppCommandAction> getCommandList() {
-		return commandList;
-	}
-
-	public MuseAppCommand searchCommand(MuseAppCommandAction type) {
-		MuseAppCommandAction t = null;
-		Iterator<MuseAppCommandAction> c = getCommandList().iterator();
-		while (c.hasNext()) {
-			t = c.next();
-			if (t == type)
-				break;
-		}
-		return t.command();
-	}
-
-	public MuseAppCommand searchCommand(String actionCommand) {
-		MuseAppCommandType c = null;
-		Iterator<MuseAppCommandAction> i = getCommandList().iterator();
-		while (i.hasNext()) {
-			c = (MuseAppCommandType) i.next();
-			if (c.name().equals(actionCommand))
-				break;
-		}
-		return c.command();
-	}
-
-	/* (非 Javadoc)
-	 * @see net.muse.gui.MuseGUIObject#getFrame()
-	 */
-	@Override
-	public MainFrame getFrame() {
-		return (MainFrame) super.getFrame();
+	private void setProjectDir(File projectDir) {
+		this.projectDir = projectDir;
 	}
 
 }
