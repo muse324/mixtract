@@ -9,13 +9,12 @@ import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
+import net.muse.gui.GroupingPanel;
 import net.muse.gui.KeyActionListener;
 import net.muse.gui.MouseActionListener;
-import net.muse.mixtract.data.MXGroup;
-import net.muse.mixtract.gui.MXGroupingPanel;
 import net.muse.pedb.data.PEDBTuneData;
 
-public class PEDBGroupingPanel extends MXGroupingPanel {
+public class PEDBGroupingPanel extends GroupingPanel {
 
 	private PEDBGroupLabel higherGroup;
 
@@ -48,7 +47,7 @@ public class PEDBGroupingPanel extends MXGroupingPanel {
 
 	@Override protected PEDBGroupLabel createGroupLabel(Group group,
 			Rectangle r) {
-		return new PEDBGroupLabel((MXGroup) group, r);
+		return new PEDBGroupLabel(group, r);
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(

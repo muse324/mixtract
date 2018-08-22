@@ -22,7 +22,7 @@ public final class ApplyHierarchicalParamsCommand extends MixtractCommand {
 		if (cv != null) {
 			cv.apply(data(), group);
 		}
-		main().notifyChangeHierarchicalParameters(cv.getType());
+		app().notifyChangeHierarchicalParameters(cv.getType());
 		frame().getTempoView().repaint();
 		frame().getDynamicsView().repaint();
 	}

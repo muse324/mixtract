@@ -10,13 +10,11 @@ import net.muse.data.Group;
 import net.muse.gui.GLMouseActionListener;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.KeyActionListener;
-import net.muse.mixtract.data.MXGroup;
-import net.muse.mixtract.gui.MXGroupLabel;
 import net.muse.pedb.data.PEDBGroup;
 
-public class PEDBGroupLabel extends MXGroupLabel {
+public class PEDBGroupLabel extends GroupLabel {
 
-	public PEDBGroupLabel(MXGroup group, Rectangle r) {
+	public PEDBGroupLabel(Group group, Rectangle r) {
 		super(group, r);
 	}
 
@@ -85,6 +83,5 @@ public class PEDBGroupLabel extends MXGroupLabel {
 			}
 		};
 	}
-
 
 }

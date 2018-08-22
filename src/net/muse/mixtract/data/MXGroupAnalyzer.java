@@ -106,7 +106,7 @@ public class MXGroupAnalyzer extends MuseObject implements Runnable {
 					GroupType.PARENT);
 			parent.setIndex(data.getUniqueGroupIndex());
 			_completeHierarcy = false;
-			parent = reachedHierarchy(parent, data.getRootGroup(0));
+			parent = reachedHierarchy(parent, (MXGroup) data.getRootGroup(0));
 			parent.setChild(g1, g2);
 			// 非階層グループリストからg1, g2を削除
 			if (data.getMiscGroup().contains(g1))

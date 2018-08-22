@@ -73,7 +73,7 @@ public class PEDBMakeGroupCommand extends MakeGroupCommand {
 		for (Group g : data().getRootGroup()) {
 			data().analyze(g);
 		}
-		main().butler().notifySetTarget(main().data());
+		app().butler().notifySetTarget(app().data());
 	}
 
 	@Override protected PEDBTuneData data() {
@@ -88,10 +88,6 @@ public class PEDBMakeGroupCommand extends MakeGroupCommand {
 	@Override protected GroupLabel getGroupLabel() {
 		// TODO 自動生成されたメソッド・スタブ
 		return super.getGroupLabel();
-	}
-
-	@Override protected PEDBStructureEditor main() {
-		return (PEDBStructureEditor) super.main();
 	}
 
 	@Override protected PEDBMainFrame frame() {

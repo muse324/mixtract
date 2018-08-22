@@ -15,7 +15,7 @@ public class ClearAllGroupsCommand extends MixtractCommand {
 		data().getMiscGroup().clear();
 		for (Group g : data().getRootGroup())
 			data().deleteGroupFromData(g);
-		main().butler().notifySetTarget(data());
+		app().butler().notifySetTarget(data());
 	}
 
 }

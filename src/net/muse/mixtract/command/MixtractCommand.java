@@ -1,6 +1,5 @@
 package net.muse.mixtract.command;
 
-import net.muse.app.Mixtract;
 import net.muse.command.MuseAppCommand;
 import net.muse.command.MuseAppCommandType;
 import net.muse.data.Group;
@@ -16,6 +15,7 @@ import net.muse.mixtract.gui.MXGroupLabel;
  * @since 2008/04/21
  */
 public class MixtractCommand extends MuseAppCommand {
+
 	protected static final Group _selectedObjects = null;
 
 	/**
@@ -87,10 +87,6 @@ public class MixtractCommand extends MuseAppCommand {
 	 */
 	protected GroupLabel getGroupLabel() {
 		return _groupLabel;
-	}
-
-	protected Mixtract main() {
-		return (Mixtract) _main;
 	}
 
 	protected MXTuneData data() {
