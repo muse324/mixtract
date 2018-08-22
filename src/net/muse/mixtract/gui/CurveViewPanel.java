@@ -36,7 +36,7 @@ public class CurveViewPanel extends PhraseCanvas {
 
 	public CurveViewPanel(MXGroup group) {
 		super(group, group.getDynamicsCurve());
-		this.group = group;
+		this.setGroup(group);
 		this.cvDyn = group.getDynamicsCurve();
 		this.cvTmp = group.getTempoCurve();
 		this.cvArt = group.getArticulationCurve();
@@ -101,8 +101,8 @@ public class CurveViewPanel extends PhraseCanvas {
 	 * .Mixtract)
 	 */
 	@Override void setController(Mixtract main) {
-		this.main = main;
-		this.mouseActions = new CanvasListener(main, this) {
+		this.setMain(main);
+		this.setMouseActions(new CanvasListener(main, this) {
 
 			/*
 			 * (非 Javadoc)
@@ -145,9 +145,9 @@ public class CurveViewPanel extends PhraseCanvas {
 				repaint();
 			}
 
-		};
-		addMouseListener(mouseActions);
-		addMouseMotionListener(mouseActions);
+		});
+		addMouseListener(getMouseActions());
+		addMouseMotionListener(getMouseActions());
 	}
 
 	/*

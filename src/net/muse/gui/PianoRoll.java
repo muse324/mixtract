@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
 import javax.swing.JPanel;
-import javax.xml.transform.TransformerException;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.app.MuseApp;
@@ -41,47 +40,45 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	private static final int DEFAULT_WIDTH = 1024;
 	private static int defaultAxisX = 10;
 
-	/**
-	 * @return defaultAxisX
-	 */
-	static int getDefaultAxisX() {
-		return defaultAxisX;
-	}
-
 	protected int axisX = 10;
 
 	private final MuseApp main; // @jve:decl-index=0:
 
 	/** 楽曲データ */
 	private TuneData data; // @jve:decl-index=0:
+
 	/* 各種描画モード */
 	private ViewerMode viewerMode; // @jve:decl-index=0:
 	private boolean isMouseSelectBoxDraw;
 	private boolean drawToolTips = true;
 	private boolean drawMelodyLine = false;
-
 	/* マウス制御 */
 	private MouseActionListener mouseActions; // @jve:decl-index=0:
 	private Point mouseEndPoint;
 	private Point mouseStartPoint;
 	/* 格納データ */
-	final LinkedList<NoteLabel> selectedNoteLabels;
+	final LinkedList<NoteLabel> selectedNoteLabels = new LinkedList<NoteLabel>();
 	protected NoteLabel notelist = null;
 	protected NoteLabel mouseOveredNoteLabel = null;
 	private int selectedVoice;
 	final Cursor defCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR); // @jve:decl-index=0:
 	final Cursor hndCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); // @jve:decl-index=0:
-
 	private GroupLabel selectedGroup;
 
 	protected PianoRoll(MuseApp main) {
 		super();
 		this.main = main;
-		selectedNoteLabels = new LinkedList<NoteLabel>();
 		setSelectedVoice(-1);
 		viewerMode = ViewerMode.REALTIME_VIEW;
 		initialize();
 		setController();
+	}
+
+	/**
+	 * @return defaultAxisX
+	 */
+	static int getDefaultAxisX() {
+		return defaultAxisX;
 	}
 
 	/*
@@ -491,18 +488,54 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		makeNoteLabel(note.next(), false);
 	}
 
-	private boolean existSamePitchNoteJustBefore(NoteData note) {
-		NoteLabel l = notelist();
-		if (l == null)
-			return false;
-		while (l.hasPrevious()) {
-			NoteData before = l.getScoreNote();
-			if (!before.rest() && before.noteNumber() == note.noteNumber()
-					&& before.offset() == note.onset())
-				return true;
-			l = l.prev();
+	/**
+	 * @param note
+	 * @param offset
+	 *            同音打鍵が続いた場合の描画間隔ピクセル
+	 */
+	protected void makeNoteLabel(final NoteData note, int offset,
+			boolean isChild) {
+		if (note == null)
+			return;
+
+		final Rectangle r = getLabelBounds(note, offset);
+		final NoteLabel n = createNoteLabel(note, r);
+		n.setController(main());
+		n.setSelected(getSelectedNoteLabels().contains(n));
+		if (notelist == null) {
+			notelist = n;
+		} else {
+			if (isChild) {
+				notelist.setChild(n);
+				n.setParent(notelist);
+				this.notelist = notelist.child();
+			} else {
+				while (notelist.hasParent()) {
+					if (n.getScoreNote().hasPrevious() && n.getScoreNote()
+							.previous().equals(notelist.getScoreNote()))
+						break;
+					notelist = notelist.parent();
+				}
+				notelist.setNext(n);
+				n.setParent(notelist.parent());
+				notelist = notelist.next();
+			}
 		}
-		return false;
+		add(n);
+
+		if (r.x + r.width > getWidth()) {
+			Dimension sz = getPreferredSize();
+			sz.width = r.x + r.width + 10;
+			setPreferredSize(sz);
+			repaint();
+		}
+	}
+
+	/**
+	 * @return notelist
+	 */
+	protected NoteLabel notelist() {
+		return notelist;
 	}
 
 	protected void rescaleNoteLabels() {}
@@ -557,18 +590,14 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		repaint();
 	}
 
-	private boolean contains(Group gr) {
-		return false;
-	}
-
-	protected KeyActionListener createKeyActions(MuseObject app) {
+	private KeyActionListener createKeyActions(MuseObject app) {
 		return new KeyActionListener(app, this);
 	}
 
 	/**
 	 * @return data
 	 */
-	protected TuneData data() {
+	private TuneData data() {
 		return data;
 	}
 
@@ -654,22 +683,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	/**
-	 * 一つの音符をピアノロールに描画します．
-	 *
-	 * @param g2
-	 * @param l
-	 * @throws TransformerException
-	 */
-	private void drawNotes(final Graphics2D g2, NoteLabel l)
-			throws TransformerException {
-		if (l == null)
-			return;
-		l.setSelected(selectedNoteLabels.contains(l));
-		drawNotes(g2, l.child());
-		drawNotes(g2, l.next());
-	}
-
-	/**
 	 * @param g2
 	 */
 	private void drawSelectedMouseBox(Graphics2D g2) {
@@ -714,81 +727,29 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 							+ "Press `g': make a group");
 	}
 
-	/**
-	 * @param g
-	 * @return
-	 */
-	private double getPixelPerGroupLength(Group g) {
-		double len;
-		switch (viewerMode) {
-		case REALTIME_VIEW:
-			len = g.duration();
-			break;
-		default:
-			len = g.getTimeValue();
+	private boolean existSamePitchNoteJustBefore(NoteData note) {
+		NoteLabel l = notelist();
+		if (l == null)
+			return false;
+		while (l.hasPrevious()) {
+			NoteData before = l.getScoreNote();
+			if (!before.rest() && before.noteNumber() == note.noteNumber()
+					&& before.offset() == note.onset())
+				return true;
+			l = l.prev();
 		}
-		return len / getWidth() / 0.9;
+		return false;
 	}
 
 	/**
 	 *
 	 */
-	protected void initialize() {
+	private void initialize() {
 		setOpaque(true);
 		setLayout(null);
 		setBackground(Color.WHITE);
 		// this.setSize(new Dimension(700, 700));
 		setDoubleBuffered(true);
-	}
-
-	/**
-	 * @param note
-	 * @param offset
-	 *            同音打鍵が続いた場合の描画間隔ピクセル
-	 */
-	protected void makeNoteLabel(final NoteData note, int offset,
-			boolean isChild) {
-		if (note == null)
-			return;
-
-		final Rectangle r = getLabelBounds(note, offset);
-		final NoteLabel n = createNoteLabel(note, r);
-		n.setController(main());
-		n.setSelected(getSelectedNoteLabels().contains(n));
-		if (notelist == null) {
-			notelist = n;
-		} else {
-			if (isChild) {
-				notelist.setChild(n);
-				n.setParent(notelist);
-				this.notelist = notelist.child();
-			} else {
-				while (notelist.hasParent()) {
-					if (n.getScoreNote().hasPrevious() && n.getScoreNote()
-							.previous().equals(notelist.getScoreNote()))
-						break;
-					notelist = notelist.parent();
-				}
-				notelist.setNext(n);
-				n.setParent(notelist.parent());
-				notelist = notelist.next();
-			}
-		}
-		add(n);
-
-		if (r.x + r.width > getWidth()) {
-			Dimension sz = getPreferredSize();
-			sz.width = r.x + r.width + 10;
-			setPreferredSize(sz);
-			repaint();
-		}
-	}
-
-	/**
-	 * @return notelist
-	 */
-	protected NoteLabel notelist() {
-		return notelist;
 	}
 
 	private void setController() {
