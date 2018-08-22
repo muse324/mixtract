@@ -9,10 +9,10 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import net.muse.command.MuseAppCommandAction;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.MainFrame;
+import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
@@ -47,8 +47,10 @@ public class PEDBStructureEditor extends MuseApp {
 
 	@Override protected void setupCommands() {
 		super.setupCommands();
+		for (MixtractCommandType e : MixtractCommandType.values())
+			getCommandList().add(e);
 		for (PEDBCommandType e : PEDBCommandType.values())
-			getCommandList().add((MuseAppCommandAction) e);
+			getCommandList().add(e);
 	}
 
 	@Override protected MainFrame mainFrame() throws IOException {

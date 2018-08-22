@@ -23,7 +23,8 @@ public class PartColor {
 
 	/** create new part color */
 	public PartColor(int voice) {
-		assert voice > 0 : "invalid voice " + voice;
+		if (voice <= 0)
+			voice = 1;
 		assert voice < _list.length : "PartColor provides only " + _list.length
 				+ " parts. Please add the voice " + voice;
 		this._voice = voice;
