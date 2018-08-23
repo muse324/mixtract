@@ -7,6 +7,18 @@ import net.muse.mixtract.data.MXNoteData;
 
 public class PEDBGroup extends Group {
 
+	@Override public String toString() {
+		String str = name() + ";" + getPartNumber() + ";";
+		if (!hasChild())
+			return str + notelistToString();
+		PEDBGroup c = child();
+		while (c != null) {
+			str += c.name() + ((c.hasNext()) ? "," : "");
+			c = (PEDBGroup) c.next();
+		}
+		return str;
+	}
+
 	public PEDBGroup(NoteData n, int i, GroupType type) {
 		super(n, i, type);
 	}

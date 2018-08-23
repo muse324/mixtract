@@ -266,24 +266,25 @@ public class MXTuneData extends TuneData {
 			return;
 		if (!root.hasChild())
 			return;
-		assert root instanceof MXGroup;
-		MXGroup r = (MXGroup) root;
-		MXGroup f = r.getChildFormerGroup();
-		MXGroup l = r.getChildLatterGroup();
-		if (f.equals(target) || l.equals(target)) {
-			// 子グループをすべて削除
-			deleteHierarchicalGroup(f, f.getChildFormerGroup());
-			deleteHierarchicalGroup(f, f.getChildLatterGroup());
-			deleteHierarchicalGroup(l, l.getChildFormerGroup());
-			deleteHierarchicalGroup(l, l.getChildLatterGroup());
+		if (root instanceof MXGroup) {
+			MXGroup r = (MXGroup) root;
+			MXGroup f = r.getChildFormerGroup();
+			MXGroup l = r.getChildLatterGroup();
+			if (f.equals(target) || l.equals(target)) {
+				// 子グループをすべて削除
+				deleteHierarchicalGroup(f, f.getChildFormerGroup());
+				deleteHierarchicalGroup(f, f.getChildLatterGroup());
+				deleteHierarchicalGroup(l, l.getChildFormerGroup());
+				deleteHierarchicalGroup(l, l.getChildLatterGroup());
 
-			// 削除
-			f.getEndNote().setNext(l.getBeginNote());
-			r.setChild(null, null);
-			return;
+				// 削除
+				f.getEndNote().setNext(l.getBeginNote());
+				r.setChild(null, null);
+				return;
+			}
+			deleteHierarchicalGroup(f, target);
+			deleteHierarchicalGroup(l, target);
 		}
-		deleteHierarchicalGroup(f, target);
-		deleteHierarchicalGroup(l, target);
 	}
 
 	/*

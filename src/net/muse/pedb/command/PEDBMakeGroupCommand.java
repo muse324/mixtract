@@ -63,10 +63,12 @@ public class PEDBMakeGroupCommand extends MakeGroupCommand {
 		if (g0 != null) {
 			g0.setNext(g1);
 			g0.setIndex(data().getUniqueGroupIndex());
+			data().getMiscGroup().remove(g1);
 		}
 		if (g2 != null) {
 			g1.setNext(g2);
 			g2.setIndex(data().getUniqueGroupIndex());
+			data().getMiscGroup().remove(g2);
 		}
 
 		// 階層グループとの整合性を取る

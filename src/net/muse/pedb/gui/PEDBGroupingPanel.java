@@ -18,6 +18,15 @@ public class PEDBGroupingPanel extends GroupingPanel {
 
 	private PEDBGroupLabel higherGroup;
 
+	protected void createHierarchicalGroupLabel(Group group, int level) {
+		if (group == null)
+			return;
+		createHierarchicalGroupLabel(group.child(), level + 1);
+		// create a new group-label
+		createGroupLabel(group, level);
+		createHierarchicalGroupLabel((Group) group.next(), level);
+	}
+
 	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (higherGroup != null) {

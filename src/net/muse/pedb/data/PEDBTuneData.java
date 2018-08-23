@@ -20,6 +20,21 @@ import net.muse.mixtract.data.MXNoteData;
 import net.muse.mixtract.data.MXTuneData;
 
 public class PEDBTuneData extends MXTuneData {
+	protected void deleteHierarchicalGroup(Group root, Group target) {
+		if (root == null)
+			return;
+
+		deleteHierarchicalGroup(root.child(), target);
+		deleteHierarchicalGroup((Group) root.next(), target);
+		if (root.equals(target)) {
+			// 子グループをすべて削除
+			deleteGroup(target);
+			target.setType(GroupType.USER);
+			// 親グループの再分析
+			// analyzeStructure(target);
+			return;
+		}
+	}
 
 	/**
 	 * @param in - File
@@ -57,6 +72,7 @@ public class PEDBTuneData extends MXTuneData {
 		assert rootGroup instanceof PEDBGroup;
 		PEDBGroup root = (PEDBGroup) rootGroup;
 		analyze(root.child());
+		analyze((Group) root.next());
 
 		PEDBGroup g = null;
 		for (Group group : getMiscGroup()) {
@@ -155,6 +171,7 @@ public class PEDBTuneData extends MXTuneData {
 		writeGroupStructureData(out, group.child());
 		out.format("%s;%s\n", group, (group.hasTopNote()) ? group.getTopNote()
 				.id() : "null");
+		writeGroupStructureData(out, (Group) group.next());
 	}
 
 	@Override protected void writeNoteData(PrintWriter out, Group g) {

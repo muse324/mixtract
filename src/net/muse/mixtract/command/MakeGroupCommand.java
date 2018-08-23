@@ -62,12 +62,10 @@ public class MakeGroupCommand extends MixtractCommand {
 			if (g1.getBeginNote().equals(parent.getBeginNote())) {
 				g2 = createGroup(g1.getEndNote().next(), parent.getEndNote(),
 						GroupType.AUTO);
-				g2.setIndex(data().getUniqueGroupIndex());
 				parent = combineGroups(null, g1, g2);
 			} else if (parent.getEndNote().equals(g1.getEndNote())) {
 				g0 = createGroup(parent.getBeginNote(), g1.getBeginNote()
 						.previous(), GroupType.AUTO);
-				g0.setIndex(data().getUniqueGroupIndex());
 				parent = combineGroups(null, g0, g1);
 			}
 		}
