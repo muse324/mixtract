@@ -289,6 +289,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 
 		getGrouplist().add(label);
 		add(label); // 描画
+		createGroupLabel((Group) group.next(), level);
 	}
 
 	protected GroupLabel createGroupLabel(Group group, final Rectangle r) {

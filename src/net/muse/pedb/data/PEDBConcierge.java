@@ -25,6 +25,8 @@ public class PEDBConcierge extends Concierge {
 				+ obj.getClass().getSimpleName();
 		MuseApp main = (MuseApp) obj;
 		switch (e.getKeyCode()) {
+		case KeyEvent.VK_R:
+			printConsole("refresh");
 		case KeyEvent.VK_G:
 			printConsole("make group");
 			c = main.searchCommand(PEDBCommandType.MAKE_GROUP);

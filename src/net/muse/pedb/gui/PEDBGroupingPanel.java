@@ -22,9 +22,9 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		if (group == null)
 			return;
 		createHierarchicalGroupLabel(group.child(), level + 1);
+		createHierarchicalGroupLabel((Group) group.next(), level);
 		// create a new group-label
 		createGroupLabel(group, level);
-		createHierarchicalGroupLabel((Group) group.next(), level);
 	}
 
 	@Override public void paintComponent(Graphics g) {
@@ -42,6 +42,7 @@ public class PEDBGroupingPanel extends GroupingPanel {
 			higherGroup.setChild(g);
 			higherGroup.group().setChild(getSelectedGroup().group());
 			setHigherGroup(null);
+			readTuneData();
 			repaint();
 		}
 	}
@@ -75,6 +76,9 @@ public class PEDBGroupingPanel extends GroupingPanel {
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_ESCAPE:
 					setHigherGroup(null);
+					break;
+				case KeyEvent.VK_R:
+					readTuneData();
 					break;
 				}
 			}

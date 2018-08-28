@@ -1,8 +1,11 @@
 package net.muse.pedb.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -31,6 +34,7 @@ public class PEDBMainFrame extends MainFrame {
 	private JScrollPane structurePane;
 	private JSlider zoomBar;
 	private JTextField zoomText;
+	private JButton refreshButton;
 
 	public PEDBMainFrame(PEDBStructureEditor app) throws IOException {
 		super(app);
@@ -125,8 +129,23 @@ public class PEDBMainFrame extends MainFrame {
 			toolBar.remove(getTempoSettingPanel());
 			toolBar.add(getZoomText());
 			toolBar.add(getZoomBar());
+			toolBar.add(getRereshButton());
 		}
 		return toolBar;
+	}
+
+	private JButton getRereshButton() {
+		if (refreshButton == null) {
+			refreshButton = new JButton("Reresh");
+			refreshButton.addActionListener(new ActionListener() {
+
+				@Override public void actionPerformed(ActionEvent e) {
+					getGroupingPanel().readTuneData();
+					repaint();
+				}
+			});
+		}
+		return refreshButton;
 	}
 
 	/*
