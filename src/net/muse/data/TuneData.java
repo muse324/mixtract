@@ -222,8 +222,11 @@ public class TuneData extends MuseObject implements TuneDataController {
 	public int getUniqueGroupIndex() {
 		ArrayList<Integer> idxlist = new ArrayList<Integer>();
 		for (Group g : getMiscGroup()) {
-			if (!idxlist.contains(g.index()))
-				idxlist.add(g.index());
+			while (g!=null) {
+				if (!idxlist.contains(g.index()))
+					idxlist.add(g.index());
+				g = (Group) g.next();
+			}
 		}
 		getUniqueGroupIndex(getRootGroup(0), idxlist);
 		for (int i = 0; i < idxlist.size(); i++) {

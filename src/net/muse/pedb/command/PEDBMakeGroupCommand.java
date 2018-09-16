@@ -54,27 +54,19 @@ public class PEDBMakeGroupCommand extends MakeGroupCommand {
 		NoteLabel begin = notes.get(0);
 		NoteLabel end = notes.get(notes.size() - 1);
 		PEDBGroup g1 = createGroup(begin, end, GroupType.USER);
+
+		// グループ作成が初回で、かつ、もし前後に未グループの音符があった場合，
+		// GroupType.AUTOで前のグループを自動生成する
+		if (data().getMiscGroup().size() == 0) {
+			PEDBGroup g0 = createAutoGroupBeforUserGroup(begin);
+			if (g0 != null) {
+				g0.setNext(g1);
+				g0.setIndex(data().getUniqueGroupIndex());
+			}
+		} else
+			data().addMiscGroupList(g1);
 		g1.setIndex(data().getUniqueGroupIndex());
-		data().addMiscGroupList(g1);
 
-		// もし前後に未グループの音符があった場合，GroupType.AUTOで自動生成する
-		PEDBGroup g0 = createAutoGroupBeforUserGroup(begin);
-		PEDBGroup g2 = createAutoGroupAfterUserGroup(end);
-		if (g0 != null) {
-			g0.setNext(g1);
-			g0.setIndex(data().getUniqueGroupIndex());
-			data().getMiscGroup().remove(g1);
-		}
-		if (g2 != null) {
-			g1.setNext(g2);
-			g2.setIndex(data().getUniqueGroupIndex());
-			data().getMiscGroup().remove(g2);
-		}
-
-		// 階層グループとの整合性を取る
-		for (Group g : data().getRootGroup()) {
-			data().analyze(g);
-		}
 		app().butler().notifySetTarget(app().data());
 	}
 
