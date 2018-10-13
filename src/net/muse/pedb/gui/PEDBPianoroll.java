@@ -29,7 +29,8 @@ public class PEDBPianoroll extends PianoRoll {
 	 * (非 Javadoc)
 	 * @see net.muse.misc.MuseObject#butler()
 	 */
-	@Override public PEDBConcierge butler() {
+	@Override
+	public PEDBConcierge butler() {
 		return (PEDBConcierge) super.butler();
 	}
 
@@ -38,7 +39,8 @@ public class PEDBPianoroll extends PianoRoll {
 	 * @see net.muse.gui.PianoRoll#selectNote(net.muse.gui.NoteLabel,
 	 * net.muse.data.NoteData, net.muse.data.NoteData)
 	 */
-	@Override public void selectNote(NoteLabel l, NoteData note, NoteData end) {
+	@Override
+	public void selectNote(NoteLabel l, NoteData note, NoteData end) {
 		if (note == null)
 			return;
 		NoteData s = l.getScoreNote();
@@ -54,11 +56,13 @@ public class PEDBPianoroll extends PianoRoll {
 	protected KeyActionListener createKeyActions(MuseObject app) {
 		return new KeyActionListener(app, this) {
 
-			@Override public PEDBStructureEditor main() {
+			@Override
+			public PEDBStructureEditor main() {
 				return (PEDBStructureEditor) super.main();
 			}
 
-			@Override public PEDBPianoroll owner() {
+			@Override
+			public PEDBPianoroll owner() {
 				return (PEDBPianoroll) super.owner();
 			}
 
@@ -71,53 +75,46 @@ public class PEDBPianoroll extends PianoRoll {
 	 * net.muse.mixtract.gui.MXPianoroll#createNoteLabel(net.muse.data.NoteData,
 	 * java.awt.Rectangle)
 	 */
-	@Override protected PEDBNoteLabel createNoteLabel(NoteData note,
+	@Override
+	protected PEDBNoteLabel createNoteLabel(NoteData note,
 			Rectangle r) {
 		return new PEDBNoteLabel(note, r);
 	}
 
-	@Override protected PianoRollActionListener createPianoRollMouseAction(
+	@Override
+	protected PianoRollActionListener createPianoRollMouseAction(
 			MuseApp app) {
 		return new PianoRollActionListener(app, this) {
 
-			@Override public PEDBPianoroll self() {
+			@Override
+			public PEDBPianoroll self() {
 				return (PEDBPianoroll) super.self();
 			}
 
-			@Override protected PEDBMainFrame frame() {
+			@Override
+			protected PEDBMainFrame frame() {
 				return (PEDBMainFrame) super.frame();
 			}
 
-			@Override protected PEDBStructureEditor main() {
+			@Override
+			protected PEDBStructureEditor main() {
 				return (PEDBStructureEditor) super.main();
 			}
 
 		};
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.gui.PianoRoll#drawMouseOveredNoteInfo(java.awt.Graphics2D)
-	 */
-	@Override protected void drawMouseOveredNoteInfo(Graphics2D g2) {
-		if (mouseOveredNoteLabel == null)
-			return;
-		final NoteData nd = mouseOveredNoteLabel.getScoreNote();
-		String str = nd.noteName() + "(" + nd.velocity() + ")" + nd.onset()
-				+ "-" + nd.offset();
-		str = String.format("%s (%s): %d-%d", nd.id(), nd.noteName(), nd
+	protected String switchViewerMode(final NoteData nd) {
+		return String.format("%s (%s): %d-%d", nd.noteName(), nd.chord(), nd
 				.onset(), nd.offset());
-		System.out.println(str + " at " + getMouseActions().getMousePoint());
-		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
-				getMouseActions().getMousePoint().y - main().getFrame()
-						.getKeyboard().getKeyHeight());
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#drawOptionalInfo(java.awt.Graphics2D)
 	 */
-	@Override protected void drawOptionalInfo(Graphics2D g2) {
+	@Override
+	protected void drawOptionalInfo(Graphics2D g2) {
 		PEDBNoteLabel l = notelist();
 		while (l.hasNext()) {
 			drawTiedNotesConnection(g2, l, l.next());
@@ -125,11 +122,13 @@ public class PEDBPianoroll extends PianoRoll {
 		}
 	}
 
-	@Override protected PEDBGroupLabel group() {
+	@Override
+	protected PEDBGroupLabel group() {
 		return (PEDBGroupLabel) super.group();
 	}
 
-	@Override protected PEDBStructureEditor main() {
+	@Override
+	protected PEDBStructureEditor main() {
 		return (PEDBStructureEditor) super.main();
 	}
 
@@ -138,7 +137,8 @@ public class PEDBPianoroll extends PianoRoll {
 	 * @see net.muse.gui.PianoRoll#makeNoteLabel(net.muse.data.NoteData, int,
 	 * boolean)
 	 */
-	@Override protected void makeNoteLabel(final NoteData note, int offset,
+	@Override
+	protected void makeNoteLabel(final NoteData note, int offset,
 			boolean isChild) {
 		if (note == null)
 			return;

@@ -99,7 +99,7 @@ public class GroupLabel extends JLabel {
 		return child;
 	}
 
-	void setController(MuseApp main) {
+	public void setController(MuseApp main) {
 		mouseActions = createMouseActionListener(main);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);

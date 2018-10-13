@@ -25,7 +25,10 @@ public class PEDBGroup extends Group {
 
 	public PEDBGroup(NoteData beginNote, NoteData endNote, GroupType type) {
 		super(beginNote, endNote, type);
+		topNote = beginNote;
+		//System.out.println(topNote);
 	}
+
 
 	@Override public PEDBGroup child() {
 		return (PEDBGroup) super.child();

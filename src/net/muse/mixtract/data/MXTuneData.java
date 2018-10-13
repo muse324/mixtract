@@ -312,7 +312,7 @@ public class MXTuneData extends TuneData {
 		if (group == null)
 			return;
 		assert group instanceof MXGroup;
-		MXGroup g = (MXGroup) group;
+		MXGroup g = (MXGroup)group;
 		if (group.hasChild()) {
 			initializeNoteEvents(g.getChildFormerGroup().getBeginNote());
 			initializeNoteEvents(g.getChildLatterGroup().getBeginNote());

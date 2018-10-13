@@ -43,7 +43,7 @@ public class Group extends SequenceData {
 	/** 終了音 */
 	private NoteData endNote = null;
 	/** 頂点音 TODO Mixtract用にプッシュダウンする */
-	protected NoteData topNote = null;
+	public NoteData topNote = null;
 	/** フレーズ（グループ）の詳細情報を格納します。 */
 	private PhraseFeature detail;
 
@@ -64,7 +64,16 @@ public class Group extends SequenceData {
 		this.setBeginNote(beginNote);
 		this.setEndNote(endNote);
 	}
-
+	/*
+	//追加
+	public Group(NoteData beginNote, NoteData endNote, GroupType type, NoteData topNote) {
+		this(type);
+		this.partNumber = beginNote.musePhony();
+		this.setBeginNote(beginNote);
+		this.setEndNote(endNote);
+		this.setTopNote(topNote);
+	}
+*/
 	/**
 	 * プロジェクトファイルから読み込んだグループを生成します．
 	 *
@@ -356,6 +365,14 @@ public class Group extends SequenceData {
 	 */
 	protected void setEndNote(NoteData note) {
 		this.endNote = note;
+	}
+	//追加
+	/**
+	 *
+	 * @param setNote セットする setNote
+	 */
+	protected void setTopNote(NoteData note) {
+		this.topNote = note;
 	}
 
 	private void setNotelist(NoteData note, NoteData root) {

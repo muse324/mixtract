@@ -73,7 +73,3 @@ class CurveHandler extends JPanel implements MouseInputListener {
 	}
 
 }
-
-
-/*練習だよ*/
-/*hogehoge*/
