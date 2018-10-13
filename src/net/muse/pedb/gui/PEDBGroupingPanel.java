@@ -19,8 +19,7 @@ import net.muse.gui.MouseActionListener;
 import net.muse.gui.PianoRoll;
 import net.muse.pedb.data.PEDBTuneData;
 
-public class PEDBGroupingPanel extends GroupingPanel {
-	int i = 0;// 追加
+class PEDBGroupingPanel extends GroupingPanel {
 	private PEDBGroupLabel higherGroup;
 
 	@Override public void paintComponent(Graphics g) {
@@ -42,6 +41,19 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		}
 	}
 
+	void setHigherGroup(PEDBGroupLabel l) {
+		higherGroup = l;
+		main().butler().printConsole(String.format("%s is set as higher group",
+				l));
+		repaint();
+
+	}
+
+	@Override protected PEDBGroupLabel createGroupLabel(Group group,
+			Rectangle r) {
+		return new PEDBGroupLabel(group, r);
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see
@@ -59,55 +71,6 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		createGroupLabel(group, level);
 
 		createHierarchicalGroupLabel(group.child(), level + 1);
-	}
-
-	@Override protected void createNonHierarchicalGroupLabel() {
-		int level = getMaximumGroupLevel() + 1;
-		for (final Group g : data().getMiscGroup()) {
-			if (level < g.getLevel())
-				level = g.getLevel() + 1;
-			createTopLabel(g, level);
-			if (g.hasChild())
-				createTopLabel(g.child(), level + 1);
-			createGroupLabel(g, level);
-
-			createGroupLabel(g.child(), level + 1);
-
-		}
-	}
-
-	protected void createTopLabel(Group group, int level) {
-		if (group != null && group.topNote != null) {
-			final RoundRectangle2D topr = getLabelBound(group.getTopNote(),
-					level);
-			final GroupLabel toplabel = createTopNoteLabel(group.getTopNote(),
-					topr);
-			System.out.println(toplabel);
-			toplabel.setBackground(Color.red);// 色の変更
-			toplabel.setController(main);
-			group.setLevel(level);
-			add(toplabel); // 描画
-		}
-	}
-
-	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote,
-			RoundRectangle2D topr) {
-		// TODO 自動生成されたメソッド・スタブ
-		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
-		return label;
-	}
-
-	public void setHigherGroup(PEDBGroupLabel l) {
-		higherGroup = l;
-		main().butler().printConsole(String.format("%s is set as higher group",
-				l));
-		repaint();
-
-	}
-
-	@Override protected PEDBGroupLabel createGroupLabel(Group group,
-			Rectangle r) {
-		return new PEDBGroupLabel(group, r);
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(
@@ -133,6 +96,21 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		};
 	}
 
+	@Override protected void createNonHierarchicalGroupLabel() {
+		int level = getMaximumGroupLevel() + 1;
+		for (final Group g : data().getMiscGroup()) {
+			if (level < g.getLevel())
+				level = g.getLevel() + 1;
+			createTopLabel(g, level);
+			if (g.hasChild())
+				createTopLabel(g.child(), level + 1);
+			createGroupLabel(g, level);
+
+			createGroupLabel(g.child(), level + 1);
+
+		}
+	}
+
 	@Override protected PEDBTuneData data() {
 		return (PEDBTuneData) super.data();
 	}
@@ -141,6 +119,27 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		for (final GroupLabel l : getGrouplist()) {
 			drawHierarchyLine(g2, l, l.child(getGrouplist()));
 		}
+	}
+
+	private void createTopLabel(Group group, int level) {
+		if (group != null && group.topNote != null) {
+			final RoundRectangle2D topr = getLabelBound(group.getTopNote(),
+					level);
+			final GroupLabel toplabel = createTopNoteLabel(group.getTopNote(),
+					topr);
+			System.out.println(toplabel);
+			toplabel.setBackground(Color.red);// 色の変更
+			toplabel.setController(main);
+			group.setLevel(level);
+			add(toplabel); // 描画
+		}
+	}
+
+	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote,
+			RoundRectangle2D topr) {
+		// TODO 自動生成されたメソッド・スタブ
+		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
+		return label;
 	}
 
 	private void drawStructureEditLine(Graphics g) {
@@ -158,8 +157,8 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		x = MainFrame.getXOfNote(topNote.realOnset()) + PianoRoll
 				.getDefaultAxisX();
 		w = MainFrame.getXOfNote((int) topNote.duration());
-		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w, LABEL_HEIGHT
-				- LEVEL_PADDING, 300, 300);
+		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
+				LABEL_HEIGHT - LEVEL_PADDING, 300, 300);
 		return r;
 	}
 
