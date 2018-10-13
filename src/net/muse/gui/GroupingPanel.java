@@ -31,7 +31,6 @@ import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.MelodyFlagViewer;
 import net.muse.mixtract.gui.ViewerMode;
-import net.muse.pedb.gui.PEDBTopNoteLabel;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -46,10 +45,11 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	private static final int DEFAULT_HEIGHT = 100;
 	protected static final int LEVEL_PADDING = 3;
 	private static final int DEFAULT_WIDTH = 1024;
-	private MuseAppCommand cmd = MixtractCommand.create(
+	private final MuseAppCommand cmd = MixtractCommand.create(
 			MixtractCommandType.PRINT_GROUP_INFO);
-	private BasicStroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_ROUND,
-			BasicStroke.JOIN_ROUND, 10.0f, dashLineList, 0.0f);
+	private final BasicStroke stroke = new BasicStroke(1.0f,
+			BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, dashLineList,
+			0.0f);
 
 	protected MuseApp main;
 
@@ -62,7 +62,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/* 描画モード */
 	private ViewerMode viewerMode;
 	private boolean displayMousePointer;
-	private boolean drawToolTips = true;
+	private final boolean drawToolTips = true;
 
 	/** マウス制御 */
 	private MouseActionListener mouseActions = null;
@@ -70,12 +70,12 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 
 	protected GroupingPanel() {
 		super();
-		grouplist = new ArrayList<GroupLabel>();
+		grouplist = new ArrayList<>();
 		viewerMode = ViewerMode.SCORE_VIEW;
 		initialize();
 	}
 
-	public void addGroup(Group g) {
+	@Override public void addGroup(Group g) {
 		readTuneData();
 		repaint();
 	}
@@ -86,11 +86,11 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * jp.crestmuse.mixtract.gui.TuneDataListener#changeExpression(jp.crestmuse
 	 * .mixtract.data.PhraseProfile.PhraseCurveType)
 	 */
-	public void changeExpression(PhraseCurveType type) {
+	@Override public void changeExpression(PhraseCurveType type) {
 		if (type == PhraseCurveType.DYNAMICS)
 			return;
-		for (GroupLabel l : getGrouplist()) {
-			Rectangle r = getLabelBounds(l.group(), l.group().getLevel());
+		for (final GroupLabel l : getGrouplist()) {
+			final Rectangle r = getLabelBounds(l.group(), l.group().getLevel());
 			l.setBounds(r);
 			// l.repaint();
 		}
@@ -98,20 +98,19 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		repaint();
 	}
 
-	public void deleteGroup(GroupLabel g) {
+	@Override public void deleteGroup(GroupLabel g) {
 		readTuneData();
 		repaint();
 	}
 
-	public void deselect(GroupLabel g) {
+	@Override public void deselect(GroupLabel g) {
 		if (selectedGroup != null) {
 			selectedGroup.setSelected(false);
 			selectedGroup = null;
 		}
 	}
 
-	public void editGroup(GroupLabel g) {
-	}
+	@Override public void editGroup(GroupLabel g) {}
 
 	public MouseActionListener getMouseActions() {
 		return mouseActions;
@@ -143,8 +142,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override
-	public void paintComponent(Graphics g) {
+	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		final Graphics2D g2 = (Graphics2D) g;
 
@@ -181,9 +179,9 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 				+ "-" + nd.offset();
 		str = switchViewerMode(nd);
 		System.out.println(str + " at " + getMouseActions().getMousePoint());
-		g2.drawString(str, getMouseActions().getMousePoint().x - PianoRoll.getDefaultAxisX(),
-				getMouseActions().getMousePoint().y - main.getFrame()
-						.getKeyboard().getKeyHeight());
+		g2.drawString(str, getMouseActions().getMousePoint().x - PianoRoll
+				.getDefaultAxisX(), getMouseActions().getMousePoint().y - main
+						.getFrame().getKeyboard().getKeyHeight());
 	}
 
 	private String switchViewerMode(NoteData nd) {
@@ -204,16 +202,15 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @deprecated Use {@link #readTuneData()} instead
 	 */
-	@Deprecated
-	public void readTuneData(MXTuneData target) {
+	@Deprecated public void readTuneData(MXTuneData target) {
 		readTuneData();
 		repaint();
 	}
 
-	public void selectGroup(GroupLabel g, boolean flg) {
+	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		if (selectedGroup != null)
 			selectedGroup.setSelected(false);
-		selectedGroup = (flg) ? g : null;
+		selectedGroup = flg ? g : null;
 		cmd.setGroup(g);
 		if (g != null)
 			g.setSelected(flg);
@@ -238,7 +235,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		this.displayMousePointer = displayMousePointer;
 	}
 
-	public void setTarget(TuneData target) {
+	@Override public void setTarget(TuneData target) {
 		if (data != target) {
 			data = target;
 		}
@@ -305,7 +302,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			return;
 		group.setHierarchy(group.hasChild() || group.hasParent());
 
-		setMaximumGroupLevel((level > getMaximumGroupLevel()) ? level
+		setMaximumGroupLevel(level > getMaximumGroupLevel() ? level
 				: getMaximumGroupLevel());
 
 		final Rectangle r = getLabelBounds(group, level);
@@ -322,47 +319,31 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		return label;
 	}
 
+	/**
+	 * create a hierarchical group label
+	 *
+	 * @author hashida
+	 *
+	 * @param group
+	 * @param level
+	 */
 	protected void createHierarchicalGroupLabel(Group group, int level) {
 		if (group == null)
 			return;
 
 		// create a new group-label
-		createTopLabel(group, level);
 		createGroupLabel(group, level);
-
-
 		createHierarchicalGroupLabel(group.child(), level + 1);
-	}
-
-	protected void createTopLabel(Group group, int level) {
-		// TODO 自動生成されたメソッド・スタブ
-		if (group != null && group.topNote != null) {
-			final Rectangle topr = getLabelBound(group.getTopNote(), level);
-			final GroupLabel toplabel = createTopNoteLabel(group.getTopNote(), topr);
-			System.out.println(toplabel);
-			toplabel.setBackground(Color.red);//色の変更
-			toplabel.setController(main);
-			group.setLevel(level);
-			add(toplabel); // 描画
-		}
-	}
-
-	private GroupLabel createTopNoteLabel(NoteData topNote, Rectangle topr) {
-		// TODO 自動生成されたメソッド・スタブ
-		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
-		return label;
 	}
 
 	protected KeyActionListener createKeyActionListener(MuseApp main) {
 		return new KeyActionListener(main, this) {
 
-			@Override
-			public MuseApp main() {
-				return (MuseApp) super.main();
+			@Override public MuseApp main() {
+				return super.main();
 			}
 
-			@Override
-			public GroupingPanel owner() {
+			@Override public GroupingPanel owner() {
 				return (GroupingPanel) super.owner();
 			}
 
@@ -378,8 +359,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java.
 			 * awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseExited(MouseEvent e) {
+			@Override public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
 				if (isGroupEditable()) {
 					setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
@@ -395,8 +375,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mousePressed(MouseEvent e) {
+			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (!SwingUtilities.isRightMouseButton(e))
 					main().butler().notifyDeselectGroup();
@@ -408,8 +387,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			public void mouseReleased(MouseEvent e) {
+			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (selectedGroup == null)
 					main().butler().notifyDeselectGroup();
@@ -423,8 +401,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override
-			protected void createPopupMenu(MouseEvent e) {
+			@Override protected void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				MixtractCommandType.SET_TYPE_CRESC.command().setGroup(
 						getSelectedGroup());
@@ -444,17 +421,12 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 */
 	protected void createNonHierarchicalGroupLabel() {
 		int level = getMaximumGroupLevel() + 1;
-		for (Group g : data.getMiscGroup()) {
+		for (final Group g : data.getMiscGroup()) {
 			if (level < g.getLevel())
 				level = g.getLevel() + 1;
-			createTopLabel(g,level);
-			if(g.hasChild())
-				createTopLabel(g.child(), level + 1);
 			createGroupLabel(g, level);
 
 			createGroupLabel(g.child(), level + 1);
-
-
 		}
 	}
 
@@ -477,7 +449,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	}
 
 	protected void drawHierarchyLine(final Graphics2D g2) {
-		for (GroupLabel l : getGrouplist()) {
+		for (final GroupLabel l : getGrouplist()) {
 			drawHierarchyLine(g2, l, l.child(getGrouplist()));
 		}
 	}
@@ -510,8 +482,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			g2.setStroke(stroke);
 			g2.setColor(Color.black);
 			final int x1 = child.getX() + child.getWidth() / 2;
-			int keyHeight = ((MainFrame) main.getFrame()).getKeyboard()
-					.getKeyHeight();
+			final int keyHeight = main.getFrame().getKeyboard().getKeyHeight();
 			final int y1 = child.getY() + child.getHeight() - keyHeight;
 			final int x2 = parent.getX() + parent.getWidth() / 2;
 			final int y2 = parent.getY() + keyHeight;
@@ -588,17 +559,17 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		return r;
 	}
 
-	//追加
-		private Rectangle getLabelBound(NoteData topNote, int level) {//頂点用
-			final int y = setLabelY(level);
-			int x, w;
-			x = MainFrame.getXOfNote(topNote.realOnset()) + PianoRoll
-					.getDefaultAxisX();
-			w = MainFrame.getXOfNote((int) topNote.duration());
-			final Rectangle r = new Rectangle(x, y, w, LABEL_HEIGHT
-					- LEVEL_PADDING);
-			return r;
-		}
+	// 追加
+	private Rectangle getLabelBound(NoteData topNote, int level) {// 頂点用
+		final int y = setLabelY(level);
+		int x, w;
+		x = MainFrame.getXOfNote(topNote.realOnset()) + PianoRoll
+				.getDefaultAxisX();
+		w = MainFrame.getXOfNote((int) topNote.duration());
+		final Rectangle r = new Rectangle(x, y, w, LABEL_HEIGHT
+				- LEVEL_PADDING);
+		return r;
+	}
 
 	private void initialize() {
 		setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
