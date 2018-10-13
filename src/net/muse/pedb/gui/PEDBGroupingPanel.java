@@ -42,22 +42,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 		}
 	}
 
-	@Override protected void createGroupLabel(Group group, int level) {
-		super.createGroupLabel(group, level);
-
-		// 追加 〜頂点〜
-		if (group != null && group.topNote != null) {
-			final RoundRectangle2D topr = getLabelBound(group.topNote, level);
-			final PEDBTopNoteLabel toplabel = createTopNoteLabel(group
-					.getTopNote(), topr);
-			toplabel.setBackground(Color.red);// 色の変更
-			toplabel.setController(main);
-			group.setLevel(level);
-			add(toplabel); // 描画
-		}
-
-	}
-
 	public void setHigherGroup(PEDBGroupLabel l) {
 		higherGroup = l;
 		main().butler().printConsole(String.format("%s is set as higher group",
@@ -83,7 +67,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 			return;
 
 		// 頂点音ラベルを生成する
-		createTopLabel(group, level);
+		createTopNoteLabel(group, level);
 		// create a new group-label
 		createGroupLabel(group, level);
 
@@ -121,13 +105,12 @@ class PEDBGroupingPanel extends GroupingPanel {
 		for (final Group g : data().getMiscGroup()) {
 			if (level < g.getLevel())
 				level = g.getLevel() + 1;
-			createTopLabel(g, level);
+			createTopNoteLabel(g, level);
 			if (g.hasChild())
-				createTopLabel(g.child(), level + 1);
+				createTopNoteLabel(g.child(), level + 1);
 			createGroupLabel(g, level);
 
 			createGroupLabel(g.child(), level + 1);
-
 		}
 	}
 
@@ -141,25 +124,27 @@ class PEDBGroupingPanel extends GroupingPanel {
 		}
 	}
 
-	private void createTopLabel(Group group, int level) {
-		if (group != null && group.topNote != null) {
-			final RoundRectangle2D topr = getLabelBound(group.getTopNote(),
-					level);
-			final GroupLabel toplabel = createTopNoteLabel(group.getTopNote(),
-					topr);
-			System.out.println(toplabel);
-			toplabel.setBackground(Color.red);// 色の変更
-			toplabel.setController(main);
-			group.setLevel(level);
-			add(toplabel); // 描画
-		}
-	}
+	/**
+	 * 頂点音ラベルを生成します。
+	 *
+	 * @author anan
+	 * @since Oct 13th, 2018
+	 */
+	private void createTopNoteLabel(Group group, int level) {
+		if (group == null || group.topNote == null)
+			return;
 
-	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote,
-			RoundRectangle2D topr) {
-		// TODO 自動生成されたメソッド・スタブ
-		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
-		return label;
+		// 以下は、group が存在し、かつ当該groupに頂点音が存在する場合にのみ実行される
+		final RoundRectangle2D topr = getTopNoteLabelBound(group.getTopNote(),
+				level);
+		final GroupLabel toplabel = new PEDBTopNoteLabel(group.getTopNote(),
+				topr);
+		System.out.println(toplabel);
+		toplabel.setBackground(Color.red);// 色の変更
+		toplabel.setController(main);
+		group.setLevel(level);
+		add(toplabel); // 描画
+		createTopNoteLabel((Group) group.next(), level);
 	}
 
 	private void drawStructureEditLine(Graphics g) {
@@ -170,8 +155,13 @@ class PEDBGroupingPanel extends GroupingPanel {
 		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
 	}
 
-	// 追加
-	private RoundRectangle2D getLabelBound(NoteData topNote, int level) {// 頂点用
+	/**
+	 * 頂点音ラベルのサイズを求めます。
+	 *
+	 * @author anan
+	 * @since Oct 13th, 2018
+	 */
+	private RoundRectangle2D getTopNoteLabelBound(NoteData topNote, int level) {
 		final int y = setLabelY(level);
 		int x, w;
 		x = MainFrame.getXOfNote(topNote.realOnset()) + PianoRoll
