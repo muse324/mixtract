@@ -90,7 +90,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * net.muse.mixtract.gui.GroupEditListener#addGroup(net.muse.mixtract.data.
 	 * Group)
 	 */
-	@Override public void addGroup(Group g) {
+	@Override
+	public void addGroup(Group g) {
 		setFocusable(false);
 		repaint();
 	}
@@ -101,7 +102,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * net.muse.mixtract.gui.TuneDataListener#changeExpression(net.muse.mixtract
 	 * .data.curve.PhraseCurveType)
 	 */
-	@Override public void changeExpression(PhraseCurveType type) {
+	@Override
+	public void changeExpression(PhraseCurveType type) {
 		if (type == PhraseCurveType.DYNAMICS)
 			return;
 		resizeLabels(notelist());
@@ -113,7 +115,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @see
 	 * net.muse.mixtract.gui.GroupEditListener#deleteGroup(javax.swing.JLabel)
 	 */
-	@Override public void deleteGroup(GroupLabel g) {
+	@Override
+	public void deleteGroup(GroupLabel g) {
 		deselect(g);
 		repaint();
 	}
@@ -122,7 +125,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * (非 Javadoc)
 	 * @see net.muse.mixtract.gui.GroupEditListener#deselect(javax.swing.JLabel)
 	 */
-	@Override public void deselect(GroupLabel g) {
+	@Override
+	public void deselect(GroupLabel g) {
 		setMouseOveredNoteLabel(null);
 		clearSelection();
 		setFocusable(false);
@@ -134,7 +138,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @see
 	 * net.muse.mixtract.gui.GroupEditListener#editGroup(javax.swing.JLabel)
 	 */
-	@Override public void editGroup(GroupLabel g) {
+	@Override
+	public void editGroup(GroupLabel g) {
 		throw new UnsupportedOperationException(); // TODO 実装
 	}
 
@@ -172,7 +177,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override public void paintComponent(final Graphics g) {
+	@Override
+	public void paintComponent(final Graphics g) {
 		/* おまじない */
 		final Graphics2D g2 = (Graphics2D) g;
 		super.paintComponent(g2);
@@ -237,7 +243,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * jp.crestmuse.mixtract.gui.components.GroupEditListener#selectGroup(javax
 	 * .swing.JLabel, boolean)
 	 */
-	@Override public void selectGroup(GroupLabel g, boolean flg) {
+	@Override
+	public void selectGroup(GroupLabel g, boolean flg) {
 		clearSelection();
 		setSelectedGroup(g);
 		selectGroup(g.group());
@@ -249,9 +256,12 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @see net.muse.mixtract.gui.CanvasMouseListener#setShowCurrentX(boolean,
 	 * int)
 	 */
-	@Override public void setShowCurrentX(boolean showCurrentX, int x) {}
+	@Override
+	public void setShowCurrentX(boolean showCurrentX, int x) {
+	}
 
-	@Override public void setTarget(TuneData target) {
+	@Override
+	public void setTarget(TuneData target) {
 		this.setData(target);
 		ChangePartCommand.setPartSize(target.getRootGroup().size());
 		makeNoteLabel();
@@ -358,6 +368,15 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		final NoteData nd = mouseOveredNoteLabel.getScoreNote();
 		String str = nd.noteName() + "(" + nd.velocity() + ")" + nd.onset()
 				+ "-" + nd.offset();
+		str = switchViewerMode(nd);
+		System.out.println(str + " at " + getMouseActions().getMousePoint());
+		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
+				getMouseActions().getMousePoint().y - main.getFrame()
+						.getKeyboard().getKeyHeight());
+	}
+
+	protected String switchViewerMode(final NoteData nd) {
+		String str;
 		switch (viewerMode) {
 		case REALTIME_VIEW:
 			str = String.format("%s (%s): v%d / %.0f[%.0f-%.0f]", nd.noteName(),
@@ -369,10 +388,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 					.onset(), nd.offset());
 			break;
 		}
-		System.out.println(str + " at " + getMouseActions().getMousePoint());
-		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
-				getMouseActions().getMousePoint().y - main.getFrame()
-						.getKeyboard().getKeyHeight());
+		return str;
 	}
 
 	/**
@@ -380,7 +396,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 *
 	 * @param g2
 	 */
-	protected void drawOptionalInfo(Graphics2D g2) {}
+	protected void drawOptionalInfo(Graphics2D g2) {
+	}
 
 	/**
 	 * マウスの選択範囲に収まる音符を色付けする．
@@ -505,7 +522,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		return false;
 	}
 
-	protected void rescaleNoteLabels() {}
+	protected void rescaleNoteLabels() {
+	}
 
 	protected void resizeLabels(NoteLabel label) {
 		if (label == null)

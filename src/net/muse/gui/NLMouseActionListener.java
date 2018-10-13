@@ -17,11 +17,16 @@ class NLMouseActionListener extends MouseActionListener {
 	 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
 	 * .awt.event.MouseEvent)
 	 */
-	@Override public void mouseEntered(MouseEvent e) {
+	@Override
+	public void mouseEntered(MouseEvent e) {
 		super.mouseEntered(e);
 		NoteLabel src = (NoteLabel) e.getSource();
 		src.setMouseOver(true);
-		((PianoRoll) self().getParent()).setMouseOveredNoteLabel(src);
+		Container p = self().getParent();
+		if (p instanceof PianoRoll)
+			((PianoRoll) p).setMouseOveredNoteLabel(src);
+		else if (p instanceof GroupingPanel)
+			((GroupingPanel) p).setMouseOveredNoteLabel(src);
 		self().repaint();
 	}
 
@@ -31,11 +36,16 @@ class NLMouseActionListener extends MouseActionListener {
 	 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java
 	 * .awt.event.MouseEvent)
 	 */
-	@Override public void mouseExited(MouseEvent e) {
+	@Override
+	public void mouseExited(MouseEvent e) {
 		super.mouseExited(e);
 		((NoteLabel) e.getSource()).setMouseOver(false);
 		((NoteLabel) e.getSource()).setEditMode(getMousePoint());
-		((PianoRoll) self().getParent()).setMouseOveredNoteLabel(null);
+		Container p = self().getParent();
+		if (p instanceof PianoRoll)
+			((PianoRoll) p).setMouseOveredNoteLabel(null);
+		else if (p instanceof GroupingPanel)
+			((GroupingPanel) p).setMouseOveredNoteLabel(null);
 		self().repaint();
 	}
 
@@ -45,7 +55,8 @@ class NLMouseActionListener extends MouseActionListener {
 	 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
 	 * .event.MouseEvent)
 	 */
-	@Override public void mouseMoved(MouseEvent e) {
+	@Override
+	public void mouseMoved(MouseEvent e) {
 		((PianoRoll) self().getParent()).setMouseOveredNoteLabel(
 				(NoteLabel) e.getSource());
 	}

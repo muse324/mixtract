@@ -23,6 +23,7 @@ import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
+import net.muse.data.NoteData;
 import net.muse.data.TuneData;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.command.MixtractCommandType;
@@ -65,6 +66,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 
 	/** マウス制御 */
 	private MouseActionListener mouseActions = null;
+	private NoteLabel mouseOveredNoteLabel;
 
 	protected GroupingPanel() {
 		super();
@@ -108,7 +110,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		}
 	}
 
-	public void editGroup(GroupLabel g) {}
+	public void editGroup(GroupLabel g) {
+	}
 
 	public MouseActionListener getMouseActions() {
 		return mouseActions;
@@ -140,7 +143,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override public void paintComponent(Graphics g) {
+	@Override
+	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		final Graphics2D g2 = (Graphics2D) g;
 
@@ -164,6 +168,27 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		if (mouseActions.isGroupEditable()) {
 			drawEditArea(g2);
 		}
+
+		/* マウスオーバー状態の音符情報を表示 */
+		drawMouseOveredNoteInfo(g2);
+	}
+
+	protected void drawMouseOveredNoteInfo(Graphics2D g2) {
+		if (mouseOveredNoteLabel == null)
+			return;
+		final NoteData nd = mouseOveredNoteLabel.getScoreNote();
+		String str = nd.noteName() + "(" + nd.velocity() + ")" + nd.onset()
+				+ "-" + nd.offset();
+		str = switchViewerMode(nd);
+		System.out.println(str + " at " + getMouseActions().getMousePoint());
+		g2.drawString(str, getMouseActions().getMousePoint().x - PianoRoll.getDefaultAxisX(),
+				getMouseActions().getMousePoint().y - main.getFrame()
+						.getKeyboard().getKeyHeight());
+	}
+
+	private String switchViewerMode(NoteData nd) {
+		return String.format("%s (%s): %d-%d", nd.noteName(), nd.chord(), nd
+				.onset(), nd.offset());
 	}
 
 	public void readTuneData() {
@@ -179,7 +204,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	/**
 	 * @deprecated Use {@link #readTuneData()} instead
 	 */
-	@Deprecated public void readTuneData(MXTuneData target) {
+	@Deprecated
+	public void readTuneData(MXTuneData target) {
 		readTuneData();
 		repaint();
 	}
@@ -309,11 +335,13 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	protected KeyActionListener createKeyActionListener(MuseApp main) {
 		return new KeyActionListener(main, this) {
 
-			@Override public MuseApp main() {
+			@Override
+			public MuseApp main() {
 				return (MuseApp) super.main();
 			}
 
-			@Override public GroupingPanel owner() {
+			@Override
+			public GroupingPanel owner() {
 				return (GroupingPanel) super.owner();
 			}
 
@@ -329,7 +357,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java.
 			 * awt.event.MouseEvent)
 			 */
-			@Override public void mouseExited(MouseEvent e) {
+			@Override
+			public void mouseExited(MouseEvent e) {
 				super.mouseExited(e);
 				if (isGroupEditable()) {
 					setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
@@ -345,7 +374,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mousePressed(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mousePressed(MouseEvent e) {
+			@Override
+			public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (!SwingUtilities.isRightMouseButton(e))
 					main().butler().notifyDeselectGroup();
@@ -357,7 +387,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseReleased(java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override public void mouseReleased(MouseEvent e) {
+			@Override
+			public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (selectedGroup == null)
 					main().butler().notifyDeselectGroup();
@@ -371,7 +402,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			 * java
 			 * .awt.event.MouseEvent)
 			 */
-			@Override protected void createPopupMenu(MouseEvent e) {
+			@Override
+			protected void createPopupMenu(MouseEvent e) {
 				super.createPopupMenu(e);
 				MixtractCommandType.SET_TYPE_CRESC.command().setGroup(
 						getSelectedGroup());
@@ -529,8 +561,6 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		return r;
 	}
 
-
-
 	private void initialize() {
 		setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 		setOpaque(true);
@@ -546,5 +576,10 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 */
 	protected int setLabelY(int level) {
 		return LABEL_HEIGHT * level + 15;
+	}
+
+	void setMouseOveredNoteLabel(NoteLabel src) {
+		this.mouseOveredNoteLabel = src;
+		repaint();
 	}
 }
