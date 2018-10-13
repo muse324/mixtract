@@ -34,6 +34,7 @@ public class PEDBTopNoteLabel extends JLabel {
 		setLocation(r.x, r.y);
 		setBounds(r);
 		//setTypeShape(topNote.getType());
+		setOpaque(true);
 	}
 
 

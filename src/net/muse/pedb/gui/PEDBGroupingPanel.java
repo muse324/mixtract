@@ -50,10 +50,8 @@ public class PEDBGroupingPanel extends GroupingPanel {
 
 		//追加　　〜頂点〜
 		if (group != null && group.topNote != null) {
-			//System.out.println(group.topNote);
 			final Rectangle topr = getLabelBound(group.topNote, level);
 			final PEDBTopNoteLabel toplabel = createTopNoteLabel(group.getTopNote(), topr);
-			//System.out.println("create" + toplabel);
 			toplabel.setForeground(Color.blue);
 			toplabel.setBackground(Color.blue);
 			toplabel.setController(main);
