@@ -43,7 +43,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 	}
 
 	@Override protected void createGroupLabel(Group group, int level) {
-		// TODO 自動生成されたメソッド・スタブ
 		super.createGroupLabel(group, level);
 
 		// 追加 〜頂点〜
