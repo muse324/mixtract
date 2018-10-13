@@ -109,11 +109,11 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	 * @return _mainFrame
 	 */
 	protected MainFrame frame() {
-		return _frame;
+		return app().getFrame();
 	}
 
 	protected TuneData data() {
-		return _data;
+		return app().data();
 	}
 
 	public void setTarget(Object obj) {
