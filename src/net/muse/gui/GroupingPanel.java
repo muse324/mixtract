@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import com.sun.javafx.geom.RoundRectangle2D;
+
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
 import net.muse.data.Group;
@@ -337,9 +339,9 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	protected void createTopLabel(Group group, int level) {
 		// TODO 自動生成されたメソッド・スタブ
 		if (group != null && group.topNote != null) {
-			final Rectangle topr = getLabelBound(group.getTopNote(), level);
+			final RoundRectangle2D topr = getLabelBound(group.getTopNote(), level);
 			final GroupLabel toplabel = createTopNoteLabel(group.getTopNote(), topr);
-			System.out.println(toplabel);
+			//System.out.println(toplabel);
 			toplabel.setBackground(Color.red);//色の変更
 			toplabel.setController(main);
 			group.setLevel(level);
@@ -347,7 +349,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		}
 	}
 
-	private GroupLabel createTopNoteLabel(NoteData topNote, Rectangle topr) {
+	private GroupLabel createTopNoteLabel(NoteData topNote, RoundRectangle2D topr) {
 		// TODO 自動生成されたメソッド・スタブ
 		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
 		return label;
@@ -589,14 +591,14 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	}
 
 	//追加
-		private Rectangle getLabelBound(NoteData topNote, int level) {//頂点用
+		private RoundRectangle2D getLabelBound(NoteData topNote, int level) {//頂点用
 			final int y = setLabelY(level);
 			int x, w;
 			x = MainFrame.getXOfNote(topNote.realOnset()) + PianoRoll
 					.getDefaultAxisX();
 			w = MainFrame.getXOfNote((int) topNote.duration());
-			final Rectangle r = new Rectangle(x, y, w, LABEL_HEIGHT
-					- LEVEL_PADDING);
+			final RoundRectangle2D r = new RoundRectangle2D(x, y, w, LABEL_HEIGHT
+					- LEVEL_PADDING , 300 , 300);
 			return r;
 		}
 

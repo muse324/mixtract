@@ -5,6 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 
+import com.sun.javafx.geom.RoundRectangle2D;
+
 import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.data.Group;
@@ -67,7 +69,7 @@ int i = 0;//追加
 
 
 
-	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote, Rectangle topr) {
+	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote, RoundRectangle2D topr) {
 		// TODO 自動生成されたメソッド・スタブ
 		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
 		return label;
