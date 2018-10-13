@@ -117,6 +117,12 @@ class PEDBGroupingPanel extends GroupingPanel {
 		}
 	}
 
+	/**
+	 * 頂点音ラベルを生成します。
+	 *
+	 * @since Oct. 13th, 2018
+	 * @author anan
+	 */
 	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote,
 			Rectangle topr) {
 		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
