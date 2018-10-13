@@ -4,8 +4,6 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-import com.sun.javafx.geom.RoundRectangle2D;
-
 import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.data.Group;
@@ -18,16 +16,6 @@ public class PEDBGroupLabel extends GroupLabel {
 
 	public PEDBGroupLabel(Group group, Rectangle r) {
 		super(group, r);
-	}
-
-	public PEDBGroupLabel(Group group, RoundRectangle2D r) {
-		//super(group, r);
-		//this();
-		this.group = group;
-		this.setPartNumber(group.getBeginNote().musePhony());
-		//setLocation(r.x, r.y);
-		//setBounds(r);
-		setTypeShape(group.getType());
 	}
 
 	@Override public PEDBGroup group() {
