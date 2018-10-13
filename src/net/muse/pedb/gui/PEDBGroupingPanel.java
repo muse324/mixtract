@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.geom.RoundRectangle2D;
 
 import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
@@ -18,18 +19,8 @@ import net.muse.gui.MouseActionListener;
 import net.muse.gui.PianoRoll;
 import net.muse.pedb.data.PEDBTuneData;
 
-public class PEDBGroupingPanel extends GroupingPanel {
-
+class PEDBGroupingPanel extends GroupingPanel {
 	private PEDBGroupLabel higherGroup;
-
-	protected void createHierarchicalGroupLabel(Group group, int level) {
-		if (group == null)
-			return;
-		createHierarchicalGroupLabel(group.child(), level + 1);
-		createHierarchicalGroupLabel((Group) group.next(), level);
-		// create a new group-label
-		createGroupLabel(group, level);
-	}
 
 	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -57,7 +48,7 @@ public class PEDBGroupingPanel extends GroupingPanel {
 
 		// 追加 〜頂点〜
 		if (group != null && group.topNote != null) {
-			final Rectangle topr = getLabelBound(group.topNote, level);
+			final RoundRectangle2D topr = getLabelBound(group.topNote, level);
 			final PEDBTopNoteLabel toplabel = createTopNoteLabel(group
 					.getTopNote(), topr);
 			toplabel.setBackground(Color.red);// 色の変更
@@ -67,15 +58,6 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		}
 
 	}
-
-	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote,
-			Rectangle topr) {
-		// TODO 自動生成されたメソッド・スタブ
-		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
-		return label;
-	}
-
-	//
 
 	public void setHigherGroup(PEDBGroupLabel l) {
 		higherGroup = l;
@@ -88,6 +70,25 @@ public class PEDBGroupingPanel extends GroupingPanel {
 	@Override protected PEDBGroupLabel createGroupLabel(Group group,
 			Rectangle r) {
 		return new PEDBGroupLabel(group, r);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.GroupingPanel#createHierarchicalGroupLabel(net.muse.data.
+	 * Group, int)
+	 */
+	@Override protected void createHierarchicalGroupLabel(Group group,
+			int level) {
+		if (group == null)
+			return;
+
+		// 頂点音ラベルを生成する
+		createTopLabel(group, level);
+		// create a new group-label
+		createGroupLabel(group, level);
+
+		createHierarchicalGroupLabel(group.child(), level + 1);
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(
@@ -116,33 +117,69 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		};
 	}
 
+	@Override protected void createNonHierarchicalGroupLabel() {
+		int level = getMaximumGroupLevel() + 1;
+		for (final Group g : data().getMiscGroup()) {
+			if (level < g.getLevel())
+				level = g.getLevel() + 1;
+			createTopLabel(g, level);
+			if (g.hasChild())
+				createTopLabel(g.child(), level + 1);
+			createGroupLabel(g, level);
+
+			createGroupLabel(g.child(), level + 1);
+
+		}
+	}
+
 	@Override protected PEDBTuneData data() {
 		return (PEDBTuneData) super.data();
 	}
 
 	@Override protected void drawHierarchyLine(final Graphics2D g2) {
-		for (GroupLabel l : getGrouplist()) {
+		for (final GroupLabel l : getGrouplist()) {
 			drawHierarchyLine(g2, l, l.child(getGrouplist()));
 		}
 	}
 
+	private void createTopLabel(Group group, int level) {
+		if (group != null && group.topNote != null) {
+			final RoundRectangle2D topr = getLabelBound(group.getTopNote(),
+					level);
+			final GroupLabel toplabel = createTopNoteLabel(group.getTopNote(),
+					topr);
+			System.out.println(toplabel);
+			toplabel.setBackground(Color.red);// 色の変更
+			toplabel.setController(main);
+			group.setLevel(level);
+			add(toplabel); // 描画
+		}
+	}
+
+	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote,
+			RoundRectangle2D topr) {
+		// TODO 自動生成されたメソッド・スタブ
+		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
+		return label;
+	}
+
 	private void drawStructureEditLine(Graphics g) {
-		MouseActionListener m = getMouseActions();
-		Rectangle r = higherGroup.getBounds();
-		int x = r.x + r.getSize().width / 2;
-		int y = (int) r.getMaxY();
+		final MouseActionListener m = getMouseActions();
+		final Rectangle r = higherGroup.getBounds();
+		final int x = r.x + r.getSize().width / 2;
+		final int y = (int) r.getMaxY();
 		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
 	}
 
 	// 追加
-	private Rectangle getLabelBound(NoteData topNote, int level) {
+	private RoundRectangle2D getLabelBound(NoteData topNote, int level) {// 頂点用
 		final int y = setLabelY(level);
 		int x, w;
 		x = MainFrame.getXOfNote(topNote.realOnset()) + PianoRoll
 				.getDefaultAxisX();
 		w = MainFrame.getXOfNote((int) topNote.duration());
-		final Rectangle r = new Rectangle(x, y, w, LABEL_HEIGHT
-				- LEVEL_PADDING);
+		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
+				LABEL_HEIGHT - LEVEL_PADDING, 300, 300);
 		return r;
 	}
 
