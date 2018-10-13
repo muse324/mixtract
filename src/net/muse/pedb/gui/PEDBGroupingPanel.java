@@ -1,6 +1,5 @@
 package net.muse.pedb.gui;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -19,7 +18,7 @@ import net.muse.gui.PianoRoll;
 import net.muse.pedb.data.PEDBTuneData;
 
 public class PEDBGroupingPanel extends GroupingPanel {
-
+int i = 0;//追加
 	private PEDBGroupLabel higherGroup;
 
 	@Override public void paintComponent(Graphics g) {
@@ -45,10 +44,11 @@ public class PEDBGroupingPanel extends GroupingPanel {
 	protected void createGroupLabel(Group group, int level) {
 		// TODO 自動生成されたメソッド・スタブ
 		super.createGroupLabel(group, level);
-
-
+/*
 		//追加　　〜頂点〜
 		if (group != null && group.topNote != null) {
+			System.out.println("createTop of Group" + i);
+			i++;
 			final Rectangle topr = getLabelBound(group.topNote, level);
 			final PEDBTopNoteLabel toplabel = createTopNoteLabel(group.getTopNote(), topr);
 			toplabel.setBackground(Color.red);//色の変更
@@ -56,10 +56,15 @@ public class PEDBGroupingPanel extends GroupingPanel {
 			group.setLevel(level);
 			add(toplabel); // 描画
 		}
-
-
+		*/
 
 	}
+	protected void createTopLabel(Group group, int level) {
+		// TODO 自動生成されたメソッド・スタブ
+		super.createTopLabel(group, level);
+	}
+
+
 
 
 	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote, Rectangle topr) {

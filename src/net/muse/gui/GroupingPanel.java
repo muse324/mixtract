@@ -31,6 +31,7 @@ import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.MelodyFlagViewer;
 import net.muse.mixtract.gui.ViewerMode;
+import net.muse.pedb.gui.PEDBTopNoteLabel;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
@@ -39,7 +40,6 @@ import net.muse.mixtract.gui.ViewerMode;
  * @since 2008/04/24
  */
 public class GroupingPanel extends JPanel implements TuneDataListener {
-
 	private static final long serialVersionUID = 1L;
 	static float[] dashLineList = { 10.0f, 5.0f, 5.0f, 5.0f };
 	protected static final int LABEL_HEIGHT = 20;
@@ -327,9 +327,30 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			return;
 
 		// create a new group-label
+		createTopLabel(group, level);
 		createGroupLabel(group, level);
 
+
 		createHierarchicalGroupLabel(group.child(), level + 1);
+	}
+
+	protected void createTopLabel(Group group, int level) {
+		// TODO 自動生成されたメソッド・スタブ
+		if (group != null && group.topNote != null) {
+			final Rectangle topr = getLabelBound(group.getTopNote(), level);
+			final GroupLabel toplabel = createTopNoteLabel(group.getTopNote(), topr);
+			System.out.println(toplabel);
+			toplabel.setBackground(Color.red);//色の変更
+			toplabel.setController(main);
+			group.setLevel(level);
+			add(toplabel); // 描画
+		}
+	}
+
+	private GroupLabel createTopNoteLabel(NoteData topNote, Rectangle topr) {
+		// TODO 自動生成されたメソッド・スタブ
+		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
+		return label;
 	}
 
 	protected KeyActionListener createKeyActionListener(MuseApp main) {
@@ -426,8 +447,14 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		for (Group g : data.getMiscGroup()) {
 			if (level < g.getLevel())
 				level = g.getLevel() + 1;
+			createTopLabel(g,level);
+			if(g.hasChild())
+				createTopLabel(g.child(), level + 1);
 			createGroupLabel(g, level);
+
 			createGroupLabel(g.child(), level + 1);
+
+
 		}
 	}
 
@@ -560,6 +587,18 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 				- LEVEL_PADDING);
 		return r;
 	}
+
+	//追加
+		private Rectangle getLabelBound(NoteData topNote, int level) {//頂点用
+			final int y = setLabelY(level);
+			int x, w;
+			x = MainFrame.getXOfNote(topNote.realOnset()) + PianoRoll
+					.getDefaultAxisX();
+			w = MainFrame.getXOfNote((int) topNote.duration());
+			final Rectangle r = new Rectangle(x, y, w, LABEL_HEIGHT
+					- LEVEL_PADDING);
+			return r;
+		}
 
 	private void initialize() {
 		setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
