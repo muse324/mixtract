@@ -44,7 +44,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	/**
 	 * @return defaultAxisX
 	 */
-	static int getDefaultAxisX() {
+	public static int getDefaultAxisX() {
 		return defaultAxisX;
 	}
 

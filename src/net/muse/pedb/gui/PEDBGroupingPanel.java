@@ -1,5 +1,7 @@
 package net.muse.pedb.gui;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -8,10 +10,13 @@ import java.awt.event.KeyEvent;
 import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.data.Group;
+import net.muse.data.NoteData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.GroupingPanel;
 import net.muse.gui.KeyActionListener;
+import net.muse.gui.MainFrame;
 import net.muse.gui.MouseActionListener;
+import net.muse.gui.PianoRoll;
 import net.muse.pedb.data.PEDBTuneData;
 
 public class PEDBGroupingPanel extends GroupingPanel {
@@ -36,6 +41,53 @@ public class PEDBGroupingPanel extends GroupingPanel {
 			repaint();
 		}
 	}
+
+	@Override
+	protected void createGroupLabel(Group group, int level) {
+		// TODO 自動生成されたメソッド・スタブ
+		super.createGroupLabel(group, level);
+
+
+		//追加　　〜頂点〜
+		if (group != null && group.topNote != null) {
+			//System.out.println(group.topNote);
+			final Rectangle topr = getLabelBound(group.topNote, level);
+			final PEDBTopNoteLabel toplabel = createTopNoteLabel(group.getTopNote(), topr);
+			//System.out.println("create" + toplabel);
+			toplabel.setForeground(Color.blue);
+			toplabel.setBackground(Color.blue);
+			toplabel.setController(main);
+			group.setLevel(level);
+			add(toplabel); // 描画
+			repaint();
+			Component[] a = getComponents();
+			for (Component c : a) {
+				if (c instanceof PEDBTopNoteLabel)
+				{
+					PEDBTopNoteLabel l = (PEDBTopNoteLabel)c;
+					System.out.println("size = "+l.getBounds());
+				}
+				else
+				{
+
+					//PEDBTopNoteLabel g = (PEDBTopNoteLabel)c;
+					System.out.println("else = " + c + " " + c.getClass().getName() + " " + c.getBounds());
+				}
+			}
+		}
+
+
+
+	}
+
+
+	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote, Rectangle topr) {
+		// TODO 自動生成されたメソッド・スタブ
+		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
+		return label;
+	}
+
+	//
 
 	public void setHigherGroup(PEDBGroupLabel l) {
 		higherGroup = l;
@@ -90,5 +142,20 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		int y = (int) r.getMaxY();
 		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
 	}
+
+
+
+	//追加
+	private Rectangle getLabelBound(NoteData topNote, int level) {
+		final int y = setLabelY(level);
+		int x, w;
+		x = MainFrame.getXOfNote(topNote.realOnset()) + PianoRoll
+				.getDefaultAxisX();
+		w = MainFrame.getXOfNote((int) topNote.duration());
+		final Rectangle r = new Rectangle(x, y, w, LABEL_HEIGHT
+				- LEVEL_PADDING);
+		return r;
+	}
+
 
 }

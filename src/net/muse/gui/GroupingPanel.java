@@ -41,16 +41,16 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 
 	private static final long serialVersionUID = 1L;
 	static float[] dashLineList = { 10.0f, 5.0f, 5.0f, 5.0f };
-	static final int LABEL_HEIGHT = 20;
+	protected static final int LABEL_HEIGHT = 20;
 	private static final int DEFAULT_HEIGHT = 100;
-	private static final int LEVEL_PADDING = 3;
+	protected static final int LEVEL_PADDING = 3;
 	private static final int DEFAULT_WIDTH = 1024;
 	private MuseAppCommand cmd = MixtractCommand.create(
 			MixtractCommandType.PRINT_GROUP_INFO);
 	private BasicStroke stroke = new BasicStroke(1.0f, BasicStroke.CAP_ROUND,
 			BasicStroke.JOIN_ROUND, 10.0f, dashLineList, 0.0f);
 
-	private MuseApp main;
+	protected MuseApp main;
 
 	/* 格納データ */
 	private TuneData data;
@@ -529,6 +529,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		return r;
 	}
 
+
+
 	private void initialize() {
 		setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 		setOpaque(true);
@@ -542,7 +544,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * @param gr
 	 * @return
 	 */
-	private int setLabelY(int level) {
+	protected int setLabelY(int level) {
 		return LABEL_HEIGHT * level + 15;
 	}
 }

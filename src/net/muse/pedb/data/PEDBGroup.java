@@ -13,7 +13,10 @@ public class PEDBGroup extends Group {
 
 	public PEDBGroup(NoteData beginNote, NoteData endNote, GroupType type) {
 		super(beginNote, endNote, type);
+		topNote = beginNote;
+		//System.out.println(topNote);
 	}
+
 
 	@Override public PEDBGroup child() {
 		return (PEDBGroup) super.child();
@@ -28,8 +31,7 @@ public class PEDBGroup extends Group {
 	}
 
 	public void setTopNote(MXNoteData n) {
-		topNote = n;//カーソルが音符に合わせた時(クリックではない)、その音符の情報値を出力する。
-		System.out.println(n);
+		topNote = n;
 	}
 
 }
