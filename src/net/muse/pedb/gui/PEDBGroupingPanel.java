@@ -55,23 +55,15 @@ class PEDBGroupingPanel extends GroupingPanel {
 		return new PEDBGroupLabel(group, r);
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see
-	 * net.muse.gui.GroupingPanel#createHierarchicalGroupLabel(net.muse.data.
-	 * Group, int)
-	 */
+
 	@Override protected void createHierarchicalGroupLabel(Group group,
 			int level) {
 		if (group == null)
 			return;
-
-		// 頂点音ラベルを生成する
-		createTopNoteLabel(group, level);
+		createHierarchicalGroupLabel(group.child(), level + 1);
+		createHierarchicalGroupLabel((Group) group.next(), level);
 		// create a new group-label
 		createGroupLabel(group, level);
-
-		createHierarchicalGroupLabel(group.child(), level + 1);
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(
@@ -119,7 +111,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	}
 
 	@Override protected void drawHierarchyLine(final Graphics2D g2) {
-		for (final GroupLabel l : getGrouplist()) {
+		for (GroupLabel l : getGrouplist()) {
 			drawHierarchyLine(g2, l, l.child(getGrouplist()));
 		}
 	}
@@ -148,10 +140,10 @@ class PEDBGroupingPanel extends GroupingPanel {
 	}
 
 	private void drawStructureEditLine(Graphics g) {
-		final MouseActionListener m = getMouseActions();
-		final Rectangle r = higherGroup.getBounds();
-		final int x = r.x + r.getSize().width / 2;
-		final int y = (int) r.getMaxY();
+		MouseActionListener m = getMouseActions();
+		Rectangle r = higherGroup.getBounds();
+		int x = r.x + r.getSize().width / 2;
+		int y = (int) r.getMaxY();
 		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
 	}
 
