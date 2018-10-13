@@ -310,7 +310,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @return _frame
 	 */
 	protected MainFrame frame() {
-		return _frame;
+		return main().getFrame();
 	}
 
 	/**

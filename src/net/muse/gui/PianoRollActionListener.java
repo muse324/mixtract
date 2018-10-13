@@ -52,6 +52,7 @@ public class PianoRollActionListener extends MouseActionListener {
 			SetKeyModeCommand.setSelectedKeyMode(KeyMode.valueOf(src
 					.getText()));
 		}
+		// 登録済みのコマンドを探して実行する
 		super.actionPerformed(e);
 		self().repaint();
 	}

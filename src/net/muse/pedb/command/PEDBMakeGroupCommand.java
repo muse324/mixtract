@@ -16,9 +16,17 @@ import net.muse.pedb.gui.PEDBMainFrame;
 
 public class PEDBMakeGroupCommand extends MakeGroupCommand {
 
-	@Override protected PEDBGroup searchGroup(MXGroup g, NoteData beginNote,
-			NoteData endNote) {
-		return (PEDBGroup) super.searchGroup(g, beginNote, endNote);
+	public PEDBMakeGroupCommand(String... lang) {
+		super(lang);
+	}
+
+	@Override public PEDBStructureEditor app() {
+		return (PEDBStructureEditor) super.app();
+	}
+
+	@Override protected PEDBGroup combineGroups(Group conditionGroup,
+			Group former, Group latter) {
+		return (PEDBGroup) super.combineGroups(conditionGroup, former, latter);
 	}
 
 	@Override protected PEDBGroup createAutoGroupAfterUserGroup(NoteLabel end) {
@@ -30,18 +38,27 @@ public class PEDBMakeGroupCommand extends MakeGroupCommand {
 		return (PEDBGroup) super.createAutoGroupBeforUserGroup(begin);
 	}
 
-	@Override protected PEDBGroup combineGroups(Group conditionGroup,
-			Group former, Group latter) {
-		return (PEDBGroup) super.combineGroups(conditionGroup, former, latter);
-	}
-
 	@Override protected PEDBGroup createGroup(NoteData b, NoteData e,
 			GroupType type) {
 		return new PEDBGroup(b, e, type);
 	}
 
-	public PEDBMakeGroupCommand(String... lang) {
-		super(lang);
+	@Override protected PEDBGroup createGroup(NoteLabel begin, NoteLabel end,
+			GroupType type) {
+		return new PEDBGroup(begin.getScoreNote(), end.getScoreNote(), type);
+	}
+
+	@Override protected PEDBTuneData data() {
+		return (PEDBTuneData) super.data();
+	}
+
+	@Override protected PEDBMainFrame frame() {
+		return (PEDBMainFrame) super.frame();
+	}
+
+	@Override protected GroupLabel getGroupLabel() {
+		// TODO 自動生成されたメソッド・スタブ
+		return super.getGroupLabel();
 	}
 
 	/*
@@ -70,25 +87,8 @@ public class PEDBMakeGroupCommand extends MakeGroupCommand {
 		app().butler().notifySetTarget(app().data());
 	}
 
-	@Override protected PEDBTuneData data() {
-		return (PEDBTuneData) super.data();
-	}
-
-	@Override protected PEDBGroup createGroup(NoteLabel begin, NoteLabel end,
-			GroupType type) {
-		return new PEDBGroup(begin.getScoreNote(), end.getScoreNote(), type);
-	}
-
-	@Override protected GroupLabel getGroupLabel() {
-		// TODO 自動生成されたメソッド・スタブ
-		return super.getGroupLabel();
-	}
-
-	@Override protected PEDBMainFrame frame() {
-		return (PEDBMainFrame) super.frame();
-	}
-
-	@Override public PEDBStructureEditor app() {
-		return (PEDBStructureEditor) super.app();
+	@Override protected PEDBGroup searchGroup(MXGroup g, NoteData beginNote,
+			NoteData endNote) {
+		return (PEDBGroup) super.searchGroup(g, beginNote, endNote);
 	}
 }

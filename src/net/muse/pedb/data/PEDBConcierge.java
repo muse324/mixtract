@@ -29,7 +29,7 @@ public class PEDBConcierge extends Concierge {
 			printConsole("refresh");
 		case KeyEvent.VK_G:
 			printConsole("make group");
-			c = main.searchCommand(PEDBCommandType.MAKE_GROUP);
+			c = main.searchCommand(PEDBCommandType.PEDBMAKE_GROUP);
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 			printConsole("delete group");

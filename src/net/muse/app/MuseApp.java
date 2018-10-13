@@ -222,10 +222,10 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	}
 
 	public MuseAppCommand searchCommand(String actionCommand) {
-		MuseAppCommandType c = null;
 		Iterator<MuseAppCommandAction> i = getCommandList().iterator();
+		MuseAppCommandAction c = null;
 		while (i.hasNext()) {
-			c = (MuseAppCommandType) i.next();
+			c =  i.next();
 			if (c.name().equals(actionCommand))
 				break;
 		}

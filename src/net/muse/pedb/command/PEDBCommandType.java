@@ -4,12 +4,12 @@ import net.muse.command.MuseAppCommandAction;
 import net.muse.mixtract.command.MixtractCommand;
 
 public enum PEDBCommandType implements MuseAppCommandAction {
-	MAKE_GROUP("Make a group", "グループを作成") {
+	PEDBMAKE_GROUP("Make a group", "グループを作成") {
 		@Override public MixtractCommand create(String... lang) {
 			return (cmd = new PEDBMakeGroupCommand(lang));
 		}
 	},
-	CHANGE_PART("Change part", "声部を変更") {
+	PEDBCHANGE_PART("Change part", "声部を変更") {
 		@Override public MixtractCommand create(String... lang) {
 			return (cmd = new PEDBChangePhonyCommand(lang));
 		}

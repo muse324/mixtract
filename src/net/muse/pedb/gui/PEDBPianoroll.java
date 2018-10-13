@@ -15,6 +15,7 @@ import net.muse.gui.PianoRoll;
 import net.muse.gui.PianoRollActionListener;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.gui.ViewerMode;
+import net.muse.pedb.command.PEDBPianoRollActionLisner;
 import net.muse.pedb.data.PEDBConcierge;
 
 public class PEDBPianoroll extends PianoRoll {
@@ -84,7 +85,7 @@ public class PEDBPianoroll extends PianoRoll {
 	@Override
 	protected PianoRollActionListener createPianoRollMouseAction(
 			MuseApp app) {
-		return new PianoRollActionListener(app, this) {
+		return new PEDBPianoRollActionLisner(app, this) {
 
 			@Override
 			public PEDBPianoroll self() {
