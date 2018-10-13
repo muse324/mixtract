@@ -112,7 +112,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	}
 
 	@Override protected void drawHierarchyLine(final Graphics2D g2) {
-		for (GroupLabel l : getGrouplist()) {
+		for (final GroupLabel l : getGrouplist()) {
 			drawHierarchyLine(g2, l, l.child(getGrouplist()));
 		}
 	}
@@ -133,10 +133,10 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * 階層構造のあるグループを曲線で結びつけ描画します。
 	 */
 	private void drawStructureEditLine(Graphics g) {
-		MouseActionListener m = getMouseActions();
-		Rectangle r = higherGroup.getBounds();
-		int x = r.x + r.getSize().width / 2;
-		int y = (int) r.getMaxY();
+		final MouseActionListener m = getMouseActions();
+		final Rectangle r = higherGroup.getBounds();
+		final int x = r.x + r.getSize().width / 2;
+		final int y = (int) r.getMaxY();
 		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
 	}
 
