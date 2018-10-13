@@ -22,9 +22,9 @@ public class PEDBGroupLabel extends GroupLabel {
 		return (PEDBGroup) super.group();
 	}
 
-	public PEDBGroupLabel child(ArrayList<GroupLabel> grouplist) {
+	@Override public PEDBGroupLabel child(ArrayList<GroupLabel> grouplist) {
 		if (child() == null) {
-			for (GroupLabel l : grouplist) {
+			for (final GroupLabel l : grouplist) {
 				if (group().hasChild() && group().child().equals(l.group())) {
 					setChild(l);
 					break;
@@ -72,13 +72,7 @@ public class PEDBGroupLabel extends GroupLabel {
 	@Override protected GLMouseActionListener createMouseActionListener(
 			MuseApp main) {
 		return new GLMouseActionListener(main, this) {
-			/*
-			 * (非 Javadoc)
-			 * @see
-			 * net.muse.gui.GLMouseActionListener#doubleClicked(net.muse.data.
-			 * Group)
-			 */
-			protected void doubleClicked(Group gr) {
+			@Override protected void doubleClicked(Group gr) {
 				// do nothing
 			}
 		};
