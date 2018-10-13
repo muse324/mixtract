@@ -55,7 +55,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 		return new PEDBGroupLabel(group, r);
 	}
 
-
 	@Override protected void createHierarchicalGroupLabel(Group group,
 			int level) {
 		if (group == null)
@@ -111,13 +110,15 @@ class PEDBGroupingPanel extends GroupingPanel {
 	}
 
 	@Override protected void drawHierarchyLine(final Graphics2D g2) {
-		for (GroupLabel l : getGrouplist()) {
+		for (final GroupLabel l : getGrouplist()) {
 			drawHierarchyLine(g2, l, l.child(getGrouplist()));
 		}
 	}
 
 	/**
 	 * 頂点音ラベルを生成します。
+	 *
+	 * <<<<<<< Upstream, based on origin/PEDB_StructureEdit
 	 *
 	 * @author anan
 	 * @since Oct 13th, 2018
@@ -140,10 +141,10 @@ class PEDBGroupingPanel extends GroupingPanel {
 	}
 
 	private void drawStructureEditLine(Graphics g) {
-		MouseActionListener m = getMouseActions();
-		Rectangle r = higherGroup.getBounds();
-		int x = r.x + r.getSize().width / 2;
-		int y = (int) r.getMaxY();
+		final MouseActionListener m = getMouseActions();
+		final Rectangle r = higherGroup.getBounds();
+		final int x = r.x + r.getSize().width / 2;
+		final int y = (int) r.getMaxY();
 		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
 	}
 
@@ -156,18 +157,17 @@ class PEDBGroupingPanel extends GroupingPanel {
 	private RoundRectangle2D getTopNoteLabelBound(NoteData topNote, int level) {
 		final double y = setLabelY(level);
 		double x, w;
-		x = MainFrame.getXOfNote(topNote.onset()) + PianoRoll
-				.getDefaultAxisX();
-		w = MainFrame.getXOfNote((double) topNote.duration());
+		x = MainFrame.getXOfNote(topNote.onset()) + PianoRoll.getDefaultAxisX();
+		w = MainFrame.getXOfNote(topNote.duration());
 		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
 				LABEL_HEIGHT - LEVEL_PADDING, 20.0, 20.0);
 
-		System.out.println("x = "+r.getX());
-		System.out.println("y = "+r.getY());
-		System.out.println("w = "+r.getWidth());
-		System.out.println("h = "+r.getHeight());
-		System.out.println("h = "+r.getArcWidth());
-		System.out.println("h = "+r.getArcHeight());
+		System.out.println("x = " + r.getX());
+		System.out.println("y = " + r.getY());
+		System.out.println("w = " + r.getWidth());
+		System.out.println("h = " + r.getHeight());
+		System.out.println("h = " + r.getArcWidth());
+		System.out.println("h = " + r.getArcHeight());
 		return r;
 	}
 
