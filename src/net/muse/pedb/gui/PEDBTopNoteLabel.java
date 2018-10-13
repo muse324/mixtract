@@ -17,6 +17,4 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 	protected PEDBTopNoteLabel(NoteData topNote, Rectangle r) {
 		super(topNote, r);
 	}
-
-
 }

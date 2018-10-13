@@ -1,7 +1,6 @@
 package net.muse.pedb.gui;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -52,26 +51,10 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		if (group != null && group.topNote != null) {
 			final Rectangle topr = getLabelBound(group.topNote, level);
 			final PEDBTopNoteLabel toplabel = createTopNoteLabel(group.getTopNote(), topr);
-			toplabel.setForeground(Color.blue);
-			toplabel.setBackground(Color.blue);
+			toplabel.setBackground(Color.red);//色の変更
 			toplabel.setController(main);
 			group.setLevel(level);
 			add(toplabel); // 描画
-			repaint();
-			Component[] a = getComponents();
-			for (Component c : a) {
-				if (c instanceof PEDBTopNoteLabel)
-				{
-					PEDBTopNoteLabel l = (PEDBTopNoteLabel)c;
-					System.out.println("size = "+l.getBounds());
-				}
-				else
-				{
-
-					//PEDBTopNoteLabel g = (PEDBTopNoteLabel)c;
-					System.out.println("else = " + c + " " + c.getClass().getName() + " " + c.getBounds());
-				}
-			}
 		}
 
 
