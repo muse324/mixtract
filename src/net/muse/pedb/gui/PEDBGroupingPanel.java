@@ -37,7 +37,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 			higherGroup.setChild(g);
 			higherGroup.group().setChild(getSelectedGroup().group());
 			setHigherGroup(null);
-			readTuneData();
 			repaint();
 		}
 	}
@@ -50,35 +49,28 @@ class PEDBGroupingPanel extends GroupingPanel {
 
 	}
 
-	@Override protected void createGroupLabel(Group group, int level) {
-		super.createGroupLabel(group, level);
-
-		// 追加 〜頂点〜
-		if (group != null && group.topNote != null) {
-			final Rectangle topr = getLabelBound(group.topNote, level);
-			final PEDBTopNoteLabel toplabel = createTopNoteLabel(group
-					.getTopNote(), topr);
-			toplabel.setBackground(Color.red);// 色の変更
-			toplabel.setController(main);
-			group.setLevel(level);
-			add(toplabel); // 描画
-		}
-
-	}
-
 	@Override protected PEDBGroupLabel createGroupLabel(Group group,
 			Rectangle r) {
 		return new PEDBGroupLabel(group, r);
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.GroupingPanel#createHierarchicalGroupLabel(net.muse.data.
+	 * Group, int)
+	 */
 	@Override protected void createHierarchicalGroupLabel(Group group,
 			int level) {
 		if (group == null)
 			return;
-		createHierarchicalGroupLabel(group.child(), level + 1);
-		createHierarchicalGroupLabel((Group) group.next(), level);
+
+		// 頂点音ラベルを生成する
+		createTopLabel(group, level);
 		// create a new group-label
 		createGroupLabel(group, level);
+
+		createHierarchicalGroupLabel(group.child(), level + 1);
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(
@@ -107,6 +99,21 @@ class PEDBGroupingPanel extends GroupingPanel {
 		};
 	}
 
+	@Override protected void createNonHierarchicalGroupLabel() {
+		int level = getMaximumGroupLevel() + 1;
+		for (final Group g : data().getMiscGroup()) {
+			if (level < g.getLevel())
+				level = g.getLevel() + 1;
+			createTopLabel(g, level);
+			if (g.hasChild())
+				createTopLabel(g.child(), level + 1);
+			createGroupLabel(g, level);
+
+			createGroupLabel(g.child(), level + 1);
+
+		}
+	}
+
 	@Override protected PEDBTuneData data() {
 		return (PEDBTuneData) super.data();
 	}
@@ -114,6 +121,18 @@ class PEDBGroupingPanel extends GroupingPanel {
 	@Override protected void drawHierarchyLine(final Graphics2D g2) {
 		for (final GroupLabel l : getGrouplist()) {
 			drawHierarchyLine(g2, l, l.child(getGrouplist()));
+		}
+	}
+
+	private void createTopLabel(Group group, int level) {
+		if (group != null && group.topNote != null) {
+			final Rectangle topr = getLabelBound(group.topNote, level);
+			final PEDBTopNoteLabel toplabel = createTopNoteLabel(group
+					.getTopNote(), topr);
+			toplabel.setBackground(Color.red);// 色の変更
+			toplabel.setController(main);
+			group.setLevel(level);
+			add(toplabel); // 描画
 		}
 	}
 
@@ -143,11 +162,8 @@ class PEDBGroupingPanel extends GroupingPanel {
 	/**
 	 * 頂点音ラベルのサイズを求めます。
 	 *
+	 * @since Oct. 13th, 2018
 	 * @author anan
-	 *
-	 * @param topNote
-	 * @param level
-	 * @return
 	 */
 	private Rectangle getLabelBound(NoteData topNote, int level) {
 		final int y = setLabelY(level);
