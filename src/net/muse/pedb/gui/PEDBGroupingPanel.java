@@ -18,18 +18,9 @@ import net.muse.gui.MouseActionListener;
 import net.muse.gui.PianoRoll;
 import net.muse.pedb.data.PEDBTuneData;
 
-public class PEDBGroupingPanel extends GroupingPanel {
+class PEDBGroupingPanel extends GroupingPanel {
 
 	private PEDBGroupLabel higherGroup;
-
-	protected void createHierarchicalGroupLabel(Group group, int level) {
-		if (group == null)
-			return;
-		createHierarchicalGroupLabel(group.child(), level + 1);
-		createHierarchicalGroupLabel((Group) group.next(), level);
-		// create a new group-label
-		createGroupLabel(group, level);
-	}
 
 	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -51,8 +42,15 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		}
 	}
 
+	void setHigherGroup(PEDBGroupLabel l) {
+		higherGroup = l;
+		main().butler().printConsole(String.format("%s is set as higher group",
+				l));
+		repaint();
+
+	}
+
 	@Override protected void createGroupLabel(Group group, int level) {
-		// TODO 自動生成されたメソッド・スタブ
 		super.createGroupLabel(group, level);
 
 		// 追加 〜頂点〜
@@ -68,26 +66,19 @@ public class PEDBGroupingPanel extends GroupingPanel {
 
 	}
 
-	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote,
-			Rectangle topr) {
-		// TODO 自動生成されたメソッド・スタブ
-		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
-		return label;
-	}
-
-	//
-
-	public void setHigherGroup(PEDBGroupLabel l) {
-		higherGroup = l;
-		main().butler().printConsole(String.format("%s is set as higher group",
-				l));
-		repaint();
-
-	}
-
 	@Override protected PEDBGroupLabel createGroupLabel(Group group,
 			Rectangle r) {
 		return new PEDBGroupLabel(group, r);
+	}
+
+	@Override protected void createHierarchicalGroupLabel(Group group,
+			int level) {
+		if (group == null)
+			return;
+		createHierarchicalGroupLabel(group.child(), level + 1);
+		createHierarchicalGroupLabel((Group) group.next(), level);
+		// create a new group-label
+		createGroupLabel(group, level);
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(
@@ -126,6 +117,15 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		}
 	}
 
+	private PEDBTopNoteLabel createTopNoteLabel(NoteData topNote,
+			Rectangle topr) {
+		final PEDBTopNoteLabel label = new PEDBTopNoteLabel(topNote, topr);
+		return label;
+	}
+
+	/**
+	 * 階層構造のあるグループを曲線で結びつけ描画します。
+	 */
 	private void drawStructureEditLine(Graphics g) {
 		MouseActionListener m = getMouseActions();
 		Rectangle r = higherGroup.getBounds();
@@ -134,7 +134,15 @@ public class PEDBGroupingPanel extends GroupingPanel {
 		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
 	}
 
-	// 追加
+	/**
+	 * 頂点音ラベルのサイズを求めます。
+	 *
+	 * @author anan
+	 *
+	 * @param topNote
+	 * @param level
+	 * @return
+	 */
 	private Rectangle getLabelBound(NoteData topNote, int level) {
 		final int y = setLabelY(level);
 		int x, w;
