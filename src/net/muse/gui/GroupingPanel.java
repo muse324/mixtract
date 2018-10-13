@@ -333,7 +333,6 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 
 		// create a new group-label
 		createGroupLabel(group, level);
-
 		createHierarchicalGroupLabel(group.child(), level + 1);
 	}
 
@@ -428,7 +427,6 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			createGroupLabel(g, level);
 
 			createGroupLabel(g.child(), level + 1);
-
 		}
 	}
 

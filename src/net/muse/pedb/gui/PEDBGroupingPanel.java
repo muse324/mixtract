@@ -41,7 +41,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 		}
 	}
 
-	void setHigherGroup(PEDBGroupLabel l) {
+	public void setHigherGroup(PEDBGroupLabel l) {
 		higherGroup = l;
 		main().butler().printConsole(String.format("%s is set as higher group",
 				l));
