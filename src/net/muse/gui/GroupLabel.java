@@ -22,7 +22,7 @@ public class GroupLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
 
 	/* 格納データ */
-	private Group group;
+	public Group group;
 	private GroupLabel child;
 	protected int partNumber;
 
