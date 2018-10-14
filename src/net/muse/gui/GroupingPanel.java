@@ -207,6 +207,9 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		repaint();
 	}
 
+	/* (非 Javadoc)
+	 * @see net.muse.gui.GroupEditListener#selectGroup(javax.swing.JLabel, boolean)
+	 */
 	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		if (selectedGroup != null)
 			selectedGroup.setSelected(false);

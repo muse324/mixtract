@@ -1,11 +1,15 @@
 package net.muse.pedb.gui;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.util.LinkedList;
 
 import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
@@ -25,6 +29,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private PEDBGroupLabel higherGroup;
+	LinkedList<PEDBGroupLabel> sequenceGroups = new LinkedList<>();
 
 	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -33,16 +38,25 @@ class PEDBGroupingPanel extends GroupingPanel {
 		}
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.GroupingPanel#selectGroup(net.muse.gui.GroupLabel,
+	 * boolean)
+	 */
 	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		super.selectGroup(g, flg);
-		if (higherGroup != null && g != null) {
-			main().butler().printConsole(String.format("%s -> %s connect",
-					higherGroup, g));
-			higherGroup.setChild(g);
-			higherGroup.group().setChild(getSelectedGroup().group());
-			setHigherGroup(null);
-			repaint();
+		adoptGroups(higherGroup, g); // higherGroupが選択済の場合、今選択されたグループと養子縁組する
+
+		sequenceGroups.clear();
+		final Component[] c = getComponents();
+		Group group = g.group();
+		while (group.hasNext()) {
+			final PEDBGroupLabel l = searchLabel((Group) group.next(), c);
+			if (l != null)
+				sequenceGroups.add(l);
+			group = (Group) group.next();
 		}
+		repaint();
 	}
 
 	public void setHigherGroup(PEDBGroupLabel l) {
@@ -50,7 +64,33 @@ class PEDBGroupingPanel extends GroupingPanel {
 		main().butler().printConsole(String.format("%s is set as higher group",
 				l));
 		repaint();
+	}
 
+	void moveLabels(MouseEvent e, Point mousePoint, Rectangle bounds,
+			boolean shiftKeyPressed, boolean mousePressed) {
+		for (final PEDBGroupLabel l : sequenceGroups) {
+			l.moveLabelVertical(e, mousePoint, l.getBounds(), shiftKeyPressed,
+					mousePressed);
+//			main().butler().printConsole(String.format("%s moved to %s", l,
+//					mousePoint));
+		}
+		repaint();
+	}
+
+	/**
+	 * ２つのグループを親子関係として縁組します
+	 *
+	 * @param parent 親（上位階層）となるグループ
+	 * @param child 子（下位階層）となるグループ
+	 */
+	protected void adoptGroups(PEDBGroupLabel parent, GroupLabel child) {
+		if (parent == null || child == null)
+			return;
+		main().butler().printConsole(String.format("%s -> %s adopt", parent,
+				child));
+		parent.setChild(child);
+		parent.group().setChild(getSelectedGroup().group());
+		setHigherGroup(null);
 	}
 
 	@Override protected PEDBGroupLabel createGroupLabel(Group group,
@@ -160,6 +200,17 @@ class PEDBGroupingPanel extends GroupingPanel {
 		System.out.println("h = " + r.getArcWidth());
 		System.out.println("h = " + r.getArcHeight());
 		return r;
+	}
+
+	private PEDBGroupLabel searchLabel(Group g, Component[] components) {
+		for (final Component c : components) {
+			if (!(c instanceof PEDBGroupLabel))
+				continue;
+			final PEDBGroupLabel l = (PEDBGroupLabel) c;
+			if (g.equals(l.group()))
+				return l;
+		}
+		return null;
 	}
 
 }

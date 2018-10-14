@@ -2,6 +2,7 @@ package net.muse.pedb.gui;
 
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import net.muse.app.MuseApp;
@@ -13,10 +14,6 @@ import net.muse.gui.KeyActionListener;
 import net.muse.pedb.data.PEDBGroup;
 
 public class PEDBGroupLabel extends GroupLabel {
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public PEDBGroupLabel(Group group, Rectangle r) {
@@ -77,8 +74,26 @@ public class PEDBGroupLabel extends GroupLabel {
 	@Override protected GLMouseActionListener createMouseActionListener(
 			MuseApp main) {
 		return new GLMouseActionListener(main, this) {
+
 			@Override protected void doubleClicked(Group gr) {
 				// do nothing
+			}
+
+			@Override public void mouseDragged(MouseEvent e) {
+				super.mouseDragged(e);
+				if (!isGroupEditable()) {
+					frame().getGroupingPanel().moveLabels(e, getMousePoint(),
+							self().getBounds(), isShiftKeyPressed(),
+							isMousePressed());
+				}
+			}
+
+			@Override protected PEDBMainFrame frame() {
+				return (PEDBMainFrame) super.frame();
+			}
+
+			@Override public PEDBGroupLabel self() {
+				return (PEDBGroupLabel) super.self();
 			}
 		};
 	}

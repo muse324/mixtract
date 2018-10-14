@@ -145,7 +145,7 @@ public class MXGroupLabel extends GroupLabel {
 		}
 	}
 
-	protected void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
+	public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
 			boolean shiftKeyPressed, boolean mousePressed) {
 		r.y = p.y;
 		setBounds(r);

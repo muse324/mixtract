@@ -32,7 +32,7 @@ public interface GroupEditListener<L extends JLabel> {
 	public void editGroup(L g);
 
 	/**
-	 * グループ全体が選択されたときに呼び出されるメソッドです．
+	 * グループが選択されたときに呼び出されるメソッドです．
 	 *
 	 * @param g
 	 *            選択されたグループラベル
