@@ -74,10 +74,11 @@ public class PEDBMakeGroupCommand extends MakeGroupCommand {
 
 		// グループ作成が初回で、かつ、もし前後に未グループの音符があった場合，
 		// GroupType.AUTOで前のグループを自動生成する
+		// （連結はしない）
 		if (data().getMiscGroup().size() == 0 && begin.hasPrevious()) {
 			PEDBGroup g0 = createAutoGroupBeforUserGroup(begin);
 			if (g0 != null) {
-				g0.setNext(g1);
+				// g0.setNext(g1);
 				g0.setIndex(data().getUniqueGroupIndex());
 			}
 		} else
