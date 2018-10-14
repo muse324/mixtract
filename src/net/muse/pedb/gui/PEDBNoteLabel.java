@@ -14,6 +14,7 @@ import net.muse.pedb.data.PEDBNoteData;
  *
  */
 public class PEDBNoteLabel extends NoteLabel {
+	private static final long serialVersionUID = 1L;
 
 	public PEDBNoteLabel(NoteData note, Rectangle r) {
 		super(note, r);

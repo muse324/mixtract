@@ -14,12 +14,13 @@ import net.muse.pedb.data.PEDBGroup;
 
 public class PEDBGroupLabel extends GroupLabel {
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public PEDBGroupLabel(Group group, Rectangle r) {
 		super(group, r);
-	}
-
-	@Override public PEDBGroup group() {
-		return (PEDBGroup) super.group();
 	}
 
 	@Override public PEDBGroupLabel child(ArrayList<GroupLabel> grouplist) {
@@ -32,6 +33,10 @@ public class PEDBGroupLabel extends GroupLabel {
 			}
 		}
 		return (PEDBGroupLabel) child();
+	}
+
+	@Override public PEDBGroup group() {
+		return (PEDBGroup) super.group();
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(

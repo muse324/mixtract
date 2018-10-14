@@ -20,6 +20,10 @@ import net.muse.gui.PianoRoll;
 import net.muse.pedb.data.PEDBTuneData;
 
 class PEDBGroupingPanel extends GroupingPanel {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private PEDBGroupLabel higherGroup;
 
 	@Override public void paintComponent(Graphics g) {

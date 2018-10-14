@@ -3,7 +3,6 @@ package net.muse.pedb.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JComponent;
@@ -31,7 +30,7 @@ public class MainPanel extends JPanel {
 				| IllegalAccessException | UnsupportedLookAndFeelException ex) {
 			ex.printStackTrace();
 		}
-		JFrame frame = new JFrame("@title@");
+		final JFrame frame = new JFrame("@title@");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.getContentPane().add(new MainPanel());
 		frame.pack();
@@ -40,19 +39,15 @@ public class MainPanel extends JPanel {
 	}
 
 	public static void main(String... args) {
-		EventQueue.invokeLater(new Runnable() {
-			@Override public void run() {
-				createAndShowGui();
-			}
-		});
+		EventQueue.invokeLater(() -> createAndShowGui());
 	}
 
 	public MainPanel(JComponent... c) {
 		super(new BorderLayout());
 
-		JSplitPane header = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		JSplitPane main = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		for (JComponent o : c) {
+		final JSplitPane header = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		final JSplitPane main = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		for (final JComponent o : c) {
 			if (o instanceof GroupingPanel) {
 				main.setTopComponent(o);
 			} else if (o instanceof PianoRoll) {
@@ -63,16 +58,14 @@ public class MainPanel extends JPanel {
 				header.setBottomComponent(o);
 			}
 		}
-		PropertyChangeListener pcl = new PropertyChangeListener() {
-			@Override public void propertyChange(PropertyChangeEvent e) {
-				if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(e
-						.getPropertyName())) {
-					JSplitPane source = (JSplitPane) e.getSource();
-					int location = ((Integer) e.getNewValue()).intValue();
-					JSplitPane target = (source == header) ? main : header;
-					if (location != target.getDividerLocation())
-						target.setDividerLocation(location);
-				}
+		final PropertyChangeListener pcl = e -> {
+			if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(e
+					.getPropertyName())) {
+				final JSplitPane source = (JSplitPane) e.getSource();
+				final int location = ((Integer) e.getNewValue()).intValue();
+				final JSplitPane target = source == header ? main : header;
+				if (location != target.getDividerLocation())
+					target.setDividerLocation(location);
 			}
 		};
 		header.addPropertyChangeListener(pcl);

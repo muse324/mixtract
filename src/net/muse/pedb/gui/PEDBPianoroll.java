@@ -96,11 +96,6 @@ public class PEDBPianoroll extends PianoRoll {
 		};
 	}
 
-	@Override protected String switchViewerMode(final NoteData nd) {
-		return String.format("%s (%s): %d-%d", nd.noteName(), nd.chord(), nd
-				.onset(), nd.offset());
-	}
-
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#drawOptionalInfo(java.awt.Graphics2D)
@@ -157,6 +152,11 @@ public class PEDBPianoroll extends PianoRoll {
 	 */
 	@Override protected PEDBNoteLabel notelist() {
 		return (PEDBNoteLabel) super.notelist();
+	}
+
+	@Override protected String switchViewerMode(final NoteData nd) {
+		return String.format("%s (%s): %d-%d", nd.noteName(), nd.chord(), nd
+				.onset(), nd.offset());
 	}
 
 	private void drawTiedNotesConnection(Graphics2D g2, PEDBNoteLabel from,

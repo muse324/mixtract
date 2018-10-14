@@ -22,55 +22,55 @@ public class DragScrollLayerUI extends LayerUI<JScrollPane> {
 	@Override public void installUI(JComponent c) {
 		super.installUI(c);
 		if (c instanceof JLayer) {
-			((JLayer) c).setLayerEventMask(AWTEvent.MOUSE_EVENT_MASK
+			((JLayer<?>) c).setLayerEventMask(AWTEvent.MOUSE_EVENT_MASK
 					| AWTEvent.MOUSE_MOTION_EVENT_MASK);
 		}
 	}
 
 	@Override public void uninstallUI(JComponent c) {
 		if (c instanceof JLayer) {
-			((JLayer) c).setLayerEventMask(0);
+			((JLayer<?>) c).setLayerEventMask(0);
 		}
 		super.uninstallUI(c);
 	}
 
 	@Override protected void processMouseEvent(MouseEvent e,
 			JLayer<? extends JScrollPane> l) {
-		Component c = e.getComponent();
+		final Component c = e.getComponent();
 		if (c instanceof JScrollBar || c instanceof JSlider
 				|| c instanceof PEDBGroupLabel) {
 			return;
 		}
 		if (c instanceof PEDBGroupingPanel) {
-			PEDBGroupingPanel p = (PEDBGroupingPanel) c;
+			final PEDBGroupingPanel p = (PEDBGroupingPanel) c;
 			if (p.hasSelectedGroup())
 				return;
 		}
 		if (e.getID() == MouseEvent.MOUSE_PRESSED) {
-			JViewport vport = l.getView().getViewport();
-			Point cp = SwingUtilities.convertPoint(c, e.getPoint(), vport);
+			final JViewport vport = l.getView().getViewport();
+			final Point cp = SwingUtilities.convertPoint(c, e.getPoint(), vport);
 			pp.setLocation(cp);
 		}
 	}
 
 	@Override protected void processMouseMotionEvent(MouseEvent e,
 			JLayer<? extends JScrollPane> l) {
-		Component c = e.getComponent();
+		final Component c = e.getComponent();
 		if (c instanceof JScrollBar || c instanceof JSlider
 				|| c instanceof PEDBGroupLabel) {
 			return;
 		}
 		if (c instanceof PEDBGroupingPanel) {
-			PEDBGroupingPanel p = (PEDBGroupingPanel) c;
+			final PEDBGroupingPanel p = (PEDBGroupingPanel) c;
 			if (p.hasSelectedGroup())
 				return;
 		}
 
 		if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
-			JViewport vport = l.getView().getViewport();
-			JComponent cmp = (JComponent) vport.getView();
-			Point cp = SwingUtilities.convertPoint(c, e.getPoint(), vport);
-			Point vp = vport.getViewPosition();
+			final JViewport vport = l.getView().getViewport();
+			final JComponent cmp = (JComponent) vport.getView();
+			final Point cp = SwingUtilities.convertPoint(c, e.getPoint(), vport);
+			final Point vp = vport.getViewPosition();
 			vp.translate(pp.x - cp.x, pp.y - cp.y);
 			cmp.scrollRectToVisible(new Rectangle(vp, vport.getSize()));
 			pp.setLocation(cp);
