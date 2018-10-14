@@ -81,8 +81,8 @@ public class PEDBMakeGroupCommand extends MakeGroupCommand {
 				// g0.setNext(g1);
 				g0.setIndex(data().getUniqueGroupIndex());
 			}
-		} else
-			data().addMiscGroupList(g1);
+		}
+		data().addMiscGroupList(g1);
 		g1.setIndex(data().getUniqueGroupIndex());
 
 		app().butler().notifySetTarget(app().data());

@@ -232,7 +232,7 @@ public class GroupLabel extends JLabel {
 		this.startEdit = startEdit;
 	}
 
-	protected GroupLabel child() {
+	public GroupLabel child() {
 		return child;
 	}
 

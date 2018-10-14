@@ -11,6 +11,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.util.LinkedList;
 
+import javax.swing.JOptionPane;
+
 import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.data.Group;
@@ -45,7 +47,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 */
 	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		super.selectGroup(g, flg);
-		adoptGroups(higherGroup, g); // higherGroupが選択済の場合、今選択されたグループと養子縁組する
+		connectGroups(higherGroup, (PEDBGroupLabel) g); // higherGroupが選択済の場合、今選択されたグループと養子縁組する
 
 		sequenceGroups.clear();
 		final Component[] c = getComponents();
@@ -57,6 +59,43 @@ class PEDBGroupingPanel extends GroupingPanel {
 			group = (Group) group.next();
 		}
 		repaint();
+	}
+
+	private void connectGroups(PEDBGroupLabel l1, PEDBGroupLabel l2) {
+		if (l1 == null || l2 == null)
+			return;
+		if (l1.group.getLevel() == l2.group.getLevel())
+			combineGroups(l1, l2, "combine");
+		else
+			adoptGroups(l1, l2, "adopt");
+		setHigherGroup(null);
+	}
+
+	/**
+	 * 二つのグループを連結し、親(上位階層)グループを生成します。
+	 *
+	 * @author hashida
+	 * @since Oct. 14th, 2018
+	 *
+	 * @param l1 ひとつ目のグループラベル
+	 * @param l2 ふたつ目のグループラベル
+	 * @param mesg 接続関係を文字列で
+	 */
+	private void combineGroups(PEDBGroupLabel l1, PEDBGroupLabel l2,
+			String mesg) {
+		PEDBGroupLabel pre, pro;
+		// 前後関係の確認
+		if (l1.getX() < l2.getX()) {
+			pre = l1;
+			pro = l2;
+		} else {
+			pre = l2;
+			pro = l1;
+		}
+		main().butler().printConsole(String.format("%s -> %s %s", pre, pro,
+				mesg));
+		pre.setNext(pro);
+		pre.group().setNext(pro.group());
 	}
 
 	public void setHigherGroup(PEDBGroupLabel l) {
@@ -71,8 +110,8 @@ class PEDBGroupingPanel extends GroupingPanel {
 		for (final PEDBGroupLabel l : sequenceGroups) {
 			l.moveLabelVertical(e, mousePoint, l.getBounds(), shiftKeyPressed,
 					mousePressed);
-//			main().butler().printConsole(String.format("%s moved to %s", l,
-//					mousePoint));
+			// main().butler().printConsole(String.format("%s moved to %s", l,
+			// mousePoint));
 		}
 		repaint();
 	}
@@ -80,17 +119,41 @@ class PEDBGroupingPanel extends GroupingPanel {
 	/**
 	 * ２つのグループを親子関係として縁組します
 	 *
-	 * @param parent 親（上位階層）となるグループ
-	 * @param child 子（下位階層）となるグループ
+	 * @author hashida
+	 * @since Oct. 14th, 2018
+	 *
+	 * @param l1 ひとつ目のグループラベル
+	 * @param l2 ふたつ目のグループラベル
+	 * @param mesg 接続関係を文字列で
 	 */
-	protected void adoptGroups(PEDBGroupLabel parent, GroupLabel child) {
-		if (parent == null || child == null)
-			return;
-		main().butler().printConsole(String.format("%s -> %s adopt", parent,
-				child));
+	private void adoptGroups(PEDBGroupLabel l1, PEDBGroupLabel l2,
+			String mesg) {
+		PEDBGroupLabel parent, child;
+		// 階層の上下関係を確認
+		if (l1.group.getLevel() < l2.group.getLevel()) {
+			parent = l1;
+			child = l2;
+		} else {
+			parent = l2;
+			child = l1;
+		}
+
+		// parentがすでに子グループを持っていたら？
+		if (parent.hasChild()) {
+			int res = JOptionPane.showConfirmDialog(this, String.format(
+					"%sはすでに子グループ %s と接続されています。%s と付け替えますか？", parent, parent
+							.child(), child));
+			if (res != JOptionPane.YES_OPTION) {
+				main().butler().printConsole("cancel connecting");
+				main().butler().notifyDeselectGroup();
+				return;
+			}
+		}
+		// 接続する
+		main().butler().printConsole(String.format("%s -> %s %s", parent, child,
+				mesg));
 		parent.setChild(child);
-		parent.group().setChild(getSelectedGroup().group());
-		setHigherGroup(null);
+		parent.group().setChild(child.group());
 	}
 
 	@Override protected PEDBGroupLabel createGroupLabel(Group group,

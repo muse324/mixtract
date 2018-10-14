@@ -15,6 +15,8 @@ import net.muse.pedb.data.PEDBGroup;
 
 public class PEDBGroupLabel extends GroupLabel {
 	private static final long serialVersionUID = 1L;
+	private PEDBGroupLabel next;
+	private PEDBGroupLabel prev;
 
 	public PEDBGroupLabel(Group group, Rectangle r) {
 		super(group, r);
@@ -96,6 +98,28 @@ public class PEDBGroupLabel extends GroupLabel {
 				return (PEDBGroupLabel) super.self();
 			}
 		};
+	}
+
+	void setNext(PEDBGroupLabel label) {
+		next = label;
+		if (next.previous() != label)
+			label.setPrevious(next);
+
+	}
+
+	void setPrevious(PEDBGroupLabel label) {
+		prev = label;
+		if (prev.next() != label)
+			label.setNext(prev);
+
+	}
+
+	PEDBGroupLabel previous() {
+		return prev;
+	}
+
+	PEDBGroupLabel next() {
+		return next;
 	}
 
 }
