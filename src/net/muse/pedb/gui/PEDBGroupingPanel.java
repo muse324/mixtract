@@ -164,7 +164,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	private RoundRectangle2D getTopNoteLabelBound(NoteData topNote, int level) {
 		final double y = setLabelY(level);
 		double x, w;
-		x = MainFrame.getXOfNote(topNote.realOnset()) + PianoRoll
+		x = MainFrame.getXOfNote(topNote.onset()) + PianoRoll
 				.getDefaultAxisX();
 		w = MainFrame.getXOfNote((double) topNote.duration());
 		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
