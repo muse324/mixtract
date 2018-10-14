@@ -37,7 +37,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 			higherGroup.setChild(g);
 			higherGroup.group().setChild(getSelectedGroup().group());
 			setHigherGroup(null);
-			readTuneData();
 			repaint();
 		}
 	}
@@ -53,16 +52,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 	@Override protected PEDBGroupLabel createGroupLabel(Group group,
 			Rectangle r) {
 		return new PEDBGroupLabel(group, r);
-	}
-
-	@Override protected void createHierarchicalGroupLabel(Group group,
-			int level) {
-		if (group == null)
-			return;
-		createHierarchicalGroupLabel(group.child(), level + 1);
-		createHierarchicalGroupLabel((Group) group.next(), level);
-		// create a new group-label
-		createGroupLabel(group, level);
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(
@@ -117,8 +106,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 
 	/**
 	 * 頂点音ラベルを生成します。
-	 *
-	 * <<<<<<< Upstream, based on origin/PEDB_StructureEdit
 	 *
 	 * @author anan
 	 * @since Oct 13th, 2018
