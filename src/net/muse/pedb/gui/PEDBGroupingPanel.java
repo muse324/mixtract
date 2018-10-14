@@ -137,9 +137,8 @@ class PEDBGroupingPanel extends GroupingPanel {
 		// 以下は、group が存在し、かつ当該groupに頂点音が存在する場合にのみ実行される
 		final RoundRectangle2D topr = getTopNoteLabelBound(group.getTopNote(),
 				level);
-		final GroupLabel toplabel = new PEDBTopNoteLabel(group.getTopNote(),
+		final PEDBTopNoteLabel toplabel = new PEDBTopNoteLabel(group.getTopNote(),
 				topr);
-		System.out.println(toplabel);
 		toplabel.setBackground(Color.red);// 色の変更
 		toplabel.setController(main);
 		group.setLevel(level);
@@ -168,14 +167,15 @@ class PEDBGroupingPanel extends GroupingPanel {
 				.getDefaultAxisX();
 		w = MainFrame.getXOfNote((double) topNote.duration());
 		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
-				LABEL_HEIGHT - LEVEL_PADDING, 20.0, 20.0);
-
+				LABEL_HEIGHT - LEVEL_PADDING, 3.0, 3.0);
+		/*
 		System.out.println("x = "+r.getX());
 		System.out.println("y = "+r.getY());
 		System.out.println("w = "+r.getWidth());
 		System.out.println("h = "+r.getHeight());
-		System.out.println("h = "+r.getArcWidth());
-		System.out.println("h = "+r.getArcHeight());
+		System.out.println("arcw = "+r.getArcWidth());
+		System.out.println("arch = "+r.getArcHeight());
+		*/
 		return r;
 	}
 

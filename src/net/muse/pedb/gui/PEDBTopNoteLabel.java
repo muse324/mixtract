@@ -1,5 +1,6 @@
 package net.muse.pedb.gui;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -20,10 +21,11 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2 = (Graphics2D) this.getGraphics();
-		// RoundRectangle2D rect = new RoundRectangle2D.Double(30, 50, 100, 100,
-		// 30, 10);
-		// g2.setColor(Color.RED);
+		 //RoundRectangle2D rect = new RoundRectangle2D.Double(30, 50, 100, 100,
+		 //30, 10);
+		 //g2.setColor(Color.RED);
 		g2.draw((Shape) d);
+
 	}
 
 	public PEDBTopNoteLabel(NoteData topNote, RoundRectangle2D topr) {
