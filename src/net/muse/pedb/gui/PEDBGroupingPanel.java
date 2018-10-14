@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.data.Group;
+import net.muse.data.GroupType;
 import net.muse.data.NoteData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.GroupingPanel;
@@ -23,6 +24,7 @@ import net.muse.gui.KeyActionListener;
 import net.muse.gui.MainFrame;
 import net.muse.gui.MouseActionListener;
 import net.muse.gui.PianoRoll;
+import net.muse.pedb.data.PEDBGroup;
 import net.muse.pedb.data.PEDBTuneData;
 
 class PEDBGroupingPanel extends GroupingPanel {
@@ -64,7 +66,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	private void connectGroups(PEDBGroupLabel l1, PEDBGroupLabel l2) {
 		if (l1 == null || l2 == null)
 			return;
-		if (l1.group.getLevel() == l2.group.getLevel())
+		if (l1.group().getLevel() == l2.group().getLevel())
 			combineGroups(l1, l2, "combine");
 		else
 			adoptGroups(l1, l2, "adopt");
@@ -92,10 +94,46 @@ class PEDBGroupingPanel extends GroupingPanel {
 			pre = l2;
 			pro = l1;
 		}
+		// preにもう後続グループが接続されていたら、その最後尾グループまで移動させる
+		while (pre.hasNext()) {
+			main().butler().printConsole(String.format("%s moved to -> %s", pre,
+					pre.next()));
+			pre = pre.next();
+		}
+		// preにもう先行グループが接続されていたら、その先頭グループまで移動させる
+		while (pro.hasPrevious()) {
+			main().butler().printConsole(String.format("back to %s <- %s", pro,
+					pro.previous()));
+			pro = pro.next();
+		}
+		// preとproが隣接していなかったら接続不可
+		if (pre.group().getEndNote().offset() != pro.group().getBeginNote()
+				.onset()) {
+			cancelConnectiongGroups();
+			return;
+		}
+		// -- 接続する -------
 		main().butler().printConsole(String.format("%s -> %s %s", pre, pro,
 				mesg));
 		pre.setNext(pro);
 		pre.group().setNext(pro.group());
+		// 親グループを生成
+		PEDBGroup p = new PEDBGroup(pre.group().getBeginNote(), pro.group()
+				.getEndNote(), GroupType.PARENT);
+		// TODO preに親がすでにあったら？ -> 中間層グループにする
+		p.setChild(pre.group());
+		data().getMiscGroup().remove(pre.group());
+		data().getMiscGroup().remove(pro.group());
+		data().addMiscGroupList(p);
+		createGroupLabel(p, pre.group().getLevel());
+		pre.group().changeLevel(-1);
+		pro.group().changeLevel(-1);
+		repaint();
+	}
+
+	private void cancelConnectiongGroups() {
+		main().butler().printConsole("cancel connecting");
+		main().butler().notifyDeselectGroup();
 	}
 
 	public void setHigherGroup(PEDBGroupLabel l) {
@@ -130,7 +168,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 			String mesg) {
 		PEDBGroupLabel parent, child;
 		// 階層の上下関係を確認
-		if (l1.group.getLevel() < l2.group.getLevel()) {
+		if (l1.group().getLevel() < l2.group().getLevel()) {
 			parent = l1;
 			child = l2;
 		} else {
@@ -141,11 +179,10 @@ class PEDBGroupingPanel extends GroupingPanel {
 		// parentがすでに子グループを持っていたら？
 		if (parent.hasChild()) {
 			int res = JOptionPane.showConfirmDialog(this, String.format(
-					"%sはすでに子グループ %s と接続されています。%s と付け替えますか？", parent, parent
+					"%sはすでに子グループ%sと接続されています。%sと付け替えますか？", parent, parent
 							.child(), child));
 			if (res != JOptionPane.YES_OPTION) {
-				main().butler().printConsole("cancel connecting");
-				main().butler().notifyDeselectGroup();
+				cancelConnectiongGroups();
 				return;
 			}
 		}

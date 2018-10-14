@@ -8,12 +8,14 @@ import java.util.ArrayList;
 import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.data.Group;
+import net.muse.data.GroupType;
 import net.muse.gui.GLMouseActionListener;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.KeyActionListener;
 import net.muse.pedb.data.PEDBGroup;
 
 public class PEDBGroupLabel extends GroupLabel {
+
 	private static final long serialVersionUID = 1L;
 	private PEDBGroupLabel next;
 	private PEDBGroupLabel prev;
@@ -122,4 +124,16 @@ public class PEDBGroupLabel extends GroupLabel {
 		return next;
 	}
 
+	boolean hasNext() {
+		return next != null;
+	}
+
+	boolean hasPrevious() {
+		return prev != null;
+	}
+
+	@Override public void setTypeShape(GroupType type) {
+		super.setTypeShape(type);
+		setText(String.format("%s (%d)", group().name(), group().getLevel()));
+	}
 }

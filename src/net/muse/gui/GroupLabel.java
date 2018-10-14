@@ -22,7 +22,7 @@ public class GroupLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
 
 	/* 格納データ */
-	public Group group;
+	private Group group;
 	private GroupLabel child;
 	protected int partNumber;
 
@@ -45,7 +45,7 @@ public class GroupLabel extends JLabel {
 
 	protected GroupLabel(Group group, Rectangle r) {
 		this();
-		this.group = group;
+		this.setGroup(group);
 		this.setPartNumber(group.getBeginNote().musePhony());
 		setLocation(r.x, r.y);
 		setBounds(r);
@@ -76,7 +76,7 @@ public class GroupLabel extends JLabel {
 			setBorder(BorderFactory.createLineBorder(Color.black));
 			break;
 		default:
-			setText(group.name());
+			setText(group().name());
 			setCurrentColor(type.getColor());
 			initialize();
 			setBorder(null);
@@ -84,7 +84,7 @@ public class GroupLabel extends JLabel {
 	}
 
 	@Override public String toString() {
-		return group.name();
+		return group().name();
 	}
 
 	public GroupLabel child(ArrayList<GroupLabel> grouplist) {
