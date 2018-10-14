@@ -63,79 +63,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 		repaint();
 	}
 
-	private void connectGroups(PEDBGroupLabel l1, PEDBGroupLabel l2) {
-		if (l1 == null || l2 == null)
-			return;
-		if (l1.group().getLevel() == l2.group().getLevel())
-			combineGroups(l1, l2, "combine");
-		else
-			adoptGroups(l1, l2, "adopt");
-		setHigherGroup(null);
-	}
-
-	/**
-	 * 二つのグループを連結し、親(上位階層)グループを生成します。
-	 *
-	 * @author hashida
-	 * @since Oct. 14th, 2018
-	 *
-	 * @param l1 ひとつ目のグループラベル
-	 * @param l2 ふたつ目のグループラベル
-	 * @param mesg 接続関係を文字列で
-	 */
-	private void combineGroups(PEDBGroupLabel l1, PEDBGroupLabel l2,
-			String mesg) {
-		PEDBGroupLabel pre, pro;
-		// 前後関係の確認
-		if (l1.getX() < l2.getX()) {
-			pre = l1;
-			pro = l2;
-		} else {
-			pre = l2;
-			pro = l1;
-		}
-		// preにもう後続グループが接続されていたら、その最後尾グループまで移動させる
-		while (pre.hasNext()) {
-			main().butler().printConsole(String.format("%s moved to -> %s", pre,
-					pre.next()));
-			pre = pre.next();
-		}
-		// preにもう先行グループが接続されていたら、その先頭グループまで移動させる
-		while (pro.hasPrevious()) {
-			main().butler().printConsole(String.format("back to %s <- %s", pro,
-					pro.previous()));
-			pro = pro.next();
-		}
-		// preとproが隣接していなかったら接続不可
-		if (pre.group().getEndNote().offset() != pro.group().getBeginNote()
-				.onset()) {
-			cancelConnectiongGroups();
-			return;
-		}
-		// -- 接続する -------
-		main().butler().printConsole(String.format("%s -> %s %s", pre, pro,
-				mesg));
-		pre.setNext(pro);
-		pre.group().setNext(pro.group());
-		// 親グループを生成
-		PEDBGroup p = new PEDBGroup(pre.group().getBeginNote(), pro.group()
-				.getEndNote(), GroupType.PARENT);
-		// TODO preに親がすでにあったら？ -> 中間層グループにする
-		p.setChild(pre.group());
-		data().getMiscGroup().remove(pre.group());
-		data().getMiscGroup().remove(pro.group());
-		data().addMiscGroupList(p);
-		createGroupLabel(p, pre.group().getLevel());
-		pre.group().changeLevel(-1);
-		pro.group().changeLevel(-1);
-		repaint();
-	}
-
-	private void cancelConnectiongGroups() {
-		main().butler().printConsole("cancel connecting");
-		main().butler().notifyDeselectGroup();
-	}
-
 	public void setHigherGroup(PEDBGroupLabel l) {
 		higherGroup = l;
 		main().butler().printConsole(String.format("%s is set as higher group",
@@ -152,45 +79,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 			// mousePoint));
 		}
 		repaint();
-	}
-
-	/**
-	 * ２つのグループを親子関係として縁組します
-	 *
-	 * @author hashida
-	 * @since Oct. 14th, 2018
-	 *
-	 * @param l1 ひとつ目のグループラベル
-	 * @param l2 ふたつ目のグループラベル
-	 * @param mesg 接続関係を文字列で
-	 */
-	private void adoptGroups(PEDBGroupLabel l1, PEDBGroupLabel l2,
-			String mesg) {
-		PEDBGroupLabel parent, child;
-		// 階層の上下関係を確認
-		if (l1.group().getLevel() < l2.group().getLevel()) {
-			parent = l1;
-			child = l2;
-		} else {
-			parent = l2;
-			child = l1;
-		}
-
-		// parentがすでに子グループを持っていたら？
-		if (parent.hasChild()) {
-			int res = JOptionPane.showConfirmDialog(this, String.format(
-					"%sはすでに子グループ%sと接続されています。%sと付け替えますか？", parent, parent
-							.child(), child));
-			if (res != JOptionPane.YES_OPTION) {
-				cancelConnectiongGroups();
-				return;
-			}
-		}
-		// 接続する
-		main().butler().printConsole(String.format("%s -> %s %s", parent, child,
-				mesg));
-		parent.setChild(child);
-		parent.group().setChild(child.group());
 	}
 
 	@Override protected PEDBGroupLabel createGroupLabel(Group group,
@@ -246,6 +134,118 @@ class PEDBGroupingPanel extends GroupingPanel {
 		for (final GroupLabel l : getGrouplist()) {
 			drawHierarchyLine(g2, l, l.child(getGrouplist()));
 		}
+	}
+
+	/**
+	 * ２つのグループを親子関係として縁組します
+	 *
+	 * @author hashida
+	 * @since Oct. 14th, 2018
+	 *
+	 * @param l1 ひとつ目のグループラベル
+	 * @param l2 ふたつ目のグループラベル
+	 * @param mesg 接続関係を文字列で
+	 */
+	private void adoptGroups(PEDBGroupLabel l1, PEDBGroupLabel l2,
+			String mesg) {
+		PEDBGroupLabel parent, child;
+		// 階層の上下関係を確認
+		if (l1.group().getLevel() < l2.group().getLevel()) {
+			parent = l1;
+			child = l2;
+		} else {
+			parent = l2;
+			child = l1;
+		}
+
+		// parentがすでに子グループを持っていたら？
+		if (parent.hasChild()) {
+			final int res = JOptionPane.showConfirmDialog(this, String.format(
+					"%sはすでに子グループ%sと接続されています。%sと付け替えますか？", parent, parent
+							.child(), child));
+			if (res != JOptionPane.YES_OPTION) {
+				cancelConnectiongGroups();
+				return;
+			}
+		}
+		// 接続する
+		main().butler().printConsole(String.format("%s -> %s %s", parent, child,
+				mesg));
+		parent.setChild(child);
+		parent.group().setChild(child.group());
+	}
+
+	private void cancelConnectiongGroups() {
+		main().butler().printConsole("cancel connecting");
+		main().butler().notifyDeselectGroup();
+	}
+
+	/**
+	 * 二つのグループを連結し、親(上位階層)グループを生成します。
+	 *
+	 * @author hashida
+	 * @since Oct. 14th, 2018
+	 *
+	 * @param l1 ひとつ目のグループラベル
+	 * @param l2 ふたつ目のグループラベル
+	 * @param mesg 接続関係を文字列で
+	 */
+	private void combineGroups(PEDBGroupLabel l1, PEDBGroupLabel l2,
+			String mesg) {
+		PEDBGroupLabel pre, pro;
+		// 前後関係の確認
+		if (l1.getX() < l2.getX()) {
+			pre = l1;
+			pro = l2;
+		} else {
+			pre = l2;
+			pro = l1;
+		}
+		// preにもう後続グループが接続されていたら、その最後尾グループまで移動させる
+		while (pre.hasNext()) {
+			main().butler().printConsole(String.format("%s moved to -> %s", pre,
+					pre.next()));
+			pre = pre.next();
+		}
+		// preにもう先行グループが接続されていたら、その先頭グループまで移動させる
+		while (pro.hasPrevious()) {
+			main().butler().printConsole(String.format("back to %s <- %s", pro,
+					pro.previous()));
+			pro = pro.next();
+		}
+		// preとproが隣接していなかったら接続不可
+		if (pre.group().getEndNote().offset() != pro.group().getBeginNote()
+				.onset()) {
+			cancelConnectiongGroups();
+			return;
+		}
+		// -- 接続する -------
+		main().butler().printConsole(String.format("%s -> %s %s", pre, pro,
+				mesg));
+		pre.setNext(pro);
+		pre.group().setNext(pro.group());
+		// 親グループを生成
+		final PEDBGroup p = new PEDBGroup(pre.group().getBeginNote(), pro
+				.group().getEndNote(), GroupType.PARENT);
+		// TODO preに親がすでにあったら？ -> 中間層グループにする
+		p.setChild(pre.group());
+		data().getMiscGroup().remove(pre.group());
+		data().getMiscGroup().remove(pro.group());
+		data().addMiscGroupList(p);
+		createGroupLabel(p, pre.group().getLevel());
+		pre.group().changeLevel(-1);
+		pro.group().changeLevel(-1);
+		repaint();
+	}
+
+	private void connectGroups(PEDBGroupLabel l1, PEDBGroupLabel l2) {
+		if (l1 == null || l2 == null)
+			return;
+		if (l1.group().getLevel() == l2.group().getLevel())
+			combineGroups(l1, l2, "combine");
+		else
+			adoptGroups(l1, l2, "adopt");
+		setHigherGroup(null);
 	}
 
 	/**
