@@ -175,6 +175,9 @@ class PEDBGroupingPanel extends GroupingPanel {
 		parent.group().setChild(child.group());
 	}
 
+	/**
+	 * グループ接続を取りやめます。
+	 */
 	private void cancelConnectiongGroups() {
 		main().butler().printConsole("cancel connecting");
 		main().butler().notifyDeselectGroup();
@@ -202,24 +205,16 @@ class PEDBGroupingPanel extends GroupingPanel {
 			pro = l1;
 		}
 		// preにもう後続グループが接続されていたら、その最後尾グループまで移動させる
-		while (pre.hasNext()) {
-			main().butler().printConsole(String.format("%s moved to -> %s", pre,
-					pre.next()));
-			pre = pre.next();
-		}
+		pre = moveToLastGroupOf(pre);
 		// preにもう先行グループが接続されていたら、その先頭グループまで移動させる
-		while (pro.hasPrevious()) {
-			main().butler().printConsole(String.format("back to %s <- %s", pro,
-					pro.previous()));
-			pro = pro.next();
-		}
+		pro = moveToFirstGroupOf(pro);
 		// preとproが隣接していなかったら接続不可
 		if (pre.group().getEndNote().offset() != pro.group().getBeginNote()
 				.onset()) {
 			cancelConnectiongGroups();
 			return;
 		}
-		// -- 接続する -------
+		// -- preとproを接続する -------
 		main().butler().printConsole(String.format("%s -> %s %s", pre, pro,
 				mesg));
 		pre.setNext(pro);
@@ -227,6 +222,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 		// 親グループを生成
 		final PEDBGroup p = new PEDBGroup(pre.group().getBeginNote(), pro
 				.group().getEndNote(), GroupType.PARENT);
+		p.setIndex(data().getUniqueGroupIndex());
 		// TODO pre/proに親がすでにあったら？ -> 中間層グループにする
 		p.setChild(pre.group());
 		data().getMiscGroup().remove(pre.group());
@@ -236,6 +232,36 @@ class PEDBGroupingPanel extends GroupingPanel {
 		pre.changeLevel(+1);
 		pro.changeLevel(+1);
 		repaint();
+	}
+
+	/**
+	 * proにもう先行グループが接続されていたら、その先頭グループまで移動させます。
+	 *
+	 * @author hashida
+	 * @since Oct. 17th, 2018
+	 */
+	private PEDBGroupLabel moveToFirstGroupOf(PEDBGroupLabel pro) {
+		while (pro.hasPrevious()) {
+			main().butler().printConsole(String.format("back to %s <- %s", pro,
+					pro.previous()));
+			pro = pro.next();
+		}
+		return pro;
+	}
+
+	/**
+	 * preにもう後続グループが接続されていたら、その最後尾グループまで移動させます。
+	 *
+	 * @author hashida
+	 * @since Oct. 17th, 2018
+	 */
+	private PEDBGroupLabel moveToLastGroupOf(PEDBGroupLabel pre) {
+		while (pre.hasNext()) {
+			main().butler().printConsole(String.format("%s moved to -> %s", pre,
+					pre.next()));
+			pre = pre.next();
+		}
+		return pre;
 	}
 
 	private void connectGroups(PEDBGroupLabel l1, PEDBGroupLabel l2) {
