@@ -227,14 +227,14 @@ class PEDBGroupingPanel extends GroupingPanel {
 		// 親グループを生成
 		final PEDBGroup p = new PEDBGroup(pre.group().getBeginNote(), pro
 				.group().getEndNote(), GroupType.PARENT);
-		// TODO preに親がすでにあったら？ -> 中間層グループにする
+		// TODO pre/proに親がすでにあったら？ -> 中間層グループにする
 		p.setChild(pre.group());
 		data().getMiscGroup().remove(pre.group());
 		data().getMiscGroup().remove(pro.group());
 		data().addMiscGroupList(p);
 		createGroupLabel(p, pre.group().getLevel());
-		pre.group().changeLevel(-1);
-		pro.group().changeLevel(-1);
+		pre.changeLevel(+1);
+		pro.changeLevel(+1);
 		repaint();
 	}
 

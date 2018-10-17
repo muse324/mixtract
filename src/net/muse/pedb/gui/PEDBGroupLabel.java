@@ -136,4 +136,10 @@ public class PEDBGroupLabel extends GroupLabel {
 		super.setTypeShape(type);
 		setText(String.format("%s (%d)", group().name(), group().getLevel()));
 	}
+
+	public void changeLevel(int i) {
+		group().changeLevel(i);
+		setText(String.format("%s (%d)", group().name(), group().getLevel()));
+		repaint();
+	}
 }
