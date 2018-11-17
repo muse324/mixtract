@@ -14,7 +14,6 @@ import net.muse.data.Group;
 import net.muse.data.NoteData;
 import net.muse.gui.GLMouseActionListener;
 import net.muse.gui.KeyActionListener;
-import net.muse.pedb.data.PEDBConcierge;
 import net.muse.pedb.data.PEDBNoteData;
 
 public class PEDBTopNoteLabel extends PEDBNoteLabel {
@@ -81,6 +80,10 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 			MuseApp main) {
 		return new GLMouseActionListener(main, this) {
 
+			@Override public PEDBTopNoteLabel self() {
+				return (PEDBTopNoteLabel) super.self();
+			}
+
 			@Override public PEDBStructureEditor main() {
 				return (PEDBStructureEditor) super.main();
 			}
@@ -88,9 +91,8 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 			// 11/17  藤坂が一部追加  クリックした時のグループ(頂点)を選択
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// TODO 自動生成されたメソッド・スタブ
 				super.mousePressed(e);
-				((PEDBConcierge)(main().butler())).setTopNoteLabel(self());
+				main().butler().notifySelectTopNote(self(), true);
 				System.out.print("clicked!");
 			}
 

@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
+import net.muse.data.NoteData;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MouseActionListener;
@@ -216,6 +217,11 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 		main.data().calculateExpressionParameters();
 		((MXMainFrame) main.getFrame()).getDynamicsView().repaint();
 		((MXMainFrame) main.getFrame()).getTempoView().repaint();
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 }

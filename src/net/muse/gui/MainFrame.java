@@ -54,6 +54,7 @@ import net.muse.command.MuseAppCommand;
 import net.muse.command.MuseAppCommandType;
 import net.muse.data.Concierge;
 import net.muse.data.Group;
+import net.muse.data.NoteData;
 import net.muse.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.gui.CurveView;
@@ -1101,6 +1102,11 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 	protected void readfile(File f) throws IOException {
 		butler().readfile(f, main.getProjectDirectory());
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

@@ -7,9 +7,11 @@ import net.muse.app.PEDBStructureEditor;
 import net.muse.command.MuseAppCommandType;
 import net.muse.data.Concierge;
 import net.muse.gui.GroupLabel;
+import net.muse.gui.TuneDataListener;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.pedb.command.PEDBCommandType;
+import net.muse.pedb.gui.PEDBTopNoteLabel;
 
 public class PEDBConcierge extends Concierge {
 
@@ -25,6 +27,7 @@ public class PEDBConcierge extends Concierge {
 		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
 				+ obj.getClass().getSimpleName();
 		MuseApp main = (MuseApp) obj;
+		printConsole(String.format("%d", e.getKeyCode()));
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_R:
 			printConsole("refresh");
@@ -73,6 +76,13 @@ public class PEDBConcierge extends Concierge {
 	 */
 	@Override protected PEDBStructureEditor app() {
 		return (PEDBStructureEditor) super.app();
+	}
+
+	public void notifySelectTopNote(PEDBTopNoteLabel self, boolean b) {
+		setTopNoteLabel(self);
+		for (TuneDataListener l : getTdListenerList()) {
+			l.selectTopNote(self.getScoreNote(), b);
+		}
 	}
 
 }

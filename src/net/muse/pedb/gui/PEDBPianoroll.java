@@ -1,5 +1,6 @@
 package net.muse.pedb.gui;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -30,8 +31,7 @@ public class PEDBPianoroll extends PianoRoll {
 	 * (非 Javadoc)
 	 * @see net.muse.misc.MuseObject#butler()
 	 */
-	@Override
-	public PEDBConcierge butler() {
+	@Override public PEDBConcierge butler() {
 		return (PEDBConcierge) super.butler();
 	}
 
@@ -40,8 +40,7 @@ public class PEDBPianoroll extends PianoRoll {
 	 * @see net.muse.gui.PianoRoll#selectNote(net.muse.gui.NoteLabel,
 	 * net.muse.data.NoteData, net.muse.data.NoteData)
 	 */
-	@Override
-	public void selectNote(NoteLabel l, NoteData note, NoteData end) {
+	@Override public void selectNote(NoteLabel l, NoteData note, NoteData end) {
 		if (note == null)
 			return;
 		NoteData s = l.getScoreNote();
@@ -57,13 +56,11 @@ public class PEDBPianoroll extends PianoRoll {
 	protected KeyActionListener createKeyActions(MuseObject app) {
 		return new KeyActionListener(app, this) {
 
-			@Override
-			public PEDBStructureEditor main() {
+			@Override public PEDBStructureEditor main() {
 				return (PEDBStructureEditor) super.main();
 			}
 
-			@Override
-			public PEDBPianoroll owner() {
+			@Override public PEDBPianoroll owner() {
 				return (PEDBPianoroll) super.owner();
 			}
 
@@ -76,29 +73,24 @@ public class PEDBPianoroll extends PianoRoll {
 	 * net.muse.mixtract.gui.MXPianoroll#createNoteLabel(net.muse.data.NoteData,
 	 * java.awt.Rectangle)
 	 */
-	@Override
-	protected PEDBNoteLabel createNoteLabel(NoteData note,
+	@Override protected PEDBNoteLabel createNoteLabel(NoteData note,
 			Rectangle r) {
 		return new PEDBNoteLabel(note, r);
 	}
 
-	@Override
-	protected PianoRollActionListener createPianoRollMouseAction(
+	@Override protected PianoRollActionListener createPianoRollMouseAction(
 			MuseApp app) {
 		return new PEDBPianoRollActionLisner(app, this) {
 
-			@Override
-			public PEDBPianoroll self() {
+			@Override public PEDBPianoroll self() {
 				return (PEDBPianoroll) super.self();
 			}
 
-			@Override
-			protected PEDBMainFrame frame() {
+			@Override protected PEDBMainFrame frame() {
 				return (PEDBMainFrame) super.frame();
 			}
 
-			@Override
-			protected PEDBStructureEditor main() {
+			@Override protected PEDBStructureEditor main() {
 				return (PEDBStructureEditor) super.main();
 			}
 
@@ -114,8 +106,7 @@ public class PEDBPianoroll extends PianoRoll {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#drawOptionalInfo(java.awt.Graphics2D)
 	 */
-	@Override
-	protected void drawOptionalInfo(Graphics2D g2) {
+	@Override protected void drawOptionalInfo(Graphics2D g2) {
 		PEDBNoteLabel l = notelist();
 		while (l.hasNext()) {
 			drawTiedNotesConnection(g2, l, l.next());
@@ -123,13 +114,11 @@ public class PEDBPianoroll extends PianoRoll {
 		}
 	}
 
-	@Override
-	protected PEDBGroupLabel group() {
+	@Override protected PEDBGroupLabel group() {
 		return (PEDBGroupLabel) super.group();
 	}
 
-	@Override
-	protected PEDBStructureEditor main() {
+	@Override protected PEDBStructureEditor main() {
 		return (PEDBStructureEditor) super.main();
 	}
 
@@ -138,8 +127,7 @@ public class PEDBPianoroll extends PianoRoll {
 	 * @see net.muse.gui.PianoRoll#makeNoteLabel(net.muse.data.NoteData, int,
 	 * boolean)
 	 */
-	@Override
-	protected void makeNoteLabel(final NoteData note, int offset,
+	@Override protected void makeNoteLabel(final NoteData note, int offset,
 			boolean isChild) {
 		if (note == null)
 			return;
@@ -197,5 +185,15 @@ public class PEDBPianoroll extends PianoRoll {
 			g2.draw(p);
 		}
 		drawTiedNotesConnection(g2, from, to.next());
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// super.selectTopNote(note, b);
+		for (Component c : getComponents()) {
+			if(c instanceof PEDBNoteLabel) {
+				PEDBNoteLabel n = (PEDBNoteLabel)c;
+				n.setSelected(n.getScoreNote().equals(note));
+			}
+		}
 	}
 }

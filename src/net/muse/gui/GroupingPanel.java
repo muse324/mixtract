@@ -581,4 +581,9 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		this.mouseOveredNoteLabel = src;
 		repaint();
 	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
 }

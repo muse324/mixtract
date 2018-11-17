@@ -8,6 +8,7 @@ import javax.swing.JScrollPane;
 
 import net.muse.app.Mixtract;
 import net.muse.data.Group;
+import net.muse.data.NoteData;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
@@ -108,6 +109,11 @@ public class CurveView extends JScrollPane implements TuneDataListener {
 		curvePanel.setViewerMode(mode);
 		curvePanel.setCurvelist(data);
 		curvePanel.repaint();
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 } // @jve:decl-index=0:visual-constraint="21,33"

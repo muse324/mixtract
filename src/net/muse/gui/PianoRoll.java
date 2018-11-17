@@ -800,4 +800,9 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		mouseEndPoint = mouseStartPoint = e.getPoint();
 	}
 
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
 } // @jve:decl-index=0:visual-constraint="10,10"

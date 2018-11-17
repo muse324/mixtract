@@ -9,7 +9,6 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.TuneData;
 import net.muse.gui.MainFrame;
@@ -30,8 +29,7 @@ public class PEDBStructureEditor extends MuseApp {
 	}
 
 	@Override
-	public Concierge butler() {
-		// TODO 自動生成されたメソッド・スタブ
+	public PEDBConcierge butler() {
 		return (PEDBConcierge)super.butler();
 	}
 
