@@ -59,12 +59,13 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 			}
 
 			@Override protected void keyPressedOption(KeyEvent e) {
+				System.out.println(e.getKeyCode());
 				switch (e.getKeyCode()) {
-				case KeyEvent.VK_KP_LEFT:
+				case KeyEvent.VK_LEFT:
 					//setHigherGroup(owner());
 					System.out.println("ababababa");
 					break;
-				case KeyEvent.VK_KP_RIGHT:
+				case KeyEvent.VK_RIGHT:
 					//setHigherGroup(null);
 					System.out.println("cdcdcdcdc");
 				}
@@ -87,11 +88,11 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 
 			// 11/17  藤坂が一部追加  クリックした時のグループ(頂点)を選択
 			@Override
-			public void mousePressed(MouseEvent e) {
+			public void mouseClicked(MouseEvent e) {
 				// TODO 自動生成されたメソッド・スタブ
 				super.mousePressed(e);
 				((PEDBConcierge)(main().butler())).setTopNoteLabel(self());
-				System.out.print("clicked!");
+				System.out.print("clicked");;
 			}
 
 			/*
