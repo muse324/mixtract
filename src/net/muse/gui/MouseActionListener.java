@@ -30,9 +30,8 @@ public class MouseActionListener extends MouseAdapter implements
 	private static Point mousePoint;
 
 	/* 制御オブジェクト */
-	private final MuseApp _main;
+	private final MuseApp _app;
 	private final Container _self;
-	private final MainFrame _frame;
 	private JPopupMenu popup;
 
 	/* マウスドラッグによる矩形範囲の座標 */
@@ -48,11 +47,10 @@ public class MouseActionListener extends MouseAdapter implements
 
 	boolean groupEditable;
 
-	public MouseActionListener(MuseApp main, Container owner) {
+	public MouseActionListener(MuseApp app, Container owner) {
 		super();
-		_main = main;
+		_app = app;
 		_self = owner;
-		_frame = main().getFrame();
 	}
 
 	/*
@@ -62,12 +60,12 @@ public class MouseActionListener extends MouseAdapter implements
 	 * )
 	 */
 	@Override public void actionPerformed(ActionEvent e) {
-		MuseAppCommand c = main().searchCommand(e.getActionCommand());
+		MuseAppCommand c = app().searchCommand(e.getActionCommand());
 		if (c == null)
 			return;
 		// final MuseAppCommand c = MuseAppCommand.create(e.getActionCommand());
 		c.setFrame(frame());
-		c.setMain(main());
+		c.setApp(app());
 		c.setTarget(e.getSource());
 		c.run();
 	}
@@ -170,7 +168,6 @@ public class MouseActionListener extends MouseAdapter implements
 		setMousePoint(e);
 		setStartPoint(e.getPoint());
 		setEndPoint(e.getPoint());
-		// _main.notifyDeselectGroup();
 		_self.repaint();
 	}
 
@@ -292,10 +289,10 @@ public class MouseActionListener extends MouseAdapter implements
 				hasSelectedGroup));
 		popup.add(addMenuItem(MixtractCommandType.DELETE_GROUP,
 				hasSelectedGroup));
-		popup.add(addMenuItem(MixtractCommandType.CLEAR_ALLGROUPS, main()
+		popup.add(addMenuItem(MixtractCommandType.CLEAR_ALLGROUPS, app()
 				.hasTarget()));
 		popup.addSeparator();
-		popup.add(addMenuItem(MixtractCommandType.PRINT_ALLGROUPS, main()
+		popup.add(addMenuItem(MixtractCommandType.PRINT_ALLGROUPS, app()
 				.hasTarget()));
 		popup.add(addMenuItem(MixtractCommandType.MOUSE_DISPLAY, true));
 	}
@@ -310,7 +307,7 @@ public class MouseActionListener extends MouseAdapter implements
 	 * @return _frame
 	 */
 	protected MainFrame frame() {
-		return main().getFrame();
+		return app().getFrame();
 	}
 
 	/**
@@ -320,8 +317,8 @@ public class MouseActionListener extends MouseAdapter implements
 		return isDragging;
 	}
 
-	protected MuseApp main() {
-		return _main;
+	protected MuseApp app() {
+		return _app;
 	}
 
 	protected void setDragging(boolean b) {

@@ -18,6 +18,10 @@ public class PEDBGroupLabel extends GroupLabel {
 		super(group, r);
 	}
 
+	public PEDBGroupLabel() {
+		super();
+	}
+
 	@Override public PEDBGroup group() {
 		return (PEDBGroup) super.group();
 	}
@@ -34,12 +38,15 @@ public class PEDBGroupLabel extends GroupLabel {
 		return (PEDBGroupLabel) child();
 	}
 
+	/* (非 Javadoc)
+	 * @see net.muse.gui.GroupLabel#createKeyActionListener(net.muse.app.MuseApp)
+	 */
 	@Override protected KeyActionListener createKeyActionListener(
-			MuseApp main) {
-		return new KeyActionListener(main, this) {
+			MuseApp app) {
+		return new KeyActionListener(app, this) {
 
-			@Override public PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+			@Override public PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
 			@Override public PEDBGroupLabel owner() {
@@ -47,6 +54,7 @@ public class PEDBGroupLabel extends GroupLabel {
 			}
 
 			@Override protected void keyPressedOption(KeyEvent e) {
+				super.keyPressedOption(e);
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_H:
 					setHigherGroup(owner());
@@ -57,7 +65,7 @@ public class PEDBGroupLabel extends GroupLabel {
 			}
 
 			protected void setHigherGroup(PEDBGroupLabel owner) {
-				main().getFrame().getGroupingPanel().setHigherGroup(owner);
+				app().getFrame().getGroupingPanel().setHigherGroup(owner);
 			}
 
 		};
@@ -70,8 +78,8 @@ public class PEDBGroupLabel extends GroupLabel {
 	 * .MuseApp)
 	 */
 	@Override protected GLMouseActionListener createMouseActionListener(
-			MuseApp main) {
-		return new GLMouseActionListener(main, this) {
+			MuseApp app) {
+		return new GLMouseActionListener(app, this) {
 			/*
 			 * (非 Javadoc)
 			 * @see

@@ -33,7 +33,7 @@ public class OpenMusicXMLCommand extends MuseAppCommand {
 			JFileChooser fc = (app() != null) ? new JFileChooser(app().getMusicXMLDir()) : new JFileChooser();
 			int res = fc.showOpenDialog(null);
 			if (res == JFileChooser.APPROVE_OPTION) {
-				app().butler().readfile(fc.getSelectedFile(), new File(_main
+				butler().readfile(fc.getSelectedFile(), new File(_app
 						.getProjectDirectory(), fc.getSelectedFile().getName()
 								+ Mixtract.getProjectFileExtension()));
 			}

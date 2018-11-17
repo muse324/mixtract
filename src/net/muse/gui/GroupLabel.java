@@ -99,20 +99,20 @@ public class GroupLabel extends JLabel {
 		return child;
 	}
 
-	public void setController(MuseApp main) {
-		mouseActions = createMouseActionListener(main);
+	public void setController(MuseApp app) {
+		mouseActions = createMouseActionListener(app);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
-		keyActions = createKeyActionListener(main);
+		keyActions = createKeyActionListener(app);
 		addKeyListener(keyActions);
 	}
 
-	protected KeyActionListener createKeyActionListener(MuseApp main) {
-		return new KeyActionListener(main, this);
+	protected KeyActionListener createKeyActionListener(MuseApp app) {
+		return new KeyActionListener(app, this);
 	}
 
-	protected MouseActionListener createMouseActionListener(MuseApp main) {
-		return new GLMouseActionListener(main, this);
+	protected MouseActionListener createMouseActionListener(MuseApp app) {
+		return new GLMouseActionListener(app, this);
 	}
 
 	/**
