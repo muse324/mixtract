@@ -160,22 +160,12 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * @author hashida
 	 * @since Oct. 14th, 2018
 	 *
-	 * @param l1 ひとつ目のグループラベル
-	 * @param l2 ふたつ目のグループラベル
+	 * @param parent 親となるグループラベル
+	 * @param child 子となるグループラベル
 	 * @param mesg 接続関係を文字列で
 	 */
-	private void adoptGroups(PEDBGroupLabel l1, PEDBGroupLabel l2,
+	private void adoptGroups(PEDBGroupLabel parent, PEDBGroupLabel child,
 			String mesg) {
-		PEDBGroupLabel parent, child;
-		// 階層の上下関係を確認
-		if (l1.group().getLevel() < l2.group().getLevel()) {
-			parent = l1;
-			child = l2;
-		} else {
-			parent = l2;
-			child = l1;
-		}
-
 		// parentがすでに子グループを持っていたら？
 		if (parent.hasChild()) {
 			final int res = JOptionPane.showConfirmDialog(this, String.format(
@@ -258,12 +248,11 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * @since Oct. 17th, 2018
 	 */
 	private PEDBGroupLabel moveToFirstGroupOf(PEDBGroupLabel pro) {
-		while (pro.hasPrevious()) {
-			main().butler().printConsole(String.format("back to %s <- %s", pro,
-					pro.previous()));
-			pro = pro.next();
-		}
-		return pro;
+		if (!pro.hasPrevious())
+			return pro;
+		main().butler().printConsole(String.format("back to %s <- %s", pro, pro
+				.previous()));
+		return moveToFirstGroupOf(pro.previous());
 	}
 
 	/**
@@ -273,22 +262,61 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * @since Oct. 17th, 2018
 	 */
 	private PEDBGroupLabel moveToLastGroupOf(PEDBGroupLabel pre) {
-		while (pre.hasNext()) {
-			main().butler().printConsole(String.format("%s moved to -> %s", pre,
-					pre.next()));
-			pre = pre.next();
-		}
-		return pre;
+		if (!pre.hasNext())
+			return pre;
+		main().butler().printConsole(String.format("%s forward to -> %s", pre, pre
+				.next()));
+		return moveToLastGroupOf(pre.next());
 	}
 
 	private void connectGroups(PEDBGroupLabel l1, PEDBGroupLabel l2) {
 		if (l1 == null || l2 == null)
 			return;
-		if (l1.group().getLevel() == l2.group().getLevel())
-			combineGroups(l1, l2, "combine");
-		else
+		if (isConditionOfGroupAdopting(l1, l2))
 			adoptGroups(l1, l2, "adopt");
+		else if (isConditionOfGroupAdopting(l2, l1))
+			adoptGroups(l2, l1, "adopt");
+		else if (isConditionOfGroupConnecting(l1, l2))
+			combineGroups(l1, l2, "combine");
 		setHigherGroup(null);
+	}
+
+	/**
+	 * 二つのグループラベルが親子階層として接続できるか判定します。
+	 *
+	 * @param l1
+	 * @param l2
+	 * @return
+	 */
+	private boolean isConditionOfGroupAdopting(PEDBGroupLabel l1,
+			PEDBGroupLabel l2) {
+		PEDBGroup g1 = l1.group();
+		PEDBGroup g2 = l2.group();
+		// g1がg2を内包する
+		if (g1.onsetInTicks() <= g2.onsetInTicks() && g1.offsetInTicks() >= g2
+				.offsetInTicks())
+			return true;
+		return false;
+	}
+
+	private boolean isConditionOfGroupConnecting(PEDBGroupLabel l1,
+			PEDBGroupLabel l2) {
+		if (l1.getLevel() == l2.getLevel()) {
+			main().butler().printConsole("レベルが同じ");
+			return true;
+		}
+		PEDBGroup g1 = l1.group();
+		PEDBGroup g2 = l2.group();
+		if (g1.offsetInTicks() == g2.onsetInTicks()) {
+			main().butler().printConsole("２音が連続");
+			return true;
+		}
+		if (g1.getEndNote().onset() <= g2.getBeginNote().onset() && g1
+				.offsetInTicks() >= g2.getBeginNote().onset()) {
+			main().butler().printConsole("g2開始音がg1終了音と同時刻帯");
+			return true;
+		}
+		return false;
 	}
 
 	/**
