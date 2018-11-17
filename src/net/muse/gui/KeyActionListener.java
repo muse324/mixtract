@@ -24,6 +24,7 @@ public class KeyActionListener extends KeyAdapter {
 	 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
 	 */
 	@Override public void keyPressed(KeyEvent e) {
+		System.out.println(String.format("KeyActionListener: %d", e.getKeyCode()));
 		main().butler().keyPressed(e);
 		keyPressedOption(e);
 	}

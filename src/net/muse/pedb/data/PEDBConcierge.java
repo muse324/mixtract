@@ -27,7 +27,7 @@ public class PEDBConcierge extends Concierge {
 		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
 				+ obj.getClass().getSimpleName();
 		MuseApp main = (MuseApp) obj;
-		printConsole(String.format("%d", e.getKeyCode()));
+		printConsole(String.format("PEDBConcierge: %d", e.getKeyCode()));
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_R:
 			printConsole("refresh");
