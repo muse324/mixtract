@@ -15,8 +15,8 @@ import net.muse.data.Group;
  */
 public class GLMouseActionListener extends MouseActionListener {
 
-	public GLMouseActionListener(MuseApp main, Container owner) {
-		super(main, owner);
+	public GLMouseActionListener(MuseApp app, Container owner) {
+		super(app, owner);
 	}
 
 	/*
@@ -98,7 +98,7 @@ public class GLMouseActionListener extends MouseActionListener {
 	 */
 	@Override public void mousePressed(MouseEvent e) {
 		super.mousePressed(e);
-		main().butler().notifySelectGroup(self(), true);
+		app().butler().notifySelectGroup(self(), true);
 		if (self().getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
 			setGroupEditable(true);
 		}
@@ -128,13 +128,13 @@ public class GLMouseActionListener extends MouseActionListener {
 	}
 
 	protected void doubleClicked(Group gr) {
-		for (InfoViewer r : main().butler().getInfoViewList()) {
+		for (InfoViewer r : app().butler().getInfoViewList()) {
 			if (r.contains(gr)) {
 				r.setVisible(true);
 				return;
 			}
 		}
-		self().showInfoViewer(main(), gr);
+		self().showInfoViewer(app(), gr);
 	}
 
 }

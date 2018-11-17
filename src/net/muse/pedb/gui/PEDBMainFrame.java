@@ -62,7 +62,7 @@ public class PEDBMainFrame extends MainFrame {
 	}
 
 	@Override protected PEDBGroupingPanel createGroupingPanel() {
-		return new PEDBGroupingPanel();
+		return new PEDBGroupingPanel(app());
 	}
 
 	/*
@@ -70,8 +70,8 @@ public class PEDBMainFrame extends MainFrame {
 	 * @see
 	 * net.muse.mixtract.gui.MXMainFrame#createPianoRoll(net.muse.app.MuseApp)
 	 */
-	@Override protected PianoRoll createPianoRoll(MuseApp main) {
-		return new PEDBPianoroll(main);
+	@Override protected PianoRoll createPianoRoll(MuseApp app) {
+		return new PEDBPianoroll(app);
 	}
 
 	/*
@@ -167,7 +167,7 @@ public class PEDBMainFrame extends MainFrame {
 	 * @see net.muse.gui.MainFrame#readfile(java.io.File)
 	 */
 	@Override protected void readfile(File f) throws IOException {
-		butler().readfile(f, main.getProjectDirectory());
+		butler().readfile(f, app().getProjectDirectory());
 	}
 
 	private JButton getRereshButton() {

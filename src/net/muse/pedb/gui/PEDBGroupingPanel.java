@@ -32,6 +32,11 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+
+	protected PEDBGroupingPanel(MuseApp app) {
+		super(app);
+	}
+
 	private PEDBGroupLabel higherGroup;
 	LinkedList<PEDBGroupLabel> sequenceGroups = new LinkedList<>();
 
@@ -49,6 +54,8 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 */
 	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		super.selectGroup(g, flg);
+		if (g instanceof PEDBTopNoteLabel)
+			return;
 		connectGroups(higherGroup, (PEDBGroupLabel) g); // higherGroupが選択済の場合、今選択されたグループと養子縁組する
 
 		sequenceGroups.clear();
@@ -83,8 +90,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 
 	public void setHigherGroup(PEDBGroupLabel l) {
 		higherGroup = l;
-		main().butler().printConsole(String.format("%s is set as higher group",
-				l));
+		butler().printConsole(String.format("%s is set as higher group", l));
 		repaint();
 	}
 
@@ -104,12 +110,16 @@ class PEDBGroupingPanel extends GroupingPanel {
 		return new PEDBGroupLabel(group, r);
 	}
 
-	@Override protected KeyActionListener createKeyActionListener(
-			MuseApp main) {
-		return new KeyActionListener(main, this) {
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.GroupingPanel#createKeyActionListener(net.muse.app.MuseApp)
+	 */
+	@Override protected KeyActionListener createKeyActionListener(MuseApp app) {
+		return new KeyActionListener(app, this) {
 
-			@Override public PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+			@Override public PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
 			@Override public PEDBGroupingPanel owner() {
@@ -117,6 +127,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 			}
 
 			@Override protected void keyPressedOption(KeyEvent e) {
+				super.keyPressedOption(e);
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_ESCAPE:
 					setHigherGroup(null);
@@ -177,7 +188,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 			}
 		}
 		// 接続する
-		main().butler().printConsole(String.format("%s -> %s %s", parent, child,
+		app().butler().printConsole(String.format("%s -> %s %s", parent, child,
 				mesg));
 		parent.setChild(child);
 	}
@@ -186,8 +197,8 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * グループ接続を取りやめます。
 	 */
 	private void cancelConnectiongGroups() {
-		main().butler().printConsole("cancel connecting");
-		main().butler().notifyDeselectGroup();
+		app().butler().printConsole("cancel connecting");
+		app().butler().notifyDeselectGroup();
 	}
 
 	/**
@@ -222,7 +233,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 			return;
 		}
 		// -- preとproを接続する -------
-		main().butler().printConsole(String.format("%s -> %s %s", pre, pro,
+		app().butler().printConsole(String.format("%s -> %s %s", pre, pro,
 				mesg));
 		pre.setNext(pro);
 		pre.group().setNext(pro.group());
@@ -250,7 +261,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	private PEDBGroupLabel moveToFirstGroupOf(PEDBGroupLabel pro) {
 		if (!pro.hasPrevious())
 			return pro;
-		main().butler().printConsole(String.format("back to %s <- %s", pro, pro
+		app().butler().printConsole(String.format("back to %s <- %s", pro, pro
 				.previous()));
 		return moveToFirstGroupOf(pro.previous());
 	}
@@ -264,8 +275,8 @@ class PEDBGroupingPanel extends GroupingPanel {
 	private PEDBGroupLabel moveToLastGroupOf(PEDBGroupLabel pre) {
 		if (!pre.hasNext())
 			return pre;
-		main().butler().printConsole(String.format("%s forward to -> %s", pre, pre
-				.next()));
+		app().butler().printConsole(String.format("%s forward to -> %s", pre,
+				pre.next()));
 		return moveToLastGroupOf(pre.next());
 	}
 
@@ -302,18 +313,18 @@ class PEDBGroupingPanel extends GroupingPanel {
 	private boolean isConditionOfGroupConnecting(PEDBGroupLabel l1,
 			PEDBGroupLabel l2) {
 		if (l1.getLevel() == l2.getLevel()) {
-			main().butler().printConsole("レベルが同じ");
+			app().butler().printConsole("レベルが同じ");
 			return true;
 		}
 		PEDBGroup g1 = l1.group();
 		PEDBGroup g2 = l2.group();
 		if (g1.offsetInTicks() == g2.onsetInTicks()) {
-			main().butler().printConsole("２音が連続");
+			app().butler().printConsole("２音が連続");
 			return true;
 		}
 		if (g1.getEndNote().onset() <= g2.getBeginNote().onset() && g1
 				.offsetInTicks() >= g2.getBeginNote().onset()) {
-			main().butler().printConsole("g2開始音がg1終了音と同時刻帯");
+			app().butler().printConsole("g2開始音がg1終了音と同時刻帯");
 			return true;
 		}
 		return false;
@@ -332,11 +343,10 @@ class PEDBGroupingPanel extends GroupingPanel {
 		// 以下は、group が存在し、かつ当該groupに頂点音が存在する場合にのみ実行される
 		final RoundRectangle2D topr = getTopNoteLabelBound(group.getTopNote(),
 				level);
-		final GroupLabel toplabel = new PEDBTopNoteLabel(group.getTopNote(),
+		PEDBTopNoteLabel toplabel = new PEDBTopNoteLabel(group.getTopNote(),
 				topr);
-		System.out.println(toplabel);
 		toplabel.setBackground(Color.red);// 色の変更
-		toplabel.setController(main);
+		toplabel.setController(app());
 		group.setLevel(level);
 		add(toplabel); // 描画
 		createTopNoteLabel((Group) group.next(), level);
@@ -362,14 +372,15 @@ class PEDBGroupingPanel extends GroupingPanel {
 		x = MainFrame.getXOfNote(topNote.onset()) + PianoRoll.getDefaultAxisX();
 		w = MainFrame.getXOfNote(topNote.duration());
 		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
-				LABEL_HEIGHT - LEVEL_PADDING, 20.0, 20.0);
-
-		System.out.println("x = " + r.getX());
-		System.out.println("y = " + r.getY());
-		System.out.println("w = " + r.getWidth());
-		System.out.println("h = " + r.getHeight());
-		System.out.println("h = " + r.getArcWidth());
-		System.out.println("h = " + r.getArcHeight());
+				LABEL_HEIGHT - LEVEL_PADDING, 3.0, 3.0);
+		/*
+		 * System.out.println("x = "+r.getX());
+		 * System.out.println("y = "+r.getY());
+		 * System.out.println("w = "+r.getWidth());
+		 * System.out.println("h = "+r.getHeight());
+		 * System.out.println("arcw = "+r.getArcWidth());
+		 * System.out.println("arch = "+r.getArcHeight());
+		 */
 		return r;
 	}
 

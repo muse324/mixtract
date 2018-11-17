@@ -1,5 +1,6 @@
 package net.muse.pedb.gui;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -13,7 +14,6 @@ import net.muse.gui.KeyActionListener;
 import net.muse.gui.NoteLabel;
 import net.muse.gui.PianoRoll;
 import net.muse.gui.PianoRollActionListener;
-import net.muse.misc.MuseObject;
 import net.muse.mixtract.gui.ViewerMode;
 import net.muse.pedb.command.PEDBPianoRollActionLisner;
 import net.muse.pedb.data.PEDBConcierge;
@@ -21,8 +21,8 @@ import net.muse.pedb.data.PEDBConcierge;
 public class PEDBPianoroll extends PianoRoll {
 	private static final long serialVersionUID = 1L;
 
-	PEDBPianoroll(MuseApp main) {
-		super(main);
+	PEDBPianoroll(MuseApp app) {
+		super(app);
 		setViewMode(ViewerMode.SCORE_VIEW);
 	}
 
@@ -48,15 +48,14 @@ public class PEDBPianoroll extends PianoRoll {
 		getSelectedNoteLabels().add(l);
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.gui.PianoRoll#createKeyActions(net.muse.misc.MuseObject)
+	/* (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#createKeyActionListener(net.muse.app.MuseApp)
 	 */
-	protected KeyActionListener createKeyActions(MuseObject app) {
+	protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 
-			@Override public PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+			@Override public PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
 			@Override public PEDBPianoroll owner() {
@@ -89,8 +88,8 @@ public class PEDBPianoroll extends PianoRoll {
 				return (PEDBMainFrame) super.frame();
 			}
 
-			@Override protected PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+			@Override protected PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
 		};
@@ -112,8 +111,8 @@ public class PEDBPianoroll extends PianoRoll {
 		return (PEDBGroupLabel) super.group();
 	}
 
-	@Override protected PEDBStructureEditor main() {
-		return (PEDBStructureEditor) super.main();
+	@Override protected PEDBStructureEditor app() {
+		return (PEDBStructureEditor) super.app();
 	}
 
 	/*
@@ -128,7 +127,7 @@ public class PEDBPianoroll extends PianoRoll {
 
 		final Rectangle r = getLabelBounds(note, offset);
 		final PEDBNoteLabel n = createNoteLabel(note, r);
-		n.setController(main());
+		n.setController(app());
 		n.setSelected(getSelectedNoteLabels().contains(n));
 		if (notelist == null) {
 			notelist = n;
@@ -184,5 +183,15 @@ public class PEDBPianoroll extends PianoRoll {
 			g2.draw(p);
 		}
 		drawTiedNotesConnection(g2, from, to.next());
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// super.selectTopNote(note, b);
+		for (Component c : getComponents()) {
+			if(c instanceof PEDBNoteLabel) {
+				PEDBNoteLabel n = (PEDBNoteLabel)c;
+				n.setSelected(n.getScoreNote().equals(note));
+			}
+		}
 	}
 }

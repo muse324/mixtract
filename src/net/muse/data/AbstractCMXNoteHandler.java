@@ -149,4 +149,8 @@ public abstract class AbstractCMXNoteHandler extends MuseObject implements
 		fifths = f;
 	}
 
+	@Override public Concierge butler() {
+		return data().butler();
+	}
+
 }

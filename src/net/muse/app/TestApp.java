@@ -30,8 +30,8 @@ public class TestApp extends MuseApp {
 
 	public static void main(String[] args) {
 		try {
-			TestApp main = new TestApp(args);
-			main.setup();
+			TestApp app = new TestApp(args);
+			app.setup();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -81,7 +81,7 @@ public class TestApp extends MuseApp {
 
 		// 各種実行コマンド制御を行うMuseAppComandクラスにメインクラスを登録します。
 		// アプリケーション独自の制御コマンドを作成するにはMuseAppCommandクラスのサブクラスを定義してください。
-		// MuseAppCommand.setMain(main);
+		// MuseAppCommand.setMain(app);
 
 		/* sprash screen */
 		createSplashScreen(getAppImageFile());
@@ -91,7 +91,7 @@ public class TestApp extends MuseApp {
 			}
 		});
 
-		// create main frame
+		// create mainFrame
 		createNewFrame();
 		getFrame().setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		JFrame.setDefaultLookAndFeelDecorated(false);

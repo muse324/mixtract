@@ -16,7 +16,7 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 	private static final long serialVersionUID = 1L;
 
 	/* 制御データ */
-	protected final MuseObject main;
+	protected final MuseObject app;
 	protected final Group group;
 
 	public static InfoViewer create(MuseGUIObject<JFrame> app, Group gr) {
@@ -27,7 +27,7 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 
 	protected InfoViewer(MuseGUIObject<JFrame> app, Group group) {
 		super(app.getFrame());
-		this.main = app;
+		this.app = app;
 		this.group = group;
 		initialize();
 	}
@@ -67,10 +67,10 @@ public class InfoViewer extends JDialog implements CanvasMouseListener {
 	}
 
 	/**
-	 * @return main
+	 * @return app
 	 */
-	protected MuseObject main() {
-		return main;
+	protected MuseObject app() {
+		return app;
 	}
 
 	protected MainFrame owner() {

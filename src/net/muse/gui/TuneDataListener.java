@@ -30,5 +30,4 @@ public interface TuneDataListener extends GroupEditListener<GroupLabel> {
 	 * @see {@link PhraseCurveType#TEMPO}
 	 */
 	void changeExpression(PhraseCurveType type);
-
 }

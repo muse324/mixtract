@@ -21,7 +21,6 @@ import net.muse.data.Group;
 import net.muse.data.Harmony;
 import net.muse.data.NoteData;
 import net.muse.data.TuneData;
-import net.muse.misc.MuseObject;
 import net.muse.misc.Util;
 import net.muse.mixtract.command.ChangePartCommand;
 import net.muse.mixtract.data.curve.PhraseCurveType;
@@ -42,7 +41,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	protected int axisX = 10;
 
-	private final MuseApp main; // @jve:decl-index=0:
+	private final MuseApp app; // @jve:decl-index=0:
 
 	/** 楽曲データ */
 	private TuneData data; // @jve:decl-index=0:
@@ -65,9 +64,9 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	final Cursor hndCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR); // @jve:decl-index=0:
 	private GroupLabel selectedGroup;
 
-	protected PianoRoll(MuseApp main) {
+	protected PianoRoll(MuseApp app) {
 		super();
-		this.main = main;
+		this.app = app;
 		setSelectedVoice(-1);
 		viewerMode = ViewerMode.REALTIME_VIEW;
 		initialize();
@@ -87,8 +86,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * net.muse.mixtract.gui.GroupEditListener#addGroup(net.muse.mixtract.data.
 	 * Group)
 	 */
-	@Override
-	public void addGroup(Group g) {
+	@Override public void addGroup(Group g) {
 		setFocusable(false);
 		repaint();
 	}
@@ -99,8 +97,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * net.muse.mixtract.gui.TuneDataListener#changeExpression(net.muse.mixtract
 	 * .data.curve.PhraseCurveType)
 	 */
-	@Override
-	public void changeExpression(PhraseCurveType type) {
+	@Override public void changeExpression(PhraseCurveType type) {
 		if (type == PhraseCurveType.DYNAMICS)
 			return;
 		resizeLabels(notelist());
@@ -112,8 +109,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @see
 	 * net.muse.mixtract.gui.GroupEditListener#deleteGroup(javax.swing.JLabel)
 	 */
-	@Override
-	public void deleteGroup(GroupLabel g) {
+	@Override public void deleteGroup(GroupLabel g) {
 		deselect(g);
 		repaint();
 	}
@@ -122,8 +118,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * (非 Javadoc)
 	 * @see net.muse.mixtract.gui.GroupEditListener#deselect(javax.swing.JLabel)
 	 */
-	@Override
-	public void deselect(GroupLabel g) {
+	@Override public void deselect(GroupLabel g) {
 		setMouseOveredNoteLabel(null);
 		clearSelection();
 		setFocusable(false);
@@ -135,8 +130,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @see
 	 * net.muse.mixtract.gui.GroupEditListener#editGroup(javax.swing.JLabel)
 	 */
-	@Override
-	public void editGroup(GroupLabel g) {
+	@Override public void editGroup(GroupLabel g) {
 		throw new UnsupportedOperationException(); // TODO 実装
 	}
 
@@ -174,8 +168,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
-	@Override
-	public void paintComponent(final Graphics g) {
+	@Override public void paintComponent(final Graphics g) {
 		/* おまじない */
 		final Graphics2D g2 = (Graphics2D) g;
 		super.paintComponent(g2);
@@ -240,8 +233,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * jp.crestmuse.mixtract.gui.components.GroupEditListener#selectGroup(javax
 	 * .swing.JLabel, boolean)
 	 */
-	@Override
-	public void selectGroup(GroupLabel g, boolean flg) {
+	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		clearSelection();
 		setSelectedGroup(g);
 		selectGroup(g.group());
@@ -253,12 +245,9 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @see net.muse.mixtract.gui.CanvasMouseListener#setShowCurrentX(boolean,
 	 * int)
 	 */
-	@Override
-	public void setShowCurrentX(boolean showCurrentX, int x) {
-	}
+	@Override public void setShowCurrentX(boolean showCurrentX, int x) {}
 
-	@Override
-	public void setTarget(TuneData target) {
+	@Override public void setTarget(TuneData target) {
 		this.setData(target);
 		ChangePartCommand.setPartSize(target.getRootGroup().size());
 		makeNoteLabel();
@@ -316,7 +305,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	protected Concierge butler() {
-		return main.butler();
+		return app().butler();
 	}
 
 	protected NoteLabel createNoteLabel(final NoteData note,
@@ -368,7 +357,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		str = switchViewerMode(nd);
 		System.out.println(str + " at " + getMouseActions().getMousePoint());
 		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
-				getMouseActions().getMousePoint().y - main.getFrame()
+				getMouseActions().getMousePoint().y - app().getFrame()
 						.getKeyboard().getKeyHeight());
 	}
 
@@ -393,8 +382,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 *
 	 * @param g2
 	 */
-	protected void drawOptionalInfo(Graphics2D g2) {
-	}
+	protected void drawOptionalInfo(Graphics2D g2) {}
 
 	/**
 	 * マウスの選択範囲に収まる音符を色付けする．
@@ -450,7 +438,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	protected Rectangle getLabelBounds(final NoteData nd, final int offset) {
 		if (nd == null)
 			return null;
-		final int h = main().getFrame().getKeyboard().getKeyHeight();
+		final int h = app().getFrame().getKeyboard().getKeyHeight();
 		final int y = KeyBoard.getYPositionOfPitch(nd.noteNumber()) * h;
 		int x, w;
 		switch (viewerMode) {
@@ -480,11 +468,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		return selectedGroup;
 	}
 
-	/**
-	 * @return main
-	 */
-	protected MuseApp main() {
-		return main;
+	protected MuseApp app() {
+		return app;
 	}
 
 	protected void makeNoteLabel(Group group) {
@@ -517,7 +502,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 		final Rectangle r = getLabelBounds(note, offset);
 		final NoteLabel n = createNoteLabel(note, r);
-		n.setController(main());
+		n.setController(app());
 		n.setSelected(getSelectedNoteLabels().contains(n));
 		if (notelist == null) {
 			notelist = n;
@@ -555,8 +540,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		return notelist;
 	}
 
-	protected void rescaleNoteLabels() {
-	}
+	protected void rescaleNoteLabels() {}
 
 	protected void resizeLabels(NoteLabel label) {
 		if (label == null)
@@ -608,7 +592,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		repaint();
 	}
 
-	private KeyActionListener createKeyActions(MuseObject app) {
+	protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this);
 	}
 
@@ -637,10 +621,10 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				// 黒鍵
 				g.setColor(Color.getHSBColor((float) 0.5, (float) 0.,
 						(float) 0.9));
-				g.fillRect(0, curHeight, width, main.getFrame().getKeyboard()
+				g.fillRect(0, curHeight, width, app().getFrame().getKeyboard()
 						.getKeyHeight());
 			}
-			curHeight += main.getFrame().getKeyboard().getKeyHeight();
+			curHeight += app().getFrame().getKeyboard().getKeyHeight();
 		}
 	}
 
@@ -682,14 +666,14 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		final Note n2 = selectedGroup.group().getMelodyFlagment()
 				.getLatterFirstNote();
 		// final Note ed = group.getEndNote();
-		final int keyheight = main.getFrame().getKeyboard().getKeyHeight();
+		final int keyheight = app().getFrame().getKeyboard().getKeyHeight();
 		// final int y1 = KeyBoard.getYPositionOfPitch(bg.notenum()) *
 		// keyheight;
 		final int y2 = KeyBoard.getYPositionOfPitch(n1.notenum()) * keyheight;
 		final int y3 = KeyBoard.getYPositionOfPitch(n2.notenum()) * keyheight;
 		// final int y4 = KeyBoard.getYPositionOfPitch(ed.notenum()) *
 		// keyheight;
-		final int tpb = main.getTicksPerBeat();
+		final int tpb = app().getTicksPerBeat();
 		// final int x1 = getX(bg.onset(tpb)) + axisX;
 		final int x2 = MainFrame.getXOfNote(n1.offset(tpb)) + axisX;
 		final int x3 = MainFrame.getXOfNote(n2.onset(tpb)) + axisX;
@@ -772,10 +756,10 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	private void setController() {
 		butler().addTuneDataListenerList(this);
-		setMouseActions(createPianoRollMouseAction(main));
+		setMouseActions(createPianoRollMouseAction(app()));
 		addMouseListener(getMouseActions());
 		addMouseMotionListener(getMouseActions());
-		addKeyListener(createKeyActions(main));
+		addKeyListener(createKeyActionListener(app()));
 	}
 
 	/**
@@ -798,6 +782,11 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	private void setStartPositionOfMouseBox(MouseEvent e) {
 		mouseEndPoint = mouseStartPoint = e.getPoint();
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

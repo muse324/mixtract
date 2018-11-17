@@ -85,16 +85,16 @@ public class MXMainFrame extends MainFrame {
 	 * @see net.muse.gui.MainFrame#createGroupingPanel()
 	 */
 	@Override protected MXGroupingPanel createGroupingPanel() {
-		return new MXGroupingPanel();
+		return new MXGroupingPanel(app());
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#createPianoRollPane()
 	 */
-	@Override protected PianoRoll createPianoRoll(MuseApp main) {
-		assert main instanceof Mixtract;
-		return new MXPianoroll((Mixtract) main);
+	@Override protected PianoRoll createPianoRoll(MuseApp app) {
+		assert app instanceof Mixtract;
+		return new MXPianoroll((Mixtract) app);
 	}
 
 	@Override protected JToolBar getToolBar() {
@@ -160,7 +160,7 @@ public class MXMainFrame extends MainFrame {
 
 	private PhraseCurveEditorPanel getPhraseDynamicsView() {
 		if (phraseDynView == null) {
-			phraseDynView = new PhraseCurveEditorPanel(main,
+			phraseDynView = new PhraseCurveEditorPanel(app(),
 					PhraseCurveType.DYNAMICS);
 			butler().addTuneDataListenerList(phraseDynView);
 		}
@@ -169,7 +169,7 @@ public class MXMainFrame extends MainFrame {
 
 	private PhraseCurveEditorPanel getPhraseTempoView() {
 		if (phraseTempoView == null) {
-			phraseTempoView = new PhraseCurveEditorPanel(main,
+			phraseTempoView = new PhraseCurveEditorPanel(app(),
 					PhraseCurveType.TEMPO);
 			butler().addTuneDataListenerList(phraseTempoView);
 		}
@@ -178,7 +178,7 @@ public class MXMainFrame extends MainFrame {
 
 	private PhraseCurveEditorPanel getPhraseArticulationView() {
 		if (phraseArtView == null) {
-			phraseArtView = new PhraseCurveEditorPanel(main,
+			phraseArtView = new PhraseCurveEditorPanel(app(),
 					PhraseCurveType.ARTICULATION);
 			butler().addTuneDataListenerList(phraseArtView);
 		}
@@ -207,8 +207,8 @@ public class MXMainFrame extends MainFrame {
 						public void actionPerformed(
 								java.awt.event.ActionEvent e) {
 							assert data instanceof MXTuneData;
-							main.analyzeStructure((MXTuneData) data, null);
-							main.butler().notifySetTarget(data);
+							app().analyzeStructure((MXTuneData) data, null);
+							butler().notifySetTarget(data);
 						}
 					});
 		}

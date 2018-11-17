@@ -100,9 +100,9 @@ public class CurveViewPanel extends PhraseCanvas {
 	 * mixtract
 	 * .Mixtract)
 	 */
-	@Override void setController(Mixtract main) {
-		this.setMain(main);
-		this.setMouseActions(new CanvasListener(main, this) {
+	@Override void setController(Mixtract app) {
+		this.setMain(app);
+		this.setMouseActions(new CanvasListener(app, this) {
 
 			/*
 			 * (非 Javadoc)
@@ -114,7 +114,7 @@ public class CurveViewPanel extends PhraseCanvas {
 			@Override public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
 				if (SwingUtilities.isLeftMouseButton(e))
-					main().notifyShowCurrentX(true, getMousePosition().x);
+					app().notifyShowCurrentX(true, getMousePosition().x);
 				repaint();
 			}
 
@@ -127,7 +127,7 @@ public class CurveViewPanel extends PhraseCanvas {
 			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (SwingUtilities.isLeftMouseButton(e))
-					main().notifyShowCurrentX(true, getMousePosition().x);
+					app().notifyShowCurrentX(true, getMousePosition().x);
 				repaint();
 			}
 
@@ -141,7 +141,7 @@ public class CurveViewPanel extends PhraseCanvas {
 			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (SwingUtilities.isLeftMouseButton(e))
-					main().notifyShowCurrentX(false, getMousePosition().x);
+					app().notifyShowCurrentX(false, getMousePosition().x);
 				repaint();
 			}
 

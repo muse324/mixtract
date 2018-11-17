@@ -21,9 +21,6 @@ public class NoteLabel extends GroupLabel {
 
 	private boolean measureBeginning;
 
-	/* イベント制御 */
-	private MouseActionListener mouseActions;
-
 	protected NoteLabel(NoteData note, Rectangle r) {
 		super();
 		this.note = note;
@@ -98,12 +95,9 @@ public class NoteLabel extends GroupLabel {
 		this.child = child;
 	}
 
-	@Override public void setController(MuseApp main) {
-		mouseActions = new NLMouseActionListener(main, this);
-		addMouseListener(mouseActions);
-		addMouseWheelListener(mouseActions);
+	protected MouseActionListener createMouseActionListener(MuseApp app) {
+		return new NLMouseActionListener(app, this);
 	}
-
 	/**
 	 * @param l セットする next
 	 */

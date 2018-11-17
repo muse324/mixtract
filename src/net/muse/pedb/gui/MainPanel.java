@@ -46,12 +46,12 @@ public class MainPanel extends JPanel {
 		super(new BorderLayout());
 
 		final JSplitPane header = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		final JSplitPane main = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		final JSplitPane mainPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		for (final JComponent o : c) {
 			if (o instanceof GroupingPanel) {
-				main.setTopComponent(o);
+				mainPane.setTopComponent(o);
 			} else if (o instanceof PianoRoll) {
-				main.setBottomComponent(o);
+				mainPane.setBottomComponent(o);
 			} else if (o instanceof PartSelectorPanel) {
 				header.setTopComponent(o);
 			} else if (o instanceof KeyBoard) {
@@ -63,18 +63,18 @@ public class MainPanel extends JPanel {
 					.getPropertyName())) {
 				final JSplitPane source = (JSplitPane) e.getSource();
 				final int location = ((Integer) e.getNewValue()).intValue();
-				final JSplitPane target = source == header ? main : header;
+				final JSplitPane target = source == header ? mainPane : header;
 				if (location != target.getDividerLocation())
 					target.setDividerLocation(location);
 			}
 		};
 		header.addPropertyChangeListener(pcl);
-		main.addPropertyChangeListener(pcl);
+		mainPane.addPropertyChangeListener(pcl);
 
 		header.setDividerLocation(150);
-		main.setDividerLocation(150);
+		mainPane.setDividerLocation(150);
 		add(header, BorderLayout.WEST);
-		add(new JLayer<>(new JScrollPane(main), new DragScrollLayerUI()),
+		add(new JLayer<>(new JScrollPane(mainPane), new DragScrollLayerUI()),
 				BorderLayout.CENTER);
 		setPreferredSize(new Dimension(640, 480));
 	}
