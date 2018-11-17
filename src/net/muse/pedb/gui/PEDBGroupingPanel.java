@@ -178,5 +178,4 @@ class PEDBGroupingPanel extends GroupingPanel {
 		*/
 		return r;
 	}
-
 }

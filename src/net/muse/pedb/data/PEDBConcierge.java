@@ -6,6 +6,7 @@ import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.command.MuseAppCommandType;
 import net.muse.data.Concierge;
+import net.muse.gui.GroupLabel;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.pedb.command.PEDBCommandType;
@@ -40,6 +41,17 @@ public class PEDBConcierge extends Concierge {
 			c = main.searchCommand((!isPlayed()) ? MuseAppCommandType.PLAY
 					: MuseAppCommandType.STOP);
 			break;
+
+			// 11/17  藤坂が追加  頂点を動かすために方向キーを使用する。
+		case KeyEvent.VK_RIGHT:
+			printConsole("move right");
+			//PEDBNoteData n = PEDBTopNoteLabel.moveNote(0, n);
+			break;
+		case KeyEvent.VK_LEFT:
+			printConsole("move left");
+			//PEDBTopNoteLabel.moveNote(1);
+			break;
+
 		default:
 			printConsole(e.getSource().getClass().getName()
 					+ ": key pressed: ");
@@ -51,7 +63,11 @@ public class PEDBConcierge extends Concierge {
 			c.run();
 		}
 	}
+	public PEDBNoteData setTopNoteLabel(GroupLabel self) {
+		return null;
+		// TODO 自動生成されたメソッド・スタブ
 
+	}
 	/* (非 Javadoc)
 	 * @see net.muse.data.Concierge#app()
 	 */

@@ -98,12 +98,9 @@ public class NoteLabel extends GroupLabel {
 		this.child = child;
 	}
 
-	@Override public void setController(MuseApp main) {
-		mouseActions = new NLMouseActionListener(main, this);
-		addMouseListener(mouseActions);
-		addMouseWheelListener(mouseActions);
+	protected MouseActionListener createMouseActionListener(MuseApp main) {
+		return new NLMouseActionListener(main, this);
 	}
-
 	/**
 	 * @param l セットする next
 	 */

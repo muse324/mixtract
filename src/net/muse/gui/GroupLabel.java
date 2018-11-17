@@ -111,7 +111,7 @@ public class GroupLabel extends JLabel {
 		return new KeyActionListener(main, this);
 	}
 
-	protected GLMouseActionListener createMouseActionListener(MuseApp main) {
+	protected MouseActionListener createMouseActionListener(MuseApp main) {
 		return new GLMouseActionListener(main, this);
 	}
 
