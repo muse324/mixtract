@@ -141,6 +141,7 @@ public class PEDBGroupLabel extends GroupLabel {
 	 * グループ名を表記します。repaint()をオーバーライドして呼び出されるため、外部から明示的に呼び出す必要はありません。
 	 */
 	private void renameText() {
+		if(group()==null)return;
 		setText(String.format("[%d] %s:%s", group().getLevel(), group().name(),
 				childGroupNameText()));
 	}
@@ -180,5 +181,9 @@ public class PEDBGroupLabel extends GroupLabel {
 	@Override public void repaint() {
 		super.repaint();
 		renameText();
+	}
+
+	public int getLevel() {
+		return group().getLevel();
 	}
 }

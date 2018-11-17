@@ -91,7 +91,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	void moveLabels(MouseEvent e, Point mousePoint, int level, Rectangle bounds,
 			boolean shiftKeyPressed, boolean mousePressed) {
 		for (final PEDBGroupLabel l : sequenceGroups) {
-			int levelOffset = l.group().getLevel() - level;
+			int levelOffset = l.getLevel() - level;
 			mousePoint.y += LABEL_HEIGHT * levelOffset;
 			l.moveLabelVertical(e, mousePoint, l.getBounds(), shiftKeyPressed,
 					mousePressed);
