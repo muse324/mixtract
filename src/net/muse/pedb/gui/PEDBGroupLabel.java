@@ -18,6 +18,10 @@ public class PEDBGroupLabel extends GroupLabel {
 		super(group, r);
 	}
 
+	public PEDBGroupLabel() {
+		super();
+	}
+
 	@Override public PEDBGroup group() {
 		return (PEDBGroup) super.group();
 	}

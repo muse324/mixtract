@@ -16,7 +16,7 @@ import net.muse.gui.GLMouseActionListener;
 import net.muse.gui.KeyActionListener;
 import net.muse.pedb.data.PEDBNoteData;
 
-public class PEDBTopNoteLabel extends PEDBNoteLabel {
+public class PEDBTopNoteLabel extends PEDBGroupLabel {
 
 	PEDBNoteData n;
 
@@ -37,19 +37,21 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 	}
 
 	public PEDBTopNoteLabel(NoteData topNote, RoundRectangle2D topr) {
-
-		super(topNote, new Rectangle((int) topr.getX(), (int) topr.getY(),
-				(int) topr.getWidth(), (int) topr.getHeight()));
+		super();
+		setBounds(new Rectangle((int) topr.getX(), (int) topr.getY(), (int) topr
+				.getWidth(), (int) topr.getHeight()));
 		d = topr;
 		n = (PEDBNoteData) topNote;
 
 	}
 
-	/* (非 Javadoc)
-	 * @see net.muse.pedb.gui.PEDBNoteLabel#createKeyActionListener(net.muse.app.MuseApp)
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.pedb.gui.PEDBNoteLabel#createKeyActionListener(net.muse.app.
+	 * MuseApp)
 	 */
-	@Override protected KeyActionListener createKeyActionListener(
-			MuseApp app) {
+	@Override protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 
 			@Override public PEDBStructureEditor app() {
@@ -115,8 +117,7 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 		n = i;
 	}
 
-	@Override public PEDBNoteData getScoreNote() {
-		// TODO 自動生成されたメソッド・スタブ
+	public PEDBNoteData getScoreNote() {
 		return n;
 	}
 
