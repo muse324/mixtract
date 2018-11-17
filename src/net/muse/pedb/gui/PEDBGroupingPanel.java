@@ -54,6 +54,19 @@ class PEDBGroupingPanel extends GroupingPanel {
 		sequenceGroups.clear();
 		final Component[] c = getComponents();
 		Group group = g.group();
+		addSequencePrevAndNext(c, group);
+		while (group.hasChild()) {
+			final PEDBGroupLabel l = searchLabel((Group) group.child(), c);
+			if (l != null)
+				sequenceGroups.add(l);
+			addSequencePrevAndNext(c, l.group());
+			group = (Group) group.child();
+		}
+
+		repaint();
+	}
+
+	private void addSequencePrevAndNext(final Component[] c, Group group) {
 		while (group.hasPrevious()) {
 			final PEDBGroupLabel l = searchLabel((Group) group.previous(), c);
 			if (l != null)
@@ -66,7 +79,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 				sequenceGroups.add(l);
 			group = (Group) group.next();
 		}
-		repaint();
 	}
 
 	public void setHigherGroup(PEDBGroupLabel l) {
@@ -76,13 +88,13 @@ class PEDBGroupingPanel extends GroupingPanel {
 		repaint();
 	}
 
-	void moveLabels(MouseEvent e, Point mousePoint, Rectangle bounds,
+	void moveLabels(MouseEvent e, Point mousePoint, int level, Rectangle bounds,
 			boolean shiftKeyPressed, boolean mousePressed) {
 		for (final PEDBGroupLabel l : sequenceGroups) {
+			int levelOffset = l.group().getLevel() - level;
+			mousePoint.y += LABEL_HEIGHT * levelOffset;
 			l.moveLabelVertical(e, mousePoint, l.getBounds(), shiftKeyPressed,
 					mousePressed);
-			// main().butler().printConsole(String.format("%s moved to %s", l,
-			// mousePoint));
 		}
 		repaint();
 	}

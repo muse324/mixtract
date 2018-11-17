@@ -86,7 +86,7 @@ public class PEDBGroupLabel extends GroupLabel {
 			@Override public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
 				if (!isGroupEditable()) {
-					frame().getGroupingPanel().moveLabels(e, getMousePoint(),
+					frame().getGroupingPanel().moveLabels(e, getMousePoint(),self().group().getLevel(),
 							self().getBounds(), isShiftKeyPressed(),
 							isMousePressed());
 				}

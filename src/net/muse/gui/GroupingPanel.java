@@ -39,6 +39,7 @@ import net.muse.mixtract.gui.ViewerMode;
  * @since 2008/04/24
  */
 public class GroupingPanel extends JPanel implements TuneDataListener {
+	private static final int LABEL_HEIGHT_OFFSET = 15;
 	private static final long serialVersionUID = 1L;
 	static float[] dashLineList = { 10.0f, 5.0f, 5.0f, 5.0f };
 	protected static final int LABEL_HEIGHT = 20;
@@ -576,7 +577,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * @return
 	 */
 	protected int setLabelY(int level) {
-		return LABEL_HEIGHT * level + 15;
+		return LABEL_HEIGHT * level + LABEL_HEIGHT_OFFSET;
 	}
 
 	void setMouseOveredNoteLabel(NoteLabel src) {
