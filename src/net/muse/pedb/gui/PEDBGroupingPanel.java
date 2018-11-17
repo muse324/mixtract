@@ -54,6 +54,12 @@ class PEDBGroupingPanel extends GroupingPanel {
 		sequenceGroups.clear();
 		final Component[] c = getComponents();
 		Group group = g.group();
+		while (group.hasPrevious()) {
+			final PEDBGroupLabel l = searchLabel((Group) group.previous(), c);
+			if (l != null)
+				sequenceGroups.add(l);
+			group = (Group) group.previous();
+		}
 		while (group.hasNext()) {
 			final PEDBGroupLabel l = searchLabel((Group) group.next(), c);
 			if (l != null)
