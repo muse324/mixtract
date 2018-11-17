@@ -1,6 +1,7 @@
 package net.muse.command;
 
 import net.muse.app.MuseApp;
+import net.muse.data.Concierge;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
@@ -123,6 +124,10 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 
 	public MuseApp app() {
 		return _app;
+	}
+
+	@Override public Concierge butler() {
+		return app().butler();
 	}
 
 }

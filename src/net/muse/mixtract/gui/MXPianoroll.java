@@ -22,6 +22,7 @@ public class MXPianoroll extends PianoRoll {
 	protected MXPianoroll(Mixtract app) {
 		super(app);
 	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#deselect(net.muse.gui.GroupLabel)
@@ -43,7 +44,11 @@ public class MXPianoroll extends PianoRoll {
 		((MXGroup) g.group()).extractApex();
 	}
 
-	protected KeyActionListener createKeyActionListener(MuseApp app) {
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#createKeyActionListener(net.muse.app.MuseApp)
+	 */
+	protected KeyActionListener cresateKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 
 			@Override public Mixtract app() {

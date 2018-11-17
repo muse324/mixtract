@@ -34,6 +34,9 @@ public class PEDBGroupLabel extends GroupLabel {
 		return (PEDBGroupLabel) child();
 	}
 
+	/* (非 Javadoc)
+	 * @see net.muse.gui.GroupLabel#createKeyActionListener(net.muse.app.MuseApp)
+	 */
 	@Override protected KeyActionListener createKeyActionListener(
 			MuseApp app) {
 		return new KeyActionListener(app, this) {

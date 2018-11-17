@@ -21,6 +21,7 @@ import javax.swing.WindowConstants;
 
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
+import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.data.NoteData;
@@ -375,7 +376,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (!SwingUtilities.isRightMouseButton(e))
-					app().butler().notifyDeselectGroup();
+					butler().notifyDeselectGroup();
 			}
 
 			/*
@@ -387,7 +388,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (selectedGroup == null)
-					app().butler().notifyDeselectGroup();
+					butler().notifyDeselectGroup();
 				repaint();
 			}
 
@@ -435,7 +436,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * @param g2
 	 */
 	protected void drawEditArea(Graphics2D g2) {
-		app().butler().printConsole("eeee");
+		butler().printConsole("eeee");
 		// if (!MixtractCommand.getSelectedObjects().isOveredGroup())
 		// editPointX = mouseActions.getMousePoint().x;
 		// final BasicStroke dashed2 = new BasicStroke(1.0f,
@@ -577,5 +578,9 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	@Override public void selectTopNote(NoteData note, boolean b) {
 		// TODO 自動生成されたメソッド・スタブ
 
+	}
+
+	protected Concierge butler() {
+		return app().butler();
 	}
 }

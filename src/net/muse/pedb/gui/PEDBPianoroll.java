@@ -48,6 +48,9 @@ public class PEDBPianoroll extends PianoRoll {
 		getSelectedNoteLabels().add(l);
 	}
 
+	/* (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#createKeyActionListener(net.muse.app.MuseApp)
+	 */
 	protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 

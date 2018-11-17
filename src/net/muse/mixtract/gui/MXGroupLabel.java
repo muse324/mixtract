@@ -49,9 +49,13 @@ public class MXGroupLabel extends GroupLabel {
 		throw new NoClassDefFoundError("MXGroupLabelでは使用できません．");
 	}
 
-	@Override protected KeyActionListener createKeyActionListener(
-			MuseApp app) {
-		return new KeyActionListener(app,this) {
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.GroupLabel#createKeyActionListener(net.muse.app.MuseApp)
+	 */
+	@Override protected KeyActionListener createKeyActionListener(MuseApp app) {
+		return new KeyActionListener(app, this) {
 
 			@Override public Mixtract app() {
 				return (Mixtract) super.app();
@@ -59,7 +63,8 @@ public class MXGroupLabel extends GroupLabel {
 
 			@Override public MXGroupLabel owner() {
 				return (MXGroupLabel) super.owner();
-			}};
+			}
+		};
 	}
 
 	/*

@@ -305,7 +305,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	}
 
 	protected Concierge butler() {
-		return app.butler();
+		return app().butler();
 	}
 
 	protected NoteLabel createNoteLabel(final NoteData note,
@@ -357,7 +357,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		str = switchViewerMode(nd);
 		System.out.println(str + " at " + getMouseActions().getMousePoint());
 		g2.drawString(str, getMouseActions().getMousePoint().x - axisX,
-				getMouseActions().getMousePoint().y - app.getFrame()
+				getMouseActions().getMousePoint().y - app().getFrame()
 						.getKeyboard().getKeyHeight());
 	}
 
@@ -621,10 +621,10 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 				// 黒鍵
 				g.setColor(Color.getHSBColor((float) 0.5, (float) 0.,
 						(float) 0.9));
-				g.fillRect(0, curHeight, width, app.getFrame().getKeyboard()
+				g.fillRect(0, curHeight, width, app().getFrame().getKeyboard()
 						.getKeyHeight());
 			}
-			curHeight += app.getFrame().getKeyboard().getKeyHeight();
+			curHeight += app().getFrame().getKeyboard().getKeyHeight();
 		}
 	}
 
@@ -666,14 +666,14 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		final Note n2 = selectedGroup.group().getMelodyFlagment()
 				.getLatterFirstNote();
 		// final Note ed = group.getEndNote();
-		final int keyheight = app.getFrame().getKeyboard().getKeyHeight();
+		final int keyheight = app().getFrame().getKeyboard().getKeyHeight();
 		// final int y1 = KeyBoard.getYPositionOfPitch(bg.notenum()) *
 		// keyheight;
 		final int y2 = KeyBoard.getYPositionOfPitch(n1.notenum()) * keyheight;
 		final int y3 = KeyBoard.getYPositionOfPitch(n2.notenum()) * keyheight;
 		// final int y4 = KeyBoard.getYPositionOfPitch(ed.notenum()) *
 		// keyheight;
-		final int tpb = app.getTicksPerBeat();
+		final int tpb = app().getTicksPerBeat();
 		// final int x1 = getX(bg.onset(tpb)) + axisX;
 		final int x2 = MainFrame.getXOfNote(n1.offset(tpb)) + axisX;
 		final int x3 = MainFrame.getXOfNote(n2.onset(tpb)) + axisX;

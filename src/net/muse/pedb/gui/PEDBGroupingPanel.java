@@ -17,6 +17,7 @@ import net.muse.gui.KeyActionListener;
 import net.muse.gui.MainFrame;
 import net.muse.gui.MouseActionListener;
 import net.muse.gui.PianoRoll;
+import net.muse.pedb.data.PEDBConcierge;
 import net.muse.pedb.data.PEDBTuneData;
 
 class PEDBGroupingPanel extends GroupingPanel {
@@ -36,7 +37,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		super.selectGroup(g, flg);
 		if (higherGroup != null && g != null) {
-			app().butler().printConsole(String.format("%s -> %s connect",
+			butler().printConsole(String.format("%s -> %s connect",
 					higherGroup, g));
 			higherGroup.setChild(g);
 			higherGroup.group().setChild(getSelectedGroup().group());
@@ -48,7 +49,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 
 	public void setHigherGroup(PEDBGroupLabel l) {
 		higherGroup = l;
-		app().butler().printConsole(String.format("%s is set as higher group",
+		butler().printConsole(String.format("%s is set as higher group",
 				l));
 		repaint();
 
@@ -78,6 +79,9 @@ class PEDBGroupingPanel extends GroupingPanel {
 		createHierarchicalGroupLabel(group.child(), level + 1);
 	}
 
+	/* (非 Javadoc)
+	 * @see net.muse.gui.GroupingPanel#createKeyActionListener(net.muse.app.MuseApp)
+	 */
 	@Override protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 
@@ -180,5 +184,9 @@ class PEDBGroupingPanel extends GroupingPanel {
 		 * System.out.println("arch = "+r.getArcHeight());
 		 */
 		return r;
+	}
+
+	@Override protected PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
 	}
 }

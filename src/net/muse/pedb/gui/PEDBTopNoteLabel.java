@@ -45,6 +45,9 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 
 	}
 
+	/* (非 Javadoc)
+	 * @see net.muse.pedb.gui.PEDBNoteLabel#createKeyActionListener(net.muse.app.MuseApp)
+	 */
 	@Override protected KeyActionListener createKeyActionListener(
 			MuseApp app) {
 		return new KeyActionListener(app, this) {
