@@ -134,12 +134,33 @@ public class PEDBGroupLabel extends GroupLabel {
 
 	@Override public void setTypeShape(GroupType type) {
 		super.setTypeShape(type);
-		setText(String.format("%s (%d)", group().name(), group().getLevel()));
+		renameText();
+	}
+
+	/**
+	 * グループ名を表記します。
+	 */
+	private void renameText() {
+		setText(String.format("[%d] %s:%s", group().getLevel(), group().name(),
+				childGroupNameText()));
+	}
+
+	private String childGroupNameText() {
+		if (!group().hasChild())
+			return "-";
+		PEDBGroup c = group().child();
+		String s = c.name();
+		while (c.hasNext()) {
+			PEDBGroup n = (PEDBGroup) c.next();
+			s += "->" + n.name();
+			c = n;
+		}
+		return s;
 	}
 
 	public void changeLevel(int i) {
 		group().changeLevel(i);
-		setText(String.format("%s (%d)", group().name(), group().getLevel()));
+		renameText();
 		repaint();
 	}
 }
