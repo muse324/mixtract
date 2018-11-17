@@ -118,7 +118,7 @@ public class GroupLabel extends JLabel {
 	/**
 	 * @param mousePosition TODO
 	 */
-	void setEditMode(Point mousePosition) {
+	protected void setEditMode(Point mousePosition) {
 		Rectangle r = getBounds();
 		Rectangle st = new Rectangle(new Point(r.x, r.y), new Dimension(10,
 				r.height));
