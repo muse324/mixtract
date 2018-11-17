@@ -22,8 +22,8 @@ import net.muse.pedb.data.PEDBConcierge;
 public class PEDBPianoroll extends PianoRoll {
 	private static final long serialVersionUID = 1L;
 
-	PEDBPianoroll(MuseApp main) {
-		super(main);
+	PEDBPianoroll(MuseApp app) {
+		super(app);
 		setViewMode(ViewerMode.SCORE_VIEW);
 	}
 
@@ -49,15 +49,11 @@ public class PEDBPianoroll extends PianoRoll {
 		getSelectedNoteLabels().add(l);
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.gui.PianoRoll#createKeyActions(net.muse.misc.MuseObject)
-	 */
 	protected KeyActionListener createKeyActions(MuseObject app) {
 		return new KeyActionListener(app, this) {
 
-			@Override public PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+			@Override public PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
 			@Override public PEDBPianoroll owner() {
@@ -90,8 +86,8 @@ public class PEDBPianoroll extends PianoRoll {
 				return (PEDBMainFrame) super.frame();
 			}
 
-			@Override protected PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+			@Override protected PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
 		};
@@ -118,8 +114,8 @@ public class PEDBPianoroll extends PianoRoll {
 		return (PEDBGroupLabel) super.group();
 	}
 
-	@Override protected PEDBStructureEditor main() {
-		return (PEDBStructureEditor) super.main();
+	@Override protected PEDBStructureEditor app() {
+		return (PEDBStructureEditor) super.app();
 	}
 
 	/*
@@ -134,7 +130,7 @@ public class PEDBPianoroll extends PianoRoll {
 
 		final Rectangle r = getLabelBounds(note, offset);
 		PEDBNoteLabel n = createNoteLabel(note, r);
-		n.setController(main());
+		n.setController(app());
 		n.setSelected(getSelectedNoteLabels().contains(n));
 		if (notelist == null) {
 			notelist = n;

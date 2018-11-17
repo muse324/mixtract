@@ -82,7 +82,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	/** JFrameおよびDockのアイコン */
 	protected Image icon;
 
-	protected final MuseApp main;
+	private final MuseApp app;
 	protected PianoRoll pianoroll = null;
 	protected JLabel tempoValueLabel = null;
 	private JTextField bpmValue = null;
@@ -141,10 +141,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	public MainFrame(MuseApp app) throws IOException {
 		super();
-		this.main = app;
-		main.synthe().addMidiEventListener(this);
+		this.app = app;
+		app.synthe().addMidiEventListener(this);
 		butler().addTuneDataListenerList(this);
-		butler().addTuneDataListenerList(main.synthe());
+		butler().addTuneDataListenerList(app.synthe());
 
 		// TODO ウィンドウアイコンの設定
 		// ただし、OSXにはウィンドウアイコンはないため表示されない
@@ -225,7 +225,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	protected Concierge butler() {
-		return main.butler();
+		return app().butler();
 	}
 
 	/**
@@ -236,7 +236,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	public GroupingPanel getGroupingPanel() {
 		if (groupingPanel == null) {
 			groupingPanel = createGroupingPanel();
-			groupingPanel.setController(main);
+			groupingPanel.setController(app());
 			butler().addTuneDataListenerList(groupingPanel);
 		}
 		return groupingPanel;
@@ -249,13 +249,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	public PianoRoll getPianoroll() {
 		if (pianoroll == null) {
-			pianoroll = createPianoRoll(main);
+			pianoroll = createPianoRoll(app());
 		}
 		return pianoroll;
 	}
 
-	protected PianoRoll createPianoRoll(MuseApp main) {
-		return new PianoRoll(main);
+	protected PianoRoll createPianoRoll(MuseApp app) {
+		return new PianoRoll(app);
 	}
 
 	/**
@@ -356,7 +356,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	protected GroupingPanel createGroupingPanel() {
-		return new GroupingPanel();
+		return new GroupingPanel(app());
 	}
 
 	/**
@@ -423,7 +423,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			playButton.setIcon(new ImageIcon(getClass().getResource(
 					"images/Play16.gif"))); // Generated
 			playButton.setMnemonic(KeyEvent.VK_SPACE);
-			MuseAppCommand cmd = main.searchCommand(MuseAppCommandType.PLAY);
+			MuseAppCommand cmd = app().searchCommand(MuseAppCommandType.PLAY);
 			playButton.setActionCommand(cmd.name());
 			playButton.setToolTipText("Play");
 			playButton.setEnabled(false); // Generated
@@ -653,7 +653,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			fileMenu.add(getSaveAsMenu());
 
 			// バージョン情報と終了コマンド
-			if (!main.isMac()) {
+			if (!app().isMac()) {
 				fileMenu.addSeparator();
 				fileMenu.add(getQuitMenuItemForMac());
 
@@ -732,7 +732,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	private JMenuItem getImportXMLMenu() {
 		if (xmlMenuItem == null) {
-			MuseAppCommand cmd = main.searchCommand(
+			MuseAppCommand cmd = app().searchCommand(
 					MuseAppCommandType.OPEN_MUSICXML);
 			xmlMenuItem = new JMenuItem();
 			xmlMenuItem.setText(cmd.getText());
@@ -741,7 +741,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 					shortcutKey));
 			xmlMenuItem.setActionCommand(MuseAppCommandType.OPEN_MUSICXML
 					.name());
-			xmlMenuItem.addActionListener(new MouseActionListener(main, this));
+			xmlMenuItem.addActionListener(new MouseActionListener(app(), this));
 		}
 		return xmlMenuItem;
 	}
@@ -753,7 +753,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	public KeyBoard getKeyboard() {
 		if (keyboard == null) {
-			keyboard = new KeyBoard(main);
+			keyboard = new KeyBoard(app());
 			butler().addTuneDataListenerList(keyboard);
 		}
 		return keyboard;
@@ -800,7 +800,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	private void setPlaybarMode(MuseAppCommandType type) {
-		MuseAppCommand cmd = main.searchCommand(type);
+		MuseAppCommand cmd = app().searchCommand(type);
 		playStopMenu.setActionCommand(type.name());
 		playStopMenu.setText(cmd.getText());
 	}
@@ -818,7 +818,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		m.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				try {
-					JFileChooser fc = (main != null) ? new JFileChooser(main
+					JFileChooser fc = (app() != null) ? new JFileChooser(app()
 							.getProjectDirectory()) : new JFileChooser();
 					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 					int res = fc.showOpenDialog(null);
@@ -897,7 +897,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 					shortcutKey + ActionEvent.SHIFT_MASK));
 			saveAsMenu.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					JFileChooser fc = new JFileChooser(main
+					JFileChooser fc = new JFileChooser(app()
 							.getProjectDirectory());
 					int res = fc.showSaveDialog(null);
 					if (res == JOptionPane.NO_OPTION) {
@@ -1101,12 +1101,16 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	protected void readfile(File f) throws IOException {
-		butler().readfile(f, main.getProjectDirectory());
+		butler().readfile(f, app().getProjectDirectory());
 	}
 
 	@Override public void selectTopNote(NoteData note, boolean b) {
 		// TODO 自動生成されたメソッド・スタブ
 
+	}
+
+	protected MuseApp app() {
+		return app;
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

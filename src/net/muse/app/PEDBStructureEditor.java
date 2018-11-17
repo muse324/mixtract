@@ -35,8 +35,8 @@ public class PEDBStructureEditor extends MuseApp {
 
 	public static void main(String[] args) {
 		try {
-			final PEDBStructureEditor main = new PEDBStructureEditor(args);
-			main.setup();
+			final PEDBStructureEditor app = new PEDBStructureEditor(args);
+			app.setup();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

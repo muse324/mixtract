@@ -20,8 +20,8 @@ public class MXPianoroll extends PianoRoll {
 	private static final long serialVersionUID = 1L;
 	boolean displayApex = false;
 
-	protected MXPianoroll(Mixtract main) {
-		super(main);
+	protected MXPianoroll(Mixtract app) {
+		super(app);
 	}
 	/*
 	 * (非 Javadoc)
@@ -50,8 +50,8 @@ public class MXPianoroll extends PianoRoll {
 	protected KeyActionListener createKeyActions(MuseObject app) {
 		return new KeyActionListener(app, this) {
 
-			@Override public Mixtract main() {
-				return (Mixtract) super.main();
+			@Override public Mixtract app() {
+				return (Mixtract) super.app();
 			}
 
 			@Override public MXPianoroll owner() {

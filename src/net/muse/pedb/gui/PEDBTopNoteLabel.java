@@ -29,9 +29,9 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 	public void paint(Graphics g) {
 		super.paint(g);
 		Graphics2D g2 = (Graphics2D) this.getGraphics();
-		 //RoundRectangle2D rect = new RoundRectangle2D.Double(30, 50, 100, 100,
-		 //30, 10);
-		 //g2.setColor(Color.RED);
+		// RoundRectangle2D rect = new RoundRectangle2D.Double(30, 50, 100, 100,
+		// 30, 10);
+		// g2.setColor(Color.RED);
 		g2.draw((Shape) d);
 
 	}
@@ -41,16 +41,16 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 		super(topNote, new Rectangle((int) topr.getX(), (int) topr.getY(),
 				(int) topr.getWidth(), (int) topr.getHeight()));
 		d = topr;
-		n = (PEDBNoteData)topNote;
+		n = (PEDBNoteData) topNote;
 
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(
-			MuseApp main) {
-		return new KeyActionListener(main, this) {
+			MuseApp app) {
+		return new KeyActionListener(app, this) {
 
-			@Override public PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+			@Override public PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
 			@Override public PEDBTopNoteLabel owner() {
@@ -58,41 +58,41 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 			}
 
 			@Override protected void keyPressedOption(KeyEvent e) {
+				super.keyPressedOption(e);
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_KP_LEFT:
-					//setHigherGroup(owner());
+					// setHigherGroup(owner());
 					System.out.println("ababababa");
 					break;
 				case KeyEvent.VK_KP_RIGHT:
-					//setHigherGroup(null);
+					// setHigherGroup(null);
 					System.out.println("cdcdcdcdc");
 				}
 			}
-/*
-			protected void setHigherGroup(PEDBGroupLabel owner) {
-				main().getFrame().getGroupingPanel().setHigherGroup(owner);
-			}
-*/
+			/*
+			 * protected void setHigherGroup(PEDBGroupLabel owner) {
+			 * app().getFrame().getGroupingPanel().setHigherGroup(owner);
+			 * }
+			 */
 		};
 	}
 
 	@Override protected GLMouseActionListener createMouseActionListener(
-			MuseApp main) {
-		return new GLMouseActionListener(main, this) {
+			MuseApp app) {
+		return new GLMouseActionListener(app, this) {
 
 			@Override public PEDBTopNoteLabel self() {
 				return (PEDBTopNoteLabel) super.self();
 			}
 
-			@Override public PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+			@Override public PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
-			// 11/17  藤坂が一部追加  クリックした時のグループ(頂点)を選択
-			@Override
-			public void mousePressed(MouseEvent e) {
+			// 11/17 藤坂が一部追加 クリックした時のグループ(頂点)を選択
+			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
-				main().butler().notifySelectTopNote(self(), true);
+				app().butler().notifySelectTopNote(self(), true);
 				System.out.print("clicked!");
 			}
 
@@ -112,29 +112,23 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 		n = i;
 	}
 
-	@Override
-	public PEDBNoteData getScoreNote() {
+	@Override public PEDBNoteData getScoreNote() {
 		// TODO 自動生成されたメソッド・スタブ
 		return n;
 	}
 
-	// 11/17  藤坂が追加  頂点の音を変更するメソッドの作成
-	public PEDBNoteData moveNote(int i,PEDBNoteData n) {
-		//n = getScoreNote();
-		if(i == 0)
-		{
+	// 11/17 藤坂が追加 頂点の音を変更するメソッドの作成
+	public PEDBNoteData moveNote(int i, PEDBNoteData n) {
+		// n = getScoreNote();
+		if (i == 0) {
 			n = (PEDBNoteData) n.next();
 			setTopNote(n);
-		}
-		else
-		{
+		} else {
 			n = (PEDBNoteData) n.previous();
 			setTopNote(n);
 		}
 		return n;
 
 	}
-
-
 
 }

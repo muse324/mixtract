@@ -98,8 +98,8 @@ public class NoteLabel extends GroupLabel {
 		this.child = child;
 	}
 
-	protected MouseActionListener createMouseActionListener(MuseApp main) {
-		return new NLMouseActionListener(main, this);
+	protected MouseActionListener createMouseActionListener(MuseApp app) {
+		return new NLMouseActionListener(app, this);
 	}
 	/**
 	 * @param l セットする next

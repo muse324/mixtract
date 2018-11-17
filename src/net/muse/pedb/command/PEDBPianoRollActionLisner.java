@@ -12,8 +12,8 @@ import net.muse.mixtract.command.ChangePartCommand;
 
 public class PEDBPianoRollActionLisner extends PianoRollActionListener {
 
-	public PEDBPianoRollActionLisner(MuseApp main, Container owner) {
-		super(main, owner);
+	public PEDBPianoRollActionLisner(MuseApp app, Container owner) {
+		super(app, owner);
 	}
 
 	/*

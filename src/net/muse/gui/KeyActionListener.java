@@ -9,12 +9,12 @@ import net.muse.misc.MuseObject;
 
 public class KeyActionListener extends KeyAdapter {
 
-	private final MuseObject _main;
+	private final MuseObject _app;
 	private final Container _owner;
 
-	public KeyActionListener(MuseObject main, Container owner) {
+	public KeyActionListener(MuseObject app, Container owner) {
 		super();
-		_main = main;
+		_app = app;
 		_owner = owner;
 	}
 
@@ -24,15 +24,19 @@ public class KeyActionListener extends KeyAdapter {
 	 * java.awt.event.KeyAdapter#keyPressed(java.awt.event.KeyEvent)
 	 */
 	@Override public void keyPressed(KeyEvent e) {
-		System.out.println(String.format("KeyActionListener: %d", e.getKeyCode()));
-		main().butler().keyPressed(e);
+		System.out.println(String.format("KeyActionListener: %d", e
+				.getKeyCode()));
+		app().butler().keyPressed(e);
 		keyPressedOption(e);
 	}
 
-	protected void keyPressedOption(KeyEvent e) {}
+	protected void keyPressedOption(KeyEvent e) {
+		System.out.println(String.format("keyPressedOption in %s: %d", owner()
+				.getClass().getSimpleName(), e.getKeyCode()));
+	}
 
-	public MuseApp main() {
-		return (MuseApp) _main;
+	public MuseApp app() {
+		return (MuseApp) _app;
 	}
 
 	public Container owner() {

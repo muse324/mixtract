@@ -37,8 +37,8 @@ public class Mixtract extends MuseApp {
 
 	public static void main(String[] args) {
 		try {
-			final Mixtract main = new Mixtract(args);
-			main.setup();
+			final Mixtract app = new Mixtract(args);
+			app.setup();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -100,7 +100,6 @@ public class Mixtract extends MuseApp {
 		// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-		// MixtractCommand.setMain(main);
 
 		/* sprash screen */
 		createSplashScreen(getAppImageFile());

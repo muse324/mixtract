@@ -70,7 +70,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 
 	private int ticksperbeat = 480;
 
-	private MuseApp main;
+	private MuseApp app;
 
 	/**
 	 * @return
@@ -134,9 +134,9 @@ public class KeyBoard extends JPanel implements MouseListener,
 		initialize();
 	}
 
-	public KeyBoard(MuseApp main) {
-		this(main.getTicksPerBeat());
-		this.main = main;
+	public KeyBoard(MuseApp app) {
+		this(app.getTicksPerBeat());
+		this.app = app;
 	}
 
 	/*
