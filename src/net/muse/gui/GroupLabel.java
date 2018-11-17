@@ -307,6 +307,7 @@ public class GroupLabel extends JLabel {
 
 	public void setChild(GroupLabel child) {
 		this.child = child;
+		group().setChild(child.group());
 		if (child.parent() == null || !child.parent().equals(this)) {
 			child.setParent(this);
 		}
@@ -318,6 +319,7 @@ public class GroupLabel extends JLabel {
 
 	private void setParent(GroupLabel label) {
 		parent = label;
+		group().setParent(label.group());
 		if (!parent.hasChild() || !parent.child().equals(this)) {
 			parent.setChild(this);
 		}

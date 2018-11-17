@@ -86,9 +86,9 @@ public class PEDBGroupLabel extends GroupLabel {
 			@Override public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
 				if (!isGroupEditable()) {
-					frame().getGroupingPanel().moveLabels(e, getMousePoint(),self().group().getLevel(),
-							self().getBounds(), isShiftKeyPressed(),
-							isMousePressed());
+					frame().getGroupingPanel().moveLabels(e, getMousePoint(),
+							self().group().getLevel(), self().getBounds(),
+							isShiftKeyPressed(), isMousePressed());
 				}
 			}
 
@@ -134,11 +134,11 @@ public class PEDBGroupLabel extends GroupLabel {
 
 	@Override public void setTypeShape(GroupType type) {
 		super.setTypeShape(type);
-		renameText();
+		repaint();
 	}
 
 	/**
-	 * グループ名を表記します。
+	 * グループ名を表記します。repaint()をオーバーライドして呼び出されるため、外部から明示的に呼び出す必要はありません。
 	 */
 	private void renameText() {
 		setText(String.format("[%d] %s:%s", group().getLevel(), group().name(),
@@ -158,9 +158,27 @@ public class PEDBGroupLabel extends GroupLabel {
 		return s;
 	}
 
+	/**
+	 * 階層レベルを指定した値に変更します。
+	 *
+	 * @param i
+	 */
 	public void changeLevel(int i) {
 		group().changeLevel(i);
-		renameText();
 		repaint();
+	}
+
+	@Override public void setChild(GroupLabel child) {
+		super.setChild(child);
+		repaint();
+	}
+
+	@Override public PEDBGroupLabel child() {
+		return (PEDBGroupLabel) super.child();
+	}
+
+	@Override public void repaint() {
+		super.repaint();
+		renameText();
 	}
 }

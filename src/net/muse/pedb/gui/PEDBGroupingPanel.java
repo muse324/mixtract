@@ -190,7 +190,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 		main().butler().printConsole(String.format("%s -> %s %s", parent, child,
 				mesg));
 		parent.setChild(child);
-		parent.group().setChild(child.group());
 	}
 
 	/**
