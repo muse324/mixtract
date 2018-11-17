@@ -12,7 +12,7 @@ public class KeyActionListener extends KeyAdapter {
 	private final MuseObject _app;
 	private final Container _owner;
 
-	public KeyActionListener(MuseObject app, Container owner) {
+	public KeyActionListener(MuseApp app, Container owner) {
 		super();
 		_app = app;
 		_owner = owner;
@@ -31,7 +31,7 @@ public class KeyActionListener extends KeyAdapter {
 	}
 
 	protected void keyPressedOption(KeyEvent e) {
-		System.out.println(String.format("keyPressedOption in %s: %d", owner()
+		System.out.println(String.format("%s in KeyActionListener.keyPressedOption: %d", owner()
 				.getClass().getSimpleName(), e.getKeyCode()));
 	}
 

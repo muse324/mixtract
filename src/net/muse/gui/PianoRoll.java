@@ -21,7 +21,6 @@ import net.muse.data.Group;
 import net.muse.data.Harmony;
 import net.muse.data.NoteData;
 import net.muse.data.TuneData;
-import net.muse.misc.MuseObject;
 import net.muse.misc.Util;
 import net.muse.mixtract.command.ChangePartCommand;
 import net.muse.mixtract.data.curve.PhraseCurveType;
@@ -593,7 +592,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		repaint();
 	}
 
-	protected KeyActionListener createKeyActionListener(MuseObject app) {
+	protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this);
 	}
 

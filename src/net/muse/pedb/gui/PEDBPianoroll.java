@@ -14,7 +14,6 @@ import net.muse.gui.KeyActionListener;
 import net.muse.gui.NoteLabel;
 import net.muse.gui.PianoRoll;
 import net.muse.gui.PianoRollActionListener;
-import net.muse.misc.MuseObject;
 import net.muse.mixtract.gui.ViewerMode;
 import net.muse.pedb.command.PEDBPianoRollActionLisner;
 import net.muse.pedb.data.PEDBConcierge;
@@ -49,7 +48,7 @@ public class PEDBPianoroll extends PianoRoll {
 		getSelectedNoteLabels().add(l);
 	}
 
-	protected KeyActionListener createKeyActions(MuseObject app) {
+	protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 
 			@Override public PEDBStructureEditor app() {

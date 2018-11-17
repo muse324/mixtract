@@ -12,7 +12,6 @@ import net.muse.gui.KeyActionListener;
 import net.muse.gui.NoteLabel;
 import net.muse.gui.PianoRoll;
 import net.muse.gui.PianoRollActionListener;
-import net.muse.misc.MuseObject;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXPianoroll extends PianoRoll {
@@ -44,10 +43,7 @@ public class MXPianoroll extends PianoRoll {
 		((MXGroup) g.group()).extractApex();
 	}
 
-	/* (非 Javadoc)
-	 * @see net.muse.gui.PianoRoll#createKeyActions(net.muse.misc.MuseObject)
-	 */
-	protected KeyActionListener createKeyActions(MuseObject app) {
+	protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 
 			@Override public Mixtract app() {

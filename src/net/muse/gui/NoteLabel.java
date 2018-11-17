@@ -21,9 +21,6 @@ public class NoteLabel extends GroupLabel {
 
 	private boolean measureBeginning;
 
-	/* イベント制御 */
-	private MouseActionListener mouseActions;
-
 	protected NoteLabel(NoteData note, Rectangle r) {
 		super();
 		this.note = note;
