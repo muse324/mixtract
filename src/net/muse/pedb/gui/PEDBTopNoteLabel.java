@@ -2,6 +2,7 @@ package net.muse.pedb.gui;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
@@ -43,6 +44,10 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 		d = topr;
 		n = (PEDBNoteData) topNote;
 
+	}
+
+	protected void setEditMode(Point mousePosition) {
+		// do nothing
 	}
 
 	/*
