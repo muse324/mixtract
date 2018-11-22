@@ -17,7 +17,7 @@ public class PlayCommand extends MuseAppCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override public void run() {
-		app().butler().notifyStartPlaying(app().data());
+		butler().notifyStartPlaying(app().data());
 	}
 
 }

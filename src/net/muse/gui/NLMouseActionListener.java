@@ -7,8 +7,8 @@ import net.muse.app.MuseApp;
 
 class NLMouseActionListener extends MouseActionListener {
 
-	protected NLMouseActionListener(MuseApp main, Container owner) {
-		super(main, owner);
+	protected NLMouseActionListener(MuseApp app, Container owner) {
+		super(app, owner);
 	}
 
 	/*

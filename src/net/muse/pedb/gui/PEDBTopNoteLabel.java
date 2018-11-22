@@ -2,6 +2,7 @@ package net.muse.pedb.gui;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
@@ -14,10 +15,9 @@ import net.muse.data.Group;
 import net.muse.data.NoteData;
 import net.muse.gui.GLMouseActionListener;
 import net.muse.gui.KeyActionListener;
-import net.muse.pedb.data.PEDBConcierge;
 import net.muse.pedb.data.PEDBNoteData;
 
-public class PEDBTopNoteLabel extends PEDBNoteLabel {
+public class PEDBTopNoteLabel extends PEDBGroupLabel {
 
 	PEDBNoteData n;
 
@@ -38,20 +38,29 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 	}
 
 	public PEDBTopNoteLabel(NoteData topNote, RoundRectangle2D topr) {
-
-		super(topNote, new Rectangle((int) topr.getX(), (int) topr.getY(),
-				(int) topr.getWidth(), (int) topr.getHeight()));
+		super();
+		setBounds(new Rectangle((int) topr.getX(), (int) topr.getY(), (int) topr
+				.getWidth(), (int) topr.getHeight()));
 		d = topr;
 		n = (PEDBNoteData)topNote;
 
 	}
 
-	@Override protected KeyActionListener createKeyActionListener(
-			MuseApp main) {
-		return new KeyActionListener(main, this) {
+	protected void setEditMode(Point mousePosition) {
+		// do nothing
+	}
 
-			@Override public PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.pedb.gui.PEDBNoteLabel#createKeyActionListener(net.muse.app.
+	 * MuseApp)
+	 */
+	@Override protected KeyActionListener createKeyActionListener(MuseApp app) {
+		return new KeyActionListener(app, this) {
+
+			@Override public PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
 			@Override public PEDBTopNoteLabel owner() {
@@ -59,7 +68,7 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 			}
 
 			@Override protected void keyPressedOption(KeyEvent e) {
-				System.out.println(e.getKeyCode());
+				super.keyPressedOption(e);
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_LEFT:
 					//setHigherGroup(owner());
@@ -71,27 +80,30 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 				}
 			}
 /*
-			protected void setHigherGroup(PEDBGroupLabel owner) {
-				main().getFrame().getGroupingPanel().setHigherGroup(owner);
-			}
+			 * protected void setHigherGroup(PEDBGroupLabel owner) {
+			 * app().getFrame().getGroupingPanel().setHigherGroup(owner);
+			 * }
 */
 		};
 	}
 
 	@Override protected GLMouseActionListener createMouseActionListener(
-			MuseApp main) {
-		return new GLMouseActionListener(main, this) {
+			MuseApp app) {
+		return new GLMouseActionListener(app, this) {
 
-			@Override public PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+			@Override public PEDBTopNoteLabel self() {
+				return (PEDBTopNoteLabel) super.self();
+			}
+
+			@Override public PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
 			// 11/17  藤坂が一部追加  クリックした時のグループ(頂点)を選択
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// TODO 自動生成されたメソッド・スタブ
 				super.mousePressed(e);
-				((PEDBConcierge)(main().butler())).setTopNoteLabel(self());
+				app().butler().notifySelectTopNote(self(), true);
 				System.out.print("clicked");;
 			}
 
@@ -111,22 +123,17 @@ public class PEDBTopNoteLabel extends PEDBNoteLabel {
 		n = i;
 	}
 
-	@Override
 	public PEDBNoteData getScoreNote() {
-		// TODO 自動生成されたメソッド・スタブ
 		return n;
 	}
 
 	// 11/17  藤坂が追加  頂点の音を変更するメソッドの作成
 	public PEDBNoteData moveNote(int i,PEDBNoteData n) {
 		//n = getScoreNote();
-		if(i == 0)
-		{
+		if (i == 0) {
 			n = (PEDBNoteData) n.next();
 			setTopNote(n);
-		}
-		else
-		{
+		} else {
 			n = (PEDBNoteData) n.previous();
 			setTopNote(n);
 		}

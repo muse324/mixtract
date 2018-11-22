@@ -1,6 +1,7 @@
 package net.muse.mixtract.sound;
 
 import net.muse.data.Group;
+import net.muse.data.NoteData;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
@@ -98,5 +99,10 @@ public class MixtractMIDIController extends MIDIController implements
 	}
 
 	public void stopPlaying(MIDIController synthe) {}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
 
 }

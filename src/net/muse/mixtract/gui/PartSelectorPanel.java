@@ -126,4 +126,9 @@ public class PartSelectorPanel extends JPanel implements TuneDataListener {
 	@Override
 	public void changeExpression(PhraseCurveType type) {}
 
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
 } // @jve:decl-index=0:visual-constraint="10,10"
