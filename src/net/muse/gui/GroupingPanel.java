@@ -40,10 +40,10 @@ import net.muse.mixtract.gui.ViewerMode;
  * @since 2008/04/24
  */
 public class GroupingPanel extends JPanel implements TuneDataListener {
-	private static final int LABEL_HEIGHT_OFFSET = 15;
+	public static final int LABEL_HEIGHT_OFFSET = 15;
 	private static final long serialVersionUID = 1L;
 	static float[] dashLineList = { 10.0f, 5.0f, 5.0f, 5.0f };
-	protected static final int LABEL_HEIGHT = 20;
+	public static final int LABEL_HEIGHT = 20;
 	private static final int DEFAULT_HEIGHT = 100;
 	protected static final int LEVEL_PADDING = 3;
 	private static final int DEFAULT_WIDTH = 1024;

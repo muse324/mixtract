@@ -12,6 +12,7 @@ import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.gui.GLMouseActionListener;
 import net.muse.gui.GroupLabel;
+import net.muse.gui.GroupingPanel;
 import net.muse.gui.KeyActionListener;
 import net.muse.pedb.data.PEDBGroup;
 
@@ -20,7 +21,7 @@ public class PEDBGroupLabel extends GroupLabel {
 	private static final long serialVersionUID = 1L;
 	private static final int FORWARD = 1;
 	private static final int REWIND = 2;
-	public static final int START = 0;
+	private static final int CHILD = 0;
 	private PEDBGroupLabel next;
 	private PEDBGroupLabel prev;
 
@@ -112,24 +113,30 @@ public class PEDBGroupLabel extends GroupLabel {
 
 	public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
 			boolean shiftKeyPressed, boolean mousePressed) {
-		moveLabelVertical(e, p, getBounds(), shiftKeyPressed,
-				mousePressed, START);
+
+		moveLabelVertical(e, p, getBounds(), shiftKeyPressed, mousePressed,
+				REWIND);
+		moveLabelVertical(e, p, getBounds(), shiftKeyPressed, mousePressed,
+				FORWARD);
+		if (hasChild()) {
+			p.translate(0, GroupingPanel.LABEL_HEIGHT
+					+ GroupingPanel.LABEL_HEIGHT_OFFSET);
+			child().moveLabelVertical(e, p, child().getBounds(),
+					shiftKeyPressed, mousePressed);
+		}
 	}
 
 	public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
 			boolean shiftKeyPressed, boolean mousePressed, int direction) {
 		r.y = p.y;
 		setBounds(r);
-		if (direction != REWIND) {
-			if (hasNext())
-				next().moveLabelVertical(e, p, next().getBounds(),
-						shiftKeyPressed, mousePressed, FORWARD);
-		}
-		if (direction != FORWARD) {
-			if (hasPrevious())
-				previous().moveLabelVertical(e, p, previous().getBounds(),
-						shiftKeyPressed, mousePressed, REWIND);
-		}
+
+		if (direction == FORWARD && hasNext())
+			next().moveLabelVertical(e, p, next().getBounds(), shiftKeyPressed,
+					mousePressed, FORWARD);
+		if (direction == REWIND && hasPrevious())
+			previous().moveLabelVertical(e, p, previous().getBounds(),
+					shiftKeyPressed, mousePressed, REWIND);
 		repaint();
 	}
 
