@@ -1,6 +1,5 @@
 package net.muse.pedb.gui;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -338,7 +337,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 				level);
 		PEDBTopNoteLabel toplabel = new PEDBTopNoteLabel(group.getTopNote(),
 				topr,group);
-		toplabel.setBackground(Color.red);// 色の変更
 		toplabel.setController(app());
 		group.setLevel(level);
 		add(toplabel); // 描画

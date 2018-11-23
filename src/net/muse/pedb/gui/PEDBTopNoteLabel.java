@@ -1,5 +1,6 @@
 package net.muse.pedb.gui;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -46,6 +47,8 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 
 	public PEDBTopNoteLabel(NoteData topNote, RoundRectangle2D topr, Group group) {
 		super();
+		setOpaque(false);
+		setBorder(new LineBorderEx(Color.DARK_GRAY, 3, 240));
 		setBounds(new Rectangle((int) topr.getX(), (int) topr.getY(), (int) topr
 				.getWidth(), (int) topr.getHeight()));
 		d = topr;
