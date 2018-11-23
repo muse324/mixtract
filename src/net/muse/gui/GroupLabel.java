@@ -265,7 +265,7 @@ public class GroupLabel extends JLabel {
 		}
 	}
 
-	private void moveLabelVertical(MouseEvent e, boolean mousePressed) {
+	protected void moveLabelVertical(MouseEvent e, boolean mousePressed) {
 		Point pc;
 		if (hasChild()) {
 			pc = child().getLocation();
