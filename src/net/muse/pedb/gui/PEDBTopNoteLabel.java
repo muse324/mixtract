@@ -15,11 +15,17 @@ import net.muse.data.Group;
 import net.muse.data.NoteData;
 import net.muse.gui.GLMouseActionListener;
 import net.muse.gui.KeyActionListener;
+import net.muse.gui.MainFrame;
+import net.muse.gui.PianoRoll;
+import net.muse.pedb.data.PEDBGroup;
 import net.muse.pedb.data.PEDBNoteData;
 
 public class PEDBTopNoteLabel extends PEDBGroupLabel {
 
 	PEDBNoteData n;
+	PEDBGroup g;
+
+
 
 	/* イベント制御 */
 	private boolean startEdit;
@@ -37,12 +43,14 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 
 	}
 
-	public PEDBTopNoteLabel(NoteData topNote, RoundRectangle2D topr) {
+
+	public PEDBTopNoteLabel(NoteData topNote, RoundRectangle2D topr, Group group) {
 		super();
 		setBounds(new Rectangle((int) topr.getX(), (int) topr.getY(), (int) topr
 				.getWidth(), (int) topr.getHeight()));
 		d = topr;
 		n = (PEDBNoteData)topNote;
+		setGroup(group);
 
 	}
 
@@ -67,16 +75,20 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 				return (PEDBTopNoteLabel) super.owner();
 			}
 
+			// 11/17~23  藤坂が一部追加  方向キーを押した時の処理
 			@Override protected void keyPressedOption(KeyEvent e) {
 				super.keyPressedOption(e);
 				switch (e.getKeyCode()) {
-				case KeyEvent.VK_LEFT:
-					//setHigherGroup(owner());
-					System.out.println("ababababa");
-					break;
 				case KeyEvent.VK_RIGHT:
-					//setHigherGroup(null);
-					System.out.println("cdcdcdcdc");
+					g = group();
+					moveNote(0,g);
+					break;
+					//System.out.println("right →");
+				case KeyEvent.VK_LEFT:
+					g = group();
+					moveNote(1,g);
+					break;
+					//System.out.println("left ←");
 				}
 			}
 /*
@@ -99,12 +111,12 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 				return (PEDBStructureEditor) super.app();
 			}
 
-			// 11/17  藤坂が一部追加  クリックした時のグループ(頂点)を選択
+			// 11/17~22  藤坂が一部追加  クリックした時のグループ(頂点)を選択
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mousePressed(e);
 				app().butler().notifySelectTopNote(self(), true);
-				System.out.print("clicked");;
+				//System.out.print("clicked");;クリック可能確認済み
 			}
 
 			/*
@@ -127,20 +139,36 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 		return n;
 	}
 
-	// 11/17  藤坂が追加  頂点の音を変更するメソッドの作成
-	public PEDBNoteData moveNote(int i,PEDBNoteData n) {
-		//n = getScoreNote();
-		if (i == 0) {
-			n = (PEDBNoteData) n.next();
-			setTopNote(n);
-		} else {
-			n = (PEDBNoteData) n.previous();
-			setTopNote(n);
+	// 11/17~23  藤坂が追加  頂点の音を変更するメソッドの作成・グラフィックスの頂点を移動させる処理をも行う
+	public void moveNote(int i,PEDBGroup g) {
+		switch (i) {
+		case 0:
+			if(g.topNote != g.getEndNote()) {
+				//System.out.println("→を押す前　"+g.topNote);
+				n = (PEDBNoteData) g.getTopNote().next();
+				g.topNote = n;
+				//System.out.println("→を押した後　"+g.topNote);
+			}
+			else {
+				//do nothing
+			}
+			break;
+		case 1:
+			if(g.topNote != g.getBeginNote()) {
+				//System.out.println("←を押す前　"+g.topNote);
+				n = (PEDBNoteData) g.getTopNote().previous();
+				g.topNote = n;
+				//System.out.println("←を押した後　"+g.topNote);
+			}
+			else {
+				//do nothing
+			}
+			break;
 		}
-		return n;
+		double x, w;
+		x = MainFrame.getXOfNote(g.getTopNote().onset()) + PianoRoll.getDefaultAxisX();
+		w = MainFrame.getXOfNote((double) g.getTopNote().duration());
+		setBounds(new Rectangle((int) x, (int) d.getY(), (int) w, (int) d.getHeight()));
 
 	}
-
-
-
 }

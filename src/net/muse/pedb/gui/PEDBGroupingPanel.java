@@ -138,7 +138,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * @author anan
 	 * @since Oct 13th, 2018
 	 */
-	private void createTopNoteLabel(Group group, int level) {
+	public void createTopNoteLabel(Group group, int level) {
 		if (group == null || group.topNote == null)
 			return;
 
@@ -146,11 +146,12 @@ class PEDBGroupingPanel extends GroupingPanel {
 		final RoundRectangle2D topr = getTopNoteLabelBound(group.getTopNote(),
 				level);
 		PEDBTopNoteLabel toplabel = new PEDBTopNoteLabel(group.getTopNote(),
-				topr);
+				topr,group);
 		toplabel.setBackground(Color.red);// 色の変更
 		toplabel.setController(app());
 		group.setLevel(level);
 		add(toplabel); // 描画
+		System.out.println(group.getScoreNotelist());
 		createTopNoteLabel((Group) group.next(), level);
 	}
 
@@ -168,7 +169,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * @author anan
 	 * @since Oct 13th, 2018
 	 */
-	private RoundRectangle2D getTopNoteLabelBound(NoteData topNote, int level) {
+	public RoundRectangle2D getTopNoteLabelBound(NoteData topNote, int level) {
 		final double y = setLabelY(level);
 		double x, w;
 		x = MainFrame.getXOfNote(topNote.onset()) + PianoRoll.getDefaultAxisX();
