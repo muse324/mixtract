@@ -4,10 +4,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.util.LinkedList;
 
@@ -91,17 +89,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 	public void setHigherGroup(PEDBGroupLabel l) {
 		higherGroup = l;
 		butler().printConsole(String.format("%s is set as higher group", l));
-		repaint();
-	}
-
-	void moveLabels(MouseEvent e, Point mousePoint, int level, Rectangle bounds,
-			boolean shiftKeyPressed, boolean mousePressed) {
-		for (final PEDBGroupLabel l : sequenceGroups) {
-			int levelOffset = l.getLevel() - level;
-			mousePoint.y += LABEL_HEIGHT * levelOffset;
-			l.moveLabelVertical(e, mousePoint, l.getBounds(), shiftKeyPressed,
-					mousePressed);
-		}
 		repaint();
 	}
 
