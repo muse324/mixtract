@@ -17,9 +17,14 @@ import net.muse.gui.KeyActionListener;
 import net.muse.gui.MainFrame;
 import net.muse.gui.MouseActionListener;
 import net.muse.gui.PianoRoll;
+import net.muse.pedb.data.PEDBConcierge;
 import net.muse.pedb.data.PEDBTuneData;
 
 class PEDBGroupingPanel extends GroupingPanel {
+	protected PEDBGroupingPanel(MuseApp app) {
+		super(app);
+	}
+
 	private PEDBGroupLabel higherGroup;
 
 	@Override public void paintComponent(Graphics g) {
@@ -32,7 +37,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		super.selectGroup(g, flg);
 		if (higherGroup != null && g != null) {
-			main().butler().printConsole(String.format("%s -> %s connect",
+			butler().printConsole(String.format("%s -> %s connect",
 					higherGroup, g));
 			higherGroup.setChild(g);
 			higherGroup.group().setChild(getSelectedGroup().group());
@@ -44,7 +49,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 
 	public void setHigherGroup(PEDBGroupLabel l) {
 		higherGroup = l;
-		main().butler().printConsole(String.format("%s is set as higher group",
+		butler().printConsole(String.format("%s is set as higher group",
 				l));
 		repaint();
 
@@ -74,12 +79,14 @@ class PEDBGroupingPanel extends GroupingPanel {
 		createHierarchicalGroupLabel(group.child(), level + 1);
 	}
 
-	@Override protected KeyActionListener createKeyActionListener(
-			MuseApp main) {
-		return new KeyActionListener(main, this) {
+	/* (非 Javadoc)
+	 * @see net.muse.gui.GroupingPanel#createKeyActionListener(net.muse.app.MuseApp)
+	 */
+	@Override protected KeyActionListener createKeyActionListener(MuseApp app) {
+		return new KeyActionListener(app, this) {
 
-			@Override public PEDBStructureEditor main() {
-				return (PEDBStructureEditor) super.main();
+			@Override public PEDBStructureEditor app() {
+				return (PEDBStructureEditor) super.app();
 			}
 
 			@Override public PEDBGroupingPanel owner() {
@@ -87,6 +94,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 			}
 
 			@Override protected void keyPressedOption(KeyEvent e) {
+				super.keyPressedOption(e);
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_ESCAPE:
 					setHigherGroup(null);
@@ -130,20 +138,20 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * @author anan
 	 * @since Oct 13th, 2018
 	 */
-	private void createTopNoteLabel(Group group, int level) {
+	public void createTopNoteLabel(Group group, int level) {
 		if (group == null || group.topNote == null)
 			return;
 
 		// 以下は、group が存在し、かつ当該groupに頂点音が存在する場合にのみ実行される
 		final RoundRectangle2D topr = getTopNoteLabelBound(group.getTopNote(),
 				level);
-		final GroupLabel toplabel = new PEDBTopNoteLabel(group.getTopNote(),
-				topr);
-		System.out.println(toplabel);
+		PEDBTopNoteLabel toplabel = new PEDBTopNoteLabel(group.getTopNote(),
+				topr,group);
 		toplabel.setBackground(Color.red);// 色の変更
-		toplabel.setController(main);
+		toplabel.setController(app());
 		group.setLevel(level);
 		add(toplabel); // 描画
+		System.out.println(group.getScoreNotelist());
 		createTopNoteLabel((Group) group.next(), level);
 	}
 
@@ -161,22 +169,25 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * @author anan
 	 * @since Oct 13th, 2018
 	 */
-	private RoundRectangle2D getTopNoteLabelBound(NoteData topNote, int level) {
+	public RoundRectangle2D getTopNoteLabelBound(NoteData topNote, int level) {
 		final double y = setLabelY(level);
 		double x, w;
-		x = MainFrame.getXOfNote(topNote.onset()) + PianoRoll
-				.getDefaultAxisX();
+		x = MainFrame.getXOfNote(topNote.onset()) + PianoRoll.getDefaultAxisX();
 		w = MainFrame.getXOfNote((double) topNote.duration());
 		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
-				LABEL_HEIGHT - LEVEL_PADDING, 20.0, 20.0);
-
-		System.out.println("x = "+r.getX());
-		System.out.println("y = "+r.getY());
-		System.out.println("w = "+r.getWidth());
-		System.out.println("h = "+r.getHeight());
-		System.out.println("h = "+r.getArcWidth());
-		System.out.println("h = "+r.getArcHeight());
+				LABEL_HEIGHT - LEVEL_PADDING, 3.0, 3.0);
+		/*
+		 * System.out.println("x = "+r.getX());
+		 * System.out.println("y = "+r.getY());
+		 * System.out.println("w = "+r.getWidth());
+		 * System.out.println("h = "+r.getHeight());
+		 * System.out.println("arcw = "+r.getArcWidth());
+		 * System.out.println("arch = "+r.getArcHeight());
+		 */
 		return r;
 	}
 
+	@Override protected PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
+	}
 }

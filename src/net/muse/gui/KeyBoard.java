@@ -1,14 +1,26 @@
 package net.muse.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
-import net.muse.data.*;
+import net.muse.data.Group;
+import net.muse.data.NoteData;
+import net.muse.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.sound.MixtractMIDIController;
 import net.muse.sound.MIDIController;
@@ -58,7 +70,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 
 	private int ticksperbeat = 480;
 
-	private MuseApp main;
+	private MuseApp app;
 
 	/**
 	 * @return
@@ -122,9 +134,9 @@ public class KeyBoard extends JPanel implements MouseListener,
 		initialize();
 	}
 
-	public KeyBoard(MuseApp main) {
-		this(main.getTicksPerBeat());
-		this.main = main;
+	public KeyBoard(MuseApp app) {
+		this(app.getTicksPerBeat());
+		this.app = app;
 	}
 
 	/*
@@ -450,6 +462,11 @@ public class KeyBoard extends JPanel implements MouseListener,
 	 */
 	public void setKeyHeight(int keyHeight) {
 		this.keyHeight = keyHeight;
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 }

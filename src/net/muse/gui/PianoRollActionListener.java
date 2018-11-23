@@ -24,8 +24,8 @@ import net.muse.mixtract.command.SetKeyModeCommand;
 public class PianoRollActionListener extends MouseActionListener {
 	private final Point pp = new Point();
 
-	public PianoRollActionListener(MuseApp main, Container owner) {
-		super(main, owner);
+	public PianoRollActionListener(MuseApp app, Container owner) {
+		super(app, owner);
 	}
 
 	@Override public PianoRoll self() {
@@ -183,7 +183,7 @@ public class PianoRollActionListener extends MouseActionListener {
 			self().encloseNotes();
 			self().selectNotes();
 			if (self().selectedNoteLabels.size() == 0)
-				main().butler().notifyDeselectGroup();
+				app().butler().notifyDeselectGroup();
 			else {
 				self().setFocusable(true);
 				self().requestFocus();

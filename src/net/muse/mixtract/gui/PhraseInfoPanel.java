@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
 import net.muse.data.Group;
+import net.muse.data.NoteData;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
@@ -57,6 +58,11 @@ public class PhraseInfoPanel extends JPanel implements TuneDataListener {
 
 	public JLabel getGroupNameLabel() {
 		return groupNameLabel;
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 }

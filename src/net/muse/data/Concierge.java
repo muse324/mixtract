@@ -85,32 +85,30 @@ public class Concierge extends MuseObject implements TuneDataController {
 	}
 
 	public void keyPressed(KeyEvent e) {
-		c=null;
+		c = null;
 		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
 				+ obj.getClass().getSimpleName();
-		MuseApp main = (MuseApp) obj;
+		MuseApp app = (MuseApp) obj;
+		printConsole(String.format("PEDBConcierge: %d", e.getKeyCode()));
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_G:
 			printConsole("make group");
-			c = main.searchCommand(MixtractCommandType.MAKE_GROUP);
+			c = app.searchCommand(MixtractCommandType.MAKE_GROUP);
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 			printConsole("delete group");
-			c = main.searchCommand(MixtractCommandType.DELETE_GROUP);
+			c = app.searchCommand(MixtractCommandType.DELETE_GROUP);
 			break;
 		case KeyEvent.VK_SPACE:
 			printConsole((!isPlayed) ? "play" : "stop");
-			c = main.searchCommand((!isPlayed) ? MuseAppCommandType.PLAY
+			c = app.searchCommand((!isPlayed) ? MuseAppCommandType.PLAY
 					: MuseAppCommandType.STOP);
 			setPlayed(!isPlayed);
 			break;
-		default:
-			printConsole(e.getSource().getClass().getName()
-					+ ": key pressed: ");
 		}
 		if (c != null) {
 			c.setFrame((MainFrame) app().getFrame());
-			c.setMain(app());
+			c.setApp(app());
 			c.setTarget(app().data());
 			c.run();
 		}
@@ -128,6 +126,7 @@ public class Concierge extends MuseObject implements TuneDataController {
 			l.selectGroup(g, b);
 		}
 	}
+
 	public void notifyDeselectGroup() {
 		if (app().data() != null)
 			app().data().setSelectedGroup(null);
@@ -135,6 +134,7 @@ public class Concierge extends MuseObject implements TuneDataController {
 			l.deselect(null);
 		}
 	}
+
 	public void notifySetTarget(TuneData data) {
 		getInfoViewList().clear();
 		for (TuneDataListener l : getTdListenerList()) {

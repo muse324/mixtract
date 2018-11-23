@@ -44,8 +44,8 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 		CanvasMouseListener {
 
 	public class CanvasListener extends MouseActionListener {
-		CanvasListener(Mixtract main, Container owner) {
-			super(main, owner);
+		CanvasListener(Mixtract app, Container owner) {
+			super(app, owner);
 		}
 
 		/*
@@ -89,8 +89,8 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 			// cv.calculate(getRangeY() / 2.);
 			paramApplicator.run();
 			try {
-				assert main().data() instanceof MXTuneData;
-				((MXTuneData) main().data()).writeTempfileCurveParameters();
+				assert app().data() instanceof MXTuneData;
+				((MXTuneData) app().data()).writeTempfileCurveParameters();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -119,7 +119,7 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 	private static int defaultRectangleHeight = 100;
 
 	/* 制御データ */
-	private Mixtract main; // @jve:decl-index=0:
+	private Mixtract app; // @jve:decl-index=0:
 	private MXGroup group; // @jve:decl-index=0:
 
 	private PhraseCurve cv; // @jve:decl-index=0:
@@ -279,9 +279,9 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 
 	public void setShowCurrentX(boolean showCurrentX, int x) {}
 
-	void setController(Mixtract main) {
-		this.main = main;
-		this.mouseActions = new CanvasListener(main, this);
+	void setController(Mixtract app) {
+		this.app = app;
+		this.mouseActions = new CanvasListener(app, this);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
 	}
@@ -443,8 +443,8 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 							cv.calculate(getHalfRangeY());
 							paramApplicator.run();
 							try {
-								assert main.data() instanceof MXTuneData;
-								((MXTuneData) main.data())
+								assert app.data() instanceof MXTuneData;
+								((MXTuneData) app.data())
 										.writeTempfileCurveParameters();
 							} catch (IOException e1) {
 								e1.printStackTrace();
@@ -490,8 +490,8 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 							cv.calculate(getHalfRangeY());
 						}
 					});
-			if (main.getFrame() != null) {
-				calcRealTempoTimeItem.addActionListener((MainFrame) main
+			if (app.getFrame() != null) {
+				calcRealTempoTimeItem.addActionListener((MainFrame) app
 						.getFrame());
 				calcRealTempoTimeItem.setActionCommand(paramApplicator.name());
 				calcRealTempoTimeItem.setText(paramApplicator.getText());
@@ -571,14 +571,14 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 							cv.calculate(getHeight());
 							paramApplicator.run();
 							try {
-								assert main.data() instanceof MXTuneData;
-								((MXTuneData) main.data())
+								assert app.data() instanceof MXTuneData;
+								((MXTuneData) app.data())
 										.writeTempfileCurveParameters();
-								((MainFrame) main.getFrame()).getTempoView()
+								((MainFrame) app.getFrame()).getTempoView()
 										.repaint();
-								((MainFrame) main.getFrame()).getDynamicsView()
+								((MainFrame) app.getFrame()).getDynamicsView()
 										.repaint();
-								((MainFrame) main.getFrame()).getPianoroll()
+								((MainFrame) app.getFrame()).getPianoroll()
 										.makeNoteLabel();
 							} catch (IOException e1) {
 								e1.printStackTrace();
@@ -705,11 +705,11 @@ class PhraseCanvas extends JPanel implements MouseListener, MouseMotionListener,
 	}
 
 	protected Mixtract getMain() {
-		return main;
+		return app;
 	}
 
-	protected void setMain(Mixtract main) {
-		this.main = main;
+	protected void setMain(Mixtract app) {
+		this.app = app;
 	}
 
 	protected MXGroup getGroup() {

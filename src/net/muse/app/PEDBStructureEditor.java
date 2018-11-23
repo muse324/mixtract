@@ -28,10 +28,15 @@ public class PEDBStructureEditor extends MuseApp {
 		super(args);
 	}
 
+	@Override
+	public PEDBConcierge butler() {
+		return (PEDBConcierge)super.butler();
+	}
+
 	public static void main(String[] args) {
 		try {
-			final PEDBStructureEditor main = new PEDBStructureEditor(args);
-			main.setup();
+			final PEDBStructureEditor app = new PEDBStructureEditor(args);
+			app.setup();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
