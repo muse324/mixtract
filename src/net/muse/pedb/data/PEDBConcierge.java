@@ -27,7 +27,7 @@ public class PEDBConcierge extends Concierge {
 		c = null;
 		assert obj instanceof MuseApp : "MuseApp系のクラスオブジェクトで呼び出してください: obj:"
 				+ obj.getClass().getSimpleName();
-		MuseApp app = (MuseApp) obj;
+		final MuseApp app = (MuseApp) obj;
 		printConsole(String.format("PEDBConcierge: %d", e.getKeyCode()));
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_R:
@@ -41,8 +41,8 @@ public class PEDBConcierge extends Concierge {
 			c = app.searchCommand(MixtractCommandType.DELETE_GROUP);
 			break;
 		case KeyEvent.VK_SPACE:
-			printConsole((!isPlayed()) ? "play" : "stop");
-			c = app.searchCommand((!isPlayed()) ? MuseAppCommandType.PLAY
+			printConsole(!isPlayed() ? "play" : "stop");
+			c = app.searchCommand(!isPlayed() ? MuseAppCommandType.PLAY
 					: MuseAppCommandType.STOP);
 			break;
 
@@ -64,6 +64,13 @@ public class PEDBConcierge extends Concierge {
 		}
 	}
 
+	public void notifySelectTopNote(PEDBTopNoteLabel self, boolean b) {
+		setTopNoteLabel(self);
+		for (final TuneDataListener l : getTdListenerList()) {
+			l.selectTopNote(self.note(), b);
+		}
+	}
+
 	public PEDBNoteData setTopNoteLabel(GroupLabel self) {
 		return null;
 		// TODO 自動生成されたメソッド・スタブ
@@ -76,13 +83,6 @@ public class PEDBConcierge extends Concierge {
 	 */
 	@Override protected PEDBStructureEditor app() {
 		return (PEDBStructureEditor) super.app();
-	}
-
-	public void notifySelectTopNote(PEDBTopNoteLabel self, boolean b) {
-		setTopNoteLabel(self);
-		for (TuneDataListener l : getTdListenerList()) {
-			l.selectTopNote(self.note(), b);
-		}
 	}
 
 }

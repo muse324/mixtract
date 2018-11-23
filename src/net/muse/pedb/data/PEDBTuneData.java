@@ -20,22 +20,6 @@ import net.muse.mixtract.data.MXNoteData;
 import net.muse.mixtract.data.MXTuneData;
 
 public class PEDBTuneData extends MXTuneData {
-	protected void deleteHierarchicalGroup(Group root, Group target) {
-		if (root == null)
-			return;
-
-		deleteHierarchicalGroup(root.child(), target);
-		deleteHierarchicalGroup((Group) root.next(), target);
-		if (root.equals(target)) {
-			// 子グループをすべて削除
-			deleteGroup(target);
-			target.setType(GroupType.USER);
-			// 親グループの再分析
-			// analyzeStructure(target);
-			return;
-		}
-	}
-
 	/**
 	 * @param in - File
 	 * @param out - File
@@ -45,37 +29,16 @@ public class PEDBTuneData extends MXTuneData {
 		super(in, out);
 	}
 
-	@Override protected void setNoteScheduleEvent(final Group group) {
-		if (group == null)
-			return;
-		assert group instanceof PEDBGroup;
-		PEDBGroup g = (PEDBGroup) group;
-		setNoteScheduleEvent(g.child());
-		setNoteScheduleEvent(g.getBeginNote(), g.getBeginNote().onset(), g
-				.getEndNote().offset());
-	}
-
-	protected void getUniqueGroupIndex(Group glist,
-			ArrayList<Integer> idxlist) {
-		if (glist == null)
-			return;
-		assert glist instanceof PEDBGroup;
-		PEDBGroup g = (PEDBGroup) glist;
-		getUniqueGroupIndex(g.child(), idxlist);
-		if (!idxlist.contains(g.index()))
-			idxlist.add(g.index());
-	}
-
 	@Override public void analyze(Group rootGroup) {
 		if (rootGroup == null)
 			return;
 		assert rootGroup instanceof PEDBGroup;
-		PEDBGroup root = (PEDBGroup) rootGroup;
+		final PEDBGroup root = (PEDBGroup) rootGroup;
 		analyze(root.child());
 		analyze((Group) root.next());
 
 		PEDBGroup g = null;
-		for (Group group : getMiscGroup()) {
+		for (final Group group : getMiscGroup()) {
 			if (root.nearlyEquals(group)) {
 				g = (PEDBGroup) group;
 				break;
@@ -92,6 +55,14 @@ public class PEDBTuneData extends MXTuneData {
 	 */
 	@Override public PEDBConcierge butler() {
 		return (PEDBConcierge) super.butler();
+	}
+
+	@Override public PEDBNoteData getLastNote(int partIndex) {
+		return (PEDBNoteData) super.getLastNote(partIndex);
+	}
+
+	@Override public PEDBGroup getRootGroup(int partIndex) {
+		return (PEDBGroup) super.getRootGroup(partIndex);
 	}
 
 	/*
@@ -126,6 +97,33 @@ public class PEDBTuneData extends MXTuneData {
 		return new PEDBConcierge(this);
 	}
 
+	@Override protected void deleteHierarchicalGroup(Group root, Group target) {
+		if (root == null)
+			return;
+
+		deleteHierarchicalGroup(root.child(), target);
+		deleteHierarchicalGroup((Group) root.next(), target);
+		if (root.equals(target)) {
+			// 子グループをすべて削除
+			deleteGroup(target);
+			target.setType(GroupType.USER);
+			// 親グループの再分析
+			// analyzeStructure(target);
+			return;
+		}
+	}
+
+	@Override protected void getUniqueGroupIndex(Group glist,
+			ArrayList<Integer> idxlist) {
+		if (glist == null)
+			return;
+		assert glist instanceof PEDBGroup;
+		final PEDBGroup g = (PEDBGroup) glist;
+		getUniqueGroupIndex(g.child(), idxlist);
+		if (!idxlist.contains(g.index()))
+			idxlist.add(g.index());
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.mixtract.data.MXTuneData#readStructureData(java.io.File)
@@ -133,30 +131,38 @@ public class PEDBTuneData extends MXTuneData {
 	@Override protected void readStructureData(File file) {
 		try {
 			getRootGroup().clear();
-			BufferedReader in = new BufferedReader(new FileReader(file));
+			final BufferedReader in = new BufferedReader(new FileReader(file));
 			String str = null;
-			List<MXGroup> glist = new ArrayList<MXGroup>();
+			final List<MXGroup> glist = new ArrayList<>();
 			while ((str = in.readLine()) != null) {
-				String item[] = str.split(";");
-				String groupName = item[0]; // group name
+				final String item[] = str.split(";");
+				final String groupName = item[0]; // group name
 				int partNumber = Integer.parseInt(item[1]);
 				if (partNumber <= 0)
 					partNumber = 1;
-				MXNoteData note = null;
-				String groupInfo = item[2];
-				String topNoteName = item[3];
-				MXGroup g = parseGroupInfo(glist, note, groupName, partNumber,
-						groupInfo);
+				final MXNoteData note = null;
+				final String groupInfo = item[2];
+				parseGroupInfo(glist, note, groupName, partNumber, groupInfo);
 
 				// TODO setTopNote をパースする
 			}
 			in.close();
 			++hierarchicalGroupCount;
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override protected void setNoteScheduleEvent(final Group group) {
+		if (group == null)
+			return;
+		assert group instanceof PEDBGroup;
+		final PEDBGroup g = (PEDBGroup) group;
+		setNoteScheduleEvent(g.child());
+		setNoteScheduleEvent(g.getBeginNote(), g.getBeginNote().onset(), g
+				.getEndNote().offset());
 	}
 
 	/*
@@ -169,7 +175,7 @@ public class PEDBTuneData extends MXTuneData {
 		if (group == null)
 			return;
 		writeGroupStructureData(out, group.child());
-		out.format("%s;%s\n", group, (group.hasTopNote()) ? group.getTopNote()
+		out.format("%s;%s\n", group, group.hasTopNote() ? group.getTopNote()
 				.id() : "null");
 		writeGroupStructureData(out, (Group) group.next());
 	}
