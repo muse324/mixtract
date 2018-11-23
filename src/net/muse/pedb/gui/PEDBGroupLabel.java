@@ -68,6 +68,12 @@ public class PEDBGroupLabel extends GroupLabel {
 					break;
 				case KeyEvent.VK_ESCAPE:
 					setHigherGroup(null);
+					break;
+				case KeyEvent.VK_UP:
+					changeLevel(-1);
+					break;
+				case KeyEvent.VK_DOWN:changeLevel(+1);
+					break;
 				}
 			}
 
