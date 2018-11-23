@@ -202,7 +202,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 	}
 
 	/**
-	 * 二つのグループを連結し、親(上位階層)グループを生成します。
+	 * 二つのグループを前後に連結し、親(上位階層)グループを生成します。
 	 *
 	 * @author hashida
 	 * @since Oct. 14th, 2018
@@ -280,6 +280,12 @@ class PEDBGroupingPanel extends GroupingPanel {
 		return moveToLastGroupOf(pre.next());
 	}
 
+	/**
+	 * ふたつのグループラベルを接続します。
+	 *
+	 * @param l1
+	 * @param l2
+	 */
 	private void connectGroups(PEDBGroupLabel l1, PEDBGroupLabel l2) {
 		if (l1 == null || l2 == null)
 			return;
