@@ -35,18 +35,20 @@ public class PEDBNoteLabel extends NoteLabel {
 		return (PEDBNoteLabel) super.prev();
 	}
 
-	/* (非 Javadoc)
-	 * @see net.muse.gui.GroupLabel#createKeyActionListener(net.muse.app.MuseApp)
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.GroupLabel#createKeyActionListener(net.muse.app.MuseApp)
 	 */
-	protected KeyActionListener createKeyActionListener(MuseApp app) {
+	@Override protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 
 			@Override public PEDBStructureEditor app() {
 				return (PEDBStructureEditor) super.app();
 			}
 
-			@Override public PEDBNoteLabel owner() {
-				return (PEDBNoteLabel) super.owner();
+			@Override public PEDBNoteLabel self() {
+				return (PEDBNoteLabel) super.self();
 			}
 
 		};

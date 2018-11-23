@@ -37,22 +37,15 @@ public class Group extends SequenceData {
 	/** 声部番号（1〜） */
 	private int partNumber;
 	/** TODO 具体的にどう使ってるか確認する */
-	protected final ArrayList<NoteData> scoreNotelist = new ArrayList<NoteData>();
+	protected final ArrayList<NoteData> scoreNotelist = new ArrayList<>();
 	/** 開始音 */
 	private NoteData beginNote = null;
 	/** 終了音 */
 	private NoteData endNote = null;
-	/** 頂点音 TODO Mixtract用にプッシュダウンする */
-	public NoteData topNote = null;
+	/** 頂点音 */
+	private NoteData topNote = null;
 	/** フレーズ（グループ）の詳細情報を格納します。 */
 	private PhraseFeature detail;
-
-	/**
-	 * @param INCLUDE_LAST_RESTNOTE セットする INCLUDE_LAST_RESTNOTE
-	 */
-	public static void setAvoidLastRestsFromGroup(boolean aVOID_LAST_RESTNOTE) {
-		INCLUDE_LAST_RESTNOTE = aVOID_LAST_RESTNOTE;
-	}
 
 	/**
 	 * @param beginNote
@@ -64,16 +57,23 @@ public class Group extends SequenceData {
 		this.setBeginNote(beginNote);
 		this.setEndNote(endNote);
 	}
-	/*
-	//追加
-	public Group(NoteData beginNote, NoteData endNote, GroupType type, NoteData topNote) {
-		this(type);
-		this.partNumber = beginNote.musePhony();
-		this.setBeginNote(beginNote);
-		this.setEndNote(endNote);
-		this.setTopNote(topNote);
+
+	protected Group(GroupType type) {
+		_type = type;
+		initialize();
 	}
-*/
+
+	/*
+	 * //追加
+	 * public Group(NoteData beginNote, NoteData endNote, GroupType type,
+	 * NoteData topNote) {
+	 * this(type);
+	 * this.partNumber = beginNote.musePhony();
+	 * this.setBeginNote(beginNote);
+	 * this.setEndNote(endNote);
+	 * this.setTopNote(topNote);
+	 * }
+	 */
 	/**
 	 * プロジェクトファイルから読み込んだグループを生成します．
 	 *
@@ -110,9 +110,22 @@ public class Group extends SequenceData {
 		comfirmLastRestnotesFromGroup();
 	}
 
-	protected Group(GroupType type) {
-		_type = type;
-		initialize();
+	/**
+	 * @param INCLUDE_LAST_RESTNOTE セットする INCLUDE_LAST_RESTNOTE
+	 */
+	public static void setAvoidLastRestsFromGroup(boolean aVOID_LAST_RESTNOTE) {
+		INCLUDE_LAST_RESTNOTE = aVOID_LAST_RESTNOTE;
+	}
+
+	public void addScoreNoteList() {
+		if (hasChild())
+			addScoreNoteList(child().getBeginNote());
+		else
+			addScoreNoteList(getBeginNote());
+	}
+
+	@Override public Group child() {
+		return (Group) super.child();
 	}
 
 	/**
@@ -129,7 +142,7 @@ public class Group extends SequenceData {
 	@Override public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
-		Group g = (Group) obj;
+		final Group g = (Group) obj;
 		if (!g.getBeginNote().equals(getBeginNote()) || !g.getEndNote().equals(
 				getEndNote()) || !g.getType().equals(getType()))
 			// || !g.getType().equals(getType()) || !g.getLayer().equals(layer))
@@ -166,8 +179,8 @@ public class Group extends SequenceData {
 		return (Group) super.parent();
 	}
 
-	@Override public Group child() {
-		return (Group) super.child();
+	public int getPartNumber() {
+		return partNumber;
 	}
 
 	/**
@@ -177,13 +190,6 @@ public class Group extends SequenceData {
 		// scoreNotelist.clear();
 		// addScoreNoteList();
 		return scoreNotelist;
-	}
-
-	public void addScoreNoteList() {
-		if (hasChild())
-			addScoreNoteList(child().getBeginNote());
-		else
-			addScoreNoteList(getBeginNote());
 	}
 
 	/**
@@ -208,7 +214,7 @@ public class Group extends SequenceData {
 	}
 
 	public final boolean hasTopNote() {
-		return topNote != null;
+		return getTopNote() != null;
 	}
 
 	/**
@@ -241,6 +247,10 @@ public class Group extends SequenceData {
 		return getBeginNote().onset();
 	}
 
+	public String printInfo() {
+		return String.format("Group %s\n", name());
+	}
+
 	/**
 	 * @return
 	 */
@@ -262,6 +272,19 @@ public class Group extends SequenceData {
 
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+	public void setPartNumber(int partNumber) {
+		this.partNumber = partNumber;
+	}
+
+	// 追加
+	/**
+	 *
+	 * @param setNote セットする setNote
+	 */
+	public void setTopNote(NoteData note) {
+		this.topNote = note;
 	}
 
 	/**
@@ -289,7 +312,7 @@ public class Group extends SequenceData {
 		String str = name() + ";" + partNumber + ";";
 		if (!hasChild())
 			return str + notelistToString();
-		str += (hasChild()) ? child().name() : "null";
+		str += hasChild() ? child().name() : "null";
 		return str;
 	}
 
@@ -312,6 +335,38 @@ public class Group extends SequenceData {
 		if (root.onset() >= getBeginNote().onset())
 			scoreNotelist.add(root);
 		makeScoreNotelist(root.next());
+	}
+
+	/**
+	 * @return
+	 */
+	protected String notelistToString() {
+		return notelistName("[", getBeginNote()) + "]";
+	}
+
+	/**
+	 * @param beginNote セットする beginNote
+	 */
+	protected void setBeginNote(NoteData note) {
+		this.beginNote = note;
+	}
+
+	/**
+	 * @param endNote セットする endNote
+	 */
+	protected void setEndNote(NoteData note) {
+		this.endNote = note;
+	}
+
+	protected int timevalue(NoteData note) {
+		if (note == null)
+			return 0;
+		int len = 0;
+		while (note != null) {
+			len += note.timeValue();
+			note = note.next();
+		}
+		return len;
 	}
 
 	/**
@@ -342,37 +397,8 @@ public class Group extends SequenceData {
 		return notelistName(str, note.next());
 	}
 
-	/**
-	 * @return
-	 */
-	protected String notelistToString() {
-		return notelistName("[", getBeginNote()) + "]";
-	}
-
 	private double realOffset() {
 		return getEndNote().realOffset();
-	}
-
-	/**
-	 * @param beginNote セットする beginNote
-	 */
-	protected void setBeginNote(NoteData note) {
-		this.beginNote = note;
-	}
-
-	/**
-	 * @param endNote セットする endNote
-	 */
-	protected void setEndNote(NoteData note) {
-		this.endNote = note;
-	}
-	//追加
-	/**
-	 *
-	 * @param setNote セットする setNote
-	 */
-	protected void setTopNote(NoteData note) {
-		this.topNote = note;
 	}
 
 	private void setNotelist(NoteData note, NoteData root) {
@@ -389,29 +415,6 @@ public class Group extends SequenceData {
 		}
 		setNotelist(note.child(), root);
 		setNotelist(note.next(), root);
-	}
-
-	protected int timevalue(NoteData note) {
-		if (note == null)
-			return 0;
-		int len = 0;
-		while (note != null) {
-			len += note.timeValue();
-			note = note.next();
-		}
-		return len;
-	}
-
-	public int getPartNumber() {
-		return partNumber;
-	}
-
-	public void setPartNumber(int partNumber) {
-		this.partNumber = partNumber;
-	}
-
-	public String printInfo() {
-		return String.format("Group %s\n", name());
 	}
 
 }

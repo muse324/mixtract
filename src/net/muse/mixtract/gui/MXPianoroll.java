@@ -55,8 +55,8 @@ public class MXPianoroll extends PianoRoll {
 				return (Mixtract) super.app();
 			}
 
-			@Override public MXPianoroll owner() {
-				return (MXPianoroll) super.owner();
+			@Override public MXPianoroll self() {
+				return (MXPianoroll) super.self();
 			}
 
 		};

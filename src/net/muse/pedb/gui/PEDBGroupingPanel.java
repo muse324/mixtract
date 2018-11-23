@@ -25,17 +25,60 @@ import net.muse.pedb.data.PEDBGroup;
 import net.muse.pedb.data.PEDBTuneData;
 
 class PEDBGroupingPanel extends GroupingPanel {
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 1L;
+
+	private PEDBGroupLabel higherGroup;
+	LinkedList<PEDBGroupLabel> sequenceGroups = new LinkedList<>();
 
 	protected PEDBGroupingPanel(MuseApp app) {
 		super(app);
 	}
 
-	private PEDBGroupLabel higherGroup;
-	LinkedList<PEDBGroupLabel> sequenceGroups = new LinkedList<>();
+	/**
+	 * 頂点音ラベルを生成します。
+	 *
+	 * @author anan
+	 * @since Oct 13th, 2018
+	 */
+	public void createTopNoteLabel(Group group, int level) {
+		if (group == null || group.getTopNote() == null)
+			return;
+
+		// 以下は、group が存在し、かつ当該groupに頂点音が存在する場合にのみ実行される
+		final RoundRectangle2D topr = getTopNoteLabelBound(group.getTopNote(),
+				level);
+		final PEDBTopNoteLabel toplabel = new PEDBTopNoteLabel(group
+				.getTopNote(), topr, group);
+		toplabel.setController(app());
+		group.setLevel(level);
+		add(toplabel); // 描画
+		System.out.println(group.getScoreNotelist());
+		createTopNoteLabel((Group) group.next(), level);
+	}
+
+	/**
+	 * 頂点音ラベルのサイズを求めます。
+	 *
+	 * @author anan
+	 * @since Oct 13th, 2018
+	 */
+	public RoundRectangle2D getTopNoteLabelBound(NoteData topNote, int level) {
+		final double y = setLabelY(level);
+		double x, w;
+		x = MainFrame.getXOfNote(topNote.onset()) + PianoRoll.getDefaultAxisX();
+		w = MainFrame.getXOfNote(topNote.duration());
+		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
+				LABEL_HEIGHT - LEVEL_PADDING, 3.0, 3.0);
+		/*
+		 * System.out.println("x = "+r.getX());
+		 * System.out.println("y = "+r.getY());
+		 * System.out.println("w = "+r.getWidth());
+		 * System.out.println("h = "+r.getHeight());
+		 * System.out.println("arcw = "+r.getArcWidth());
+		 * System.out.println("arch = "+r.getArcHeight());
+		 */
+		return r;
+	}
 
 	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -60,29 +103,14 @@ class PEDBGroupingPanel extends GroupingPanel {
 		Group group = g.group();
 		addSequencePrevAndNext(c, group);
 		while (group.hasChild()) {
-			final PEDBGroupLabel l = searchLabel((Group) group.child(), c);
+			final PEDBGroupLabel l = searchLabel(group.child(), c);
 			if (l != null)
 				sequenceGroups.add(l);
 			addSequencePrevAndNext(c, l.group());
-			group = (Group) group.child();
+			group = group.child();
 		}
 
 		repaint();
-	}
-
-	private void addSequencePrevAndNext(final Component[] c, Group group) {
-		while (group.hasPrevious()) {
-			final PEDBGroupLabel l = searchLabel((Group) group.previous(), c);
-			if (l != null)
-				sequenceGroups.add(l);
-			group = (Group) group.previous();
-		}
-		while (group.hasNext()) {
-			final PEDBGroupLabel l = searchLabel((Group) group.next(), c);
-			if (l != null)
-				sequenceGroups.add(l);
-			group = (Group) group.next();
-		}
 	}
 
 	public void setHigherGroup(PEDBGroupLabel l) {
@@ -108,8 +136,8 @@ class PEDBGroupingPanel extends GroupingPanel {
 				return (PEDBStructureEditor) super.app();
 			}
 
-			@Override public PEDBGroupingPanel owner() {
-				return (PEDBGroupingPanel) super.owner();
+			@Override public PEDBGroupingPanel self() {
+				return (PEDBGroupingPanel) super.self();
 			}
 
 			@Override protected void keyPressedOption(KeyEvent e) {
@@ -148,6 +176,21 @@ class PEDBGroupingPanel extends GroupingPanel {
 	@Override protected void drawHierarchyLine(final Graphics2D g2) {
 		for (final GroupLabel l : getGrouplist()) {
 			drawHierarchyLine(g2, l, l.child(getGrouplist()));
+		}
+	}
+
+	private void addSequencePrevAndNext(final Component[] c, Group group) {
+		while (group.hasPrevious()) {
+			final PEDBGroupLabel l = searchLabel((Group) group.previous(), c);
+			if (l != null)
+				sequenceGroups.add(l);
+			group = (Group) group.previous();
+		}
+		while (group.hasNext()) {
+			final PEDBGroupLabel l = searchLabel((Group) group.next(), c);
+			if (l != null)
+				sequenceGroups.add(l);
+			group = (Group) group.next();
 		}
 	}
 
@@ -239,6 +282,70 @@ class PEDBGroupingPanel extends GroupingPanel {
 	}
 
 	/**
+	 * ふたつのグループラベルを接続します。
+	 *
+	 * @param l1
+	 * @param l2
+	 */
+	private void connectGroups(PEDBGroupLabel l1, PEDBGroupLabel l2) {
+		if (l1 == null || l2 == null)
+			return;
+		if (isConditionOfGroupAdopting(l1, l2))
+			adoptGroups(l1, l2, "adopt");
+		else if (isConditionOfGroupAdopting(l2, l1))
+			adoptGroups(l2, l1, "adopt");
+		else if (isConditionOfGroupConnecting(l1, l2))
+			combineGroups(l1, l2, "combine");
+		setHigherGroup(null);
+	}
+
+	private void drawStructureEditLine(Graphics g) {
+		final MouseActionListener m = getMouseActions();
+		final Rectangle r = higherGroup.getBounds();
+		final int x = r.x + r.getSize().width / 2;
+		final int y = (int) r.getMaxY();
+		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
+	}
+
+	/**
+	 * 二つのグループラベルが親子階層として接続できるか判定します。
+	 *
+	 * @param l1
+	 * @param l2
+	 * @return
+	 */
+	private boolean isConditionOfGroupAdopting(PEDBGroupLabel l1,
+			PEDBGroupLabel l2) {
+		final PEDBGroup g1 = l1.group();
+		final PEDBGroup g2 = l2.group();
+		// g1がg2を内包する
+		if (g1.onsetInTicks() <= g2.onsetInTicks() && g1.offsetInTicks() >= g2
+				.offsetInTicks())
+			return true;
+		return false;
+	}
+
+	private boolean isConditionOfGroupConnecting(PEDBGroupLabel l1,
+			PEDBGroupLabel l2) {
+		if (l1.getLevel() == l2.getLevel()) {
+			app().butler().printConsole("レベルが同じ");
+			return true;
+		}
+		final PEDBGroup g1 = l1.group();
+		final PEDBGroup g2 = l2.group();
+		if (g1.offsetInTicks() == g2.onsetInTicks()) {
+			app().butler().printConsole("２音が連続");
+			return true;
+		}
+		if (g1.getEndNote().onset() <= g2.getBeginNote().onset() && g1
+				.offsetInTicks() >= g2.getBeginNote().onset()) {
+			app().butler().printConsole("g2開始音がg1終了音と同時刻帯");
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * proにもう先行グループが接続されていたら、その先頭グループまで移動させます。
 	 *
 	 * @author hashida
@@ -264,116 +371,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 		app().butler().printConsole(String.format("%s forward to -> %s", pre,
 				pre.next()));
 		return moveToLastGroupOf(pre.next());
-	}
-
-	/**
-	 * ふたつのグループラベルを接続します。
-	 *
-	 * @param l1
-	 * @param l2
-	 */
-	private void connectGroups(PEDBGroupLabel l1, PEDBGroupLabel l2) {
-		if (l1 == null || l2 == null)
-			return;
-		if (isConditionOfGroupAdopting(l1, l2))
-			adoptGroups(l1, l2, "adopt");
-		else if (isConditionOfGroupAdopting(l2, l1))
-			adoptGroups(l2, l1, "adopt");
-		else if (isConditionOfGroupConnecting(l1, l2))
-			combineGroups(l1, l2, "combine");
-		setHigherGroup(null);
-	}
-
-	/**
-	 * 二つのグループラベルが親子階層として接続できるか判定します。
-	 *
-	 * @param l1
-	 * @param l2
-	 * @return
-	 */
-	private boolean isConditionOfGroupAdopting(PEDBGroupLabel l1,
-			PEDBGroupLabel l2) {
-		PEDBGroup g1 = l1.group();
-		PEDBGroup g2 = l2.group();
-		// g1がg2を内包する
-		if (g1.onsetInTicks() <= g2.onsetInTicks() && g1.offsetInTicks() >= g2
-				.offsetInTicks())
-			return true;
-		return false;
-	}
-
-	private boolean isConditionOfGroupConnecting(PEDBGroupLabel l1,
-			PEDBGroupLabel l2) {
-		if (l1.getLevel() == l2.getLevel()) {
-			app().butler().printConsole("レベルが同じ");
-			return true;
-		}
-		PEDBGroup g1 = l1.group();
-		PEDBGroup g2 = l2.group();
-		if (g1.offsetInTicks() == g2.onsetInTicks()) {
-			app().butler().printConsole("２音が連続");
-			return true;
-		}
-		if (g1.getEndNote().onset() <= g2.getBeginNote().onset() && g1
-				.offsetInTicks() >= g2.getBeginNote().onset()) {
-			app().butler().printConsole("g2開始音がg1終了音と同時刻帯");
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * 頂点音ラベルを生成します。
-	 *
-	 * @author anan
-	 * @since Oct 13th, 2018
-	 */
-	public void createTopNoteLabel(Group group, int level) {
-		if (group == null || group.topNote == null)
-			return;
-
-		// 以下は、group が存在し、かつ当該groupに頂点音が存在する場合にのみ実行される
-		final RoundRectangle2D topr = getTopNoteLabelBound(group.getTopNote(),
-				level);
-		PEDBTopNoteLabel toplabel = new PEDBTopNoteLabel(group.getTopNote(),
-				topr,group);
-		toplabel.setController(app());
-		group.setLevel(level);
-		add(toplabel); // 描画
-		System.out.println(group.getScoreNotelist());
-		createTopNoteLabel((Group) group.next(), level);
-	}
-
-	private void drawStructureEditLine(Graphics g) {
-		final MouseActionListener m = getMouseActions();
-		final Rectangle r = higherGroup.getBounds();
-		final int x = r.x + r.getSize().width / 2;
-		final int y = (int) r.getMaxY();
-		g.drawLine(x, y, m.getMousePoint().x, m.getMousePoint().y);
-	}
-
-	/**
-	 * 頂点音ラベルのサイズを求めます。
-	 *
-	 * @author anan
-	 * @since Oct 13th, 2018
-	 */
-	public RoundRectangle2D getTopNoteLabelBound(NoteData topNote, int level) {
-		final double y = setLabelY(level);
-		double x, w;
-		x = MainFrame.getXOfNote(topNote.onset()) + PianoRoll.getDefaultAxisX();
-		w = MainFrame.getXOfNote(topNote.duration());
-		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
-				LABEL_HEIGHT - LEVEL_PADDING, 3.0, 3.0);
-		/*
-		 * System.out.println("x = "+r.getX());
-		 * System.out.println("y = "+r.getY());
-		 * System.out.println("w = "+r.getWidth());
-		 * System.out.println("h = "+r.getHeight());
-		 * System.out.println("arcw = "+r.getArcWidth());
-		 * System.out.println("arch = "+r.getArcHeight());
-		 */
-		return r;
 	}
 
 	private PEDBGroupLabel searchLabel(Group g, Component[] components) {

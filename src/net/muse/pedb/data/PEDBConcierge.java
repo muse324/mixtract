@@ -81,7 +81,7 @@ public class PEDBConcierge extends Concierge {
 	public void notifySelectTopNote(PEDBTopNoteLabel self, boolean b) {
 		setTopNoteLabel(self);
 		for (TuneDataListener l : getTdListenerList()) {
-			l.selectTopNote(self.getScoreNote(), b);
+			l.selectTopNote(self.note(), b);
 		}
 	}
 

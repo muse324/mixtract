@@ -10,12 +10,12 @@ import net.muse.misc.MuseObject;
 public class KeyActionListener extends KeyAdapter {
 
 	private final MuseObject _app;
-	private final Container _owner;
+	private final Container _self;
 
 	public KeyActionListener(MuseApp app, Container owner) {
 		super();
 		_app = app;
-		_owner = owner;
+		_self = owner;
 	}
 
 	/*
@@ -31,7 +31,7 @@ public class KeyActionListener extends KeyAdapter {
 	}
 
 	protected void keyPressedOption(KeyEvent e) {
-		System.out.println(String.format("%s in KeyActionListener.keyPressedOption: %d", owner()
+		System.out.println(String.format("%s in KeyActionListener.keyPressedOption: %d", self()
 				.getClass().getSimpleName(), e.getKeyCode()));
 	}
 
@@ -39,7 +39,8 @@ public class KeyActionListener extends KeyAdapter {
 		return (MuseApp) _app;
 	}
 
-	public Container owner() {
-		return _owner;
+	public Container self() {
+		return _self;
 	}
+
 }

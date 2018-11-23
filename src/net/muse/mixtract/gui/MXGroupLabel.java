@@ -61,8 +61,8 @@ public class MXGroupLabel extends GroupLabel {
 				return (Mixtract) super.app();
 			}
 
-			@Override public MXGroupLabel owner() {
-				return (MXGroupLabel) super.owner();
+			@Override public MXGroupLabel self() {
+				return (MXGroupLabel) super.self();
 			}
 		};
 	}

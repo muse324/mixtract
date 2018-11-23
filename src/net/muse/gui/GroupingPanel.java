@@ -344,8 +344,8 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 
-			@Override public GroupingPanel owner() {
-				return (GroupingPanel) super.owner();
+			@Override public GroupingPanel self() {
+				return (GroupingPanel) super.self();
 			}
 
 		};

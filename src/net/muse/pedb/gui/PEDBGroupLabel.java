@@ -17,20 +17,32 @@ import net.muse.gui.KeyActionListener;
 import net.muse.pedb.data.PEDBGroup;
 
 public class PEDBGroupLabel extends GroupLabel {
-
 	private static final long serialVersionUID = 1L;
 	private static final int FORWARD = 1;
 	private static final int REWIND = 2;
-	private static final int CHILD = 0;
 	private PEDBGroupLabel next;
 	private PEDBGroupLabel prev;
+
+	public PEDBGroupLabel() {
+		super();
+	}
 
 	public PEDBGroupLabel(Group group, Rectangle r) {
 		super(group, r);
 	}
 
-	public PEDBGroupLabel() {
-		super();
+	/**
+	 * 階層レベルを指定した値(相対値)に変更します。
+	 *
+	 * @param i
+	 */
+	public void changeLevel(int i) {
+		group().changeLevel(i);
+		repaint();
+	}
+
+	@Override public PEDBGroupLabel child() {
+		return (PEDBGroupLabel) super.child();
 	}
 
 	@Override public PEDBGroupLabel child(ArrayList<GroupLabel> grouplist) {
@@ -42,11 +54,90 @@ public class PEDBGroupLabel extends GroupLabel {
 				}
 			}
 		}
-		return (PEDBGroupLabel) child();
+		return child();
+	}
+
+	public int getLevel() {
+		return group().getLevel();
 	}
 
 	@Override public PEDBGroup group() {
 		return (PEDBGroup) super.group();
+	}
+
+	@Override public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
+			boolean shiftKeyPressed, boolean mousePressed) {
+
+		moveLabelVertical(e, p, getBounds(), shiftKeyPressed, mousePressed,
+				REWIND);
+		moveLabelVertical(e, p, getBounds(), shiftKeyPressed, mousePressed,
+				FORWARD);
+		if (hasChild()) {
+			p.translate(0, GroupingPanel.LABEL_HEIGHT
+					+ GroupingPanel.LABEL_HEIGHT_OFFSET);
+			child().moveLabelVertical(e, p, child().getBounds(),
+					shiftKeyPressed, mousePressed);
+		}
+	}
+
+	public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
+			boolean shiftKeyPressed, boolean mousePressed, int direction) {
+		r.y = p.y;
+		setBounds(r);
+
+		if (direction == FORWARD && hasNext())
+			next().moveLabelVertical(e, p, next().getBounds(), shiftKeyPressed,
+					mousePressed, FORWARD);
+		if (direction == REWIND && hasPrevious())
+			previous().moveLabelVertical(e, p, previous().getBounds(),
+					shiftKeyPressed, mousePressed, REWIND);
+		repaint();
+	}
+
+	@Override public void repaint() {
+		super.repaint();
+		renameText();
+	}
+
+	@Override public void setChild(GroupLabel child) {
+		super.setChild(child);
+		repaint();
+	}
+
+	@Override public void setTypeShape(GroupType type) {
+		super.setTypeShape(type);
+		repaint();
+	}
+
+	boolean hasNext() {
+		return next != null;
+	}
+
+	boolean hasPrevious() {
+		return prev != null;
+	}
+
+	PEDBGroupLabel next() {
+		return next;
+	}
+
+	PEDBGroupLabel previous() {
+		return prev;
+	}
+
+	void setNext(PEDBGroupLabel label) {
+		next = label;
+		group().setNext(label.group());
+		if (next.previous() != this)
+			next.setPrevious(this);
+	}
+
+	void setPrevious(PEDBGroupLabel label) {
+		prev = label;
+		group().setPrevious(label.group());
+		if (prev.next() != this)
+			prev.setNext(this);
+
 	}
 
 	@Override protected KeyActionListener createKeyActionListener(MuseApp app) {
@@ -56,15 +147,15 @@ public class PEDBGroupLabel extends GroupLabel {
 				return (PEDBStructureEditor) super.app();
 			}
 
-			@Override public PEDBGroupLabel owner() {
-				return (PEDBGroupLabel) super.owner();
+			@Override public PEDBGroupLabel self() {
+				return (PEDBGroupLabel) super.self();
 			}
 
 			@Override protected void keyPressedOption(KeyEvent e) {
 				super.keyPressedOption(e);
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_H:
-					setHigherGroup(owner());
+					setHigherGroup(self());
 					break;
 				case KeyEvent.VK_ESCAPE:
 					setHigherGroup(null);
@@ -95,6 +186,10 @@ public class PEDBGroupLabel extends GroupLabel {
 			MuseApp app) {
 		return new GLMouseActionListener(app, this) {
 
+			@Override public PEDBGroupLabel self() {
+				return (PEDBGroupLabel) super.self();
+			}
+
 			@Override protected void doubleClicked(Group gr) {
 				// do nothing
 			}
@@ -102,76 +197,20 @@ public class PEDBGroupLabel extends GroupLabel {
 			@Override protected PEDBMainFrame frame() {
 				return (PEDBMainFrame) super.frame();
 			}
-
-			@Override public PEDBGroupLabel self() {
-				return (PEDBGroupLabel) super.self();
-			}
 		};
 	}
 
-	public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
-			boolean shiftKeyPressed, boolean mousePressed) {
-
-		moveLabelVertical(e, p, getBounds(), shiftKeyPressed, mousePressed,
-				REWIND);
-		moveLabelVertical(e, p, getBounds(), shiftKeyPressed, mousePressed,
-				FORWARD);
-		if (hasChild()) {
-			p.translate(0, GroupingPanel.LABEL_HEIGHT
-					+ GroupingPanel.LABEL_HEIGHT_OFFSET);
-			child().moveLabelVertical(e, p, child().getBounds(),
-					shiftKeyPressed, mousePressed);
+	private String childGroupNameText() {
+		if (!group().hasChild())
+			return "-";
+		PEDBGroup c = group().child();
+		String s = c.name();
+		while (c.hasNext()) {
+			final PEDBGroup n = (PEDBGroup) c.next();
+			s += "->" + n.name();
+			c = n;
 		}
-	}
-
-	public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
-			boolean shiftKeyPressed, boolean mousePressed, int direction) {
-		r.y = p.y;
-		setBounds(r);
-
-		if (direction == FORWARD && hasNext())
-			next().moveLabelVertical(e, p, next().getBounds(), shiftKeyPressed,
-					mousePressed, FORWARD);
-		if (direction == REWIND && hasPrevious())
-			previous().moveLabelVertical(e, p, previous().getBounds(),
-					shiftKeyPressed, mousePressed, REWIND);
-		repaint();
-	}
-
-	void setNext(PEDBGroupLabel label) {
-		next = label;
-		group().setNext(label.group());
-		if (next.previous() != this)
-			next.setPrevious(this);
-	}
-
-	void setPrevious(PEDBGroupLabel label) {
-		prev = label;
-		group().setPrevious(label.group());
-		if (prev.next() != this)
-			prev.setNext(this);
-
-	}
-
-	PEDBGroupLabel previous() {
-		return prev;
-	}
-
-	PEDBGroupLabel next() {
-		return next;
-	}
-
-	boolean hasNext() {
-		return next != null;
-	}
-
-	boolean hasPrevious() {
-		return prev != null;
-	}
-
-	@Override public void setTypeShape(GroupType type) {
-		super.setTypeShape(type);
-		repaint();
+		return s;
 	}
 
 	/**
@@ -182,46 +221,5 @@ public class PEDBGroupLabel extends GroupLabel {
 			return;
 		setText(String.format("[%d] %s:%s", group().getLevel(), group().name(),
 				childGroupNameText()));
-	}
-
-	private String childGroupNameText() {
-		if (!group().hasChild())
-			return "-";
-		PEDBGroup c = group().child();
-		String s = c.name();
-		while (c.hasNext()) {
-			PEDBGroup n = (PEDBGroup) c.next();
-			s += "->" + n.name();
-			c = n;
-		}
-		return s;
-	}
-
-	/**
-	 * 階層レベルを指定した値(相対値)に変更します。
-	 *
-	 * @param i
-	 */
-	public void changeLevel(int i) {
-		group().changeLevel(i);
-		repaint();
-	}
-
-	@Override public void setChild(GroupLabel child) {
-		super.setChild(child);
-		repaint();
-	}
-
-	@Override public PEDBGroupLabel child() {
-		return (PEDBGroupLabel) super.child();
-	}
-
-	@Override public void repaint() {
-		super.repaint();
-		renameText();
-	}
-
-	public int getLevel() {
-		return group().getLevel();
 	}
 }

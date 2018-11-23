@@ -48,18 +48,33 @@ public class PEDBPianoroll extends PianoRoll {
 		getSelectedNoteLabels().add(l);
 	}
 
-	/* (非 Javadoc)
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// super.selectTopNote(note, b);
+		for (final Component c : getComponents()) {
+			if (c instanceof PEDBNoteLabel) {
+				final PEDBNoteLabel n = (PEDBNoteLabel) c;
+				n.setSelected(n.getScoreNote().equals(note));
+			}
+		}
+	}
+
+	@Override protected PEDBStructureEditor app() {
+		return (PEDBStructureEditor) super.app();
+	}
+
+	/*
+	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#createKeyActionListener(net.muse.app.MuseApp)
 	 */
-	protected KeyActionListener createKeyActionListener(MuseApp app) {
+	@Override protected KeyActionListener createKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 
 			@Override public PEDBStructureEditor app() {
 				return (PEDBStructureEditor) super.app();
 			}
 
-			@Override public PEDBPianoroll owner() {
-				return (PEDBPianoroll) super.owner();
+			@Override public PEDBPianoroll self() {
+				return (PEDBPianoroll) super.self();
 			}
 
 		};
@@ -84,12 +99,12 @@ public class PEDBPianoroll extends PianoRoll {
 				return (PEDBPianoroll) super.self();
 			}
 
-			@Override protected PEDBMainFrame frame() {
-				return (PEDBMainFrame) super.frame();
-			}
-
 			@Override protected PEDBStructureEditor app() {
 				return (PEDBStructureEditor) super.app();
+			}
+
+			@Override protected PEDBMainFrame frame() {
+				return (PEDBMainFrame) super.frame();
 			}
 
 		};
@@ -109,10 +124,6 @@ public class PEDBPianoroll extends PianoRoll {
 
 	@Override protected PEDBGroupLabel group() {
 		return (PEDBGroupLabel) super.group();
-	}
-
-	@Override protected PEDBStructureEditor app() {
-		return (PEDBStructureEditor) super.app();
 	}
 
 	/*
@@ -183,15 +194,5 @@ public class PEDBPianoroll extends PianoRoll {
 			g2.draw(p);
 		}
 		drawTiedNotesConnection(g2, from, to.next());
-	}
-
-	@Override public void selectTopNote(NoteData note, boolean b) {
-		// super.selectTopNote(note, b);
-		for (Component c : getComponents()) {
-			if(c instanceof PEDBNoteLabel) {
-				PEDBNoteLabel n = (PEDBNoteLabel)c;
-				n.setSelected(n.getScoreNote().equals(note));
-			}
-		}
 	}
 }
