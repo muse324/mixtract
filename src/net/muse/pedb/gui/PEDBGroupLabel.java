@@ -72,7 +72,8 @@ public class PEDBGroupLabel extends GroupLabel {
 				case KeyEvent.VK_UP:
 					changeLevel(-1);
 					break;
-				case KeyEvent.VK_DOWN:changeLevel(+1);
+				case KeyEvent.VK_DOWN:
+					changeLevel(+1);
 					break;
 				}
 			}
@@ -139,13 +140,14 @@ public class PEDBGroupLabel extends GroupLabel {
 
 	void setNext(PEDBGroupLabel label) {
 		next = label;
+		group().setNext(label.group());
 		if (next.previous() != this)
 			next.setPrevious(this);
-
 	}
 
 	void setPrevious(PEDBGroupLabel label) {
 		prev = label;
+		group().setPrevious(label.group());
 		if (prev.next() != this)
 			prev.setNext(this);
 
@@ -196,7 +198,7 @@ public class PEDBGroupLabel extends GroupLabel {
 	}
 
 	/**
-	 * 階層レベルを指定した値に変更します。
+	 * 階層レベルを指定した値(相対値)に変更します。
 	 *
 	 * @param i
 	 */

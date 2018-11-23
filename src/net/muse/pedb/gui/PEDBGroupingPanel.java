@@ -223,7 +223,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 		app().butler().printConsole(String.format("%s -> %s %s", pre, pro,
 				mesg));
 		pre.setNext(pro);
-		pre.group().setNext(pro.group());
+
 		// 親グループを生成
 		final PEDBGroup p = new PEDBGroup(pre.group().getBeginNote(), pro
 				.group().getEndNote(), GroupType.PARENT);
