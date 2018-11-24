@@ -32,9 +32,9 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 		super();
 		setOpaque(false);
 		setBorder(new LineBorderEx(Color.DARK_GRAY, 3, 240));
-		setBounds(new Rectangle((int) topr.getX(), (int) topr.getY(), (int) topr
-				.getWidth(), (int) topr.getHeight()));
 		d = topr;
+		setBounds(new Rectangle((int) d.getX(), (int) d.getY(), (int) d
+				.getWidth(), (int) d.getHeight()));
 		setNote((PEDBNoteData) topNote);
 		setGroup(group);
 	}
@@ -51,21 +51,23 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 		switch (i) {
 		case _FORWARD:
 			if (note() != group().getEndNote()) {
-				setNote(note().next());
-				group().setTopNote(note());
+				PEDBNoteData nx = note().next();
+				while (nx.hasNext() && nx.xmlVoice() != note().xmlVoice())
+					nx = nx.next();
+				setNote(nx);
+//				group().setTopNote(note());
 			}
 			break;
 		case _REWIND:
 			if (note() != group().getBeginNote()) {
-				setNote(note().previous());
-				group().setTopNote(note());
+				PEDBNoteData pre = note().previous();
+				while (pre.hasPrevious() && pre.xmlVoice() != note().xmlVoice())
+					pre = pre.previous();
+				setNote(pre);
+//				group().setTopNote(note());
 			}
 			break;
 		}
-		// final int x = MainFrame.getXOfNote(note().onset()) + PianoRoll
-		// .getDefaultAxisX();
-		// final int w = MainFrame.getXOfNote(note().duration());
-		// setBounds(x, (int) d.getY(), w, (int) d.getHeight());
 	}
 
 	/**
@@ -118,7 +120,7 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 			}
 
 			// 11/17~22 藤坂が一部追加 クリックした時のグループ(頂点)を選択
-			@Override public void mouseClicked(MouseEvent e) {
+			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				app().butler().notifySelectTopNote(self(), true);
 			}
@@ -147,7 +149,7 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 			final int w = MainFrame.getXOfNote(note().duration());
 			setBounds(x, (int) d.getY(), w, (int) d.getHeight());
 			((Graphics2D) g).draw(d);
-			isNoteChanged=false;
+			isNoteChanged = false;
 		}
 
 	}
@@ -159,5 +161,7 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 	private void setNote(PEDBNoteData n) {
 		this.note = n;
 		isNoteChanged = true;
+		group().setTopNote(n);
+		repaint();
 	}
 }

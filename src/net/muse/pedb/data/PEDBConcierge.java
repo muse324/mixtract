@@ -6,7 +6,6 @@ import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
 import net.muse.command.MuseAppCommandType;
 import net.muse.data.Concierge;
-import net.muse.gui.GroupLabel;
 import net.muse.gui.TuneDataListener;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.MixtractCommandType;
@@ -65,16 +64,9 @@ public class PEDBConcierge extends Concierge {
 	}
 
 	public void notifySelectTopNote(PEDBTopNoteLabel self, boolean b) {
-		setTopNoteLabel(self);
 		for (final TuneDataListener l : getTdListenerList()) {
 			l.selectTopNote(self.note(), b);
 		}
-	}
-
-	public PEDBNoteData setTopNoteLabel(GroupLabel self) {
-		return null;
-		// TODO 自動生成されたメソッド・スタブ
-
 	}
 
 	/*
