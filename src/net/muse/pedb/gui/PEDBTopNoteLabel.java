@@ -25,6 +25,7 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 	private static final long serialVersionUID = 1L;
 	private PEDBNoteData note;
 	private final RoundRectangle2D d;
+	private boolean isNoteChanged;
 
 	public PEDBTopNoteLabel(NoteData topNote, RoundRectangle2D topr,
 			Group group) {
@@ -61,10 +62,10 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 			}
 			break;
 		}
-		final int x = MainFrame.getXOfNote(note().onset()) + PianoRoll
-				.getDefaultAxisX();
-		final int w = MainFrame.getXOfNote(note().duration());
-		setBounds(new Rectangle(x, (int) d.getY(), w, (int) d.getHeight()));
+		// final int x = MainFrame.getXOfNote(note().onset()) + PianoRoll
+		// .getDefaultAxisX();
+		// final int w = MainFrame.getXOfNote(note().duration());
+		// setBounds(x, (int) d.getY(), w, (int) d.getHeight());
 	}
 
 	/**
@@ -72,13 +73,6 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 	 */
 	public PEDBNoteData note() {
 		return note;
-	}
-
-	// 追加
-	@Override public void paint(Graphics g) {
-		super.paint(g);
-		final Graphics2D g2 = (Graphics2D) this.getGraphics();
-		g2.draw(d);
 	}
 
 	/*
@@ -145,11 +139,25 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 		};
 	}
 
+	@Override protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		if (isNoteChanged) {
+			final int x = MainFrame.getXOfNote(note().onset()) + PianoRoll
+					.getDefaultAxisX();
+			final int w = MainFrame.getXOfNote(note().duration());
+			setBounds(x, (int) d.getY(), w, (int) d.getHeight());
+			((Graphics2D) g).draw(d);
+			isNoteChanged=false;
+		}
+
+	}
+
 	@Override protected void setEditMode(Point mousePosition) {
 		// do nothing
 	}
 
 	private void setNote(PEDBNoteData n) {
 		this.note = n;
+		isNoteChanged = true;
 	}
 }
