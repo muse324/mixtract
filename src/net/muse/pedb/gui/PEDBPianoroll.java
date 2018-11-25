@@ -34,6 +34,14 @@ public class PEDBPianoroll extends PianoRoll {
 		return (PEDBConcierge) super.butler();
 	}
 
+	public void resize(final Rectangle r) {
+		final Dimension sz = getPreferredSize();
+		// if (r.x + r.width > getWidth()) {
+		sz.width = r.x + r.width + 10;
+		setPreferredSize(sz);
+		// }
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#selectNote(net.muse.gui.NoteLabel,
@@ -147,13 +155,7 @@ public class PEDBPianoroll extends PianoRoll {
 			notelist = notelist.next();
 		}
 		add(n);
-
-		if (r.x + r.width > getWidth()) {
-			final Dimension sz = getPreferredSize();
-			sz.width = r.x + r.width + 10;
-			setPreferredSize(sz);
-			repaint();
-		}
+		resize(r);
 	}
 
 	/*
