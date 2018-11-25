@@ -11,7 +11,7 @@ import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 
 public class CMXNoteHandler extends AbstractCMXNoteHandler {
 
-	private NoteData cur = null;
+	protected NoteData cur = null;
 
 	private Group primaryGrouplist = null;
 
@@ -228,7 +228,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	/**
 	 * @param md
 	 */
-	private void readNoteData(MusicXMLWrapper.Note note) {
+	protected void readNoteData(MusicXMLWrapper.Note note) {
 		NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
 				.getBPM().get(0), currentDefaultVelocity);
 		nd.setKeyMode(keyMode, fifths);

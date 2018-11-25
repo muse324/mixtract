@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Measure;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.data.CMXNoteHandler;
 import net.muse.data.Group;
@@ -71,6 +72,8 @@ public class PEDBTuneData extends MXTuneData {
 	 */
 	@Override protected CMXNoteHandler createCMXNoteHandler() {
 		return new CMXNoteHandler(this) {
+			private int idxInMeasure = 0;
+
 			@Override protected PEDBGroup createGroup(NoteData n, int i,
 					GroupType type) {
 				return new PEDBGroup(n, i, type);
@@ -89,6 +92,17 @@ public class PEDBTuneData extends MXTuneData {
 
 			@Override protected PEDBTuneData data() {
 				return (PEDBTuneData) data;
+			}
+
+			@Override public void beginMeasure(Measure measure,
+					MusicXMLWrapper wrapper) {
+				super.beginMeasure(measure, wrapper);
+				idxInMeasure=0;
+			}
+			protected void readNoteData(MusicXMLWrapper.Note note) {
+				super.readNoteData(note);
+				PEDBNoteData c = (PEDBNoteData) cur;
+				c.setIndexInMeasure(++idxInMeasure);
 			}
 		};
 	}
@@ -187,5 +201,14 @@ public class PEDBTuneData extends MXTuneData {
 			writeNoteData(out, g.getBeginNote());
 		writeNoteData(out, g.child());
 	}
-
+	protected void writeNoteData(PrintWriter out, NoteData note) {
+		if (note == null)
+			return;
+		writeNoteData(out, note.child());
+		out.format("%s:%s:%s\n", note.id(), note, (note
+				.getXMLNote() != null) ? note.getXMLNote().getXPathExpression()
+						: (note.getSCCNote() != null) ? note.getSCCNote()
+								.getXPathExpression() : "null");
+		writeNoteData(out, note.next());
+	}
 }
