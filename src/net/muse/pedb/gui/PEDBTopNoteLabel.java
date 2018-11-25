@@ -55,7 +55,7 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 				while (nx.hasNext() && nx.xmlVoice() != note().xmlVoice())
 					nx = nx.next();
 				setNote(nx);
-//				group().setTopNote(note());
+				// group().setTopNote(note());
 			}
 			break;
 		case _REWIND:
@@ -64,7 +64,7 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 				while (pre.hasPrevious() && pre.xmlVoice() != note().xmlVoice())
 					pre = pre.previous();
 				setNote(pre);
-//				group().setTopNote(note());
+				// group().setTopNote(note());
 			}
 			break;
 		}
@@ -161,7 +161,8 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 	private void setNote(PEDBNoteData n) {
 		this.note = n;
 		isNoteChanged = true;
-		group().setTopNote(n);
+		if (group() != null)
+			group().setTopNote(n);
 		repaint();
 	}
 }
