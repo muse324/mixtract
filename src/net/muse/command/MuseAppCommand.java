@@ -15,18 +15,36 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	protected static String filename;
 	protected static MIDIController synthe;
 
-//	/**
-//	 * @param cmd
-//	 * @return
-//	 */
-//	public static MuseAppCommand create(String cmd) {
-//		MuseAppCommandType type = MuseAppCommandType.valueOf(cmd);
-//		return type.command();
-//	}
-//
-//	public static MuseAppCommand create(MuseAppCommandType type) {
-//		return type.command();
-//	}
+	// /**
+	// * @param cmd
+	// * @return
+	// */
+	// public static MuseAppCommand create(String cmd) {
+	// MuseAppCommandType type = MuseAppCommandType.valueOf(cmd);
+	// return type.command();
+	// }
+	//
+	// public static MuseAppCommand create(MuseAppCommandType type) {
+	// return type.command();
+	// }
+
+	private MainFrame _frame;
+
+	private final String[] menuText;
+
+	protected MuseApp _app;
+
+	private Object _target;
+
+	protected MuseAppCommand(String... lang) {
+		super();
+		menuText = new String[Language.getLanguageList().length];
+		if (isAssertion())
+			assert lang.length <= menuText.length;
+		for (int i = 0; i < menuText.length; i++) {
+			menuText[i] = i < lang.length ? lang[i] : lang[0];
+		}
+	}
 
 	public static void setLanguage(String val) {
 		_language = Language.create(val);
@@ -39,23 +57,12 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 		return _language;
 	}
 
-	private MainFrame _frame;
+	public MuseApp app() {
+		return _app;
+	}
 
-	private TuneData _data;
-
-	private String[] menuText;
-
-	protected MuseApp _app;
-	private Object _target;
-
-	protected MuseAppCommand(String... lang) {
-		super();
-		menuText = new String[Language.getLanguageList().length];
-		if (isAssertion())
-			assert lang.length <= menuText.length;
-		for (int i = 0; i < menuText.length; i++) {
-			menuText[i] = (i < lang.length) ? lang[i] : lang[0];
-		}
+	@Override public Concierge butler() {
+		return app().butler();
 	}
 
 	public final String getText() {
@@ -70,8 +77,13 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	 * (非 Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run() {
+	@Override public void run() {
 		throw new UnsupportedOperationException(name());
+	}
+
+	public void setApp(MuseApp app) {
+		if (_app == null | _app != app)
+			_app = app;
 	}
 
 	public void setFrame(MainFrame mainFrame) {
@@ -84,16 +96,13 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	 * @see
 	 * net.muse.command.GroupCommandInterface#setGroup(net.muse.gui.GroupLabel)
 	 */
-	public void setGroup(GroupLabel groupLabel) {}
+	@Override public void setGroup(GroupLabel groupLabel) {}
 
-	public void setApp(MuseApp app) {
-		if (_app == null | _app != app)
-			_app = app;
+	public void setTarget(Object obj) {
+		_target = obj;
 	}
 
-	public void setTarget(TuneData target) {
-		_data = target;
-	}
+	public void setTarget(TuneData target) {}
 
 	/*
 	 * (non-Javadoc)
@@ -103,6 +112,10 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 		return getText();
 	}
 
+	protected TuneData data() {
+		return app().data();
+	}
+
 	/**
 	 * @return _mainFrame
 	 */
@@ -110,24 +123,8 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 		return app().getFrame();
 	}
 
-	protected TuneData data() {
-		return app().data();
-	}
-
-	public void setTarget(Object obj) {
-		_target = obj;
-	}
-
 	protected Object target() {
 		return _target;
-	}
-
-	public MuseApp app() {
-		return _app;
-	}
-
-	@Override public Concierge butler() {
-		return app().butler();
 	}
 
 }

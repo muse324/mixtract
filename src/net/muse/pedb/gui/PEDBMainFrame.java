@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -20,10 +21,12 @@ import net.muse.data.TuneData;
 import net.muse.gui.MainFrame;
 import net.muse.gui.PianoRoll;
 import net.muse.mixtract.data.curve.PhraseCurveType;
+import net.muse.pedb.command.PEDBCommandType;
 import net.muse.pedb.data.PEDBConcierge;
 
 public class PEDBMainFrame extends MainFrame {
 	private static final long serialVersionUID = 1L;
+
 	private static String WINDOW_TITLE = "PEDB Structure Editor";
 	private JToolBar toolBar;
 	private JDesktopPane desktopPane;
@@ -63,6 +66,10 @@ public class PEDBMainFrame extends MainFrame {
 		getZoomBar().setValue(pixelperbeat);
 	}
 
+	@Override protected PEDBStructureEditor app() {
+		return (PEDBStructureEditor) super.app();
+	}
+
 	@Override protected PEDBGroupingPanel createGroupingPanel() {
 		return new PEDBGroupingPanel(app());
 	}
@@ -85,6 +92,12 @@ public class PEDBMainFrame extends MainFrame {
 			desktopPane = super.getDesktop();
 		}
 		return desktopPane;
+	}
+
+	@Override protected JMenuItem getImportXMLMenu() {
+		final JMenuItem m = super.getImportXMLMenu();
+		m.setActionCommand(PEDBCommandType.PEDBIMPORT_MUSICXML.name());
+		return m;
 	}
 
 	/*

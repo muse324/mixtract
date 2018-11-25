@@ -117,15 +117,11 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		return outputFileName;
 	}
 
-	public File getProjectDir() {
-		return projectDir;
-	}
-
 	/**
 	 * @return projectDir
 	 */
 	public File getProjectDirectory() {
-		return getProjectDir();
+		return projectDir;
 	}
 
 	/**

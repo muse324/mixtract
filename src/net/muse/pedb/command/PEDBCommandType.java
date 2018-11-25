@@ -1,20 +1,28 @@
 package net.muse.pedb.command;
 
+import net.muse.command.MuseAppCommand;
 import net.muse.command.MuseAppCommandAction;
-import net.muse.mixtract.command.MixtractCommand;
 
 public enum PEDBCommandType implements MuseAppCommandAction {
 	PEDBMAKE_GROUP("Make a group", "グループを作成") {
-		@Override public MixtractCommand create(String... lang) {
-			return (cmd = new PEDBMakeGroupCommand(lang));
+		@Override public PEDBMakeGroupCommand create(String... lang) {
+			return (PEDBMakeGroupCommand) (cmd = new PEDBMakeGroupCommand(
+					lang));
 		}
 	},
 	PEDBCHANGE_PART("Change part", "声部を変更") {
-		@Override public MixtractCommand create(String... lang) {
-			return (cmd = new PEDBChangePhonyCommand(lang));
+		@Override public PEDBChangePhonyCommand create(String... lang) {
+			return (PEDBChangePhonyCommand) (cmd = new PEDBChangePhonyCommand(
+					lang));
+		}
+	},
+	PEDBIMPORT_MUSICXML("Import MusicXML...", "MusicXMLを開く...") {
+		@Override public PEDBOpenMusicXMLCommand create(String... lang) {
+			return (PEDBOpenMusicXMLCommand) (cmd = new PEDBOpenMusicXMLCommand(
+					lang));
 		}
 	};
-	protected MixtractCommand cmd;
+	protected MuseAppCommand cmd;
 
 	PEDBCommandType(String... lang) {
 		create(lang);
@@ -24,11 +32,11 @@ public enum PEDBCommandType implements MuseAppCommandAction {
 	 * (非 Javadoc)
 	 * @see net.muse.command.MuseAppCommandAction#command()
 	 */
-	@Override public MixtractCommand command() {
+	@Override public MuseAppCommand command() {
 		return cmd;
 	}
 
-	public abstract MixtractCommand create(String... lang);
+	public abstract MuseAppCommand create(String... lang);
 
 	/*
 	 * (非 Javadoc)
