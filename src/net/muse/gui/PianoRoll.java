@@ -789,4 +789,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	}
 
+	public boolean isMouseSelectBoxDraw() {
+		return isMouseSelectBoxDraw;
+	}
+
 } // @jve:decl-index=0:visual-constraint="10,10"

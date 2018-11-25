@@ -48,7 +48,8 @@ public class DragScrollLayerUI extends LayerUI<JScrollPane> {
 		}
 		if (e.getID() == MouseEvent.MOUSE_PRESSED) {
 			final JViewport vport = l.getView().getViewport();
-			final Point cp = SwingUtilities.convertPoint(c, e.getPoint(), vport);
+			final Point cp = SwingUtilities.convertPoint(c, e.getPoint(),
+					vport);
 			pp.setLocation(cp);
 		}
 	}
@@ -65,11 +66,16 @@ public class DragScrollLayerUI extends LayerUI<JScrollPane> {
 			if (p.hasSelectedGroup())
 				return;
 		}
-
 		if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
+			if (c instanceof PEDBPianoroll) {
+				final PEDBPianoroll p = (PEDBPianoroll) c;
+				if (p.isMouseSelectBoxDraw())
+					return;
+			}
 			final JViewport vport = l.getView().getViewport();
 			final JComponent cmp = (JComponent) vport.getView();
-			final Point cp = SwingUtilities.convertPoint(c, e.getPoint(), vport);
+			final Point cp = SwingUtilities.convertPoint(c, e.getPoint(),
+					vport);
 			final Point vp = vport.getViewPosition();
 			vp.translate(pp.x - cp.x, pp.y - cp.y);
 			cmp.scrollRectToVisible(new Rectangle(vp, vport.getSize()));
