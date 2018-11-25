@@ -160,7 +160,7 @@ public class Concierge extends MuseObject implements TuneDataController {
 	public void readfile() throws IOException {
 		File in = new File(app().getInputFileName());
 		if (!in.exists())
-			in = new File(app().getProjectDir(), app().getInputFileName());
+			in = new File(app().getProjectDirectory(), app().getInputFileName());
 		if (!in.exists())
 			in = new File(app().getMusicXMLDir(), app().getInputFileName());
 		File out = new File(app().getOutputDirectory(), app()

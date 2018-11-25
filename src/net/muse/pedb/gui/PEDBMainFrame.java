@@ -38,6 +38,10 @@ public class PEDBMainFrame extends MainFrame {
 		super(app);
 	}
 
+	@Override protected PEDBStructureEditor app() {
+		return (PEDBStructureEditor) super.app();
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#butler()
