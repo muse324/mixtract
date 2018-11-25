@@ -12,7 +12,11 @@ public class PEDBGroup extends Group {
 
 	public PEDBGroup(NoteData beginNote, NoteData endNote, GroupType type) {
 		super(beginNote, endNote, type);
-		setTopNote(beginNote);
+		NoteData n = beginNote;
+		while (n.isGrace()) {
+			n = n.next();
+		}
+		setTopNote(n);
 	}
 
 	/*

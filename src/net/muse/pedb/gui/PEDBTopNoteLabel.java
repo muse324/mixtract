@@ -52,19 +52,19 @@ public class PEDBTopNoteLabel extends PEDBGroupLabel {
 		case _FORWARD:
 			if (note() != group().getEndNote()) {
 				PEDBNoteData nx = note().next();
-				while (nx.hasNext() && nx.xmlVoice() != note().xmlVoice())
+				while (nx.hasNext() && (nx.xmlVoice() != note().xmlVoice() || nx
+						.isGrace()))
 					nx = nx.next();
 				setNote(nx);
-				// group().setTopNote(note());
 			}
 			break;
 		case _REWIND:
 			if (note() != group().getBeginNote()) {
 				PEDBNoteData pre = note().previous();
-				while (pre.hasPrevious() && pre.xmlVoice() != note().xmlVoice())
+				while (pre.hasPrevious() && (pre.isGrace() || pre
+						.xmlVoice() != note().xmlVoice()))
 					pre = pre.previous();
 				setNote(pre);
-				// group().setTopNote(note());
 			}
 			break;
 		}
