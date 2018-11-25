@@ -22,7 +22,7 @@ public class GroupLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
 
 	/* 格納データ */
-	public Group group;
+	private Group group;
 	private GroupLabel child;
 	protected int partNumber;
 
@@ -45,7 +45,7 @@ public class GroupLabel extends JLabel {
 
 	protected GroupLabel(Group group, Rectangle r) {
 		this();
-		this.group = group;
+		this.setGroup(group);
 		this.setPartNumber(group.getBeginNote().musePhony());
 		setLocation(r.x, r.y);
 		setBounds(r);
@@ -76,7 +76,7 @@ public class GroupLabel extends JLabel {
 			setBorder(BorderFactory.createLineBorder(Color.black));
 			break;
 		default:
-			setText(group.name());
+			setText(group().name());
 			setCurrentColor(type.getColor());
 			initialize();
 			setBorder(null);
@@ -84,7 +84,7 @@ public class GroupLabel extends JLabel {
 	}
 
 	@Override public String toString() {
-		return group.name();
+		return group().name();
 	}
 
 	public GroupLabel child(ArrayList<GroupLabel> grouplist) {
@@ -99,26 +99,26 @@ public class GroupLabel extends JLabel {
 		return child;
 	}
 
-	public void setController(MuseApp main) {
-		mouseActions = createMouseActionListener(main);
+	public void setController(MuseApp app) {
+		mouseActions = createMouseActionListener(app);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
-		keyActions = createKeyActionListener(main);
+		keyActions = createKeyActionListener(app);
 		addKeyListener(keyActions);
 	}
 
-	protected KeyActionListener createKeyActionListener(MuseApp main) {
-		return new KeyActionListener(main, this);
+	protected KeyActionListener createKeyActionListener(MuseApp app) {
+		return new KeyActionListener(app, this);
 	}
 
-	protected GLMouseActionListener createMouseActionListener(MuseApp main) {
-		return new GLMouseActionListener(main, this);
+	protected MouseActionListener createMouseActionListener(MuseApp app) {
+		return new GLMouseActionListener(app, this);
 	}
 
 	/**
 	 * @param mousePosition TODO
 	 */
-	void setEditMode(Point mousePosition) {
+	protected void setEditMode(Point mousePosition) {
 		Rectangle r = getBounds();
 		Rectangle st = new Rectangle(new Point(r.x, r.y), new Dimension(10,
 				r.height));
@@ -232,7 +232,7 @@ public class GroupLabel extends JLabel {
 		this.startEdit = startEdit;
 	}
 
-	protected GroupLabel child() {
+	public GroupLabel child() {
 		return child;
 	}
 
@@ -265,7 +265,7 @@ public class GroupLabel extends JLabel {
 		}
 	}
 
-	private void moveLabelVertical(MouseEvent e, boolean mousePressed) {
+	protected void moveLabelVertical(MouseEvent e, boolean mousePressed) {
 		Point pc;
 		if (hasChild()) {
 			pc = child().getLocation();
@@ -282,7 +282,7 @@ public class GroupLabel extends JLabel {
 	 * @param mousePressed TODO
 	 * @param src
 	 */
-	void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
+	public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
 			boolean shiftKeyPressed, boolean mousePressed) {
 		r.y = p.y;
 		setBounds(r);
@@ -307,6 +307,7 @@ public class GroupLabel extends JLabel {
 
 	public void setChild(GroupLabel child) {
 		this.child = child;
+		group().setChild(child.group());
 		if (child.parent() == null || !child.parent().equals(this)) {
 			child.setParent(this);
 		}
@@ -318,6 +319,7 @@ public class GroupLabel extends JLabel {
 
 	private void setParent(GroupLabel label) {
 		parent = label;
+		group().setParent(label.group());
 		if (!parent.hasChild() || !parent.child().equals(this)) {
 			parent.setChild(this);
 		}

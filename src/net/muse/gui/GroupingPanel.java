@@ -21,6 +21,7 @@ import javax.swing.WindowConstants;
 
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
+import net.muse.data.Concierge;
 import net.muse.data.Group;
 import net.muse.data.GroupType;
 import net.muse.data.NoteData;
@@ -39,9 +40,10 @@ import net.muse.mixtract.gui.ViewerMode;
  * @since 2008/04/24
  */
 public class GroupingPanel extends JPanel implements TuneDataListener {
+	public static final int LABEL_HEIGHT_OFFSET = 15;
 	private static final long serialVersionUID = 1L;
 	static float[] dashLineList = { 10.0f, 5.0f, 5.0f, 5.0f };
-	protected static final int LABEL_HEIGHT = 20;
+	public static final int LABEL_HEIGHT = 20;
 	private static final int DEFAULT_HEIGHT = 100;
 	protected static final int LEVEL_PADDING = 3;
 	private static final int DEFAULT_WIDTH = 1024;
@@ -51,7 +53,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f, dashLineList,
 			0.0f);
 
-	protected MuseApp main;
+	private final MuseApp app;
 
 	/* 格納データ */
 	private TuneData data;
@@ -68,8 +70,9 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	private MouseActionListener mouseActions = null;
 	private NoteLabel mouseOveredNoteLabel;
 
-	protected GroupingPanel() {
+	protected GroupingPanel(MuseApp app) {
 		super();
+		this.app = app;
 		grouplist = new ArrayList<>();
 		viewerMode = ViewerMode.SCORE_VIEW;
 		initialize();
@@ -180,7 +183,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		str = switchViewerMode(nd);
 		System.out.println(str + " at " + getMouseActions().getMousePoint());
 		g2.drawString(str, getMouseActions().getMousePoint().x - PianoRoll
-				.getDefaultAxisX(), getMouseActions().getMousePoint().y - main
+				.getDefaultAxisX(), getMouseActions().getMousePoint().y - app()
 						.getFrame().getKeyboard().getKeyHeight());
 	}
 
@@ -207,6 +210,9 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		repaint();
 	}
 
+	/* (非 Javadoc)
+	 * @see net.muse.gui.GroupEditListener#selectGroup(javax.swing.JLabel, boolean)
+	 */
 	@Override public void selectGroup(GroupLabel g, boolean flg) {
 		if (selectedGroup != null)
 			selectedGroup.setSelected(false);
@@ -218,14 +224,13 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	}
 
 	/**
-	 * @param main
+	 * @param app
 	 */
-	public void setController(MuseApp main) {
-		this.main = main;
-		mouseActions = createMouseActionListener(main);
+	public void setController(MuseApp app) {
+		mouseActions = createMouseActionListener(app());
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
-		addKeyListener(createKeyActionListener(main));
+		addKeyListener(createKeyActionListener(app()));
 	}
 
 	/**
@@ -307,7 +312,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 
 		final Rectangle r = getLabelBounds(group, level);
 		final GroupLabel label = createGroupLabel(group, r);
-		label.setController(main);
+		label.setController(app());
 		group.setLevel(level);
 
 		getGrouplist().add(label);
@@ -316,8 +321,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	}
 
 	protected GroupLabel createGroupLabel(Group group, final Rectangle r) {
-		final GroupLabel label = new GroupLabel(group, r);
-		return label;
+		return new GroupLabel(group, r);
 	}
 
 	/**
@@ -337,22 +341,18 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		createHierarchicalGroupLabel(group.child(), level + 1);
 	}
 
-	protected KeyActionListener createKeyActionListener(MuseApp main) {
-		return new KeyActionListener(main, this) {
+	protected KeyActionListener createKeyActionListener(MuseApp app) {
+		return new KeyActionListener(app, this) {
 
-			@Override public MuseApp main() {
-				return super.main();
-			}
-
-			@Override public GroupingPanel owner() {
-				return (GroupingPanel) super.owner();
+			@Override public GroupingPanel self() {
+				return (GroupingPanel) super.self();
 			}
 
 		};
 	}
 
-	protected MouseActionListener createMouseActionListener(MuseApp main) {
-		return new MouseActionListener(main, this) {
+	protected MouseActionListener createMouseActionListener(MuseApp app) {
+		return new MouseActionListener(app, this) {
 
 			/*
 			 * (非 Javadoc)
@@ -379,7 +379,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (!SwingUtilities.isRightMouseButton(e))
-					main().butler().notifyDeselectGroup();
+					butler().notifyDeselectGroup();
 			}
 
 			/*
@@ -391,7 +391,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (selectedGroup == null)
-					main().butler().notifyDeselectGroup();
+					butler().notifyDeselectGroup();
 				repaint();
 			}
 
@@ -439,7 +439,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * @param g2
 	 */
 	protected void drawEditArea(Graphics2D g2) {
-		main.butler().printConsole("eeee");
+		butler().printConsole("eeee");
 		// if (!MixtractCommand.getSelectedObjects().isOveredGroup())
 		// editPointX = mouseActions.getMousePoint().x;
 		// final BasicStroke dashed2 = new BasicStroke(1.0f,
@@ -483,7 +483,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 			g2.setStroke(stroke);
 			g2.setColor(Color.black);
 			final int x1 = child.getX() + child.getWidth() / 2;
-			final int keyHeight = main.getFrame().getKeyboard().getKeyHeight();
+			final int keyHeight = app().getFrame().getKeyboard().getKeyHeight();
 			final int y1 = child.getY() + child.getHeight() - keyHeight;
 			final int x2 = parent.getX() + parent.getWidth() / 2;
 			final int y2 = parent.getY() + keyHeight;
@@ -499,16 +499,12 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 		return maximumGroupLevel;
 	}
 
-	protected MuseApp main() {
-		return main;
+	protected MuseApp app() {
+		return app;
 	}
 
 	protected void setData(TuneData data) {
 		this.data = data;
-	}
-
-	protected void setMain(MuseApp main) {
-		this.main = main;
 	}
 
 	protected void setMaximumGroupLevel(int maximumGroupLevel) {
@@ -574,11 +570,20 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * @return
 	 */
 	protected int setLabelY(int level) {
-		return LABEL_HEIGHT * level + 15;
+		return LABEL_HEIGHT * level + LABEL_HEIGHT_OFFSET;
 	}
 
 	void setMouseOveredNoteLabel(NoteLabel src) {
 		this.mouseOveredNoteLabel = src;
 		repaint();
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	protected Concierge butler() {
+		return app().butler();
 	}
 }

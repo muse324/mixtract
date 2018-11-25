@@ -61,8 +61,8 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	/**
 	 * @return main
 	 */
-	protected Mixtract main() {
-		return (Mixtract) main;
+	protected Mixtract app() {
+		return (Mixtract) app;
 	}
 
 	protected MXMainFrame owner() {
@@ -195,7 +195,7 @@ public class PhraseViewer extends InfoViewer implements CanvasMouseListener {
 	 */
 	private PianoRollSmall getGroupPianoRoll() {
 		if (pianoRoll == null) {
-			pianoRoll = new PianoRollSmall(main());
+			pianoRoll = new PianoRollSmall(app());
 			pianoRoll.setTarget(owner().getTarget());
 			pianoRoll.selectGroup(group());
 		}

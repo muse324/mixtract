@@ -3,7 +3,6 @@ package net.muse.pedb.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.JComponent;
@@ -31,7 +30,7 @@ public class MainPanel extends JPanel {
 				| IllegalAccessException | UnsupportedLookAndFeelException ex) {
 			ex.printStackTrace();
 		}
-		JFrame frame = new JFrame("@title@");
+		final JFrame frame = new JFrame("@title@");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.getContentPane().add(new MainPanel());
 		frame.pack();
@@ -40,48 +39,42 @@ public class MainPanel extends JPanel {
 	}
 
 	public static void main(String... args) {
-		EventQueue.invokeLater(new Runnable() {
-			@Override public void run() {
-				createAndShowGui();
-			}
-		});
+		EventQueue.invokeLater(() -> createAndShowGui());
 	}
 
 	public MainPanel(JComponent... c) {
 		super(new BorderLayout());
 
-		JSplitPane header = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		JSplitPane main = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		for (JComponent o : c) {
+		final JSplitPane header = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		final JSplitPane mainPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		for (final JComponent o : c) {
 			if (o instanceof GroupingPanel) {
-				main.setTopComponent(o);
+				mainPane.setTopComponent(o);
 			} else if (o instanceof PianoRoll) {
-				main.setBottomComponent(o);
+				mainPane.setBottomComponent(o);
 			} else if (o instanceof PartSelectorPanel) {
 				header.setTopComponent(o);
 			} else if (o instanceof KeyBoard) {
 				header.setBottomComponent(o);
 			}
 		}
-		PropertyChangeListener pcl = new PropertyChangeListener() {
-			@Override public void propertyChange(PropertyChangeEvent e) {
-				if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(e
-						.getPropertyName())) {
-					JSplitPane source = (JSplitPane) e.getSource();
-					int location = ((Integer) e.getNewValue()).intValue();
-					JSplitPane target = (source == header) ? main : header;
-					if (location != target.getDividerLocation())
-						target.setDividerLocation(location);
-				}
+		final PropertyChangeListener pcl = e -> {
+			if (JSplitPane.DIVIDER_LOCATION_PROPERTY.equals(e
+					.getPropertyName())) {
+				final JSplitPane source = (JSplitPane) e.getSource();
+				final int location = ((Integer) e.getNewValue()).intValue();
+				final JSplitPane target = source == header ? mainPane : header;
+				if (location != target.getDividerLocation())
+					target.setDividerLocation(location);
 			}
 		};
 		header.addPropertyChangeListener(pcl);
-		main.addPropertyChangeListener(pcl);
+		mainPane.addPropertyChangeListener(pcl);
 
 		header.setDividerLocation(150);
-		main.setDividerLocation(150);
+		mainPane.setDividerLocation(150);
 		add(header, BorderLayout.WEST);
-		add(new JLayer<>(new JScrollPane(main), new DragScrollLayerUI()),
+		add(new JLayer<>(new JScrollPane(mainPane), new DragScrollLayerUI()),
 				BorderLayout.CENTER);
 		setPreferredSize(new Dimension(640, 480));
 	}

@@ -1,7 +1,6 @@
 package net.muse.mixtract.command;
 
-final class ShowSimilarGroupsCommand extends
-		MixtractCommand {
+final class ShowSimilarGroupsCommand extends MixtractCommand {
 
 	public ShowSimilarGroupsCommand(String... lang) {
 		super(lang);
@@ -11,13 +10,6 @@ final class ShowSimilarGroupsCommand extends
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void run() {
-		// final SimilarGroupPanel panel = new SimilarGroupPanel(_main,
-		// _target,
-		// getSelectedObjects().getGroupLabel().getGroup(), _mainFrame
-		// .getGroupingPanel().sim);
-		// panel.pack();
-		// panel.setVisible(true);
-	}
+	@Override public void run() {}
 
 }

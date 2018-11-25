@@ -12,7 +12,6 @@ import net.muse.gui.KeyActionListener;
 import net.muse.gui.NoteLabel;
 import net.muse.gui.PianoRoll;
 import net.muse.gui.PianoRollActionListener;
-import net.muse.misc.MuseObject;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXPianoroll extends PianoRoll {
@@ -20,9 +19,10 @@ public class MXPianoroll extends PianoRoll {
 	private static final long serialVersionUID = 1L;
 	boolean displayApex = false;
 
-	protected MXPianoroll(Mixtract main) {
-		super(main);
+	protected MXPianoroll(Mixtract app) {
+		super(app);
 	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.PianoRoll#deselect(net.muse.gui.GroupLabel)
@@ -44,18 +44,19 @@ public class MXPianoroll extends PianoRoll {
 		((MXGroup) g.group()).extractApex();
 	}
 
-	/* (非 Javadoc)
-	 * @see net.muse.gui.PianoRoll#createKeyActions(net.muse.misc.MuseObject)
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#createKeyActionListener(net.muse.app.MuseApp)
 	 */
-	protected KeyActionListener createKeyActions(MuseObject app) {
+	protected KeyActionListener cresateKeyActionListener(MuseApp app) {
 		return new KeyActionListener(app, this) {
 
-			@Override public Mixtract main() {
-				return (Mixtract) super.main();
+			@Override public Mixtract app() {
+				return (Mixtract) super.app();
 			}
 
-			@Override public MXPianoroll owner() {
-				return (MXPianoroll) super.owner();
+			@Override public MXPianoroll self() {
+				return (MXPianoroll) super.self();
 			}
 
 		};

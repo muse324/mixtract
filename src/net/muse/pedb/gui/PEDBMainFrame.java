@@ -1,7 +1,5 @@
 package net.muse.pedb.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -13,8 +11,6 @@ import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import net.muse.app.MuseApp;
 import net.muse.app.PEDBStructureEditor;
@@ -66,7 +62,7 @@ public class PEDBMainFrame extends MainFrame {
 	}
 
 	@Override protected PEDBGroupingPanel createGroupingPanel() {
-		return new PEDBGroupingPanel();
+		return new PEDBGroupingPanel(app());
 	}
 
 	/*
@@ -74,8 +70,8 @@ public class PEDBMainFrame extends MainFrame {
 	 * @see
 	 * net.muse.mixtract.gui.MXMainFrame#createPianoRoll(net.muse.app.MuseApp)
 	 */
-	@Override protected PianoRoll createPianoRoll(MuseApp main) {
-		return new PEDBPianoroll(main);
+	@Override protected PianoRoll createPianoRoll(MuseApp app) {
+		return new PEDBPianoroll(app);
 	}
 
 	/*
@@ -134,20 +130,6 @@ public class PEDBMainFrame extends MainFrame {
 		return toolBar;
 	}
 
-	private JButton getRereshButton() {
-		if (refreshButton == null) {
-			refreshButton = new JButton("Reresh");
-			refreshButton.addActionListener(new ActionListener() {
-
-				@Override public void actionPerformed(ActionEvent e) {
-					getGroupingPanel().readTuneData();
-					repaint();
-				}
-			});
-		}
-		return refreshButton;
-	}
-
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#getTuneViewPanel()
@@ -185,7 +167,18 @@ public class PEDBMainFrame extends MainFrame {
 	 * @see net.muse.gui.MainFrame#readfile(java.io.File)
 	 */
 	@Override protected void readfile(File f) throws IOException {
-		butler().readfile(f, main.getProjectDirectory());
+		butler().readfile(f, app().getProjectDirectory());
+	}
+
+	private JButton getRereshButton() {
+		if (refreshButton == null) {
+			refreshButton = new JButton("Reresh");
+			refreshButton.addActionListener(e -> {
+				getGroupingPanel().readTuneData();
+				repaint();
+			});
+		}
+		return refreshButton;
 	}
 
 	/**
@@ -194,16 +187,13 @@ public class PEDBMainFrame extends MainFrame {
 	private JSlider getZoomBar() {
 		if (zoomBar == null) {
 			zoomBar = new JSlider();
-			zoomBar.addChangeListener(new ChangeListener() {
-
-				@Override public void stateChanged(ChangeEvent e) {
-					JSlider s = (JSlider) e.getSource();
-					int v = s.getValue();
-					pixelperbeat = v;
-					getGroupingPanel().changeExpression(PhraseCurveType.TEMPO);
-					getPianoroll().changeExpression(PhraseCurveType.TEMPO);
-					getZoomText().setText(String.format("%d", v));
-				}
+			zoomBar.addChangeListener(e -> {
+				final JSlider s = (JSlider) e.getSource();
+				final int v = s.getValue();
+				pixelperbeat = v;
+				getGroupingPanel().changeExpression(PhraseCurveType.TEMPO);
+				getPianoroll().changeExpression(PhraseCurveType.TEMPO);
+				getZoomText().setText(String.format("%d", v));
 			});
 		}
 		return zoomBar;

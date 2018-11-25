@@ -28,10 +28,15 @@ public class PEDBStructureEditor extends MuseApp {
 		super(args);
 	}
 
+	@Override
+	public PEDBConcierge butler() {
+		return (PEDBConcierge)super.butler();
+	}
+
 	public static void main(String[] args) {
 		try {
-			final PEDBStructureEditor main = new PEDBStructureEditor(args);
-			main.setup();
+			final PEDBStructureEditor app = new PEDBStructureEditor(args);
+			app.setup();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -93,7 +98,6 @@ public class PEDBStructureEditor extends MuseApp {
 		// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-		// MixtractCommand.setMain(main);
 
 		/* sprash screen */
 		createSplashScreen(getAppImageFile());
@@ -103,7 +107,7 @@ public class PEDBStructureEditor extends MuseApp {
 			}
 		});
 
-		// create main frame
+		// create mainFrame
 		createNewFrame();
 		getFrame().setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		JFrame.setDefaultLookAndFeelDecorated(false);

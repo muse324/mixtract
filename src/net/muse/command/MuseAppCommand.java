@@ -1,6 +1,7 @@
 package net.muse.command;
 
 import net.muse.app.MuseApp;
+import net.muse.data.Concierge;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MainFrame;
@@ -44,7 +45,7 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 
 	private String[] menuText;
 
-	protected MuseApp _main;
+	protected MuseApp _app;
 	private Object _target;
 
 	protected MuseAppCommand(String... lang) {
@@ -85,12 +86,9 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	 */
 	public void setGroup(GroupLabel groupLabel) {}
 
-	/**
-	 * @param _main セットする _main
-	 */
-	public void setMain(MuseApp main) {
-		if (_main == null | _main != main)
-			_main = main;
+	public void setApp(MuseApp app) {
+		if (_app == null | _app != app)
+			_app = app;
 	}
 
 	public void setTarget(TuneData target) {
@@ -125,7 +123,11 @@ public class MuseAppCommand extends MuseObject implements Runnable,
 	}
 
 	public MuseApp app() {
-		return _main;
+		return _app;
+	}
+
+	@Override public Concierge butler() {
+		return app().butler();
 	}
 
 }

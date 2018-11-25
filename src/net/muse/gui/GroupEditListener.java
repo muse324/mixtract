@@ -3,6 +3,7 @@ package net.muse.gui;
 import javax.swing.JLabel;
 
 import net.muse.data.Group;
+import net.muse.data.NoteData;
 
 /**
  * グループ編集に関するイベントを受け取るためのリスナーインタフェースです。
@@ -32,7 +33,7 @@ public interface GroupEditListener<L extends JLabel> {
 	public void editGroup(L g);
 
 	/**
-	 * グループ全体が選択されたときに呼び出されるメソッドです．
+	 * グループが選択されたときに呼び出されるメソッドです．
 	 *
 	 * @param g
 	 *            選択されたグループラベル
@@ -45,4 +46,12 @@ public interface GroupEditListener<L extends JLabel> {
 	 * グループの選択状態が解除されたときに呼び出されるメソッドです．
 	 */
 	public void deselect(L g);
+
+	/**
+	 * グループの頂点音が選択された時に呼び出されるメソッドです。
+	 *
+	 * @param scoreNote
+	 * @param b
+	 */
+	public void selectTopNote(NoteData note, boolean b);
 }
