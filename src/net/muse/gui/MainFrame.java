@@ -823,7 +823,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 *
 	 * @return javax.swing.JMenuItem
 	 */
-	private JMenuItem getImportXMLMenu() {
+	protected JMenuItem getImportXMLMenu() {
 		if (xmlMenuItem == null) {
 			final MuseAppCommand cmd = app().searchCommand(
 					MuseAppCommandType.OPEN_MUSICXML);
@@ -1028,7 +1028,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		if (timeScrollBar == null) {
 			timeScrollBar = new JScrollBar(Adjustable.HORIZONTAL) {
 				/**
-				 * 
+				 *
 				 */
 				private static final long serialVersionUID = 1L;
 
