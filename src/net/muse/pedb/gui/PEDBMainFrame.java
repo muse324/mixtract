@@ -1,5 +1,7 @@
 package net.muse.pedb.gui;
 
+import java.awt.Component;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 
@@ -186,14 +188,26 @@ public class PEDBMainFrame extends MainFrame {
 	 */
 	private JSlider getZoomBar() {
 		if (zoomBar == null) {
-			zoomBar = new JSlider();
+			zoomBar = new JSlider(1, 200);
 			zoomBar.addChangeListener(e -> {
 				final JSlider s = (JSlider) e.getSource();
 				final int v = s.getValue();
 				pixelperbeat = v;
 				getGroupingPanel().changeExpression(PhraseCurveType.TEMPO);
-				getPianoroll().changeExpression(PhraseCurveType.TEMPO);
+				final PEDBPianoroll p = getPianoroll();
+				p.changeExpression(PhraseCurveType.TEMPO);
 				getZoomText().setText(String.format("%d", v));
+				getZoomText().setSize(getZoomText().getPreferredSize());
+				Rectangle r = null;
+				for (final Component c : p.getComponents()) {
+					if (!(c instanceof PEDBNoteLabel))
+						continue;
+					if (r == null || c.getBounds().x > r.x) {
+						r = c.getBounds();
+						continue;
+					}
+					p.resize(r);
+				}
 			});
 		}
 		return zoomBar;

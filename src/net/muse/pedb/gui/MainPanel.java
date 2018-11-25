@@ -22,6 +22,7 @@ import net.muse.mixtract.gui.PartSelectorPanel;
 
 public class MainPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
+	private JLayer<JScrollPane> layer;
 
 	public static void createAndShowGui() {
 		try {
@@ -74,9 +75,14 @@ public class MainPanel extends JPanel {
 		header.setDividerLocation(150);
 		mainPane.setDividerLocation(150);
 		add(header, BorderLayout.WEST);
-		add(new JLayer<>(new JScrollPane(mainPane), new DragScrollLayerUI()),
+		layer = new JLayer<>(new JScrollPane(mainPane), new DragScrollLayerUI());
+		add(layer,
 				BorderLayout.CENTER);
-		setPreferredSize(new Dimension(640, 480));
+		setSize(new Dimension(640, 480));
+	}
+
+	public JLayer<JScrollPane> getLayer() {
+		return layer;
 	}
 
 }

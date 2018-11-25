@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -47,6 +46,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 
 import net.muse.app.MuseApp;
@@ -95,7 +95,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JButton playButton = null;
 	private JMenuItem saveAsMenu;
 	private JMenuItem saveMenu = null;
-	private int shortcutKey;
+	private final int shortcutKey;
 	private JButton stopButton = null;
 	private JPanel tempoSettingPanel = null;
 	private JSlider tempoSlider = null;
@@ -124,16 +124,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	private JToolBar toolBar;
 
 	/**
-	 * 発音時刻や音長に対する横軸の長さを求めます．
-	 *
-	 * @param val
-	 * @return
-	 */
-	public static int getXOfNote(final double val) {
-		return (int) Math.round(val / pixelperbeat);
-	}
-
-	/**
 	 * This method initializes
 	 *
 	 * @param app
@@ -156,13 +146,23 @@ public class MainFrame extends JFrame implements TuneDataListener,
 
 		// システムのデフォルトのコマンド修飾キーを取得する.
 		// Windowsならctrl, OSXならばmetaになる.
-		Toolkit tk = Toolkit.getDefaultToolkit();
+		final Toolkit tk = Toolkit.getDefaultToolkit();
 		shortcutKey = tk.getMenuShortcutKeyMask();
 
 		initialize();
 	}
 
-	public void actionPerformed(ActionEvent e) {}
+	/**
+	 * 発音時刻や音長に対する横軸の長さを求めます．
+	 *
+	 * @param val
+	 * @return
+	 */
+	public static int getXOfNote(final double val) {
+		return (int) Math.round(val / pixelperbeat);
+	}
+
+	@Override public void actionPerformed(ActionEvent e) {}
 
 	/*
 	 * (non-Javadoc)
@@ -171,7 +171,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * mixtract
 	 * .data.Group)
 	 */
-	public void addGroup(Group g) {
+	@Override public void addGroup(Group g) {
 		repaint();
 	}
 
@@ -181,7 +181,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * jp.crestmuse.mixtract.gui.TuneDataListener#changeExpression(jp.crestmuse
 	 * .mixtract.data.PhraseProfile.PhraseCurveType)
 	 */
-	public void changeExpression(PhraseCurveType type) {}
+	@Override public void changeExpression(PhraseCurveType type) {}
 
 	/*
 	 * (non-Javadoc)
@@ -189,7 +189,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * jp.crestmuse.mixtract.gui.GroupEditListener#deleteGroup(javax.swing
 	 * .JLabel)
 	 */
-	public void deleteGroup(GroupLabel g) {
+	@Override public void deleteGroup(GroupLabel g) {
 		repaint();
 	}
 
@@ -199,7 +199,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * jp.crestmuse.mixtract.gui.GroupEditListener#deselect(javax.swing.JLabel
 	 * )
 	 */
-	public void deselect(GroupLabel g) {}
+	@Override public void deselect(GroupLabel g) {}
 
 	/*
 	 * (non-Javadoc)
@@ -207,7 +207,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * jp.crestmuse.mixtract.gui.GroupEditListener#editGroup(javax.swing.JLabel
 	 * )
 	 */
-	public void editGroup(GroupLabel g) {
+	@Override public void editGroup(GroupLabel g) {
 		throw new UnsupportedOperationException(); // TODO 実装
 	}
 
@@ -222,10 +222,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			butler().addTuneDataListenerList(dynamicsView);
 		}
 		return dynamicsView;
-	}
-
-	protected Concierge butler() {
-		return app().butler();
 	}
 
 	/**
@@ -243,6 +239,19 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	/**
+	 * This method initializes akeyboard
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	public KeyBoard getKeyboard() {
+		if (keyboard == null) {
+			keyboard = new KeyBoard(app());
+			butler().addTuneDataListenerList(keyboard);
+		}
+		return keyboard;
+	}
+
+	/**
 	 * This method initializes pianoroll
 	 *
 	 * @return javax.swing.JPanel
@@ -252,10 +261,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			pianoroll = createPianoRoll(app());
 		}
 		return pianoroll;
-	}
-
-	protected PianoRoll createPianoRoll(MuseApp app) {
-		return new PianoRoll(app);
 	}
 
 	/**
@@ -282,7 +287,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * (非 Javadoc)
 	 * @see net.muse.sound.MIDIEventListener#pausePlaying()
 	 */
-	public void pausePlaying() {
+	@Override public void pausePlaying() {
 		// do nothing (unsupported in the CEDEC version)
 	}
 
@@ -300,9 +305,18 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * jp.crestmuse.mixtract.gui.GroupEditListener#selectGroup(javax.swing
 	 * .JLabel, boolean)
 	 */
-	public void selectGroup(GroupLabel g, boolean flg) {}
+	@Override public void selectGroup(GroupLabel g, boolean flg) {}
 
-	public void setTarget(TuneData target) {
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.TuneDataListener#setTarget(net.muse.data.TuneData)
+	 */
+	@Override public void setTarget(TuneData target) {
 		data = target;
 		getViewer().setTitle(data.getOutputFile().getName());
 		getSaveAsMenu().setEnabled(true);
@@ -315,7 +329,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			try {
 				getBpmValue().setText(String.valueOf(data.getBPM().get(0)));
 				getTempoSlider().setValue(data.getBPM().get(0));
-			} catch (IndexOutOfBoundsException e) {
+			} catch (final IndexOutOfBoundsException e) {
 				getBpmValue().setText("120");
 				getTempoSlider().setValue(120);
 			}
@@ -327,13 +341,13 @@ public class MainFrame extends JFrame implements TuneDataListener,
 				getViewer().validate();
 				getViewer().pack();
 				getViewer().setVisible(true);
-			} catch (PropertyVetoException e) {
+			} catch (final PropertyVetoException e) {
 				JOptionPane.showMessageDialog(this, e.getLocalizedMessage());
 			}
 		}
 	}
 
-	public void startPlaying(String smfFilename) {
+	@Override public void startPlaying(String smfFilename) {
 		butler().printConsole("playing...");
 		playButton.setEnabled(false);
 		stopButton.setEnabled(true);
@@ -342,7 +356,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		tempoSlider.setEnabled(false);
 	}
 
-	public void stopPlaying() {
+	@Override public void stopPlaying() {
 		butler().printConsole("Sound stopped.");
 		playButton.setEnabled(true);
 		stopButton.setEnabled(false);
@@ -351,12 +365,43 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		tempoSlider.setEnabled(true);
 	}
 
-	public void stopPlaying(MIDIController synthe) {
+	@Override public void stopPlaying(MIDIController synthe) {
 		throw new UnsupportedOperationException();
+	}
+
+	protected MuseApp app() {
+		return app;
+	}
+
+	protected Concierge butler() {
+		return app().butler();
 	}
 
 	protected GroupingPanel createGroupingPanel() {
 		return new GroupingPanel(app());
+	}
+
+	protected PianoRoll createPianoRoll(MuseApp app) {
+		return new PianoRoll(app);
+	}
+
+	/**
+	 * This method initializes curveSplitPane
+	 *
+	 * @return javax.swing.JSplitPane
+	 */
+	protected JSplitPane getCurveSplitPane() {
+		if (curveSplitPane == null) {
+			curveSplitPane = new JSplitPane();
+			curveSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT); // Generated
+			curveSplitPane.setPreferredSize(new Dimension(20, 200)); // Generated
+			curveSplitPane.setResizeWeight(0.5D); // Generated
+			curveSplitPane.setOneTouchExpandable(true); // Generated
+			curveSplitPane.setTopComponent(getDynamicsCurvePane()); // Generated
+			curveSplitPane.setBottomComponent(getTempoCurvePane()); // Generated
+			curveSplitPane.setDividerSize(10); // Generated
+		}
+		return curveSplitPane;
 	}
 
 	/**
@@ -369,29 +414,40 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			dataSetButton = new JButton();
 			dataSetButton.setText("Set"); // Generated
 			dataSetButton.setEnabled(false); // Generated
-			dataSetButton.addActionListener(
-					new java.awt.event.ActionListener() {
-						public void actionPerformed(
-								java.awt.event.ActionEvent e) {
-							data.setNoteScheduleEvent();
-						}
-					});
+			dataSetButton.addActionListener(e -> data.setNoteScheduleEvent());
 		}
 		return dataSetButton;
 	}
 
-	protected JToolBar getToolBar() {
-		if (toolBar == null) {
-			tempoValueLabel = new JLabel();
-			tempoValueLabel.setText("   BPM:");
-			toolBar = new JToolBar();
-			toolBar.add(getDataSetButton()); // Generated
-			toolBar.add(getPlayButton()); // Generated
-			toolBar.add(getPauseButton()); // Generated
-			toolBar.add(getStopButton()); // Generated
-			toolBar.add(getTempoSettingPanel());
+	/**
+	 * This method initializes desktop
+	 *
+	 * @return javax.swing.JDesktopPane
+	 */
+	protected JDesktopPane getDesktop() {
+		if (desktop == null) {
+			desktop = new JDesktopPane();
+			desktop.setLayout(new BorderLayout()); // Generated
+			desktop.setBackground(Color.GRAY);
+			desktop.add(getViewer(), BorderLayout.CENTER); // Generated
+			desktop.add(getToolBarPanel(), BorderLayout.NORTH); // Generated
 		}
-		return toolBar;
+		return desktop;
+	}
+
+	/**
+	 * This method initializes partSelectorPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	protected JPanel getPartSelectorPanel() {
+		if (partSelectorPanel == null) {
+			partSelectorPanel = new PartSelectorPanel();
+			partSelectorPanel.setPreferredSize(new Dimension(KeyBoard
+					.getKeyWidth(), 24)); // Generated
+			butler().addTuneDataListenerList(partSelectorPanel);
+		}
+		return partSelectorPanel;
 	}
 
 	/**
@@ -413,6 +469,25 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	/**
+	 * This method initializes pianorollPane
+	 *
+	 * @return javax.swing.JScrollPane
+	 */
+	protected JScrollPane getPianorollPane() {
+		if (pianorollPanel == null) {
+			pianorollPanel = new JScrollPane();
+			pianorollPanel.setRowHeaderView(getKeyboard());
+			pianorollPanel.setViewportView(getPianoroll()); // Generated
+			pianorollPanel.setHorizontalScrollBar(getTimeScrollBar());
+			pianorollPanel.setHorizontalScrollBarPolicy(
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+			pianorollPanel.setVerticalScrollBarPolicy(
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}
+		return pianorollPanel;
+	}
+
+	/**
 	 * This method initializes jButton
 	 *
 	 * @return javax.swing.JButton
@@ -423,18 +498,50 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			playButton.setIcon(new ImageIcon(getClass().getResource(
 					"images/Play16.gif"))); // Generated
 			playButton.setMnemonic(KeyEvent.VK_SPACE);
-			MuseAppCommand cmd = app().searchCommand(MuseAppCommandType.PLAY);
+			final MuseAppCommand cmd = app().searchCommand(
+					MuseAppCommandType.PLAY);
 			playButton.setActionCommand(cmd.name());
 			playButton.setToolTipText("Play");
 			playButton.setEnabled(false); // Generated
 			playButton.setText("Play");
-			playButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					butler().notifyStartPlaying(data);
+			playButton.addActionListener(e -> butler().notifyStartPlaying(
+					data));
+		}
+		return playButton;
+	}
+
+	protected JMenuItem getPreferenceMenuItem() {
+		if (menuPreference == null) {
+			menuPreference = new JMenuItem("環境設定(E)");
+			menuPreference.setMnemonic(KeyEvent.VK_E);
+			menuPreference.setAccelerator(KeyStroke.getKeyStroke(
+					KeyEvent.VK_COMMA, shortcutKey));
+			menuPreference.addActionListener(new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				@Override public void actionPerformed(ActionEvent e) {
+					onPreference();
 				}
 			});
 		}
-		return playButton;
+		return menuPreference;
+	}
+
+	protected JMenuItem getQuitMenuItemForMac() {
+		if (quitMenu == null) {
+			quitMenu = new JMenuItem("終了(Q)");
+			quitMenu.setMnemonic(KeyEvent.VK_Q);
+			quitMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
+					shortcutKey));
+			quitMenu.addActionListener(new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				@Override public void actionPerformed(ActionEvent e) {
+					quit();
+				}
+			});
+		}
+		return quitMenu;
 	}
 
 	/**
@@ -447,18 +554,31 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			stopButton = new JButton();
 			stopButton.setIcon(new ImageIcon(getClass().getResource(
 					"images/Stop16.gif"))); // Generated
-			MuseAppCommandType cmd = MuseAppCommandType.STOP;
+			final MuseAppCommandType cmd = MuseAppCommandType.STOP;
 			stopButton.setActionCommand(cmd.name());
 			stopButton.setEnabled(false); // Generated
 			stopButton.setToolTipText("Stop");
 			stopButton.setText("Stop");
-			stopButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					butler().notifyStopPlaying();
-				}
-			});
+			stopButton.addActionListener(e -> butler().notifyStopPlaying());
 		}
 		return stopButton;
+	}
+
+	/**
+	 * This method initializes structurePane
+	 *
+	 * @return javax.swing.JScrollPane
+	 */
+	protected JScrollPane getStructurePane() {
+		if (structurePane == null) {
+			structurePane = new JScrollPane();
+			structurePane.setRowHeaderView(getPartSelectorPanel());
+			structurePane.setViewportView(getGroupingPanel());
+			structurePane.setHorizontalScrollBar(getTimeScrollBar());
+			structurePane.setVerticalScrollBarPolicy(
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		}
+		return structurePane;
 	}
 
 	/**
@@ -477,6 +597,55 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		return tempoSettingPanel;
 	}
 
+	protected JToolBar getToolBar() {
+		if (toolBar == null) {
+			tempoValueLabel = new JLabel();
+			tempoValueLabel.setText("   BPM:");
+			toolBar = new JToolBar();
+			toolBar.add(getDataSetButton()); // Generated
+			toolBar.add(getPlayButton()); // Generated
+			toolBar.add(getPauseButton()); // Generated
+			toolBar.add(getStopButton()); // Generated
+			toolBar.add(getTempoSettingPanel());
+		}
+		return toolBar;
+	}
+
+	/**
+	 * This method initializes tuneViewPanel
+	 *
+	 * @return javax.swing.JPanel
+	 */
+	protected JPanel getTuneViewPanel() {
+		if (tuneViewPanel == null) {
+			tuneViewPanel = new JPanel();
+			tuneViewPanel.setLayout(new BorderLayout()); // Generated
+			tuneViewPanel.add(getStructurePane(), BorderLayout.NORTH);
+			tuneViewPanel.add(getPianorollPane(), BorderLayout.CENTER); // Generated
+			tuneViewPanel.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
+		}
+		return tuneViewPanel;
+	}
+
+	protected JMenuItem getVersionMenuItem() {
+		if (menuAbout == null) {
+			menuAbout = new JMenuItem("バージョン情報(V)");
+			menuAbout.setMnemonic(KeyEvent.VK_V);
+			menuAbout.addActionListener(new AbstractAction() {
+				private static final long serialVersionUID = 1L;
+
+				@Override public void actionPerformed(ActionEvent e) {
+					onAbout();
+				}
+			});
+		}
+		return menuAbout;
+	}
+
+	protected String getWindowTitle() {
+		return WINDOW_TITLE;
+	}
+
 	/** ウィンドウ表示の初期設定を行います。 */
 	protected void initialize() {
 		this.setTitle(getWindowTitle()); // ウィンドウのタイトル
@@ -493,11 +662,11 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	}
 
 	protected void onPreference() {
-		JTextArea textArea = new JTextArea();
+		final JTextArea textArea = new JTextArea();
 		textArea.setText(getSystemProperties(System.getProperty(
 				"line.separator")));
 
-		JScrollPane scr = new JScrollPane(textArea);
+		final JScrollPane scr = new JScrollPane(textArea);
 		scr.setPreferredSize(new Dimension(400, 300));
 
 		JOptionPane.showMessageDialog(this, scr);
@@ -508,14 +677,18 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		System.exit(0);
 	}
 
+	protected void readfile(File f) throws IOException {
+		butler().readfile(f, app().getProjectDirectory());
+	}
+
 	protected void savefile() {
 		try {
 			data.setNoteScheduleEvent();
 			data.writefile();
 			saveScreenShot();
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			e1.printStackTrace();
-		} catch (AWTException e1) {
+		} catch (final AWTException e1) {
 			e1.printStackTrace();
 		}
 	}
@@ -525,43 +698,34 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 * @throws IOException
 	 */
 	protected void saveScreenShot() throws AWTException, IOException {
-		Point pos = getViewer().getLocationOnScreen();
-		Dimension size = getViewer().getSize();
+		final Point pos = getViewer().getLocationOnScreen();
+		final Dimension size = getViewer().getSize();
 		size.height -= 15;
-		Robot robot = new Robot();
-		Image img = robot.createScreenCapture(new Rectangle(pos.x, pos.y,
+		final Robot robot = new Robot();
+		final Image img = robot.createScreenCapture(new Rectangle(pos.x, pos.y,
 				size.width, size.height));
-		File fp = new File(data.getOutputFile(), "screenshot.png");
+		final File fp = new File(data.getOutputFile(), "screenshot.png");
 		if (!ImageIO.write(createBufferedImage(img), "PNG", fp)) {
 			throw new IOException("フォーマットが対象外");
 		}
 	}
 
+	protected void switchPlayMode(ActionEvent e) {
+		if (e.getActionCommand().equals(MuseAppCommandType.PLAY.name()))
+			butler().notifyStartPlaying(data);
+		else if (e.getActionCommand().equals(MuseAppCommandType.STOP.name()))
+			butler().notifyStopPlaying();
+	}
+
 	private BufferedImage createBufferedImage(Image img) {
-		BufferedImage bimg = new BufferedImage(img.getWidth(null), img
+		final BufferedImage bimg = new BufferedImage(img.getWidth(null), img
 				.getHeight(null), BufferedImage.TYPE_INT_RGB);
 
-		Graphics g = bimg.getGraphics();
+		final Graphics g = bimg.getGraphics();
 		g.drawImage(img, 0, 0, null);
 		g.dispose();
 
 		return bimg;
-	}
-
-	/**
-	 * This method initializes desktop
-	 *
-	 * @return javax.swing.JDesktopPane
-	 */
-	protected JDesktopPane getDesktop() {
-		if (desktop == null) {
-			desktop = new JDesktopPane();
-			desktop.setLayout(new BorderLayout()); // Generated
-			desktop.setBackground(Color.GRAY);
-			desktop.add(getViewer(), BorderLayout.CENTER); // Generated
-			desktop.add(getToolBarPanel(), BorderLayout.NORTH); // Generated
-		}
-		return desktop;
 	}
 
 	/**
@@ -573,39 +737,17 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		if (bpmValue == null) {
 			bpmValue = new JTextField();
 			bpmValue.setText(" 100"); // Generated
-			bpmValue.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					getTempoSlider().setIgnoreRepaint(true);
-					getTempoSlider().setValue(Integer.parseInt(bpmValue
-							.getText()));
-					getTempoSlider().setIgnoreRepaint(false);
-					System.out.println("actionPerformed()"); // TODO
-					if (data != null) {
-						data.setBPM(0, Integer.parseInt(bpmValue.getText()));
-					}
+			bpmValue.addActionListener(e -> {
+				getTempoSlider().setIgnoreRepaint(true);
+				getTempoSlider().setValue(Integer.parseInt(bpmValue.getText()));
+				getTempoSlider().setIgnoreRepaint(false);
+				System.out.println("actionPerformed()"); // TODO
+				if (data != null) {
+					data.setBPM(0, Integer.parseInt(bpmValue.getText()));
 				}
 			});
 		}
 		return bpmValue;
-	}
-
-	/**
-	 * This method initializes curveSplitPane
-	 *
-	 * @return javax.swing.JSplitPane
-	 */
-	protected JSplitPane getCurveSplitPane() {
-		if (curveSplitPane == null) {
-			curveSplitPane = new JSplitPane();
-			curveSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT); // Generated
-			curveSplitPane.setPreferredSize(new Dimension(20, 200)); // Generated
-			curveSplitPane.setResizeWeight(0.5D); // Generated
-			curveSplitPane.setOneTouchExpandable(true); // Generated
-			curveSplitPane.setTopComponent(getDynamicsCurvePane()); // Generated
-			curveSplitPane.setBottomComponent(getTempoCurvePane()); // Generated
-			curveSplitPane.setDividerSize(10); // Generated
-		}
-		return curveSplitPane;
 	}
 
 	/**
@@ -668,55 +810,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		return fileMenu;
 	}
 
-	protected JMenuItem getVersionMenuItem() {
-		if (menuAbout == null) {
-			menuAbout = new JMenuItem("バージョン情報(V)");
-			menuAbout.setMnemonic(KeyEvent.VK_V);
-			menuAbout.addActionListener(new AbstractAction() {
-				private static final long serialVersionUID = 1L;
-
-				public void actionPerformed(ActionEvent e) {
-					onAbout();
-				}
-			});
-		}
-		return menuAbout;
-	}
-
-	protected JMenuItem getPreferenceMenuItem() {
-		if (menuPreference == null) {
-			menuPreference = new JMenuItem("環境設定(E)");
-			menuPreference.setMnemonic(KeyEvent.VK_E);
-			menuPreference.setAccelerator(KeyStroke.getKeyStroke(
-					KeyEvent.VK_COMMA, shortcutKey));
-			menuPreference.addActionListener(new AbstractAction() {
-				private static final long serialVersionUID = 1L;
-
-				public void actionPerformed(ActionEvent e) {
-					onPreference();
-				}
-			});
-		}
-		return menuPreference;
-	}
-
-	protected JMenuItem getQuitMenuItemForMac() {
-		if (quitMenu == null) {
-			quitMenu = new JMenuItem("終了(Q)");
-			quitMenu.setMnemonic(KeyEvent.VK_Q);
-			quitMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q,
-					shortcutKey));
-			quitMenu.addActionListener(new AbstractAction() {
-				private static final long serialVersionUID = 1L;
-
-				public void actionPerformed(ActionEvent e) {
-					quit();
-				}
-			});
-		}
-		return quitMenu;
-	}
-
 	private JMenu getHelpMenu() {
 		if (helpMenu == null) {
 			helpMenu = new JMenu("ヘルプ(H)");
@@ -732,7 +825,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	private JMenuItem getImportXMLMenu() {
 		if (xmlMenuItem == null) {
-			MuseAppCommand cmd = app().searchCommand(
+			final MuseAppCommand cmd = app().searchCommand(
 					MuseAppCommandType.OPEN_MUSICXML);
 			xmlMenuItem = new JMenuItem();
 			xmlMenuItem.setText(cmd.getText());
@@ -744,19 +837,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			xmlMenuItem.addActionListener(new MouseActionListener(app(), this));
 		}
 		return xmlMenuItem;
-	}
-
-	/**
-	 * This method initializes akeyboard
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	public KeyBoard getKeyboard() {
-		if (keyboard == null) {
-			keyboard = new KeyBoard(app());
-			butler().addTuneDataListenerList(keyboard);
-		}
-		return keyboard;
 	}
 
 	/**
@@ -782,6 +862,32 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		return midiMenu;
 	}
 
+	/**
+	 * This method initializes openProjectMenu
+	 *
+	 * @return javax.swing.JMenuItem
+	 */
+	private JMenuItem getOpenProjectMenu() {
+		final JMenuItem m = new JMenuItem();
+		m.setText("Open Project File...");
+		m.setMnemonic('O');
+		m.setAccelerator(KeyStroke.getKeyStroke('O', shortcutKey));
+		m.addActionListener(e -> {
+			try {
+				final JFileChooser fc = app() != null ? new JFileChooser(app()
+						.getProjectDirectory()) : new JFileChooser();
+				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				final int res = fc.showOpenDialog(null);
+				if (res == JFileChooser.APPROVE_OPTION) {
+					readfile(fc.getSelectedFile());
+				}
+			} catch (final IOException e1) {
+				e1.printStackTrace();
+			}
+		});
+		return m;
+	}
+
 	private JMenuItem getPlayStopMenu() {
 		if (playStopMenu == null) {
 			playStopMenu = new JMenuItem();
@@ -790,81 +896,9 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			playStopMenu.setMnemonic(KeyEvent.VK_SPACE);
 			playStopMenu.setAccelerator(KeyStroke.getKeyStroke(
 					KeyEvent.VK_SPACE, shortcutKey));
-			playStopMenu.addActionListener(new ActionListener() {
-				@Override public void actionPerformed(ActionEvent e) {
-					switchPlayMode(e);
-				}
-			});
+			playStopMenu.addActionListener(e -> switchPlayMode(e));
 		}
 		return playStopMenu;
-	}
-
-	private void setPlaybarMode(MuseAppCommandType type) {
-		MuseAppCommand cmd = app().searchCommand(type);
-		playStopMenu.setActionCommand(type.name());
-		playStopMenu.setText(cmd.getText());
-	}
-
-	/**
-	 * This method initializes openProjectMenu
-	 *
-	 * @return javax.swing.JMenuItem
-	 */
-	private JMenuItem getOpenProjectMenu() {
-		JMenuItem m = new JMenuItem();
-		m.setText("Open Project File...");
-		m.setMnemonic('O');
-		m.setAccelerator(KeyStroke.getKeyStroke('O', shortcutKey));
-		m.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				try {
-					JFileChooser fc = (app() != null) ? new JFileChooser(app()
-							.getProjectDirectory()) : new JFileChooser();
-					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					int res = fc.showOpenDialog(null);
-					if (res == JFileChooser.APPROVE_OPTION) {
-						readfile(fc.getSelectedFile());
-					}
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-			}
-		});
-		return m;
-	}
-
-	/**
-	 * This method initializes partSelectorPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	protected JPanel getPartSelectorPanel() {
-		if (partSelectorPanel == null) {
-			partSelectorPanel = new PartSelectorPanel();
-			partSelectorPanel.setPreferredSize(new Dimension(KeyBoard
-					.getKeyWidth(), 24)); // Generated
-			butler().addTuneDataListenerList(partSelectorPanel);
-		}
-		return partSelectorPanel;
-	}
-
-	/**
-	 * This method initializes pianorollPane
-	 *
-	 * @return javax.swing.JScrollPane
-	 */
-	protected JScrollPane getPianorollPane() {
-		if (pianorollPanel == null) {
-			pianorollPanel = new JScrollPane();
-			pianorollPanel.setRowHeaderView(getKeyboard());
-			pianorollPanel.setViewportView(getPianoroll()); // Generated
-			pianorollPanel.setHorizontalScrollBar(getTimeScrollBar());
-			pianorollPanel.setHorizontalScrollBarPolicy(
-					JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-			pianorollPanel.setVerticalScrollBarPolicy(
-					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		}
-		return pianorollPanel;
 	}
 
 	/**
@@ -878,11 +912,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			quitMenu.setMnemonic('Q');
 			quitMenu.setText("Quit");
 			quitMenu.setAccelerator(KeyStroke.getKeyStroke('Q', shortcutKey));
-			quitMenu.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					quit();
-				}
-			});
+			quitMenu.addActionListener(e -> quit());
 		}
 		return quitMenu;
 	}
@@ -895,19 +925,17 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			saveAsMenu.setMnemonic(KeyEvent.VK_S);
 			saveAsMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
 					shortcutKey + ActionEvent.SHIFT_MASK));
-			saveAsMenu.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					JFileChooser fc = new JFileChooser(app()
-							.getProjectDirectory());
-					int res = fc.showSaveDialog(null);
-					if (res == JOptionPane.NO_OPTION) {
-						System.out.println("cancelled.");
-						return;
-					}
-					data.createNewOutputFile(fc);
-					savefile();
-					getViewer().setTitle(data.getOutputFile().getName());
+			saveAsMenu.addActionListener(e -> {
+				final JFileChooser fc = new JFileChooser(app()
+						.getProjectDirectory());
+				final int res = fc.showSaveDialog(null);
+				if (res == JOptionPane.NO_OPTION) {
+					System.out.println("cancelled.");
+					return;
 				}
+				data.createNewOutputFile(fc);
+				savefile();
+				getViewer().setTitle(data.getOutputFile().getName());
 			});
 		}
 		return saveAsMenu;
@@ -926,45 +954,23 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			saveMenu.setMnemonic(KeyEvent.VK_S);
 			saveMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
 					shortcutKey));
-			saveMenu.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					savefile();
-				}
-
-			});
+			saveMenu.addActionListener(e -> savefile());
 		}
 		return saveMenu;
 	}
 
-	/**
-	 * This method initializes structurePane
-	 *
-	 * @return javax.swing.JScrollPane
-	 */
-	protected JScrollPane getStructurePane() {
-		if (structurePane == null) {
-			structurePane = new JScrollPane();
-			structurePane.setRowHeaderView(getPartSelectorPanel());
-			structurePane.setViewportView(getGroupingPanel());
-			structurePane.setHorizontalScrollBar(getTimeScrollBar());
-			structurePane.setVerticalScrollBarPolicy(
-					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		}
-		return structurePane;
-	}
-
 	// システムプロパティをダンプする
 	private String getSystemProperties(String lineSep) {
-		ArrayList<String> keys = new ArrayList<String>();
-		StringBuffer buf = new StringBuffer();
-		for (Enumeration<?> enm = System.getProperties().keys(); enm
+		final ArrayList<String> keys = new ArrayList<>();
+		final StringBuffer buf = new StringBuffer();
+		for (final Enumeration<?> enm = System.getProperties().keys(); enm
 				.hasMoreElements();) {
-			String key = (String) enm.nextElement();
+			final String key = (String) enm.nextElement();
 			keys.add(key);
 		}
 		Collections.sort(keys);
-		for (Iterator<String> ite = keys.iterator(); ite.hasNext();) {
-			String key = (String) ite.next();
+		for (final String string : keys) {
+			final String key = string;
 			buf.append(key + "=" + System.getProperty(key) + lineSep);
 		}
 		buf.append("*EOF*");
@@ -1007,20 +1013,32 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			tempoSlider.setMajorTickSpacing(50);
 			tempoSlider.setMinorTickSpacing(10);
 			tempoSlider.setPaintTicks(true);
-			tempoSlider.addChangeListener(
-					new javax.swing.event.ChangeListener() {
-						public void stateChanged(
-								javax.swing.event.ChangeEvent e) {
-							getBpmValue().setText(String.valueOf(tempoSlider
-									.getValue()));
-							System.out.println("stateChanged()"); // TODO
-							if (data != null) {
-								data.setBPM(0, tempoSlider.getValue());
-							}
-						}
-					});
+			tempoSlider.addChangeListener(e -> {
+				getBpmValue().setText(String.valueOf(tempoSlider.getValue()));
+				System.out.println("stateChanged()"); // TODO
+				if (data != null) {
+					data.setBPM(0, tempoSlider.getValue());
+				}
+			});
 		}
 		return tempoSlider;
+	}
+
+	private JScrollBar getTimeScrollBar() {
+		if (timeScrollBar == null) {
+			timeScrollBar = new JScrollBar(Adjustable.HORIZONTAL) {
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@Override public Dimension getPreferredSize() {
+					final Dimension dim = super.getPreferredSize();
+					return new Dimension(dim.width, 20);
+				}
+			};
+		}
+		return timeScrollBar;
 	}
 
 	/**
@@ -1030,7 +1048,7 @@ public class MainFrame extends JFrame implements TuneDataListener,
 	 */
 	private JPanel getToolBarPanel() {
 		if (toolBarPanel == null) {
-			GridBagConstraints g = new GridBagConstraints();
+			final GridBagConstraints g = new GridBagConstraints();
 			g.fill = GridBagConstraints.VERTICAL; // Generated
 			g.gridy = 0; // Generated
 			g.weightx = 1.0; // Generated
@@ -1040,34 +1058,6 @@ public class MainFrame extends JFrame implements TuneDataListener,
 			toolBarPanel.add(getToolBar(), g); // Generated
 		}
 		return toolBarPanel;
-	}
-
-	/**
-	 * This method initializes tuneViewPanel
-	 *
-	 * @return javax.swing.JPanel
-	 */
-	protected JPanel getTuneViewPanel() {
-		if (tuneViewPanel == null) {
-			tuneViewPanel = new JPanel();
-			tuneViewPanel.setLayout(new BorderLayout()); // Generated
-			tuneViewPanel.add(getStructurePane(), BorderLayout.NORTH);
-			tuneViewPanel.add(getPianorollPane(), BorderLayout.CENTER); // Generated
-			tuneViewPanel.add(getCurveSplitPane(), BorderLayout.SOUTH); // Generated
-		}
-		return tuneViewPanel;
-	}
-
-	private JScrollBar getTimeScrollBar() {
-		if (timeScrollBar == null) {
-			timeScrollBar = new JScrollBar(Adjustable.HORIZONTAL) {
-				@Override public Dimension getPreferredSize() {
-					Dimension dim = super.getPreferredSize();
-					return new Dimension(dim.width, 20);
-				}
-			};
-		}
-		return timeScrollBar;
 	}
 
 	/**
@@ -1089,28 +1079,10 @@ public class MainFrame extends JFrame implements TuneDataListener,
 		return viewer;
 	}
 
-	protected String getWindowTitle() {
-		return WINDOW_TITLE;
-	}
-
-	protected void switchPlayMode(ActionEvent e) {
-		if (e.getActionCommand().equals(MuseAppCommandType.PLAY.name()))
-			butler().notifyStartPlaying(data);
-		else if (e.getActionCommand().equals(MuseAppCommandType.STOP.name()))
-			butler().notifyStopPlaying();
-	}
-
-	protected void readfile(File f) throws IOException {
-		butler().readfile(f, app().getProjectDirectory());
-	}
-
-	@Override public void selectTopNote(NoteData note, boolean b) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
-	protected MuseApp app() {
-		return app;
+	private void setPlaybarMode(MuseAppCommandType type) {
+		final MuseAppCommand cmd = app().searchCommand(type);
+		playStopMenu.setActionCommand(type.name());
+		playStopMenu.setText(cmd.getText());
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"

@@ -36,7 +36,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	private static final int DEFAULT_NOTELABEL_OFFSET = 5;
 	private static final long serialVersionUID = 1L;
-	private static final int DEFAULT_WIDTH = 1024;
 	private static int defaultAxisX = 10;
 
 	protected int axisX = 10;
@@ -49,14 +48,14 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	/* 各種描画モード */
 	private ViewerMode viewerMode; // @jve:decl-index=0:
 	private boolean isMouseSelectBoxDraw;
-	private boolean drawToolTips = true;
-	private boolean drawMelodyLine = false;
+	private final boolean drawToolTips = true;
+	private final boolean drawMelodyLine = false;
 	/* マウス制御 */
 	private MouseActionListener mouseActions; // @jve:decl-index=0:
 	private Point mouseEndPoint;
 	private Point mouseStartPoint;
 	/* 格納データ */
-	final LinkedList<NoteLabel> selectedNoteLabels = new LinkedList<NoteLabel>();
+	final LinkedList<NoteLabel> selectedNoteLabels = new LinkedList<>();
 	protected NoteLabel notelist = null;
 	protected NoteLabel mouseOveredNoteLabel = null;
 	private int selectedVoice;
@@ -101,6 +100,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		if (type == PhraseCurveType.DYNAMICS)
 			return;
 		resizeLabels(notelist());
+		scrollRectToVisible(getBounds());
 		repaint();
 	}
 
@@ -149,12 +149,16 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		return selectedVoice;
 	}
 
+	public boolean isMouseSelectBoxDraw() {
+		return isMouseSelectBoxDraw;
+	}
+
 	public void makeNoteLabel() {
 		removeAll();
 		this.notelist = null;
 		if (data() == null)
 			return;
-		for (Group g : data().getRootGroup()) {
+		for (final Group g : data().getRootGroup()) {
 			makeNoteLabel(g);
 		}
 		// 巻き戻す
@@ -240,6 +244,11 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		repaint();
 	}
 
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.mixtract.gui.CanvasMouseListener#setShowCurrentX(boolean,
@@ -277,10 +286,10 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	void selectNotes() {
 		selectedNoteLabels.clear();
-		for (Component c : getComponents()) {
+		for (final Component c : getComponents()) {
 			if (!(c instanceof NoteLabel))
 				continue;
-			NoteLabel l = (NoteLabel) c;
+			final NoteLabel l = (NoteLabel) c;
 			if (l.isSelected()) {
 				selectedNoteLabels.addLast(l);
 			}
@@ -304,8 +313,16 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		this.selectedVoice = selectedVoice;
 	}
 
+	protected MuseApp app() {
+		return app;
+	}
+
 	protected Concierge butler() {
 		return app().butler();
+	}
+
+	protected KeyActionListener createKeyActionListener(MuseApp app) {
+		return new KeyActionListener(app, this);
 	}
 
 	protected NoteLabel createNoteLabel(final NoteData note,
@@ -339,7 +356,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 			return;
 
 		if (pre != null) {
-			Harmony c = cur.getScoreNote().chord();
+			final Harmony c = cur.getScoreNote().chord();
 			if (c != pre.getScoreNote().chord()) {
 				g2.setColor(c.color());
 				g2.drawLine(cur.getX(), 0, cur.getX(), getHeight());
@@ -361,22 +378,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 						.getKeyboard().getKeyHeight());
 	}
 
-	protected String switchViewerMode(final NoteData nd) {
-		String str;
-		switch (viewerMode) {
-		case REALTIME_VIEW:
-			str = String.format("%s (%s): v%d / %.0f[%.0f-%.0f]", nd.noteName(),
-					nd.chord(), nd.velocity(), nd.realOffset() - nd.realOnset(),
-					nd.realOnset(), nd.realOffset());
-			break;
-		default:
-			str = String.format("%s (%s): %d-%d", nd.noteName(), nd.chord(), nd
-					.onset(), nd.offset());
-			break;
-		}
-		return str;
-	}
-
 	/**
 	 * ピアノロール画面にオリジナル情報を描画します。サブクラスで実装してください。
 	 *
@@ -394,7 +395,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		if (mouseBox == null)
 			return;
 
-		for (Component c : getComponents()) {
+		for (final Component c : getComponents()) {
 			if (!(c instanceof NoteLabel))
 				continue;
 			final NoteLabel l = (NoteLabel) c;
@@ -468,10 +469,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		return selectedGroup;
 	}
 
-	protected MuseApp app() {
-		return app;
-	}
-
 	protected void makeNoteLabel(Group group) {
 		if (group.hasChild()) {
 			makeNoteLabel(group.child());
@@ -482,7 +479,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	protected void makeNoteLabel(NoteData note, boolean isChild) {
 		if (note == null)
 			return;
-		int offset = existSamePitchNoteJustBefore(note)
+		final int offset = existSamePitchNoteJustBefore(note)
 				? DEFAULT_NOTELABEL_OFFSET
 				: 0;
 		makeNoteLabel(note, offset, isChild);
@@ -526,7 +523,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		add(n);
 
 		if (r.x + r.width > getWidth()) {
-			Dimension sz = getPreferredSize();
+			final Dimension sz = getPreferredSize();
 			sz.width = r.x + r.width + 10;
 			setPreferredSize(sz);
 			repaint();
@@ -545,7 +542,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	protected void resizeLabels(NoteLabel label) {
 		if (label == null)
 			return;
-		Rectangle r = getLabelBounds(label.getScoreNote(), label.getOffset());
+		final Rectangle r = getLabelBounds(label.getScoreNote(), label
+				.getOffset());
 		label.setBounds(r);
 		resizeLabels(label.child());
 		resizeLabels(label.next());
@@ -558,8 +556,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		if (group == null)
 			return;
 		selectGroup(group.child());
-		for (Component c : getComponents()) {
-			NoteLabel l = (NoteLabel) c;
+		for (final Component c : getComponents()) {
+			final NoteLabel l = (NoteLabel) c;
 			selectNote(l, group.getBeginNote(), group.getEndNote());
 		}
 	}
@@ -580,20 +578,32 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		selectNote(l, note.next(), end);
 	}
 
+	protected String switchViewerMode(final NoteData nd) {
+		String str;
+		switch (viewerMode) {
+		case REALTIME_VIEW:
+			str = String.format("%s (%s): v%d / %.0f[%.0f-%.0f]", nd.noteName(),
+					nd.chord(), nd.velocity(), nd.realOffset() - nd.realOnset(),
+					nd.realOnset(), nd.realOffset());
+			break;
+		default:
+			str = String.format("%s (%s): %d-%d", nd.noteName(), nd.chord(), nd
+					.onset(), nd.offset());
+			break;
+		}
+		return str;
+	}
+
 	/**
 	 *
 	 */
 	private void clearSelection() {
-		for (NoteLabel l : selectedNoteLabels)
+		for (final NoteLabel l : selectedNoteLabels)
 			l.setSelected(false);
 		selectedNoteLabels.clear();
 		setSelectedVoice(-1);
 		setSelectedGroup(null);
 		repaint();
-	}
-
-	protected KeyActionListener createKeyActionListener(MuseApp app) {
-		return new KeyActionListener(app, this);
 	}
 
 	/**
@@ -633,8 +643,8 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 * @param onset
 	 */
 	private void drawMeasureLine(final Graphics2D g) {
-		for (Component src : getComponents()) {
-			NoteLabel n = (NoteLabel) src;
+		for (final Component src : getComponents()) {
+			final NoteLabel n = (NoteLabel) src;
 			final Rectangle r = n.getBounds();
 			// draw measure line
 			if (!n.hasParent() && n.isMeasureBeginning()) {
@@ -654,15 +664,17 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		if (group() == null || selectedNoteLabels.size() < 1)
 			return;
 
-		int x1 = selectedNoteLabels.get(0).getX();
-		int y1 = selectedNoteLabels.get(0).getY() + selectedNoteLabels.get(0)
-				.getHeight() / 2;
-		NoteLabel n4 = selectedNoteLabels.get(selectedNoteLabels.size() - 1);
-		int x4 = n4.getX() + n4.getWidth();
-		int y4 = n4.getY() + n4.getHeight() / 2;
+		final int x1 = selectedNoteLabels.get(0).getX();
+		final int y1 = selectedNoteLabels.get(0).getY() + selectedNoteLabels
+				.get(0).getHeight() / 2;
+		final NoteLabel n4 = selectedNoteLabels.get(selectedNoteLabels.size()
+				- 1);
+		final int x4 = n4.getX() + n4.getWidth();
+		final int y4 = n4.getY() + n4.getHeight() / 2;
 
 		// final Note bg = group.getBeginningNote();
-		Note n1 = selectedGroup.group().getMelodyFlagment().getFormerLastNote();
+		final Note n1 = selectedGroup.group().getMelodyFlagment()
+				.getFormerLastNote();
 		final Note n2 = selectedGroup.group().getMelodyFlagment()
 				.getLatterFirstNote();
 		// final Note ed = group.getEndNote();
@@ -689,14 +701,14 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 	 */
 	private void drawSelectedMouseBox(Graphics2D g2) {
 
-		final int sx = (mouseStartPoint.x < mouseEndPoint.x) ? mouseStartPoint.x
+		final int sx = mouseStartPoint.x < mouseEndPoint.x ? mouseStartPoint.x
 				: mouseEndPoint.x;
-		final int sy = (mouseStartPoint.y < mouseEndPoint.y) ? mouseStartPoint.y
+		final int sy = mouseStartPoint.y < mouseEndPoint.y ? mouseStartPoint.y
 				: mouseEndPoint.y;
-		final int w = (mouseStartPoint.x < mouseEndPoint.x) ? mouseEndPoint.x
-				- sx : mouseStartPoint.x - sx;
-		final int h = (mouseStartPoint.y < mouseEndPoint.y) ? mouseEndPoint.y
-				- sy : mouseStartPoint.y - sy;
+		final int w = mouseStartPoint.x < mouseEndPoint.x ? mouseEndPoint.x - sx
+				: mouseStartPoint.x - sx;
+		final int h = mouseStartPoint.y < mouseEndPoint.y ? mouseEndPoint.y - sy
+				: mouseStartPoint.y - sy;
 		final Rectangle r = new Rectangle(sx, sy, w, h);
 		getMouseActions().setMouseBox(r);
 		// if (MixtractCommand.getSelectedObjects() != null) {
@@ -734,7 +746,7 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 		if (l == null)
 			return false;
 		while (l.hasPrevious()) {
-			NoteData before = l.getScoreNote();
+			final NoteData before = l.getScoreNote();
 			if (!before.rest() && before.noteNumber() == note.noteNumber()
 					&& before.offset() == note.onset())
 				return true;
@@ -782,15 +794,6 @@ public class PianoRoll extends JPanel implements TuneDataListener,
 
 	private void setStartPositionOfMouseBox(MouseEvent e) {
 		mouseEndPoint = mouseStartPoint = e.getPoint();
-	}
-
-	@Override public void selectTopNote(NoteData note, boolean b) {
-		// TODO 自動生成されたメソッド・スタブ
-
-	}
-
-	public boolean isMouseSelectBoxDraw() {
-		return isMouseSelectBoxDraw;
 	}
 
 } // @jve:decl-index=0:visual-constraint="10,10"
