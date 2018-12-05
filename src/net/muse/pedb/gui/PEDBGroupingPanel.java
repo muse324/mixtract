@@ -38,11 +38,12 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * 頂点音ラベルを生成します。
 	 *
 	 * @author anan
+	 * @return
 	 * @since Oct 13th, 2018
 	 */
-	public void createTopNoteLabel(Group group, int level) {
+	public PEDBTopNoteLabel createTopNoteLabel(Group group, int level) {
 		if (group == null || group.getTopNote() == null)
-			return;
+			return null;
 
 		// 以下は、group が存在し、かつ当該groupに頂点音が存在する場合にのみ実行される
 		final RoundRectangle2D topr = getTopNoteLabelBound(group.getTopNote(),
@@ -53,7 +54,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 		group.setLevel(level);
 		add(toplabel); // 描画
 		System.out.println(group.getScoreNotelist());
-		createTopNoteLabel((Group) group.next(), level);
+		return toplabel;
 	}
 
 	/**
@@ -124,6 +125,28 @@ class PEDBGroupingPanel extends GroupingPanel {
 		return new PEDBGroupLabel(group, r);
 	}
 
+	@Override protected void createGroupLabel(Group group, int level) {
+		if (group == null)
+			return;
+		group.setHierarchy(group.hasChild() || group.hasParent());
+
+		setMaximumGroupLevel(level > getMaximumGroupLevel() ? level
+				: getMaximumGroupLevel());
+
+		// create a topnote label
+		PEDBTopNoteLabel top = createTopNoteLabel(group, level);
+		// create group label
+		final Rectangle r = getLabelBounds(group, level);
+		PEDBGroupLabel label = createGroupLabel(group, r);
+		label.setController(app());
+		group.setLevel(level);
+		label.setTopNoteLabel(top);
+
+		getGrouplist().add(label);
+		add(label); // 描画
+		createGroupLabel((Group) group.next(), level);
+	}
+
 	/*
 	 * (非 Javadoc)
 	 * @see
@@ -153,20 +176,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 			}
 
 		};
-	}
-
-	@Override protected void createNonHierarchicalGroupLabel() {
-		int level = getMaximumGroupLevel() + 1;
-		for (final Group g : data().getMiscGroup()) {
-			if (level < g.getLevel())
-				level = g.getLevel() + 1;
-			createTopNoteLabel(g, level);
-			if (g.hasChild())
-				createTopNoteLabel(g.child(), level + 1);
-			createGroupLabel(g, level);
-
-			createGroupLabel(g.child(), level + 1);
-		}
 	}
 
 	@Override protected PEDBTuneData data() {

@@ -22,6 +22,7 @@ public class PEDBGroupLabel extends GroupLabel {
 	private static final int REWIND = 2;
 	private PEDBGroupLabel next;
 	private PEDBGroupLabel prev;
+	private PEDBTopNoteLabel topNoteLabel;
 
 	public PEDBGroupLabel() {
 		super();
@@ -221,5 +222,9 @@ public class PEDBGroupLabel extends GroupLabel {
 			return;
 		setText(String.format("[%d] %s:%s", group().getLevel(), group().name(),
 				childGroupNameText()));
+	}
+
+	public void setTopNoteLabel(PEDBTopNoteLabel top) {
+		topNoteLabel = top;
 	}
 }
