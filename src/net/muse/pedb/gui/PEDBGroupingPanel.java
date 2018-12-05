@@ -70,14 +70,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 		w = MainFrame.getXOfNote(topNote.duration());
 		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
 				LABEL_HEIGHT - LEVEL_PADDING, 3.0, 3.0);
-		/*
-		 * System.out.println("x = "+r.getX());
-		 * System.out.println("y = "+r.getY());
-		 * System.out.println("w = "+r.getWidth());
-		 * System.out.println("h = "+r.getHeight());
-		 * System.out.println("arcw = "+r.getArcWidth());
-		 * System.out.println("arch = "+r.getArcHeight());
-		 */
 		return r;
 	}
 
@@ -120,11 +112,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 		repaint();
 	}
 
-	@Override protected PEDBGroupLabel createGroupLabel(Group group,
-			Rectangle r) {
-		return new PEDBGroupLabel(group, r);
-	}
-
 	@Override protected void createGroupLabel(Group group, int level) {
 		if (group == null)
 			return;
@@ -134,10 +121,10 @@ class PEDBGroupingPanel extends GroupingPanel {
 				: getMaximumGroupLevel());
 
 		// create a topnote label
-		PEDBTopNoteLabel top = createTopNoteLabel(group, level);
+		final PEDBTopNoteLabel top = createTopNoteLabel(group, level);
 		// create group label
 		final Rectangle r = getLabelBounds(group, level);
-		PEDBGroupLabel label = createGroupLabel(group, r);
+		final PEDBGroupLabel label = createGroupLabel(group, r);
 		label.setController(app());
 		group.setLevel(level);
 		label.setTopNoteLabel(top);
@@ -145,6 +132,11 @@ class PEDBGroupingPanel extends GroupingPanel {
 		getGrouplist().add(label);
 		add(label); // 描画
 		createGroupLabel((Group) group.next(), level);
+	}
+
+	@Override protected PEDBGroupLabel createGroupLabel(Group group,
+			Rectangle r) {
+		return new PEDBGroupLabel(group, r);
 	}
 
 	/*

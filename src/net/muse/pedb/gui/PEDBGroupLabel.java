@@ -85,6 +85,7 @@ public class PEDBGroupLabel extends GroupLabel {
 			boolean shiftKeyPressed, boolean mousePressed, int direction) {
 		r.y = p.y;
 		setBounds(r);
+		getTopNoteLabel().setLocation(getTopNoteLabel().getX(), p.y);
 
 		if (direction == FORWARD && hasNext())
 			next().moveLabelVertical(e, p, next().getBounds(), shiftKeyPressed,
@@ -103,6 +104,10 @@ public class PEDBGroupLabel extends GroupLabel {
 	@Override public void setChild(GroupLabel child) {
 		super.setChild(child);
 		repaint();
+	}
+
+	public void setTopNoteLabel(PEDBTopNoteLabel top) {
+		topNoteLabel = top;
 	}
 
 	@Override public void setTypeShape(GroupType type) {
@@ -214,6 +219,10 @@ public class PEDBGroupLabel extends GroupLabel {
 		return s;
 	}
 
+	private PEDBTopNoteLabel getTopNoteLabel() {
+		return topNoteLabel;
+	}
+
 	/**
 	 * グループ名を表記します。repaint()をオーバーライドして呼び出されるため、外部から明示的に呼び出す必要はありません。
 	 */
@@ -222,9 +231,5 @@ public class PEDBGroupLabel extends GroupLabel {
 			return;
 		setText(String.format("[%d] %s:%s", group().getLevel(), group().name(),
 				childGroupNameText()));
-	}
-
-	public void setTopNoteLabel(PEDBTopNoteLabel top) {
-		topNoteLabel = top;
 	}
 }

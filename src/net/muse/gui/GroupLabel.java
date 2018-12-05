@@ -52,8 +52,28 @@ public class GroupLabel extends JLabel {
 		setTypeShape(group.getType());
 	}
 
+	public GroupLabel child() {
+		return child;
+	}
+
+	public GroupLabel child(ArrayList<GroupLabel> grouplist) {
+		if (child == null) {
+			for (final GroupLabel l : grouplist) {
+				if (group().hasChild() && group().child().equals(l.group())) {
+					child = l;
+					break;
+				}
+			}
+		}
+		return child;
+	}
+
 	public Group group() {
 		return group;
+	}
+
+	public boolean hasChild() {
+		return child() != null;
 	}
 
 	/**
@@ -61,6 +81,58 @@ public class GroupLabel extends JLabel {
 	 */
 	public boolean isSelected() {
 		return isSelected;
+	}
+
+	/**
+	 * @param e
+	 * @param p
+	 * @param r
+	 * @param shiftKeyPressed TODO
+	 * @param mousePressed TODO
+	 * @param src
+	 */
+	public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
+			boolean shiftKeyPressed, boolean mousePressed) {
+		r.y = p.y;
+		setBounds(r);
+		if (shiftKeyPressed) {
+			moveLabelVertical(e, mousePressed);
+		}
+		repaint();
+	}
+
+	public void setChild(GroupLabel child) {
+		this.child = child;
+		group().setChild(child.group());
+		if (child.parent() == null || !child.parent().equals(this)) {
+			child.setParent(this);
+		}
+	}
+
+	public void setController(MuseApp app) {
+		mouseActions = createMouseActionListener(app);
+		addMouseListener(mouseActions);
+		addMouseMotionListener(mouseActions);
+		keyActions = createKeyActionListener(app);
+		addKeyListener(keyActions);
+	}
+
+	/**
+	 * @param partNumber the partNumber to set
+	 */
+	public void setPartNumber(int partNumber) {
+		this.partNumber = partNumber;
+	}
+
+	/**
+	 * @param hasSelectedNoteList
+	 */
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
+		setBackground(isSelected ? PartColor.SELECTED_COLOR
+				: getCurrentColor());
+		setSelectedOption(isSelected);
+		repaint();
 	}
 
 	/**
@@ -87,24 +159,20 @@ public class GroupLabel extends JLabel {
 		return group().name();
 	}
 
-	public GroupLabel child(ArrayList<GroupLabel> grouplist) {
-		if (child == null) {
-			for (GroupLabel l : grouplist) {
-				if (group().hasChild() && group().child().equals(l.group())) {
-					child = l;
-					break;
-				}
-			}
-		}
-		return child;
+	void setMouseOver(boolean b) {
+		if (b) {
+			setBackground(PartColor.MOUSE_OVER_COLOR);
+		} else
+			setBackground(getCurrentColor());
 	}
 
-	public void setController(MuseApp app) {
-		mouseActions = createMouseActionListener(app);
-		addMouseListener(mouseActions);
-		addMouseMotionListener(mouseActions);
-		keyActions = createKeyActionListener(app);
-		addKeyListener(keyActions);
+	void showInfoViewer(MuseApp app, Group gr) {
+		final InfoViewer pv = InfoViewer.create(app, gr);
+		pv.setTitle(gr.name());
+		app.butler().addInfoViewerList(pv);
+		pv.pack();
+		pv.setVisible(true);
+		pv.preset();
 	}
 
 	protected KeyActionListener createKeyActionListener(MuseApp app) {
@@ -113,51 +181,6 @@ public class GroupLabel extends JLabel {
 
 	protected MouseActionListener createMouseActionListener(MuseApp app) {
 		return new GLMouseActionListener(app, this);
-	}
-
-	/**
-	 * @param mousePosition TODO
-	 */
-	protected void setEditMode(Point mousePosition) {
-		Rectangle r = getBounds();
-		Rectangle st = new Rectangle(new Point(r.x, r.y), new Dimension(10,
-				r.height));
-		Rectangle ed = new Rectangle(new Point(r.x + r.width - 10, r.y),
-				new Dimension(15, r.height));
-		Rectangle m = new Rectangle(mousePosition, new Dimension(5, 5));
-
-		// GUIUtil.printConsole(r.toString() + "<>" + mousePosition);
-		if (SwingUtilities.isRectangleContainingRectangle(st, m)) {
-			setStartEdit(true);
-			setEndEdit(false);
-			setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
-		} else if (SwingUtilities.isRectangleContainingRectangle(ed, m)) {
-			setStartEdit(false);
-			setEndEdit(true);
-			setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
-		} else {
-			setStartEdit(false);
-			setEndEdit(false);
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		}
-	}
-
-	void setMouseOver(boolean b) {
-		if (b) {
-			setBackground(PartColor.MOUSE_OVER_COLOR);
-		} else
-			setBackground(getCurrentColor());
-	}
-
-	/**
-	 * @param hasSelectedNoteList
-	 */
-	public void setSelected(boolean isSelected) {
-		this.isSelected = isSelected;
-		setBackground(isSelected ? PartColor.SELECTED_COLOR
-				: getCurrentColor());
-		setSelectedOption(isSelected);
-		repaint();
 	}
 
 	/**
@@ -200,6 +223,15 @@ public class GroupLabel extends JLabel {
 		moveChildLabel(e, mousePressed);
 	}
 
+	protected void moveLabelVertical(MouseEvent e, boolean mousePressed) {
+		Point pc;
+		if (hasChild()) {
+			pc = child().getLocation();
+			pc.translate(e.getX(), e.getY());
+			child().moveLabel(e, pc, mousePressed);
+		}
+	}
+
 	/**
 	 * @param currentColor the currentColor to set
 	 */
@@ -209,15 +241,35 @@ public class GroupLabel extends JLabel {
 		setBackground(currentColor);
 	}
 
-	protected void setGroup(Group group) {
-		this.group = group;
+	/**
+	 * @param mousePosition TODO
+	 */
+	protected void setEditMode(Point mousePosition) {
+		final Rectangle r = getBounds();
+		final Rectangle st = new Rectangle(new Point(r.x, r.y), new Dimension(10,
+				r.height));
+		final Rectangle ed = new Rectangle(new Point(r.x + r.width - 10, r.y),
+				new Dimension(15, r.height));
+		final Rectangle m = new Rectangle(mousePosition, new Dimension(5, 5));
+
+		// GUIUtil.printConsole(r.toString() + "<>" + mousePosition);
+		if (SwingUtilities.isRectangleContainingRectangle(st, m)) {
+			setStartEdit(true);
+			setEndEdit(false);
+			setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
+		} else if (SwingUtilities.isRectangleContainingRectangle(ed, m)) {
+			setStartEdit(false);
+			setEndEdit(true);
+			setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
+		} else {
+			setStartEdit(false);
+			setEndEdit(false);
+			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
 	}
 
-	/**
-	 * @param partNumber the partNumber to set
-	 */
-	public void setPartNumber(int partNumber) {
-		this.partNumber = partNumber;
+	protected void setGroup(Group group) {
+		this.group = group;
 	}
 
 	protected void setSelectedOption(boolean isSelected) {
@@ -230,14 +282,6 @@ public class GroupLabel extends JLabel {
 
 	protected void setStartEdit(boolean startEdit) {
 		this.startEdit = startEdit;
-	}
-
-	public GroupLabel child() {
-		return child;
-	}
-
-	public boolean hasChild() {
-		return child() != null;
 	}
 
 	/**
@@ -259,62 +303,18 @@ public class GroupLabel extends JLabel {
 	private void moveChildLabel(MouseEvent e, boolean mousePressed) {
 		if (mousePressed && hasChild()) {
 			child().setStartEdit(true);
-			Point pc = child().getLocation();
+			final Point pc = child().getLocation();
 			pc.translate(e.getX(), e.getY());
 			moveLabel(e, pc, mousePressed);
 		}
 	}
 
-	protected void moveLabelVertical(MouseEvent e, boolean mousePressed) {
-		Point pc;
-		if (hasChild()) {
-			pc = child().getLocation();
-			pc.translate(e.getX(), e.getY());
-			child().moveLabel(e, pc, mousePressed);
-		}
-	}
-
-	/**
-	 * @param e
-	 * @param p
-	 * @param r
-	 * @param shiftKeyPressed TODO
-	 * @param mousePressed TODO
-	 * @param src
-	 */
-	public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
-			boolean shiftKeyPressed, boolean mousePressed) {
-		r.y = p.y;
-		setBounds(r);
-		if (shiftKeyPressed) {
-			moveLabelVertical(e, mousePressed);
-		}
-		repaint();
+	private GroupLabel parent() {
+		return parent;
 	}
 
 	private void setEndEdit(boolean endEdit) {
 		this.endEdit = endEdit;
-	}
-
-	void showInfoViewer(MuseApp app, Group gr) {
-		InfoViewer pv = InfoViewer.create(app, gr);
-		pv.setTitle(gr.name());
-		app.butler().addInfoViewerList(pv);
-		pv.pack();
-		pv.setVisible(true);
-		pv.preset();
-	}
-
-	public void setChild(GroupLabel child) {
-		this.child = child;
-		group().setChild(child.group());
-		if (child.parent() == null || !child.parent().equals(this)) {
-			child.setParent(this);
-		}
-	}
-
-	private GroupLabel parent() {
-		return parent;
 	}
 
 	private void setParent(GroupLabel label) {
