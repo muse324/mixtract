@@ -38,11 +38,12 @@ class PEDBGroupingPanel extends GroupingPanel {
 	 * 頂点音ラベルを生成します。
 	 *
 	 * @author anan
+	 * @return
 	 * @since Oct 13th, 2018
 	 */
-	public void createTopNoteLabel(Group group, int level) {
+	public PEDBTopNoteLabel createTopNoteLabel(Group group, int level) {
 		if (group == null || group.getTopNote() == null)
-			return;
+			return null;
 
 		// 以下は、group が存在し、かつ当該groupに頂点音が存在する場合にのみ実行される
 		final RoundRectangle2D topr = getTopNoteLabelBound(group.getTopNote(),
@@ -53,7 +54,7 @@ class PEDBGroupingPanel extends GroupingPanel {
 		group.setLevel(level);
 		add(toplabel); // 描画
 		System.out.println(group.getScoreNotelist());
-		createTopNoteLabel((Group) group.next(), level);
+		return toplabel;
 	}
 
 	/**
@@ -69,14 +70,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 		w = MainFrame.getXOfNote(topNote.duration());
 		final RoundRectangle2D r = new RoundRectangle2D.Double(x, y, w,
 				LABEL_HEIGHT - LEVEL_PADDING, 3.0, 3.0);
-		/*
-		 * System.out.println("x = "+r.getX());
-		 * System.out.println("y = "+r.getY());
-		 * System.out.println("w = "+r.getWidth());
-		 * System.out.println("h = "+r.getHeight());
-		 * System.out.println("arcw = "+r.getArcWidth());
-		 * System.out.println("arch = "+r.getArcHeight());
-		 */
 		return r;
 	}
 
@@ -119,6 +112,28 @@ class PEDBGroupingPanel extends GroupingPanel {
 		repaint();
 	}
 
+	@Override protected void createGroupLabel(Group group, int level) {
+		if (group == null)
+			return;
+		group.setHierarchy(group.hasChild() || group.hasParent());
+
+		setMaximumGroupLevel(level > getMaximumGroupLevel() ? level
+				: getMaximumGroupLevel());
+
+		// create a topnote label
+		final PEDBTopNoteLabel top = createTopNoteLabel(group, level);
+		// create group label
+		final Rectangle r = getLabelBounds(group, level);
+		final PEDBGroupLabel label = createGroupLabel(group, r);
+		label.setController(app());
+		group.setLevel(level);
+		label.setTopNoteLabel(top);
+
+		getGrouplist().add(label);
+		add(label); // 描画
+		createGroupLabel((Group) group.next(), level);
+	}
+
 	@Override protected PEDBGroupLabel createGroupLabel(Group group,
 			Rectangle r) {
 		return new PEDBGroupLabel(group, r);
@@ -153,20 +168,6 @@ class PEDBGroupingPanel extends GroupingPanel {
 			}
 
 		};
-	}
-
-	@Override protected void createNonHierarchicalGroupLabel() {
-		int level = getMaximumGroupLevel() + 1;
-		for (final Group g : data().getMiscGroup()) {
-			if (level < g.getLevel())
-				level = g.getLevel() + 1;
-			createTopNoteLabel(g, level);
-			if (g.hasChild())
-				createTopNoteLabel(g.child(), level + 1);
-			createGroupLabel(g, level);
-
-			createGroupLabel(g.child(), level + 1);
-		}
 	}
 
 	@Override protected PEDBTuneData data() {

@@ -535,7 +535,7 @@ public class GroupingPanel extends JPanel implements TuneDataListener {
 	 * @param level
 	 * @return
 	 */
-	private Rectangle getLabelBounds(Group group, int level) {
+	protected Rectangle getLabelBounds(Group group, int level) {
 		final int y = setLabelY(level);
 		int x, w;
 		switch (viewerMode) {
