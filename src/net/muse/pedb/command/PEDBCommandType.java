@@ -23,7 +23,7 @@ public enum PEDBCommandType implements MuseAppCommandAction {
 					lang));
 		}
 	},
-	DELETE_GROUP {
+	PEDBDELETE_GROUP("Delete group", "グループを削除") {
 		@Override public MuseAppCommand create(String... lang) {
 			return (DeleteGroupCommand) (cmd = new DeleteGroupCommand(lang));
 		}

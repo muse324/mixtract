@@ -36,7 +36,7 @@ public class PEDBConcierge extends Concierge {
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 			printConsole("delete group");
-			c = app.searchCommand(PEDBCommandType.DELETE_GROUP);
+			c = app.searchCommand(PEDBCommandType.PEDBDELETE_GROUP);
 			break;
 		case KeyEvent.VK_SPACE:
 			printConsole(!isPlayed() ? "play" : "stop");
