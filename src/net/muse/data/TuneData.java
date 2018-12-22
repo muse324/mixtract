@@ -32,7 +32,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	static boolean segmentGroupnoteLine = false;
 
 	/** 入力ファイル */
-	private File inputFile;
+	private final File inputFile;
 
 	/** 出力ファイル */
 	private File outputFile;
@@ -150,11 +150,7 @@ public class TuneData extends MuseObject implements TuneDataController {
 	}
 
 	public void deleteGroupFromData(Group group) {
-		// 非階層グループから削除
-		if (getMiscGroup().contains(group)) {
-			getMiscGroup().remove(group);
-			return;
-		}
+		deleteGroupFromMiscGroup(group);
 		// 階層グループから削除
 		for (final Group g : getRootGroup()) {
 			if (g.equals(group) && g.getType() == GroupType.NOTE) {
@@ -476,6 +472,19 @@ public class TuneData extends MuseObject implements TuneDataController {
 		deleteGroup(target.child());
 		target.getScoreNotelist().clear();
 		target.setChild(null);
+	}
+
+	/**
+	 * 指定されたグループをmiscGroupリストから削除します。
+	 *
+	 * @param group
+	 */
+	protected void deleteGroupFromMiscGroup(Group group) {
+		if (group == null)
+			return;
+		if (getMiscGroup().contains(group)) {
+			getMiscGroup().remove(group);
+		}
 	}
 
 	/**

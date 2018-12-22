@@ -16,7 +16,7 @@ public class DeleteGroupCommand extends MixtractCommand {
 		if (data() == null)
 			return;
 
-		GroupLabel sel = frame().getGroupingPanel().getSelectedGroup();
+		final GroupLabel sel = frame().getGroupingPanel().getSelectedGroup();
 		app().data().deleteGroupFromData(sel.group());
 		app().notifyDeleteGroup(sel);
 	}

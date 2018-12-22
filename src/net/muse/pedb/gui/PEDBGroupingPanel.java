@@ -24,10 +24,11 @@ import net.muse.gui.PianoRoll;
 import net.muse.pedb.data.PEDBGroup;
 import net.muse.pedb.data.PEDBTuneData;
 
-class PEDBGroupingPanel extends GroupingPanel {
+public class PEDBGroupingPanel extends GroupingPanel {
 	private static final long serialVersionUID = 1L;
 
 	private PEDBGroupLabel higherGroup;
+
 	LinkedList<PEDBGroupLabel> sequenceGroups = new LinkedList<>();
 
 	protected PEDBGroupingPanel(MuseApp app) {
@@ -55,6 +56,10 @@ class PEDBGroupingPanel extends GroupingPanel {
 		add(toplabel); // 描画
 		System.out.println(group.getScoreNotelist());
 		return toplabel;
+	}
+
+	@Override public PEDBGroupLabel getSelectedGroup() {
+		return (PEDBGroupLabel) super.getSelectedGroup();
 	}
 
 	/**

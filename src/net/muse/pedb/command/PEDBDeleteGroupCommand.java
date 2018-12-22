@@ -9,14 +9,6 @@ import net.muse.pedb.gui.PEDBMainFrame;
 
 public class PEDBDeleteGroupCommand extends DeleteGroupCommand {
 
-	@Override protected PEDBGroupLabel getGroupLabel() {
-		return (PEDBGroupLabel) super.getGroupLabel();
-	}
-
-	@Override protected PEDBTuneData data() {
-		return (PEDBTuneData) super.data();
-	}
-
 	@Override public PEDBStructureEditor app() {
 		return (PEDBStructureEditor) super.app();
 	}
@@ -25,8 +17,30 @@ public class PEDBDeleteGroupCommand extends DeleteGroupCommand {
 		return (PEDBConcierge) super.butler();
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.mixtract.command.DeleteGroupCommand#run()
+	 */
+	@Override public void run() {
+		if (data() == null)
+			return;
+
+		final PEDBGroupLabel sel = frame().getGroupingPanel()
+				.getSelectedGroup();
+		app().data().deleteGroupFromData(sel.group());
+		app().notifyDeleteGroup(sel);
+	}
+
+	@Override protected PEDBTuneData data() {
+		return (PEDBTuneData) super.data();
+	}
+
 	@Override protected PEDBMainFrame frame() {
 		return (PEDBMainFrame) super.frame();
+	}
+
+	@Override protected PEDBGroupLabel getGroupLabel() {
+		return (PEDBGroupLabel) super.getGroupLabel();
 	}
 
 	@Override protected PEDBTuneData target() {
