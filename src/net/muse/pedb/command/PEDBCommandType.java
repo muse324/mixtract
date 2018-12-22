@@ -2,6 +2,7 @@ package net.muse.pedb.command;
 
 import net.muse.command.MuseAppCommand;
 import net.muse.command.MuseAppCommandAction;
+import net.muse.mixtract.command.DeleteGroupCommand;
 
 public enum PEDBCommandType implements MuseAppCommandAction {
 	PEDBMAKE_GROUP("Make a group", "グループを作成") {
@@ -20,6 +21,11 @@ public enum PEDBCommandType implements MuseAppCommandAction {
 		@Override public PEDBOpenMusicXMLCommand create(String... lang) {
 			return (PEDBOpenMusicXMLCommand) (cmd = new PEDBOpenMusicXMLCommand(
 					lang));
+		}
+	},
+	PEDBDELETE_GROUP("Delete group", "グループを削除") {
+		@Override public MuseAppCommand create(String... lang) {
+			return (DeleteGroupCommand) (cmd = new DeleteGroupCommand(lang));
 		}
 	};
 	protected MuseAppCommand cmd;

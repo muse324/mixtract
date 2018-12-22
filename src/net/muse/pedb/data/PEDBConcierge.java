@@ -8,7 +8,6 @@ import net.muse.command.MuseAppCommandType;
 import net.muse.data.Concierge;
 import net.muse.gui.TuneDataListener;
 import net.muse.misc.MuseObject;
-import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.pedb.command.PEDBCommandType;
 import net.muse.pedb.gui.PEDBTopNoteLabel;
 
@@ -37,7 +36,7 @@ public class PEDBConcierge extends Concierge {
 			break;
 		case KeyEvent.VK_BACK_SPACE:
 			printConsole("delete group");
-			c = app.searchCommand(MixtractCommandType.DELETE_GROUP);
+			c = app.searchCommand(PEDBCommandType.PEDBDELETE_GROUP);
 			break;
 		case KeyEvent.VK_SPACE:
 			printConsole(!isPlayed() ? "play" : "stop");

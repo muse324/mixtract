@@ -58,6 +58,25 @@ public class PEDBTuneData extends MXTuneData {
 		return (PEDBConcierge) super.butler();
 	}
 
+	@Override public void deleteGroupFromData(Group group) {
+		if (group == null)
+			return;
+		// 削除
+		deleteGroupFromMiscGroup(group);
+
+		// 対象グループが階層に含まれている場合、MiscGroupリストに移動する
+		if (group.hasParent()) {
+			group.parent().setChild(null);
+			group.setParent(null);
+		}
+		if (group.hasChild()) {
+			group.child().setParent(null);
+			group.child().setLevel(-1);
+			addMiscGroupList(group.child());
+			group.setChild(null);
+		}
+	}
+
 	@Override public PEDBNoteData getLastNote(int partIndex) {
 		return (PEDBNoteData) super.getLastNote(partIndex);
 	}
@@ -73,6 +92,12 @@ public class PEDBTuneData extends MXTuneData {
 	@Override protected CMXNoteHandler createCMXNoteHandler() {
 		return new CMXNoteHandler(this) {
 			private int idxInMeasure = 0;
+
+			@Override public void beginMeasure(Measure measure,
+					MusicXMLWrapper wrapper) {
+				super.beginMeasure(measure, wrapper);
+				idxInMeasure = 0;
+			}
 
 			@Override protected PEDBGroup createGroup(NoteData n, int i,
 					GroupType type) {
@@ -94,14 +119,9 @@ public class PEDBTuneData extends MXTuneData {
 				return (PEDBTuneData) data;
 			}
 
-			@Override public void beginMeasure(Measure measure,
-					MusicXMLWrapper wrapper) {
-				super.beginMeasure(measure, wrapper);
-				idxInMeasure=0;
-			}
-			protected void readNoteData(MusicXMLWrapper.Note note) {
+			@Override protected void readNoteData(MusicXMLWrapper.Note note) {
 				super.readNoteData(note);
-				PEDBNoteData c = (PEDBNoteData) cur;
+				final PEDBNoteData c = (PEDBNoteData) cur;
 				c.setIndexInMeasure(++idxInMeasure);
 			}
 		};
@@ -109,6 +129,12 @@ public class PEDBTuneData extends MXTuneData {
 
 	@Override protected PEDBConcierge createConcierge() {
 		return new PEDBConcierge(this);
+	}
+
+	@Override protected void deleteGroup(Group target) {
+		if (target == null)
+			return;
+		super.deleteGroup(target);
 	}
 
 	@Override protected void deleteHierarchicalGroup(Group root, Group target) {
@@ -201,14 +227,15 @@ public class PEDBTuneData extends MXTuneData {
 			writeNoteData(out, g.getBeginNote());
 		writeNoteData(out, g.child());
 	}
-	protected void writeNoteData(PrintWriter out, NoteData note) {
+
+	@Override protected void writeNoteData(PrintWriter out, NoteData note) {
 		if (note == null)
 			return;
 		writeNoteData(out, note.child());
-		out.format("%s:%s:%s\n", note.id(), note, (note
-				.getXMLNote() != null) ? note.getXMLNote().getXPathExpression()
-						: (note.getSCCNote() != null) ? note.getSCCNote()
-								.getXPathExpression() : "null");
+		out.format("%s:%s:%s\n", note.id(), note, note.getXMLNote() != null
+				? note.getXMLNote().getXPathExpression()
+				: note.getSCCNote() != null ? note.getSCCNote()
+						.getXPathExpression() : "null");
 		writeNoteData(out, note.next());
 	}
 }

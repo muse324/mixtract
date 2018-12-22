@@ -28,16 +28,11 @@ public class PEDBStructureEditor extends MuseApp {
 		super(args);
 	}
 
-	@Override
-	public PEDBConcierge butler() {
-		return (PEDBConcierge)super.butler();
-	}
-
 	public static void main(String[] args) {
 		try {
 			final PEDBStructureEditor app = new PEDBStructureEditor(args);
 			app.setup();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -47,10 +42,15 @@ public class PEDBStructureEditor extends MuseApp {
 		if (group == null)
 			return;
 		assert group instanceof MXGroup;
-		MXGroupAnalyzer ana = new MXGroupAnalyzer((MXTuneData) data, false);
+		final MXGroupAnalyzer ana = new MXGroupAnalyzer((MXTuneData) data,
+				false);
 		ana.setRootGroup((MXGroup) group);
 		ana.run();
 		getAnalyzer().add(ana);
+	}
+
+	@Override public PEDBConcierge butler() {
+		return (PEDBConcierge) super.butler();
 	}
 
 	/*
@@ -59,6 +59,10 @@ public class PEDBStructureEditor extends MuseApp {
 	 */
 	@Override public void createTuneData(File in, File out) throws IOException {
 		setData(new PEDBTuneData(in, out));
+	}
+
+	@Override public PEDBTuneData data() {
+		return (PEDBTuneData) super.data();
 	}
 
 	/*
@@ -98,14 +102,9 @@ public class PEDBStructureEditor extends MuseApp {
 		// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-
 		/* sprash screen */
 		createSplashScreen(getAppImageFile());
-		EventQueue.invokeLater(new Runnable() {
-			@Override public void run() {
-				showSplashScreen();
-			}
-		});
+		EventQueue.invokeLater(() -> showSplashScreen());
 
 		// create mainFrame
 		createNewFrame();
@@ -117,22 +116,17 @@ public class PEDBStructureEditor extends MuseApp {
 		// 長い処理のdummy
 		try {
 			Thread.sleep(2000);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			butler().printConsole(e.getMessage());
 		}
-		EventQueue.invokeLater(new Runnable() {
-			@Override public void run() {
-				// showPanel();
-				hideSplash();
-			}
-		});
+		EventQueue.invokeLater(() -> hideSplash());
 	}
 
 	@Override protected void setupCommands() {
 		super.setupCommands();
-		for (MixtractCommandType e : MixtractCommandType.values())
+		for (final MixtractCommandType e : MixtractCommandType.values())
 			getCommandList().add(e);
-		for (PEDBCommandType e : PEDBCommandType.values())
+		for (final PEDBCommandType e : PEDBCommandType.values())
 			getCommandList().add(e);
 	}
 }
