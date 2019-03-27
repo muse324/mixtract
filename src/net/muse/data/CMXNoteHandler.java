@@ -3,10 +3,7 @@ package net.muse.data;
 import java.util.ArrayList;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Attributes;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Direction;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Measure;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.MusicData;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 
 public class CMXNoteHandler extends AbstractCMXNoteHandler {
@@ -253,10 +250,11 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			NoteData tgt = null;
 			// タイ
 			for (NoteData t : tiedNote) {
-				if (t.getXMLNote().tiedTo().equals(note)) {
+				Note tiedTo = t.getXMLNote().tiedTo();
+				if (tiedTo != null && tiedTo.equals(note)) {
 					tgt = t;
-					 // TODO タイ音符のオフセットの扱い。MIDI再生時に計算させる
-//					t.setOffset(nd.offset());
+					// TODO タイ音符のオフセットの扱い。MIDI再生時に計算させる
+					// t.setOffset(nd.offset());
 					t.setTiedTo(nd);
 					break;
 				}
@@ -264,7 +262,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			if (tgt != null)
 				tiedNote.remove(tgt);
 			cur.setNext(nd);
-			cur=nd;
+			cur = nd;
 			// TODO タイ情報のファイル出力、入力を修正する
 		} else {
 			cur.setNext(nd);
