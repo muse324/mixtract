@@ -1,5 +1,6 @@
 {
     "java.project.referencedLibraries": [
+<<<<<<< HEAD
         "lib/**/*.jar",
         "/Users/hashida/Dropbox (個人用)/workspace/lib/cmx-0.62/cmx.jar",
         "/Users/hashida/Dropbox (個人用)/workspace/lib/commons-io-2.11.0/commons-io-2.11.0.jar",        "/Users/hashida/Dropbox (個人用)/workspace/lib/mime-util-2.1.3.jar",
@@ -10,4 +11,19 @@
         "src"
     ],
     "java.project.outputPath": "bin",
+=======
+<<<<<<< HEAD
+        "lib/**/*.jar"
+    ],
+=======
+        "lib/**/*.jar",
+        "/Users/hashida/Dropbox (個人用)/workspace/lib/mime-util-2.1.3.jar",
+        "/Users/hashida/Dropbox (個人用)/workspace/lib/cmx-0.62/cmx.jar"
+    ],
+    "java.dependency.packagePresentation": "hierarchical",
+>>>>>>> 34616747d2a67f441bfc2c850517adab9ce0cd97
+    "java.project.sourcePaths": [
+        "src"
+    ]
+>>>>>>> 956c8ff60a7b661c0896ba4ad95b588365d24d62
 }
