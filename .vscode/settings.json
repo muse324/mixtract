@@ -1,7 +1,15 @@
 {
     "java.project.referencedLibraries": [
+<<<<<<< HEAD
         "lib/**/*.jar"
     ],
+=======
+        "lib/**/*.jar",
+        "/Users/hashida/Dropbox (個人用)/workspace/lib/mime-util-2.1.3.jar",
+        "/Users/hashida/Dropbox (個人用)/workspace/lib/cmx-0.62/cmx.jar"
+    ],
+    "java.dependency.packagePresentation": "hierarchical",
+>>>>>>> 34616747d2a67f441bfc2c850517adab9ce0cd97
     "java.project.sourcePaths": [
         "src"
     ]
