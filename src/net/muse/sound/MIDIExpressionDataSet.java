@@ -1,10 +1,19 @@
 package net.muse.sound;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-import javax.sound.midi.*;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.ShortMessage;
 
-import net.muse.misc.*;
+import net.muse.misc.ConfigEditListener;
+import net.muse.misc.MuseObject;
+import net.muse.misc.Util;
 
 public class MIDIExpressionDataSet extends MuseObject implements
 		ConfigEditListener {
@@ -67,15 +76,17 @@ public class MIDIExpressionDataSet extends MuseObject implements
 
 	/**
 	 * サンプルの音列を生成します．
-	 * 
+	 *
 	 * @param console
 	 */
 	public void createSampleNotes() {
 		/*
-		 * ======================================================================
+		 * =====================================================================
+		 * =
 		 * =
 		 * テスト音符作成
-		 * ======================================================================
+		 * =====================================================================
+		 * =
 		 * =
 		 */
 		timeEventMap.clear();
@@ -140,7 +151,7 @@ public class MIDIExpressionDataSet extends MuseObject implements
 				continue;
 			for (MIDINoteEvent n : timeEventMap.get(t)) {
 				// MIDIイベントの作成
-				testPrintln(n.toString());
+				butler().printConsole(n.toString());
 				// if (!(n instanceof MIDINoteEvent))
 				// continue;
 				int status = ShortMessage.SYSTEM_RESET;
@@ -173,9 +184,8 @@ public class MIDIExpressionDataSet extends MuseObject implements
 
 				if (DEBUG)
 					System.err.println("   ontime " + n.getOnset() + " note "
-										+ msg.getData1() + " "
-										+ n.getMessageType() + " length "
-										+ n.getLength());
+							+ msg.getData1() + " " + n.getMessageType()
+							+ " length " + n.getLength());
 			}
 		}
 		expandMIDIEvents();
@@ -189,12 +199,12 @@ public class MIDIExpressionDataSet extends MuseObject implements
 			for (MIDINoteEvent n : timeEventMap.get(key)) {
 				if (n.getMessageType().equals("OFF"))
 					continue;
-				double offsetTime = Util.castDouble(n.getBeatOnset()
-													+ n.getLength());
+				double offsetTime = Util.castDouble(n.getBeatOnset() + n
+						.getLength());
 				double b = offsetTime - n.getMeasure();
 				if (timeEventMap.containsKey(offsetTime)) {
-					LinkedList<MIDINoteEvent> list = timeEventMap
-							.get(offsetTime);
+					LinkedList<MIDINoteEvent> list = timeEventMap.get(
+							offsetTime);
 					list.add(0, new MIDINoteEvent("OFF", n.getMeasure(), b, n
 							.getNoteNum(), getDefaultOffVelocity(), 0.,
 							getBaseBeat()));
@@ -222,9 +232,8 @@ public class MIDIExpressionDataSet extends MuseObject implements
 		int m = measure - 1; // ゼロ始まりにする
 		double b = Util.castDouble(beat - 1); // ゼロ始まりにする
 		double onset = m * baseBeat + b;
-		LinkedList<MIDINoteEvent> list = (timeEventMap.containsKey(onset)) ? timeEventMap
-				.get(onset)
-				: new LinkedList<MIDINoteEvent>();
+		LinkedList<MIDINoteEvent> list = (timeEventMap.containsKey(onset))
+				? timeEventMap.get(onset) : new LinkedList<MIDINoteEvent>();
 		list.add(new MIDINoteEvent(status, m, b, notenum, vel, length,
 				getBaseBeat()));
 		timeEventMap.put(onset, list);
@@ -247,7 +256,7 @@ public class MIDIExpressionDataSet extends MuseObject implements
 
 	/**
 	 * 楽曲の演奏時間長を取得します。
-	 * 
+	 *
 	 * @return performanceLength
 	 */
 	protected double getPerformanceLength() {
@@ -277,7 +286,8 @@ public class MIDIExpressionDataSet extends MuseObject implements
 		// selectTimeFrom = selectTimeEnd = 0;// 現在の累積時刻
 		if (DEBUG)
 			System.out.println("======== setDeltaTimes ============");
-		for (int currentBeat = timeEventMap.firstKey().intValue(); currentBeat < beatLength; currentBeat++) {
+		for (int currentBeat = timeEventMap.firstKey()
+				.intValue(); currentBeat < beatLength; currentBeat++) {
 			int tempo = (int) getBaseBeatTime(); // TODO tempoは常に曲冒頭の値
 			for (double t : timeEventMap.keySet()) {
 				if (t < currentBeat)
@@ -294,10 +304,9 @@ public class MIDIExpressionDataSet extends MuseObject implements
 
 					if (DEBUG)
 						System.out.println("mstime=" + ev.getOnset() + " note "
-											+ ev.getNoteNum() + " "
-											+ ev.getMessageType() + " onset="
-											+ ev.getOnset() + " length="
-											+ ev.getLength());
+								+ ev.getNoteNum() + " " + ev.getMessageType()
+								+ " onset=" + ev.getOnset() + " length=" + ev
+										.getLength());
 				}
 			}
 			setPerformanceLength(selectTimeEnd = beatsum += tempo);
@@ -313,11 +322,10 @@ public class MIDIExpressionDataSet extends MuseObject implements
 				// onset が積分値
 				// tempomap[i] が次の(予測)拍に変わる
 				if (DEBUG)
-					System.out.println("time=" + ev.getOnset() + " note "
-										+ ev.getNoteNum() + " "
-										+ ev.getMessageType() + " onset="
-										+ ev.getOnset() + " length="
-										+ ev.getLength());
+					System.out.println("time=" + ev.getOnset() + " note " + ev
+							.getNoteNum() + " " + ev.getMessageType()
+							+ " onset=" + ev.getOnset() + " length=" + ev
+									.getLength());
 			}
 		}
 		if (DEBUG)
@@ -362,18 +370,17 @@ public class MIDIExpressionDataSet extends MuseObject implements
 						break;
 
 					futureOffEvent.setOnset(ev.getOnset()
-											- ON_OFF_RESOLUTION_TIME);
+							- ON_OFF_RESOLUTION_TIME);
 				}
 			}
 		}
 		if (DEBUG) {
 			for (double t : timeEventMap.keySet()) {
 				for (MIDINoteEvent ev : timeEventMap.get(t)) {
-					System.out.println("time=" + ev.getOnset() + " note "
-										+ ev.getNoteNum() + " "
-										+ ev.getMessageType() + " onset="
-										+ ev.getOnset() + " length="
-										+ ev.getLength());
+					System.out.println("time=" + ev.getOnset() + " note " + ev
+							.getNoteNum() + " " + ev.getMessageType()
+							+ " onset=" + ev.getOnset() + " length=" + ev
+									.getLength());
 				}
 			}
 			System.out.println("======== (end) switchOFFEvents ============");
@@ -402,16 +409,14 @@ public class MIDIExpressionDataSet extends MuseObject implements
 		Iterator<MIDINoteEvent> it = midiEventList.iterator();
 		while (it.hasNext()) {
 			MIDINoteEvent ev = it.next();
-			if (pre != null
-				&& ev.getOnset() - pre.getOnset() < EVENT_RESOLUTION_TIME) {
+			if (pre != null && ev.getOnset() - pre
+					.getOnset() < EVENT_RESOLUTION_TIME) {
 				ev.setOnset(pre.getOnset() + EVENT_RESOLUTION_TIME);
 			}
 			if (DEBUG)
-				System.out.println("time=" + ev.getOnset() + " note "
-									+ ev.getNoteNum() + " "
-									+ ev.getMessageType() + " onset="
-									+ ev.getOnset() + " length="
-									+ ev.getLength());
+				System.out.println("time=" + ev.getOnset() + " note " + ev
+						.getNoteNum() + " " + ev.getMessageType() + " onset="
+						+ ev.getOnset() + " length=" + ev.getLength());
 			pre = ev;
 		}
 		if (DEBUG)
@@ -432,9 +437,8 @@ public class MIDIExpressionDataSet extends MuseObject implements
 	 * @param currentTime
 	 * @return
 	 */
-	@SuppressWarnings("unused")
-	private final List<MidiMessage> getMidiMessageList(double preTime,
-			double currentTime) {
+	@SuppressWarnings("unused") private final List<MidiMessage> getMidiMessageList(
+			double preTime, double currentTime) {
 		List<MidiMessage> list = new LinkedList<MidiMessage>();
 		for (MIDINoteEvent ev : midiEventList) {
 			if (ev.getOnset() >= currentTime)
@@ -460,7 +464,9 @@ public class MIDIExpressionDataSet extends MuseObject implements
 
 				long diff = n.getOnset() - onEvent.getOnset();
 				if (n.getNoteNum() == onEvent.getNoteNum() && diff > -res
-					&& diff < res) { return n; }
+						&& diff < res) {
+					return n;
+				}
 			}
 		}
 		return null;
@@ -488,7 +494,7 @@ public class MIDIExpressionDataSet extends MuseObject implements
 	/**
 	 * 基準テンポ(beat time)を設定します．このメソッドを実行すると，基準テンポ(BPM)も同時に計算されます．
 	 * TODO 使ってない 2011.8.31
-	 * 
+	 *
 	 * @param beatTime 設定する beat time
 	 */
 	public void setBaseBeatTime(double beatTime) {
@@ -498,7 +504,7 @@ public class MIDIExpressionDataSet extends MuseObject implements
 
 	/**
 	 * 基準テンポ(beat per minute)を設定します．このメソッドを実行すると，基準テンポ(beat time)も同時に計算されます．
-	 * 
+	 *
 	 * @param bpm 設定する BPM
 	 */
 	private void setBPM(double bpm) {

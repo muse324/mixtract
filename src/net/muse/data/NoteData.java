@@ -13,6 +13,8 @@ public class NoteData extends SequenceData {
 	/** 音価の最小値。TODO 単位系は各プログラムで確認してください。 */
 	private static final int minimumDuration = 50;
 
+	public static final int NO_TIED = -1;
+
 	/**
 	 * MusicXMLWrapeer.Note クラスでの音符情報。改めてCMXからの情報を取得したい時に getXMLNote()
 	 * を通じて呼び出してください。
@@ -48,10 +50,12 @@ public class NoteData extends SequenceData {
 	/** 音名 */
 	private String noteName = "";
 	/**
-	 * Part number begins from 1 by integer.<br>
-	 * 声部番号(1～)
+	 * MusicXML Part number begins from 1 by integer.<br>
+	 * MusicXMLの声部番号(1～)。１から始まる。0の場合、声部の区別がされていないことを表す。
 	 */
-	private int partNumber = 0;
+	private int xmlPartNumber = 0;
+	/** オリジナルの声部番号。１から始まる。0の場合、声部の区別がされていないことを表す。 */
+	private int musePhony = 0;
 	/**
 	 * Measure number begins from 0 (Auftakt) by integer.<br>
 	 * 小節番号(0～)
@@ -78,12 +82,16 @@ public class NoteData extends SequenceData {
 	 * 小節内の拍の位置。 TODO １拍目を0.0とするか1.0とするかは各プログラムで確認してください。
 	 */
 	private double beat;
-	/** 声部番号。１から始まる。0の場合、声部の区別がされていないことを表す。 */
-	private int voice = 0;
+	/** MusicXMLのボイス番号。１から始まる。0の場合、声部の区別がされていないことを表す。 */
+	private int xmlVoice = 0;
 	/** 装飾音であるかどうかを判別します。 */
 	private boolean grace = false;
 	/** タイであるかどうかを判別します。 */
 	private boolean tied;
+
+	private NoteData tiedTo = null;
+
+	private NoteData tiedFrom;
 
 	/**
 	 * @return
@@ -103,8 +111,9 @@ public class NoteData extends SequenceData {
 		setXMLNote(note);
 		initialize(partNumber, note.noteName(), (note.rest()) ? -1
 				: note.notenum(), note.voice(), note.grace(), note
-						.tiedTo() != null, note.rest(), note.beat(), Harmony.I);
-
+						.containsTieType("start"), note.rest(), note.beat(),
+				Harmony.I);
+		setMusePhony(note.voice());
 		setMeasureNumber(note.measure().number());
 		setOnset(note.onset(getTicksPerBeat()));
 		setOffset(note.offset(getTicksPerBeat()));
@@ -145,8 +154,7 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#child()
 	 */
-	@Override
-	public NoteData child() {
+	@Override public NoteData child() {
 		return (NoteData) super.child();
 	}
 
@@ -236,8 +244,7 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#next()
 	 */
-	@Override
-	public NoteData next() {
+	@Override public NoteData next() {
 		return (NoteData) super.next();
 	}
 
@@ -279,24 +286,22 @@ public class NoteData extends SequenceData {
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#parent()
 	 */
-	@Override
-	public NoteData parent() {
+	@Override public NoteData parent() {
 		return (NoteData) super.parent();
 	}
 
 	/**
 	 * @return partNumber
 	 */
-	public int partNumber() {
-		return partNumber;
+	public int xmlPartNumber() {
+		return xmlPartNumber;
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.data.SequenceData#previous()
 	 */
-	@Override
-	public NoteData previous() {
+	@Override public NoteData previous() {
 		return (NoteData) super.previous();
 	}
 
@@ -359,8 +364,8 @@ public class NoteData extends SequenceData {
 	/**
 	 * @param partNumber セットする partNumber
 	 */
-	public final void setPartNumber(int partNumber) {
-		this.partNumber = partNumber;
+	public final void setXMLPartNumber(int partNumber) {
+		this.xmlPartNumber = partNumber;
 	}
 
 	public void setRealOffset(double offset) {
@@ -388,8 +393,8 @@ public class NoteData extends SequenceData {
 	/**
 	 * @param voice セットする voice
 	 */
-	public void setVoice(int voice) {
-		this.voice = voice;
+	public void setXMLVoice(int voice) {
+		this.xmlVoice = voice;
 	}
 
 	/**
@@ -414,8 +419,8 @@ public class NoteData extends SequenceData {
 	/**
 	 * @return voice
 	 */
-	public int voice() {
-		return voice;
+	public int xmlVoice() {
+		return xmlVoice;
 	}
 
 	protected void createMIDINoteEvent(int bpm, int vel) {
@@ -426,17 +431,17 @@ public class NoteData extends SequenceData {
 					ShortMessage.NOTE_OFF, vel);
 		} catch (InvalidMidiDataException e) {
 			JOptionPane.showMessageDialog(null, String.format(
-					"invalid MIDI data for %s", this));
+					"invalid MIDI data for %d", this.id()));
 		}
 	}
 
 	protected void initialize(int partNumber, String noteName, int noteNumber,
 			int voice, boolean grace, boolean tie, boolean rest, double beat,
 			Harmony chord) {
-		this.partNumber = partNumber;
+		this.xmlPartNumber = partNumber;
 		this.noteName = noteName;
 		this.noteNumber = noteNumber;
-		this.voice = voice;
+		this.xmlVoice = voice;
 		this.grace = grace;
 		this.tied = tie;
 		this.rest = rest;
@@ -479,4 +484,75 @@ public class NoteData extends SequenceData {
 		this.sccNote = sccNote;
 	}
 
+	public int musePhony() {
+		return musePhony;
+	}
+
+	public void setMusePhony(int musePhony) {
+		this.musePhony = musePhony;
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override public String toString() {
+		return String.format(
+				"idx=%d, on=%d, n=%s, beat=%1f, tval=%d, p=%d, m=%d, voice=%d, phony=%s/off=%d, vel=%d, rest=%b, chd=%b, grc=%b, tiedFrom=%s, fifths=%d, harmony=%s",
+				index(), onset(), noteName(), beat(), timeValue(),
+				xmlPartNumber(), measureNumber(), xmlVoice(), musePhony(),
+				offset(), velocity(), rest(), child() != null, isGrace(),
+				(hasTiedFrom()) ? tiedFrom().index() : NO_TIED, fifths(), chord());
+	}
+
+	public void setTiedTo(NoteData nd) {
+		// タイを切る
+		if (nd == null) {
+			tiedTo.setTiedFrom(null);
+			tied = false;
+		}
+		// 代入
+		tiedTo = nd;
+
+		// 整合性チェック
+		tied = hasTiedTo();
+		if (!hasTiedTo())
+			return; // タイが切れてれるなら終了
+
+		// tiedFromを持ってないか、nd と異なる場合
+		if (!tiedTo.hasTiedFrom() || tiedTo.tiedFrom().equals(this))
+			tiedTo.setTiedFrom(this);
+	}
+
+	public void setTiedFrom(NoteData nd) {
+		// タイを切る
+		if (nd == null) {
+			tiedFrom.setTiedTo(null);
+		}
+		// 代入
+		tiedFrom = nd;
+
+		// 整合性チェック
+		tied = false;
+		if (!hasTiedFrom())
+			return;// タイが切れてれるなら終了
+		if (!tiedFrom.hasTiedTo() || !tiedFrom.tiedTo().equals(this))
+			tiedFrom.setTiedTo(this);
+	}
+
+	public boolean hasTiedTo() {
+		return tiedTo != null;
+	}
+
+	public boolean hasTiedFrom() {
+		return tiedFrom != null;
+	}
+
+	public NoteData tiedFrom() {
+		return tiedFrom;
+	}
+
+	public NoteData tiedTo() {
+		return tiedTo;
+	}
 }

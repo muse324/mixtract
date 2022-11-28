@@ -11,8 +11,8 @@ final class PrintAllSimilarGroupsCommand extends
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
-		main().printAllSimilarList();
+	@Override public void run() {
+		app().printAllSimilarList();
 	}
 
 }

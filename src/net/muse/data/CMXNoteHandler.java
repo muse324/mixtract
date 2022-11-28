@@ -1,16 +1,14 @@
 package net.muse.data;
 
+import java.util.ArrayList;
+
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Attributes;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Direction;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Measure;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.MusicData;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
-import net.muse.gui.GUIUtil;
 
 public class CMXNoteHandler extends AbstractCMXNoteHandler {
 
-	private NoteData cur = null;
+	protected NoteData cur = null;
 
 	private Group primaryGrouplist = null;
 
@@ -22,6 +20,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	private int currentBPM = 120;
 	private int currentDefaultVelocity;
 
+	private ArrayList<NoteData> tiedNote = new ArrayList<NoteData>();;
+
 	public CMXNoteHandler(TuneData tuneData) {
 		super(tuneData);
 	}
@@ -29,18 +29,19 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	@Override public void beginMeasure(Measure measure,
 			MusicXMLWrapper wrapper) {
 		super.beginMeasure(measure, wrapper);
-		if (currentPartNumber == 1) {
-			try {
-				currentBPM = (currentBPM == measure.tempo()) ? currentBPM
-						: measure.tempo();
-				data().getBPM().add(currentBPM);
-				if (currentPartNumber == 1 && measure.number() == 1) {
-					setDefaultBPM(currentBPM);
-				}
-				testPrintln("-----measure " + measure.number() + ", tempo="
-						+ currentBPM);
-			} catch (NullPointerException e) {
+		if (currentPartNumber > 1)
+			return;
+		try {
+			currentBPM = measure.tempo();
+		} catch (NullPointerException e) {
+		} catch (NumberFormatException e) {
+		} finally {
+			data().getBPM().add(currentBPM);
+			if (currentPartNumber == 1 && measure.number() == 1) {
+				setDefaultBPM(currentBPM);
 			}
+			butler().printConsole("-----measure " + measure.number()
+					+ ", tempo=" + currentBPM);
 		}
 	}
 
@@ -61,7 +62,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		currentDefaultVelocity = (int) (getDefaultVelocity()
 				* data().volume[ch]);
 		cur = null;
-		testPrintln("=====part " + currentPartNumber);
+		butler().printConsole(String.format("=====part P%d¥n",
+				currentPartNumber));
 	}
 
 	/*
@@ -94,7 +96,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			readNoteData((MusicXMLWrapper.Note) md);
 		else if (md instanceof Attributes) {
 			Attributes a = (Attributes) md;
-			setKeys(a.mode(), a.fifths());
+			if (a.mode() != null)
+				setKeys(a.mode(), a.fifths());
 			data().setBeatInfo(a.measure().number(), a.beats(), a.beatType());
 		} else if (md instanceof Direction)
 			readDirections((Direction) md);
@@ -122,7 +125,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				.getBPM().get(0), beat, note.velocity());
 		nd.setKeyMode(keyMode, fifths);
 		nd.setMeasureNumber(currentMeasureNumber);
-		testPrintln(nd.toString());
+		butler().printConsole(nd.toString());
 		if (cur == null) {
 			// 冒頭音
 			cur = nd;
@@ -139,11 +142,11 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 			return;
 		switch (note.notenum()) {
 		case 64:
-			GUIUtil.printConsole(String.format("%d: Sustain %d", note.onset(),
+			butler().printConsole(String.format("%d: Sustain %d", note.onset(),
 					note.velocity()));
 			break;
 		default:
-			GUIUtil.printConsole(String.format("%d: control %d %d", note
+			butler().printConsole(String.format("%d: control %d %d", note
 					.onset(), note.notenum(), note.velocity()));
 		}
 		return;
@@ -170,7 +173,7 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	private void createGroup() {
 		Group g = createGroup(data().getPartwiseNotelist().get(partIndex),
 				partIndex + 1, GroupType.NOTE);
-//		data().getPartwiseNotelist().add(g.getBeginNote());
+		// data().getPartwiseNotelist().add(g.getBeginNote());
 		if (primaryGrouplist == null) {
 			primaryGrouplist = g;
 			data().setGrouplist(partIndex, g);
@@ -187,7 +190,8 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 		int beat = note.onset() / getTicksPerBeat() % ((b != null) ? b.beat()
 				: 4) + 1;
 		currentMeasureNumber = note.onset() / getTicksPerBeat() / ((b != null)
-				? b.beat() : 4) + 1;
+				? b.beat()
+				: 4) + 1;
 		return beat;
 	}
 
@@ -221,12 +225,13 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 	/**
 	 * @param md
 	 */
-	private void readNoteData(MusicXMLWrapper.Note note) {
+	protected void readNoteData(MusicXMLWrapper.Note note) {
 		NoteData nd = createNoteData(note, currentPartNumber, ++idx, data()
 				.getBPM().get(0), currentDefaultVelocity);
 		nd.setKeyMode(keyMode, fifths);
 		data().setTempoListEndtime(note.offset(getTicksPerBeat()), true);
-		testPrintln(nd.toString());
+		if (note.containsTieType("start"))
+			tiedNote.add(nd);
 		if (cur == null) {
 			// 冒頭音
 			cur = nd;
@@ -242,12 +247,28 @@ public class CMXNoteHandler extends AbstractCMXNoteHandler {
 				data().setPartwiseNotelist(partIndex, nd);
 			cur = nd;
 		} else if (note.containsTieType("stop")) {
+			NoteData tgt = null;
 			// タイ
-			cur.setOffset(nd.offset());
+			for (NoteData t : tiedNote) {
+				Note tiedTo = t.getXMLNote().tiedTo();
+				if (tiedTo != null && tiedTo.equals(note)) {
+					tgt = t;
+					// TODO タイ音符のオフセットの扱い。MIDI再生時に計算させる
+					// t.setOffset(nd.offset());
+					t.setTiedTo(nd);
+					break;
+				}
+			}
+			if (tgt != null)
+				tiedNote.remove(tgt);
+			cur.setNext(nd);
+			cur = nd;
+			// TODO タイ情報のファイル出力、入力を修正する
 		} else {
 			cur.setNext(nd);
 			cur = nd;
 		}
+		butler().printConsole(nd.toString());
 	}
 
 	private void setChild(NoteData parent, NoteData note) {

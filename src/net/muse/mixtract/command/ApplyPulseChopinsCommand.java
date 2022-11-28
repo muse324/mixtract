@@ -11,7 +11,7 @@ final class ApplyPulseChopinsCommand extends
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		throw new UnsupportedOperationException("chopin's pulse");
 	}
 

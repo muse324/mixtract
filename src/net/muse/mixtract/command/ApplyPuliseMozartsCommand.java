@@ -11,7 +11,7 @@ final class ApplyPuliseMozartsCommand extends
 	 * (non-Javadoc)
 	 * @see net.muse.misc.Command#execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		// ExpressionMaker
 		// .transerPulsesTo(getSelectedObjects().getGroup(), "Mozart");
 	}

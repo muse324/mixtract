@@ -36,7 +36,7 @@ public class CurveViewPanel extends PhraseCanvas {
 
 	public CurveViewPanel(MXGroup group) {
 		super(group, group.getDynamicsCurve());
-		this.group = group;
+		this.setGroup(group);
 		this.cvDyn = group.getDynamicsCurve();
 		this.cvTmp = group.getTempoCurve();
 		this.cvArt = group.getArticulationCurve();
@@ -100,9 +100,9 @@ public class CurveViewPanel extends PhraseCanvas {
 	 * mixtract
 	 * .Mixtract)
 	 */
-	@Override void setController(Mixtract main) {
-		this.main = main;
-		this.mouseActions = new CanvasListener(main, this) {
+	@Override void setController(Mixtract app) {
+		this.setMain(app);
+		this.setMouseActions(new CanvasListener(app, this) {
 
 			/*
 			 * (非 Javadoc)
@@ -114,7 +114,7 @@ public class CurveViewPanel extends PhraseCanvas {
 			@Override public void mouseDragged(MouseEvent e) {
 				super.mouseDragged(e);
 				if (SwingUtilities.isLeftMouseButton(e))
-					_main.notifyShowCurrentX(true, getMousePosition().x);
+					app().notifyShowCurrentX(true, getMousePosition().x);
 				repaint();
 			}
 
@@ -127,7 +127,7 @@ public class CurveViewPanel extends PhraseCanvas {
 			@Override public void mousePressed(MouseEvent e) {
 				super.mousePressed(e);
 				if (SwingUtilities.isLeftMouseButton(e))
-					_main.notifyShowCurrentX(true, getMousePosition().x);
+					app().notifyShowCurrentX(true, getMousePosition().x);
 				repaint();
 			}
 
@@ -141,13 +141,13 @@ public class CurveViewPanel extends PhraseCanvas {
 			@Override public void mouseReleased(MouseEvent e) {
 				super.mouseReleased(e);
 				if (SwingUtilities.isLeftMouseButton(e))
-					_main.notifyShowCurrentX(false, getMousePosition().x);
+					app().notifyShowCurrentX(false, getMousePosition().x);
 				repaint();
 			}
 
-		};
-		addMouseListener(mouseActions);
-		addMouseMotionListener(mouseActions);
+		});
+		addMouseListener(getMouseActions());
+		addMouseMotionListener(getMouseActions());
 	}
 
 	/*

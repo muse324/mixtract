@@ -18,7 +18,6 @@ import javax.swing.WindowConstants;
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.TuneData;
-import net.muse.gui.GroupingPanel;
 import net.muse.gui.MainFrame;
 import net.muse.gui.PianoRoll;
 import net.muse.mixtract.data.MXTuneData;
@@ -27,6 +26,7 @@ import net.muse.mixtract.data.curve.PhraseCurveType;
 public class MXMainFrame extends MainFrame {
 
 	private static final long serialVersionUID = 1L;
+	private static String WINDOW_TITLE = "Mixtract";
 
 	private JButton analyzeButton = null;
 
@@ -47,6 +47,8 @@ public class MXMainFrame extends MainFrame {
 	private PhraseCurveEditorPanel phraseTempoView;
 
 	private PhraseInfoPanel phraseInfoPanel;
+	private JToolBar toolBar;
+	private JDesktopPane desktop;
 
 	public MXMainFrame(Mixtract mixtract) throws IOException {
 		super(mixtract);
@@ -82,26 +84,28 @@ public class MXMainFrame extends MainFrame {
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#createGroupingPanel()
 	 */
-	@Override protected GroupingPanel createGroupingPanel() {
-		return new MXGroupingPanel();
+	@Override protected MXGroupingPanel createGroupingPanel() {
+		return new MXGroupingPanel(app());
 	}
 
 	/*
 	 * (非 Javadoc)
 	 * @see net.muse.gui.MainFrame#createPianoRollPane()
 	 */
-	@Override protected PianoRoll createPianoRoll(MuseApp main) {
-		assert main instanceof Mixtract;
-		return new MXPianoroll((Mixtract) main);
+	@Override protected PianoRoll createPianoRoll(MuseApp app) {
+		assert app instanceof Mixtract;
+		return new MXPianoroll((Mixtract) app);
 	}
 
-	@Override protected JToolBar getJToolBar() {
-		JToolBar jToolBar = super.getJToolBar();
-		jToolBar.add(getScoreViewButton()); // Generated
-		jToolBar.add(getRealtimeViewButton()); // Generated
-		jToolBar.add(getAnalyzeButton()); // Generated
-		jToolBar.add(getTempoSettingPanel());
-		return jToolBar;
+	@Override protected JToolBar getToolBar() {
+		if (toolBar == null) {
+			toolBar = super.getToolBar();
+			toolBar.add(getScoreViewButton()); // Generated
+			toolBar.add(getRealtimeViewButton()); // Generated
+			toolBar.add(getAnalyzeButton()); // Generated
+			toolBar.add(getTempoSettingPanel());
+		}
+		return toolBar;
 	}
 
 	/*
@@ -114,14 +118,17 @@ public class MXMainFrame extends MainFrame {
 	}
 
 	@Override protected JDesktopPane getDesktop() {
-		JDesktopPane d = super.getDesktop();
-		d.add(getPhraseEditorPanel(), BorderLayout.WEST);
-		Dimension sz = getCurveEditorPanel().getPreferredSize();
-		getCurveEditorPanel().setPreferredSize(new Dimension(300, sz.height));
-		return d;
+		if (desktop == null) {
+			desktop = super.getDesktop();
+			desktop.add(getPhraseEditorPanel(), BorderLayout.WEST);
+			Dimension sz = getCurveEditorPanel().getPreferredSize();
+			getCurveEditorPanel().setPreferredSize(new Dimension(300,
+					sz.height));
+		}
+		return desktop;
 	}
 
-	private JInternalFrame getPhraseEditorPanel() {
+	protected JInternalFrame getPhraseEditorPanel() {
 		if (phraseEditorPanel == null) {
 			phraseEditorPanel = new JInternalFrame();
 			phraseEditorPanel.setClosable(false);
@@ -153,27 +160,27 @@ public class MXMainFrame extends MainFrame {
 
 	private PhraseCurveEditorPanel getPhraseDynamicsView() {
 		if (phraseDynView == null) {
-			phraseDynView = new PhraseCurveEditorPanel(main,
+			phraseDynView = new PhraseCurveEditorPanel(app(),
 					PhraseCurveType.DYNAMICS);
-			main.addTuneDataListener(phraseDynView);
+			butler().addTuneDataListenerList(phraseDynView);
 		}
 		return phraseDynView;
 	}
 
 	private PhraseCurveEditorPanel getPhraseTempoView() {
 		if (phraseTempoView == null) {
-			phraseTempoView = new PhraseCurveEditorPanel(main,
+			phraseTempoView = new PhraseCurveEditorPanel(app(),
 					PhraseCurveType.TEMPO);
-			main.addTuneDataListener(phraseTempoView);
+			butler().addTuneDataListenerList(phraseTempoView);
 		}
 		return phraseTempoView;
 	}
 
 	private PhraseCurveEditorPanel getPhraseArticulationView() {
 		if (phraseArtView == null) {
-			phraseArtView = new PhraseCurveEditorPanel(main,
+			phraseArtView = new PhraseCurveEditorPanel(app(),
 					PhraseCurveType.ARTICULATION);
-			main.addTuneDataListener(phraseArtView);
+			butler().addTuneDataListenerList(phraseArtView);
 		}
 		return phraseArtView;
 	}
@@ -181,7 +188,7 @@ public class MXMainFrame extends MainFrame {
 	private JPanel getPhraseInfoPanel() {
 		if (phraseInfoPanel == null) {
 			phraseInfoPanel = new PhraseInfoPanel();
-			main.addTuneDataListener(phraseInfoPanel);
+			butler().addTuneDataListenerList(phraseInfoPanel);
 		}
 		return phraseInfoPanel;
 	}
@@ -191,7 +198,7 @@ public class MXMainFrame extends MainFrame {
 	 *
 	 * @return javax.swing.JButton
 	 */
-	private JButton getAnalyzeButton() {
+	protected JButton getAnalyzeButton() {
 		if (analyzeButton == null) {
 			analyzeButton = new JButton("Analyze");
 			analyzeButton.setEnabled(false);
@@ -200,8 +207,8 @@ public class MXMainFrame extends MainFrame {
 						public void actionPerformed(
 								java.awt.event.ActionEvent e) {
 							assert data instanceof MXTuneData;
-							main.analyzeStructure((MXTuneData) data, null);
-							main.notifySetTarget();
+							app().analyzeStructure((MXTuneData) data, null);
+							butler().notifySetTarget(data);
 						}
 					});
 		}
@@ -213,7 +220,7 @@ public class MXMainFrame extends MainFrame {
 	 *
 	 * @return javax.swing.JRadioButton
 	 */
-	private JRadioButton getRealtimeViewButton() {
+	protected JRadioButton getRealtimeViewButton() {
 		if (realtimeViewButton == null) {
 			realtimeViewButton = new JRadioButton("realtime view");
 			getPianorollViewerGroup().add(realtimeViewButton);
@@ -242,7 +249,7 @@ public class MXMainFrame extends MainFrame {
 	 *
 	 * @return javax.swing.JRadioButton
 	 */
-	private JRadioButton getScoreViewButton() {
+	protected JRadioButton getScoreViewButton() {
 		if (scoreViewButton == null) {
 			scoreViewButton = new JRadioButton("score view");
 			getPianorollViewerGroup().add(scoreViewButton);
@@ -260,4 +267,11 @@ public class MXMainFrame extends MainFrame {
 		return scoreViewButton;
 	}
 
+	protected String getWindowTitle() {
+		return WINDOW_TITLE;
+	}
+
+	@Override public MXGroupingPanel getGroupingPanel() {
+		return (MXGroupingPanel) super.getGroupingPanel();
+	}
 }

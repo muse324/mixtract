@@ -1,8 +1,6 @@
 package net.muse.mixtract.command;
 
-import net.muse.command.OpenMusicXMLCommand;
-
-class OpenRuleMapCommand extends OpenMusicXMLCommand {
+class OpenRuleMapCommand extends MixtractCommand {
 
 	protected OpenRuleMapCommand(String... lang) {
 		super(lang);
@@ -14,7 +12,7 @@ class OpenRuleMapCommand extends OpenMusicXMLCommand {
 	 * jp.crestmuse.mixtract.gui.MixtractCommand.OpenMusicXMLCommand#execute
 	 * ()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		// try {
 		// final File fp = new File(openFileDialog());
 		// GUIUtil.printConsole(fp.getName() + " is reading...");

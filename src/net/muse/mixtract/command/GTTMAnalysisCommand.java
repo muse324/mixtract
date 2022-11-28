@@ -1,7 +1,6 @@
 package net.muse.mixtract.command;
 
-final class GTTMAnalysisCommand extends
-		AnalyzeStructureCommand {
+final class GTTMAnalysisCommand extends AnalyzeStructureCommand {
 
 	/**
 	 * @param string
@@ -17,18 +16,11 @@ final class GTTMAnalysisCommand extends
 	 * AnalyseStructureCommand
 	 * #execute()
 	 */
-	@Override public void execute() {
+	@Override public void run() {
 		makeUserGroup();
 	}
 
 	/* ユーザ定義のグルーピング */
-	private void makeUserGroup() {
-		// if (_target != null) {
-		// GTTMAnalyzer.run(_target, _mainFrame.getJCheckBoxMenuItem()
-		// .isSelected(), false);
-		// _main.notifySetTarget(_target);
-		// _mainFrame.refreshDatabase();
-		// }
-	}
+	private void makeUserGroup() {}
 
 }

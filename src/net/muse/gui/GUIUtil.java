@@ -3,10 +3,16 @@ package net.muse.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.text.Document;
 
-import net.muse.misc.Command;
+import net.muse.command.MuseAppCommand;
 
 /**
  * GUI上でよく使う各種コンポーネントの記述テンプレートを集めたユーティリティクラスです．<br>
@@ -103,8 +109,8 @@ public class GUIUtil {
 	 * @param cmd
 	 * @param key
 	 */
-	public static final JMenuItem createMenuItem(ActionListener l, Command cmd,
-			int key) {
+	public static final JMenuItem createMenuItem(ActionListener l,
+			MuseAppCommand cmd, int key) {
 		return createMenuItem(l, cmd, key, ActionEvent.CTRL_MASK);
 	}
 
@@ -115,8 +121,8 @@ public class GUIUtil {
 	 * @param ctrlMask
 	 * @return
 	 */
-	public static final JMenuItem createMenuItem(ActionListener l, Command cmd,
-			int key, int opt) {
+	public static final JMenuItem createMenuItem(ActionListener l,
+			MuseAppCommand cmd, int key, int opt) {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem();
 		menuItem.setText(cmd.getText());

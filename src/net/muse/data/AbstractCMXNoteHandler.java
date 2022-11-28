@@ -1,7 +1,9 @@
 package net.muse.data;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.*;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Measure;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.MusicData;
+import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Part;
 import jp.crestmuse.cmx.filewrappers.SCC.HeaderElement;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper.Note;
@@ -142,8 +144,13 @@ public abstract class AbstractCMXNoteHandler extends MuseObject implements
 	}
 
 	protected void setKeys(String mode, int f) {
+		assert mode != null : "mode is null";
 		keyMode = KeyMode.valueOf(mode);
 		fifths = f;
+	}
+
+	@Override public Concierge butler() {
+		return data().butler();
 	}
 
 }

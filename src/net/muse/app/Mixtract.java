@@ -5,17 +5,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.sound.midi.InvalidMidiDataException;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import net.muse.data.Group;
 import net.muse.data.TuneData;
-import net.muse.gui.GUIUtil;
 import net.muse.gui.InfoViewer;
 import net.muse.gui.MainFrame;
-import net.muse.mixtract.command.MixtractCommand;
+import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
@@ -34,115 +32,20 @@ import net.muse.mixtract.gui.MXMainFrame;
  */
 public class Mixtract extends MuseApp {
 
+	private Mixtract(String[] args) throws FileNotFoundException, IOException {
+		super(args);
+	}
+
 	public static void main(String[] args) {
 		try {
-			final Mixtract main = new Mixtract(args);
-			if (!isShowGUI())
-				main.readfile(main.getInputFileName(), main
-						.getOutputFileName());
-			else {
-				// MacOSXでのJava実行環境用のシステムプロパティの設定.
-				main.setupSystemPropertiesForMacOSX();
-
-				// システム標準のL&Fを設定.
-				// MacOSXならAqua、WindowsXPならLuna、Vista/Windows7ならばAeroになる.
-				// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
-				UIManager.setLookAndFeel(UIManager
-						.getSystemLookAndFeelClassName());
-
-				MixtractCommand.setMain(main);
-
-				/* sprash screen */
-				main.createSplashScreen(main.getAppImageFile());
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						main.showSplashScreen();
-						main.splashScreen.setLocationRelativeTo(null);
-					}
-				});
-
-				// create main frame
-				main.createNewFrame();
-				MixtractCommand.setJFrame(main.getFrame());
-				main.getFrame().setDefaultCloseOperation(
-						WindowConstants.EXIT_ON_CLOSE);
-				JFrame.setDefaultLookAndFeelDecorated(false);
-				main.getFrame().pack(); // ウィンドウサイズを最適化
-				main.getFrame().setVisible(true); // ウィンドウを表示させる
-
-				// 長い処理のdummy
-				try {
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					GUIUtil.printConsole(e.getMessage());
-				}
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						// showPanel();
-						main.hideSplash();
-					}
-				});
-
-			}
-
+			final Mixtract app = new Mixtract(args);
+			app.setup();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	public Mixtract(String[] args) throws FileNotFoundException, IOException {
-		super(args);
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
-	 */
-	@Override
-	protected MXTuneData createTuneData(File in, File out) throws IOException,
-			InvalidMidiDataException {
-		return new MXTuneData(in, out);
-	}
-
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.app.MuseApp#initialize()
-	 */
-	@Override
-	protected void initialize() {
-		setAppImageFile("mixtract-logo.png");
-		PROPERTY_FILENAME = "Mixtract.properties";
-		projectFileExtension = ".mxt";
-	}
-
-	@Override
-	protected MainFrame mainFrame() throws IOException {
-		if (getFrame() == null)
-			return new MXMainFrame(this);
-		return (MainFrame) getFrame();
-	}
-
-	protected void deleteGroup(final MXGroup g) {
-		if (g == null)
-			return;
-		deleteGroup(g.getChildFormerGroup());
-		deleteGroup(g.getChildLatterGroup());
-
-		InfoViewer d = null;
-		for (InfoViewer pv : getInfoViewList()) {
-			if (pv.group() == g) {
-				d = pv;
-				break;
-			}
-		}
-		if (d != null) {
-			d.setVisible(false);
-			getInfoViewList().remove(d);
-		}
-	}
-
-	@Override
-	public void analyzeStructure(TuneData data, Group group) {
+	@Override public void analyzeStructure(TuneData data, Group group) {
 		assert data != null && data instanceof MXTuneData;
 		if (group == null)
 			return;
@@ -150,6 +53,109 @@ public class Mixtract extends MuseApp {
 		MXGroupAnalyzer ana = new MXGroupAnalyzer((MXTuneData) data, false);
 		ana.setRootGroup((MXGroup) group);
 		ana.run();
-		analyzer.add(ana);
+		getAnalyzer().add(ana);
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
+	 */
+	@Override public void createTuneData(File in, File out) throws IOException {
+		setData(new MXTuneData(in, out));
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.MuseGUIObject#getFrame()
+	 */
+	@Override public MXMainFrame getFrame() {
+		return (MXMainFrame) super.getFrame();
+	}
+
+	@Override public MainFrame mainFrame() throws IOException {
+		if (getFrame() == null)
+			return new MXMainFrame(this);
+		return getFrame();
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.app.MuseApp#initialize()
+	 */
+	@Override protected void initialize() {
+		setAppImageFile("mixtract-logo.png");
+		PROPERTY_FILENAME = "Mixtract.properties";
+		projectFileExtension = ".mxt";
+	}
+
+	@Override protected void setup() throws Exception {
+		if (!isShowGUI()) {
+			butler().readfile();
+			return;
+		}
+		// MacOSXでのJava実行環境用のシステムプロパティの設定.
+		setupSystemPropertiesForMacOSX();
+
+		// システム標準のL&Fを設定.
+		// MacOSXならAqua、WindowsXPならLuna、Vista/Windows7ならばAeroになる.
+		// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
+		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+
+		/* sprash screen */
+		createSplashScreen(getAppImageFile());
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				showSplashScreen();
+			}
+		});
+
+		// create mainFrame
+		createNewFrame();
+		getFrame().setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		JFrame.setDefaultLookAndFeelDecorated(false);
+		getFrame().pack(); // ウィンドウサイズを最適化
+		getFrame().setVisible(true); // ウィンドウを表示させる
+
+		// 長い処理のdummy
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			butler().printConsole(e.getMessage());
+		}
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				// showPanel();
+				hideSplash();
+			}
+		});
+	}
+
+	@Override
+	protected void setupCommands() {
+		super.setupCommands();
+		for (MixtractCommandType e : MixtractCommandType.values())
+			getCommandList().add(e);
+	}
+
+	private void deleteGroup(final MXGroup g) {
+		if (g == null)
+			return;
+		deleteGroup(g.getChildFormerGroup());
+		deleteGroup(g.getChildLatterGroup());
+
+		InfoViewer d = null;
+		for (InfoViewer pv : butler().getInfoViewList()) {
+			if (pv.group() == g) {
+				d = pv;
+				break;
+			}
+		}
+		if (d != null) {
+			d.setVisible(false);
+			butler().getInfoViewList().remove(d);
+		}
 	}
 }

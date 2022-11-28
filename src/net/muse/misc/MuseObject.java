@@ -1,16 +1,22 @@
 package net.muse.misc;
 
 import java.awt.HeadlessException;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Properties;
 
 import javax.swing.JFileChooser;
+
+import net.muse.data.Concierge;
 
 public abstract class MuseObject {
 
 	/** デバッグモード */
 	protected static boolean DEBUG = true;
-	private static final String LOG_FILENAME = "log.txt";
+	protected static final String LOG_FILENAME = "log.txt";
 
 	private static String PROPERTY_FILENAME;
 
@@ -29,7 +35,9 @@ public abstract class MuseObject {
 
 	private static int _defaultBPM;
 
-	public static PrintStream log;
+	private PrintStream log;
+	/** コンシェルジュ（ファサードクラス） **/
+	private Concierge butler = null;
 
 	public final static void errPrintln(String val) {
 		if (DEBUG)
@@ -126,20 +134,6 @@ public abstract class MuseObject {
 		_ticksPerBeat = tpb;
 	}
 
-	public final static void testPrint(String val) {
-		if (DEBUG)
-			System.out.print(val);
-		if (log != System.out)
-			log.print(val);
-	}
-
-	public final static void testPrintln(String val) {
-		if (DEBUG)
-			System.out.println(val);
-		if (log != System.out)
-			log.print(val);
-	}
-
 	/**
 	 * @return the pROPERTY_FILENAME
 	 */
@@ -161,7 +155,7 @@ public abstract class MuseObject {
 		_assertion = flg;
 	}
 
-	public MuseObject() {
+	protected MuseObject() {
 		super();
 		try {
 			log = new PrintStream(new File(LOG_FILENAME));
@@ -216,17 +210,42 @@ public abstract class MuseObject {
 		config.load(new FileInputStream(getPropertyFilename()));
 
 		for (Object str : config.keySet()) {
-			testPrint("set " + str + ": " + config.getProperty((String) str)
-					+ "...");
+			butler().printConsole("set " + str + ": " + config.getProperty(
+					(String) str) + "...");
 			setOption((String) str);
-			testPrintln("");
+			butler().printConsole("");
 		}
 	}
 
 	protected void setOption(String str) throws IllegalArgumentException {
 		OptionType _cmd = OptionType.valueOf(str);
 		_cmd.exe(this, config.getProperty(str));
-		testPrint("done.");
+		butler().printConsole("done.");
+	}
+
+	public PrintStream log() {
+		if (log == null) {
+			try {
+				log = new PrintStream(new File(LOG_FILENAME));
+			} catch (FileNotFoundException e) {
+				log = System.out;
+			}
+		}
+		return log;
+	}
+
+	public void setLog(PrintStream log) {
+		this.log = log;
+	}
+
+	public Concierge butler() {
+		if (butler == null)
+			butler = createConcierge();
+		return butler;
+	}
+
+	protected Concierge createConcierge() {
+		return new Concierge(this);
 	}
 
 }

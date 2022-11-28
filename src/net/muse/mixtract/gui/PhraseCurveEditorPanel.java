@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 
@@ -16,6 +15,7 @@ import javax.swing.JPanel;
 import net.muse.app.Mixtract;
 import net.muse.app.MuseApp;
 import net.muse.data.Group;
+import net.muse.data.NoteData;
 import net.muse.data.TuneData;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.MouseActionListener;
@@ -41,11 +41,11 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 	private MouseActionListener mouseActions;
 	public CurveHandler target;
 	int offset = 5;
-	private Mixtract main;
+	private Mixtract app;
 
-	public PhraseCurveEditorPanel(MuseApp main, PhraseCurveType type) {
+	public PhraseCurveEditorPanel(MuseApp app, PhraseCurveType type) {
 		super();
-		this.main = (Mixtract) main;
+		this.app = (Mixtract) app;
 		setLayout(null);
 		setDoubleBuffered(true);
 		setBackground(Color.white);
@@ -58,21 +58,11 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 		add(tp);
 		add(ed);
 		setAxises();
-		setController(main);
+		setController(app);
 	}
 
-	private void setController(MuseApp main) {
-		mouseActions = new MouseActionListener(main, this) {
-
-			@Override public void mouseClicked(MouseEvent e) {
-				super.mouseClicked(e);
-			}
-
-			@Override public void mouseDragged(MouseEvent e) {
-				super.mouseDragged(e);
-				repaint();
-			}
-		};
+	private void setController(MuseApp app) {
+		mouseActions = new MouseActionListener(app, this);
 		addMouseListener(mouseActions);
 		addMouseMotionListener(mouseActions);
 	}
@@ -223,10 +213,15 @@ public class PhraseCurveEditorPanel extends JPanel implements TuneDataListener {
 
 	public void notifyCurveUpdate() {
 		cv.rasterize();
-		cv.apply((MXTuneData) main.data(), group);
-		main.data().calculateExpressionParameters();
-		((MXMainFrame) main.getFrame()).getDynamicsView().repaint();
-		((MXMainFrame) main.getFrame()).getTempoView().repaint();
+		cv.apply((MXTuneData) app.data(), group);
+		app.data().calculateExpressionParameters();
+		((MXMainFrame) app.getFrame()).getDynamicsView().repaint();
+		((MXMainFrame) app.getFrame()).getTempoView().repaint();
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 }

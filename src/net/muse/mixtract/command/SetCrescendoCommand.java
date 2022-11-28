@@ -16,7 +16,7 @@ public class SetCrescendoCommand extends MixtractCommand {
 	 * @see net.muse.misc.Command#execute()
 	 */
 	@Override
-	public void execute() {
+	public void run() {
 		groupLabel.group().setType(GroupType.CRESC);
 		groupLabel.setTypeShape(GroupType.CRESC);
 		groupLabel.repaint();

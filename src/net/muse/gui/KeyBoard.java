@@ -1,14 +1,26 @@
 package net.muse.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.util.List;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import net.muse.app.Mixtract;
-import net.muse.data.*;
+import net.muse.app.MuseApp;
+import net.muse.data.Group;
+import net.muse.data.NoteData;
+import net.muse.data.TuneData;
 import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.sound.MixtractMIDIController;
 import net.muse.sound.MIDIController;
@@ -23,7 +35,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 		MouseMotionListener, TuneDataListener {
 
 	/** キーボード一音の描画の縦幅[pixel] */
-	public final static int keyHeight = 7;
+	private int keyHeight = 7;
 
 	/** 最大音域数 */
 	static final int maximumKeyRegister = 88;
@@ -49,9 +61,6 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/** Y座標に対応するノートナンバーのマップ */
 	private final TreeMap<Integer, Integer> keyboardMap;
 
-	/** 音域（描画する鍵盤の数） */
-	private int keyRegister;
-
 	/** 押されている鍵盤のノート番号リスト（ソート済） */
 	private final TreeSet<Integer> noteNumberOfPushedKey;
 
@@ -61,10 +70,12 @@ public class KeyBoard extends JPanel implements MouseListener,
 
 	private int ticksperbeat = 480;
 
+	private MuseApp app;
+
 	/**
 	 * @return
 	 */
-	public static int getKeyboardHeight() {
+	public int getKeyboardHeight() {
 		return keyHeight * maximumKeyRegister;
 	}
 
@@ -99,6 +110,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	public static void setKeyWidth(int w) {
 		keyWidth = w;
 	}
+
 	/**
 	 * 白鍵のピッチクラスをインスタンス化します．
 	 */
@@ -120,6 +132,11 @@ public class KeyBoard extends JPanel implements MouseListener,
 		noteNumberOfPushedKey = new TreeSet<Integer>();
 		ticksperbeat = tpb;
 		initialize();
+	}
+
+	public KeyBoard(MuseApp app) {
+		this(app.getTicksPerBeat());
+		this.app = app;
 	}
 
 	/*
@@ -170,13 +187,6 @@ public class KeyBoard extends JPanel implements MouseListener,
 	 * )
 	 */
 	public void editGroup(GroupLabel g) {}
-
-	/**
-	 * @return
-	 */
-	public int getKeyRegistar() {
-		return keyRegister;
-	}
 
 	/**
 	 * @return the selectedKey
@@ -284,9 +294,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 		repaint();
 	}
 
-	/**
-	 *
-	 */
+	@Deprecated
 	public void resetKeyRegister() {
 		topNoteNumber = 0;
 		bottomNoteNumber = 1000;
@@ -301,31 +309,13 @@ public class KeyBoard extends JPanel implements MouseListener,
 	public void selectGroup(GroupLabel g, boolean flg) {}
 
 	/**
-	 * @param beginNote
-	 */
-	public void setKeyRegister(GroupNote note) {
-		if (note == null)
-			return;
-		setKeyRegister(note.child());
-		setKeyRegister(note.next());
-		setKeyRegister(note.getNote());
-	}
-
-	/**
 	 * @param synthe the synthe to set
 	 */
 	public void setSynthe(MIDIController synthe) {
 		this.synthe = synthe;
 	}
 
-	public void setTarget(TuneData target) {
-		resetKeyRegister();
-
-		setKeyRegister(target.getRootGroup());
-		setKeyRegister(target.getMiscGroup());
-		// setKeyRegister(0, target.getRootGroup());
-		keyRegister = topNoteNumber - bottomNoteNumber;
-	}
+	public void setTarget(TuneData target) {}
 
 	/**
 	 * キーボードを薄く描画します．
@@ -353,7 +343,7 @@ public class KeyBoard extends JPanel implements MouseListener,
 	/**
 	 * @return the keyHeight
 	 */
-	int getKeyHeight() {
+	public int getKeyHeight() {
 		return keyHeight;
 	}
 
@@ -445,19 +435,10 @@ public class KeyBoard extends JPanel implements MouseListener,
 		setBackground(Color.WHITE);
 		setBorder(BorderFactory.createEtchedBorder());
 		setDoubleBuffered(true);
-		setPreferredSize(new Dimension(keyWidth, (keyHeight
-				* maximumKeyRegister)));
+		setSize(keyWidth, (keyHeight * maximumKeyRegister));
 
 		addMouseListener(this);
 		addMouseMotionListener(this);
-	}
-
-	/**
-	 * @param grouplist
-	 */
-	private void setKeyRegister(final List<Group> grouplist) {
-		for (Group g : grouplist)
-			setKeyRegister(g.getBeginNote());
 	}
 
 	/**
@@ -475,4 +456,17 @@ public class KeyBoard extends JPanel implements MouseListener,
 		if (note.noteNumber() < bottomNoteNumber)
 			bottomNoteNumber = note.noteNumber();
 	}
+
+	/**
+	 * @param keyHeight セットする keyHeight
+	 */
+	public void setKeyHeight(int keyHeight) {
+		this.keyHeight = keyHeight;
+	}
+
+	@Override public void selectTopNote(NoteData note, boolean b) {
+		// TODO 自動生成されたメソッド・スタブ
+
+	}
+
 }

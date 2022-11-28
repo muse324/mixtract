@@ -1,10 +1,16 @@
 package net.muse.mixtract.gui;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 import net.muse.app.Mixtract;
 import net.muse.data.NoteData;
-import net.muse.gui.*;
+import net.muse.gui.GroupLabel;
+import net.muse.gui.KeyBoard;
+import net.muse.gui.NoteLabel;
 
 class PianoRollSmall extends MXPianoroll {
 	private static final long serialVersionUID = 1L;
@@ -15,8 +21,8 @@ class PianoRollSmall extends MXPianoroll {
 	private boolean showCurrentX;
 	private int endX;
 
-	PianoRollSmall(Mixtract main) {
-		super(main);
+	PianoRollSmall(Mixtract app) {
+		super(app);
 		initialize();
 		setViewMode(ViewerMode.SCORE_VIEW);
 	}
@@ -27,8 +33,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * jp.crestmuse.mixtract.gui.PianoRoll#deleteGroup(jp.crestmuse.mixtract
 	 * .gui.GroupLabel)
 	 */
-	@Override
-	public void deleteGroup(GroupLabel g) {}
+	@Override public void deleteGroup(GroupLabel g) {}
 
 	/*
 	 * (non-Javadoc)
@@ -36,8 +41,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * jp.crestmuse.mixtract.gui.PianoRoll#deselect(jp.crestmuse.mixtract.
 	 * gui.GroupLabel)
 	 */
-	@Override
-	public void deselect(GroupLabel g) {
+	@Override public void deselect(GroupLabel g) {
 		setDisplayApex(true);
 		repaint();
 	}
@@ -46,11 +50,10 @@ class PianoRollSmall extends MXPianoroll {
 	 * (non-Javadoc)
 	 * @see jp.crestmuse.mixtract.gui.PianoRoll#makeNoteLabel()
 	 */
-	@Override
-	public void makeNoteLabel() {
+	@Override public void makeNoteLabel() {
 		removeAll();
-		setNotelist(null);
-		makeNoteLabel(group());
+		this.notelist = null;
+		makeNoteLabel(group().group());
 		validate();
 		repaint();
 	}
@@ -60,8 +63,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * @see
 	 * jp.crestmuse.mixtract.gui.PianoRoll#paintComponent(java.awt.Graphics)
 	 */
-	@Override
-	public void paintComponent(Graphics g) {
+	@Override public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (showCurrentX) {
 			g.setColor(Color.magenta);
@@ -71,15 +73,7 @@ class PianoRollSmall extends MXPianoroll {
 		}
 	}
 
-	@Override
-	protected void rescaleNoteLabels() {
-		axisX = (int) Math.round(getWidth() * 0.1);
-		endX = (int) Math.round(getWidth() * 0.9);
-		resizeLabels(getNotelist());
-	}
-
-	@Override
-	public void setShowCurrentX(boolean showCurrentX, int x) {
+	@Override public void setShowCurrentX(boolean showCurrentX, int x) {
 		this.showCurrentX = showCurrentX;
 		this.currentMousePositionX = x;
 		repaint();
@@ -91,8 +85,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * jp.crestmuse.mixtract.gui.PianoRoll#setViewMode(jp.crestmuse.mixtract
 	 * .gui.ViewerMode)
 	 */
-	@Override
-	public void setViewMode(ViewerMode mode) {
+	@Override public void setViewMode(ViewerMode mode) {
 		super.setViewMode(ViewerMode.SCORE_VIEW); // 常に
 	}
 
@@ -103,8 +96,7 @@ class PianoRollSmall extends MXPianoroll {
 	 * , jp.crestmuse.mixtract.gui.NoteLabel,
 	 * jp.crestmuse.mixtract.gui.NoteLabel)
 	 */
-	@Override
-	protected void drawFifthsKeyText(Graphics2D g2, NoteLabel cur,
+	@Override protected void drawFifthsKeyText(Graphics2D g2, NoteLabel cur,
 			NoteLabel pre) {}
 
 	/*
@@ -114,9 +106,16 @@ class PianoRollSmall extends MXPianoroll {
 	 * , jp.crestmuse.mixtract.gui.NoteLabel,
 	 * jp.crestmuse.mixtract.gui.NoteLabel)
 	 */
-	@Override
-	protected void drawHarmonyGround(Graphics2D g2, NoteLabel cur,
+	@Override protected void drawHarmonyGround(Graphics2D g2, NoteLabel cur,
 			NoteLabel pre) {}
+
+	/*
+	 * (non-Javadoc)
+	 * @see jp.crestmuse.mixtract.gui.PianoRoll#selectNotes()
+	 */
+	@Override protected void encloseNotes() {
+		setDisplayApex(true);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -124,9 +123,8 @@ class PianoRollSmall extends MXPianoroll {
 	 * jp.crestmuse.mixtract.gui.PianoRoll#getLabelBounds(jp.crestmuse.mixtract
 	 * .data.NoteData, int)
 	 */
-	@Override
-	protected Rectangle getLabelBounds(NoteData nd, int offset) {
-		final int h = KeyBoard.keyHeight;
+	@Override protected Rectangle getLabelBounds(NoteData nd, int offset) {
+		final int h = app().getFrame().getKeyboard().getKeyHeight();
 		final int y = KeyBoard.getYPositionOfPitch(nd.noteNumber()) * h;
 		double x, w;
 		switch (getViewerMode()) {
@@ -136,27 +134,25 @@ class PianoRollSmall extends MXPianoroll {
 			break;
 		default:
 			double len = endX - getAxisX();
-			x = getAxisX() + ((nd.onset() - group().getBeginNote().onset())
-					/ (double) group().timeValue()) * len;
-			w = (nd.timeValue() / (double) group().timeValue()) * len - offset;
+			x = getAxisX() + ((nd.onset() - group().group().getBeginNote()
+					.onset()) / (double) group().group().timeValue()) * len;
+			w = (nd.timeValue() / (double) group().group().timeValue()) * len
+					- offset;
 			break;
 		}
 		return new Rectangle((int) x, y, (int) w, h);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see jp.crestmuse.mixtract.gui.PianoRoll#selectNotes()
-	 */
-	@Override
-	protected void selectNotes() {
-		setDisplayApex(true);
+	@Override protected void rescaleNoteLabels() {
+		axisX = (int) Math.round(getWidth() * 0.1);
+		endX = (int) Math.round(getWidth() * 0.9);
+		resizeLabels(notelist());
 	}
 
 	/**
 	 * This method initializes this
 	 */
-	private void initialize() {
+	protected void initialize() {
 		setOpaque(true);
 		setLayout(null);
 		setBackground(Color.WHITE);

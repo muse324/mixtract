@@ -8,18 +8,19 @@ import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.data.NoteData;
 import net.muse.gui.GroupLabel;
+import net.muse.gui.KeyActionListener;
 import net.muse.gui.NoteLabel;
 import net.muse.gui.PianoRoll;
+import net.muse.gui.PianoRollActionListener;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXPianoroll extends PianoRoll {
 
 	private static final long serialVersionUID = 1L;
-
 	boolean displayApex = false;
 
-	MXPianoroll(Mixtract main) {
-		super(main);
+	protected MXPianoroll(Mixtract app) {
+		super(app);
 	}
 
 	/*
@@ -31,20 +32,9 @@ public class MXPianoroll extends PianoRoll {
 		super.deselect(g);
 	}
 
-	/*
-	 * (非 Javadoc)
-	 * @see net.muse.gui.PianoRoll#selectGroup(net.muse.mixtract.data.Group)
-	 */
-	@Override public void selectGroup(Group group) {
-		if (group == null)
-			return;
-		MXGroup g = (MXGroup) group;
-		selectGroup(g.getChildFormerGroup());
-		selectGroup(g.getChildLatterGroup());
-		for (Component c : getComponents()) {
-			NoteLabel l = (NoteLabel) c;
-			selectNote(l, group.getBeginNote());
-		}
+	@Override public void editGroup(GroupLabel g) {
+		assert g.group() instanceof MXGroup;
+		((MXGroup) g.group()).setModified(true);
 	}
 
 	@Override public void selectGroup(GroupLabel g, boolean flg) {
@@ -54,16 +44,57 @@ public class MXPianoroll extends PianoRoll {
 		((MXGroup) g.group()).extractApex();
 	}
 
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#createKeyActionListener(net.muse.app.MuseApp)
+	 */
+	protected KeyActionListener cresateKeyActionListener(MuseApp app) {
+		return new KeyActionListener(app, this) {
+
+			@Override public Mixtract app() {
+				return (Mixtract) super.app();
+			}
+
+			@Override public MXPianoroll self() {
+				return (MXPianoroll) super.self();
+			}
+
+		};
+	}
+
 	protected NoteLabel createNoteLabel(final NoteData note,
 			final Rectangle r) {
 		return new MXNoteLabel(note, r);
 	}
 
-	/**
-	 * @param b
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.PianoRoll#createPianoRollMouseAction(net.muse.app.MuseApp)
 	 */
-	protected void setDisplayApex(boolean flg) {
-		displayApex = flg;
+	@Override protected PianoRollActionListener createPianoRollMouseAction(
+			MuseApp app) {
+		return new PianoRollActionListener(app, this) {
+
+		};
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see net.muse.gui.PianoRoll#group()
+	 */
+	@Override protected MXGroupLabel group() {
+		return (MXGroupLabel) super.group();
+	}
+
+	@Override protected void makeNoteLabel(Group group) {
+		if (group == null)
+			return;
+		MXGroup g = (MXGroup) group;
+		makeNoteLabel(g.getChildFormerGroup());
+		makeNoteLabel(g.getChildLatterGroup());
+
+		makeNoteLabel(g.getBeginNote(), false);
 	}
 
 	// protected void makeNoteLabel(MXGroup group) {
@@ -76,32 +107,33 @@ public class MXPianoroll extends PianoRoll {
 
 	/*
 	 * (非 Javadoc)
-	 * @see
-	 * net.muse.gui.PianoRoll#createPianoRollMouseAction(net.muse.app.MuseApp)
+	 * @see net.muse.gui.PianoRoll#notelist()
 	 */
-	@Override protected PianoRollAction createPianoRollMouseAction(
-			MuseApp app) {
-		return new PianoRollAction(app, this) {
-
-		};
+	protected MXNoteLabel notelist() {
+		return (MXNoteLabel) super.notelist();
 	}
 
 	/*
 	 * (非 Javadoc)
-	 * @see net.muse.gui.PianoRoll#group()
+	 * @see net.muse.gui.PianoRoll#selectGroup(net.muse.mixtract.data.Group)
 	 */
-	@Override protected MXGroup group() {
-		return (MXGroup) super.group();
-	}
-
-	@Override protected void makeNoteLabel(Group group) {
+	@Override protected void selectGroup(Group group) {
 		if (group == null)
 			return;
 		MXGroup g = (MXGroup) group;
-		makeNoteLabel(g.getChildFormerGroup());
-		makeNoteLabel(g.getChildLatterGroup());
+		selectGroup(g.getChildFormerGroup());
+		selectGroup(g.getChildLatterGroup());
+		for (Component c : getComponents()) {
+			NoteLabel l = (NoteLabel) c;
+			selectNote(l, group.getBeginNote(), group.getEndNote());
+		}
+	}
 
-		makeNoteLabel(g.getBeginNote(), false);
+	/**
+	 * @param b
+	 */
+	protected void setDisplayApex(boolean flg) {
+		displayApex = flg;
 	}
 
 }

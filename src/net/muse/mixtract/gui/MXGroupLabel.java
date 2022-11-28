@@ -1,12 +1,17 @@
 package net.muse.mixtract.gui;
 
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import net.muse.data.Group;
+import net.muse.app.Mixtract;
+import net.muse.app.MuseApp;
+import net.muse.gui.GLMouseActionListener;
 import net.muse.gui.GroupLabel;
+import net.muse.gui.KeyActionListener;
+import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.mixtract.data.MXGroup;
 
 public class MXGroupLabel extends GroupLabel {
@@ -15,7 +20,7 @@ public class MXGroupLabel extends GroupLabel {
 	private MXGroupLabel childFormer;
 	private MXGroupLabel childLatter;
 
-	public MXGroupLabel(Group group, Rectangle r) {
+	public MXGroupLabel(MXGroup group, Rectangle r) {
 		super(group, r);
 	}
 
@@ -38,6 +43,63 @@ public class MXGroupLabel extends GroupLabel {
 			}
 		}
 		return childLatter;
+	}
+
+	public GroupLabel child(ArrayList<GroupLabel> grouplist) {
+		throw new NoClassDefFoundError("MXGroupLabelでは使用できません．");
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.GroupLabel#createKeyActionListener(net.muse.app.MuseApp)
+	 */
+	@Override protected KeyActionListener createKeyActionListener(MuseApp app) {
+		return new KeyActionListener(app, this) {
+
+			@Override public Mixtract app() {
+				return (Mixtract) super.app();
+			}
+
+			@Override public MXGroupLabel self() {
+				return (MXGroupLabel) super.self();
+			}
+		};
+	}
+
+	/*
+	 * (非 Javadoc)
+	 * @see
+	 * net.muse.gui.GroupLabel#createMouseActionListener(net.muse.app.MuseApp)
+	 */
+	@Override protected GLMouseActionListener createMouseActionListener(
+			MuseApp app) {
+		return new GLMouseActionListener(app, this) {
+
+			/*
+			 * (非 Javadoc)
+			 * @see
+			 * jp.crestmuse.mixtract.gui.MouseActionListener#createPopupMenu
+			 * (java.awt.event.MouseEvent)
+			 */
+			@Override public void createPopupMenu(MouseEvent e) {
+				super.createPopupMenu(e);
+				app().searchCommand(MixtractCommandType.SET_TYPE_CRESC)
+						.setGroup(self());
+				app().searchCommand(MixtractCommandType.SET_TYPE_DIM).setGroup(
+						self());
+				addMenuItemOnGroupingPanel();
+				getPopup().show((Component) e.getSource(), e.getX(), e.getY());
+			}
+
+			/*
+			 * (非 Javadoc)
+			 * @see net.muse.gui.GroupLabel.GLMouseActionListener#self()
+			 */
+			@Override public MXGroupLabel self() {
+				return (MXGroupLabel) super.self();
+			}
+		};
 	}
 
 	protected GroupLabel getChildFormer(ArrayList<GroupLabel> grouplist) {
@@ -88,7 +150,7 @@ public class MXGroupLabel extends GroupLabel {
 		}
 	}
 
-	protected void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
+	public void moveLabelVertical(MouseEvent e, Point p, Rectangle r,
 			boolean shiftKeyPressed, boolean mousePressed) {
 		r.y = p.y;
 		setBounds(r);
@@ -128,10 +190,6 @@ public class MXGroupLabel extends GroupLabel {
 	 */
 	private boolean hasChildLatter() {
 		return childLatter != null;
-	}
-
-	protected GroupLabel child(ArrayList<GroupLabel> grouplist) {
-		throw new NoClassDefFoundError("MXGroupLabelでは使用できません．");
 	}
 
 }

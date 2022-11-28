@@ -3,6 +3,7 @@ package net.muse.mixtract.gui;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import net.muse.app.MuseApp;
 import net.muse.data.Group;
 import net.muse.gui.GroupLabel;
 import net.muse.gui.GroupingPanel;
@@ -10,6 +11,10 @@ import net.muse.mixtract.data.MXGroup;
 import net.muse.mixtract.data.MXTuneData;
 
 public class MXGroupingPanel extends GroupingPanel {
+
+	protected MXGroupingPanel(MuseApp app) {
+		super(app);
+	}
 
 	/*
 	 * (非 Javadoc)
@@ -19,7 +24,7 @@ public class MXGroupingPanel extends GroupingPanel {
 	 */
 	@Override protected MXGroupLabel createGroupLabel(Group group,
 			Rectangle r) {
-		return new MXGroupLabel(group, r);
+		return new MXGroupLabel((MXGroup) group, r);
 	}
 
 	private static final long serialVersionUID = 1L;

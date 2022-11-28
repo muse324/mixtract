@@ -1,5 +1,6 @@
 package net.muse.gui;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -15,8 +16,8 @@ import javax.swing.SwingUtilities;
 
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
-import net.muse.misc.Command;
-import net.muse.mixtract.command.MixtractCommand;
+import net.muse.command.MuseAppCommandAction;
+import net.muse.mixtract.command.MixtractCommandType;
 
 /**
  * MuseApp GUI システムに共通するマウスアクションを集めたものです。
@@ -29,9 +30,8 @@ public class MouseActionListener extends MouseAdapter implements
 	private static Point mousePoint;
 
 	/* 制御オブジェクト */
-	protected static MuseApp _main;
+	private final MuseApp _app;
 	private final Container _self;
-	private final MainFrame _frame;
 	private JPopupMenu popup;
 
 	/* マウスドラッグによる矩形範囲の座標 */
@@ -45,11 +45,12 @@ public class MouseActionListener extends MouseAdapter implements
 	private boolean isDragging;
 	private boolean altKeyPressed;
 
-	public MouseActionListener(MuseApp main, Container owner) {
+	boolean groupEditable;
+
+	public MouseActionListener(MuseApp app, Container owner) {
 		super();
-		_main = main;
+		_app = app;
 		_self = owner;
-		_frame = (MainFrame) _main.getFrame();
 	}
 
 	/*
@@ -58,10 +59,18 @@ public class MouseActionListener extends MouseAdapter implements
 	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent
 	 * )
 	 */
-	public void actionPerformed(ActionEvent e) {
-		final Command c = MixtractCommand.create(e.getActionCommand());
-		c.execute();
+	@Override public void actionPerformed(ActionEvent e) {
+		MuseAppCommand c = app().searchCommand(e.getActionCommand());
+		if (c == null)
+			return;
+		// final MuseAppCommand c = MuseAppCommand.create(e.getActionCommand());
+		c.setFrame(frame());
+		c.setApp(app());
+		c.setTarget(e.getSource());
+		c.run();
 	}
+
+	public void createCustomPopupMenu(MouseEvent e) {}
 
 	public Rectangle getMouseBox() {
 		return mouseBox;
@@ -79,6 +88,17 @@ public class MouseActionListener extends MouseAdapter implements
 	 */
 	public final JPopupMenu getPopup() {
 		return popup;
+	}
+
+	public boolean isAltKeyPressed() {
+		return altKeyPressed;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isGroupEditable() {
+		return groupEditable;
 	}
 
 	public boolean isMousePressed() {
@@ -107,14 +127,6 @@ public class MouseActionListener extends MouseAdapter implements
 		setShiftKeyPressed(e.isShiftDown());
 		setAltKeyPressed(e.isAltDown());
 		_self.repaint();
-	}
-
-	public void setAltKeyPressed(boolean altDown) {
-		this.altKeyPressed = altDown;
-	}
-
-	public boolean isAltKeyPressed() {
-		return altKeyPressed;
 	}
 
 	/*
@@ -156,7 +168,6 @@ public class MouseActionListener extends MouseAdapter implements
 		setMousePoint(e);
 		setStartPoint(e.getPoint());
 		setEndPoint(e.getPoint());
-		// _main.notifyDeselectGroup();
 		_self.repaint();
 	}
 
@@ -178,6 +189,18 @@ public class MouseActionListener extends MouseAdapter implements
 		// _self.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		// }
 		_self.repaint();
+	}
+
+	public Container self() {
+		return _self;
+	}
+
+	public void setAltKeyPressed(boolean altDown) {
+		this.altKeyPressed = altDown;
+	}
+
+	public void setGroupEditable(boolean b) {
+		groupEditable = b;
 	}
 
 	/**
@@ -233,10 +256,11 @@ public class MouseActionListener extends MouseAdapter implements
 		this.endPoint = endPoint;
 	}
 
-	protected JMenuItem addMenuItem(Command command, boolean enabled) {
+	protected JMenuItem addMenuItem(MuseAppCommandAction command,
+			boolean enabled) {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem();
-		menuItem.setText(command.getText());
+		menuItem.setText(command.command().getText());
 		menuItem.setActionCommand(command.name());
 		menuItem.addActionListener(this);
 		menuItem.setEnabled(enabled);
@@ -254,130 +278,36 @@ public class MouseActionListener extends MouseAdapter implements
 		// group attributes
 		JMenu attrMenu = new JMenu("Set articulation");
 		attrMenu.setEnabled(hasSelectedGroup);
-		attrMenu.add(addMenuItem(MixtractCommand.SET_TYPE_CRESC,
+		attrMenu.add(addMenuItem(MixtractCommandType.SET_TYPE_CRESC,
 				hasSelectedGroup));
-		attrMenu.add(addMenuItem(MixtractCommand.SET_TYPE_DIM,
+		attrMenu.add(addMenuItem(MixtractCommandType.SET_TYPE_DIM,
 				hasSelectedGroup));
 		popup.add(attrMenu);
 		popup.addSeparator();
 
-		popup.add(addMenuItem(MixtractCommand.PRINT_GROUP_INFO,
+		popup.add(addMenuItem(MixtractCommandType.PRINT_GROUP_INFO,
 				hasSelectedGroup));
-		popup.add(addMenuItem(MixtractCommand.DELETE_GROUP, hasSelectedGroup));
-		popup.add(addMenuItem(MixtractCommand.CLEAR_ALLGROUPS, _main
+		popup.add(addMenuItem(MixtractCommandType.DELETE_GROUP,
+				hasSelectedGroup));
+		popup.add(addMenuItem(MixtractCommandType.CLEAR_ALLGROUPS, app()
 				.hasTarget()));
 		popup.addSeparator();
-		popup.add(addMenuItem(MuseAppCommand.PRINT_ALLGROUPS, _main
+		popup.add(addMenuItem(MixtractCommandType.PRINT_ALLGROUPS, app()
 				.hasTarget()));
-		// popup.add(addMenuItem(MixtractCommand.PRINT_SUBGROUPS,
-		// _main.hasTarget()));
-		popup.add(addMenuItem(MixtractCommand.MOUSE_DISPLAY, true));
+		popup.add(addMenuItem(MixtractCommandType.MOUSE_DISPLAY, true));
 	}
-
-	// private enum OwnerContainer {
-	//
-	// MainFrame {
-	// @Override public ExpressionPanel getExpressionPanel(Container owner) {
-	// return ((MainFrame) owner).getExpressionPanel();
-	// }
-	//
-	// @Override public GroupingPanel getGroupingPanel(Container owner) {
-	// return ((MainFrame) owner).getGroupingPanel();
-	// }
-	//
-	// @Override public MainFrame getMainFrame(Container owner) {
-	// return (MainFrame) owner;
-	// }
-	//
-	// @Override public ArrayList<PhraseViewer> getPhraseViewList(Container
-	// owner) {
-	// return ((MainFrame) owner).getPhraseViewList();
-	// }
-	//
-	// @Override public PianorollScroll getScoreRoll(Container owner) {
-	// return ((MainFrame) owner).getPianorollScroll();
-	// }
-	//
-	// @Override public WindowListener getRuleWindowActions(Container owner) {
-	// return ((MainFrame) owner).getRuleWindowActions();
-	// }
-	//
-	// @Override public ActionListener getUserActions(Container owner) {
-	// return ((MainFrame) owner).getUserActions();
-	// }
-	//
-	// @Override public boolean hasTargetData(Container owner) {
-	// return ((MainFrame) owner).hasMusicData();
-	// }
-	//
-	// @Override public void moveLabel(Container owner, MouseEvent e,
-	// MouseActionListener mouseActions) {
-	// final GroupLabel src = (GroupLabel) e.getSource();
-	// if (!((MainFrame) owner).getGroupingPanel().isGroupEditable()) {
-	// src.moveLabelVertical(e, mousePoint, src.getBounds(), mouseActions
-	// .isShiftKeyPressed(), mouseActions.isMousePressed());
-	// return;
-	// }
-	// src.moveLabel(e, mousePoint, mouseActions.isMousePressed());
-	// }
-	//
-	// @Override public void notifySelectGroup(Container owner,
-	// GroupLabel label, boolean b) {
-	// _main.getSelectedObjects().setGroupLabel(label);
-	// ((MainFrame) owner).notifySelectGroup(label, b);
-	// }
-	//
-	// @Override public void setGroupEditable(Container owner, boolean b) {
-	// ((MainFrame) owner).getGroupingPanel().setGroupEditable(b);
-	// }
-	//
-	// @Override public void setShiftKeyPressed(Container owner,
-	// boolean shiftDown) {
-	// ((MainFrame) owner).getMouseActions().setShiftKeyPressed(shiftDown);
-	// }
-	//
-	// @Override public PianorollScroll getRealtimeRoll(Container owner) {
-	// return ((MainFrame) owner).getRealtimeScroll();
-	// }
-	// };
-	//
-	// public abstract ExpressionPanel getExpressionPanel(Container owner);
-	//
-	// public abstract PianorollScroll getRealtimeRoll(Container owner);
-	//
-	// public abstract GroupingPanel getGroupingPanel(Container owner);
-	//
-	// public abstract MainFrame getMainFrame(Container owner);
-	//
-	// public abstract ArrayList<PhraseViewer> getPhraseViewList(Container
-	// owner);
-	//
-	// public abstract PianorollScroll getScoreRoll(Container owner);
-	//
-	// public abstract WindowListener getRuleWindowActions(Container owner);
-	//
-	// public abstract ActionListener getUserActions(Container owner);
-	//
-	// public abstract boolean hasTargetData(Container owner);
-	//
-	// public abstract void moveLabel(Container owner, MouseEvent e,
-	// MouseActionListener mouseActions);
-	//
-	// public abstract void notifySelectGroup(Container owner, GroupLabel
-	// label,
-	// boolean b);
-	//
-	// public abstract void setGroupEditable(Container owner, boolean b);
-	//
-	// public abstract void setShiftKeyPressed(Container owner, boolean
-	// shiftDown);
-	// }
 
 	protected void createPopupMenu(MouseEvent e) {
 		popup = new JPopupMenu();
-		// if (src instanceof GroupLabel) {
-		// _self.notifySelectGroup(_self, (GroupLabel) src, true);
-		// }
+		createCustomPopupMenu(e);
+		popup.show((Component) e.getSource(), e.getX(), e.getY());
+	}
+
+	/**
+	 * @return _frame
+	 */
+	protected MainFrame frame() {
+		return app().getFrame();
 	}
 
 	/**
@@ -387,26 +317,16 @@ public class MouseActionListener extends MouseAdapter implements
 		return isDragging;
 	}
 
+	protected MuseApp app() {
+		return _app;
+	}
+
 	protected void setDragging(boolean b) {
 		isDragging = b;
 	}
 
-	private void setStartPoint(Point point) {
+	protected void setStartPoint(Point point) {
 		startPoint = point;
-	}
-
-	/**
-	 * @return _self
-	 */
-	public Container self() {
-		return _self;
-	}
-
-	/**
-	 * @return _frame
-	 */
-	protected MainFrame frame() {
-		return _frame;
 	}
 
 }
