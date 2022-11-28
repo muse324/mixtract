@@ -21,6 +21,7 @@ import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;
 
+
 /**
  * <h1>Mixtract</h1>
  *
