@@ -35,7 +35,7 @@ import net.muse.mixtract.data.curve.PhraseCurve;
  * @author Mitsuyo Hashida & Haruhiro Katayose <address>@ CrestMuse Project,
  *         JST</address> <address><a href="http://mixtract.m-use.net/"
  *         >http://mixtract.m-use.net</a></address>
- *         <address>hashida@kwansei.ac.jp</address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
  * @since 2009/09/20
  */
 public class MXTuneData extends TuneData {

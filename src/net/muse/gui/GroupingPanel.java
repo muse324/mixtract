@@ -35,8 +35,9 @@ import net.muse.mixtract.gui.ViewerMode;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
- *         <address>http://www.m-use.net/</address>
- *         <address>hashida@kwansei.ac.jp</address>
+ *         The University of Fukuchiyama (since Apr. 2020)
+ *         <address>https://m-use.net/</address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
  * @since 2008/04/24
  */
 public class GroupingPanel extends JPanel implements TuneDataListener {

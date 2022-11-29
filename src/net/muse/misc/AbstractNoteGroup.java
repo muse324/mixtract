@@ -5,9 +5,10 @@ import java.util.zip.DataFormatException;
 
 /**
  * グループ構造を格納するクラスに必要なメソッド類を集めたインターフェースです．
- * @author Mitsuyo Hashida @ CrestMuse Project, JST, JAPAN
- *         <address>http://www.m-use.net/</address>
- *         <address>hashida@kwansei.ac.jp</address>
+ * @author Mitsuyo Hashida @ CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020), JAPAN
+ *         <address>https://m-use.net/</address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
  * @since 2007.9.21
  * @version 0.1
  */

@@ -14,8 +14,9 @@ import net.muse.data.NoteData;
  * 旋律の特徴情報を格納するクラスです。
  *
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
- *         <address>http://www.m-use.net/</address>
- *         <address>hashida@kwansei.ac.jp</address>
+ *         The University of Fukuchiyama (since Apr. 2020)
+ *         <address>https://m-use.net/</address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
  * @since 2008/05/02
  */
 public class PhraseFeature extends AbstractPhraseFeature {
