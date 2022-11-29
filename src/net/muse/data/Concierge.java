@@ -18,11 +18,7 @@ import eu.medsea.mimeutil.MimeUtil;
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
 import net.muse.command.MuseAppCommandType;
-import net.muse.gui.GUIUtil;
-import net.muse.gui.GroupLabel;
-import net.muse.gui.InfoViewer;
-import net.muse.gui.MainFrame;
-import net.muse.gui.TuneDataListener;
+import net.muse.gui.*;
 import net.muse.misc.MuseObject;
 import net.muse.mixtract.command.MixtractCommandType;
 

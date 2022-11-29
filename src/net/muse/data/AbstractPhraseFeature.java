@@ -15,7 +15,7 @@ import net.muse.misc.MuseObject;
  *
  * @author Mitsuyo Hashida @ Soai University
  *         <address>https://m-use.net/</address>
- *         <address>hashida@m-use.net</address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
  * @since 2018/1/5
  */
 public class AbstractPhraseFeature extends MuseObject {

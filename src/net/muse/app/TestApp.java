@@ -21,6 +21,11 @@ import net.muse.gui.MainFrame;
  *
  * @since June 24, 2017
  * @author Mitsuyo Hashida
+ *         <address><a href="https://m-use.net/">https://m-use.net</a></address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
+ * @since 2009/09/20 at CrestMuse Project
+ * @since 2017/06/17 at m-use studio / Soai University
+ * @since 2020/04/01 at m-use studio / The University of Fukuchiyama
  */
 public class TestApp extends MuseApp {
 

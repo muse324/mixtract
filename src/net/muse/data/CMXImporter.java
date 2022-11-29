@@ -8,11 +8,7 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.SAXException;
 
-import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
-import jp.crestmuse.cmx.filewrappers.DeviationInstanceWrapper;
-import jp.crestmuse.cmx.filewrappers.MIDIXMLWrapper;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
-import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
+import jp.crestmuse.cmx.filewrappers.*;
 import jp.crestmuse.cmx.processing.CMXController;
 
 public class CMXImporter extends Concierge implements Runnable {
@@ -34,7 +30,8 @@ public class CMXImporter extends Concierge implements Runnable {
 		return inputFile;
 	}
 
-	@Override public void run() {
+	@Override
+	public void run() {
 		// XMLならCMX形式でインポート
 		if (fileType.equals("xml")) {
 			readCMXFile();
@@ -95,7 +92,8 @@ public class CMXImporter extends Concierge implements Runnable {
 	 * @see {@link CrestMuseXML:<a href=
 	 *      "http://cmx.osdn.jp/">http://cmx.osdn.jp/</a>}
 	 */
-	private void readCMXFile(CMXFileWrapper cmx) {}
+	private void readCMXFile(CMXFileWrapper cmx) {
+	}
 
 	protected void readMIDIFile() {
 		try {

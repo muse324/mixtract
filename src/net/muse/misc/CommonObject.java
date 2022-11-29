@@ -57,7 +57,7 @@ public class CommonObject {
 	 * @param parseBoolean
 	 */
 	public void setAssertion(boolean flg) {
-		_assertion=flg;
+		_assertion = flg;
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class CommonObject {
 	 */
 	public void setDebugMode(boolean dbg) {
 		DEBUG = dbg;
-		if(st!=null&& st.isDebug()!=dbg)
+		if (st != null && st.isDebug() != dbg)
 			st.setDebugMode(dbg);
 	}
 

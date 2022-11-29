@@ -19,16 +19,15 @@ import net.muse.mixtract.data.MXGroupAnalyzer;
 import net.muse.mixtract.data.MXTuneData;
 import net.muse.mixtract.gui.MXMainFrame;
 
-
 /**
  * <h1>Mixtract</h1>
  *
  * @author Mitsuyo Hashida
- *         <address><a href="http://mixtract.m-use.net/"
- *         >http://mixtract.m-use.net</a></address>
- *         <address>hashida@m-use.net</address>
+ *         <address><a href="http://mixtract.m-use.net/">http://mixtract.m-use.net</a></address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
  * @since 2009/09/20 at CrestMuse Project
  * @since 2017/06/17 at m-use studio / Soai University
+ * @since 2020/04/01 at m-use studio / The University of Fukuchiyama
  */
 public class Mixtract extends MuseApp {
 
@@ -45,7 +44,8 @@ public class Mixtract extends MuseApp {
 		}
 	}
 
-	@Override public void analyzeStructure(TuneData data, Group group) {
+	@Override
+	public void analyzeStructure(TuneData data, Group group) {
 		assert data != null && data instanceof MXTuneData;
 		if (group == null)
 			return;
@@ -58,21 +58,26 @@ public class Mixtract extends MuseApp {
 
 	/*
 	 * (非 Javadoc)
+	 * 
 	 * @see net.muse.app.MuseApp#createTuneData(java.io.File, java.io.File)
 	 */
-	@Override public void createTuneData(File in, File out) throws IOException {
+	@Override
+	public void createTuneData(File in, File out) throws IOException {
 		setData(new MXTuneData(in, out));
 	}
 
 	/*
 	 * (非 Javadoc)
+	 * 
 	 * @see net.muse.gui.MuseGUIObject#getFrame()
 	 */
-	@Override public MXMainFrame getFrame() {
+	@Override
+	public MXMainFrame getFrame() {
 		return (MXMainFrame) super.getFrame();
 	}
 
-	@Override public MainFrame mainFrame() throws IOException {
+	@Override
+	public MainFrame mainFrame() throws IOException {
 		if (getFrame() == null)
 			return new MXMainFrame(this);
 		return getFrame();
@@ -80,15 +85,18 @@ public class Mixtract extends MuseApp {
 
 	/*
 	 * (非 Javadoc)
+	 * 
 	 * @see net.muse.app.MuseApp#initialize()
 	 */
-	@Override protected void initialize() {
+	@Override
+	protected void initialize() {
 		setAppImageFile("mixtract-logo.png");
 		PROPERTY_FILENAME = "Mixtract.properties";
 		projectFileExtension = ".mxt";
 	}
 
-	@Override protected void setup() throws Exception {
+	@Override
+	protected void setup() throws Exception {
 		if (!isShowGUI()) {
 			butler().readfile();
 			return;
@@ -100,7 +108,6 @@ public class Mixtract extends MuseApp {
 		// MacOSXならAqua、WindowsXPならLuna、Vista/Windows7ならばAeroになる.
 		// Aeroの場合、メニューに表示されるニーモニックのアンダースコアはALTキーを押さないとでてこない.
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
 
 		/* sprash screen */
 		createSplashScreen(getAppImageFile());

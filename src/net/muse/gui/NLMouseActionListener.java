@@ -13,6 +13,7 @@ class NLMouseActionListener extends MouseActionListener {
 
 	/*
 	 * (非 Javadoc)
+	 * 
 	 * @see
 	 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseEntered(java
 	 * .awt.event.MouseEvent)
@@ -32,6 +33,7 @@ class NLMouseActionListener extends MouseActionListener {
 
 	/*
 	 * (非 Javadoc)
+	 * 
 	 * @see
 	 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseExited(java
 	 * .awt.event.MouseEvent)
@@ -51,6 +53,7 @@ class NLMouseActionListener extends MouseActionListener {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see
 	 * jp.crestmuse.mixtract.gui.MouseActionListener#mouseMoved(java.awt
 	 * .event.MouseEvent)

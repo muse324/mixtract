@@ -401,7 +401,7 @@ public class MXTuneData extends TuneData {
 		}
 		// 関連ファイルの読込
 		for (final File f : files) {
-			// フレーズ構想情報
+			// フレーズ構造情報
 			if (f.getName().equals(strfile)) {
 				readStructureData(f);
 				continue;

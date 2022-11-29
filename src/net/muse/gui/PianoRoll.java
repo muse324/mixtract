@@ -1,14 +1,6 @@
 package net.muse.gui;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 
@@ -16,11 +8,7 @@ import javax.swing.JPanel;
 
 import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper.Note;
 import net.muse.app.MuseApp;
-import net.muse.data.Concierge;
-import net.muse.data.Group;
-import net.muse.data.Harmony;
-import net.muse.data.NoteData;
-import net.muse.data.TuneData;
+import net.muse.data.*;
 import net.muse.misc.Util;
 import net.muse.mixtract.command.ChangePartCommand;
 import net.muse.mixtract.data.curve.PhraseCurveType;
