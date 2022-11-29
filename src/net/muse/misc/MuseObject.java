@@ -1,11 +1,7 @@
 package net.muse.misc;
 
 import java.awt.HeadlessException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.Properties;
 
 import javax.swing.JFileChooser;

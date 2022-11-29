@@ -7,7 +7,8 @@ import net.muse.misc.Util;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
- *         <address>http://www.m-use.net/</address>
+ *         The University of Fukuchiyama (since Apr. 2020)
+ *         <address>https://m-use.net/</address>
  * @since 2008/01/07
  */
 public class MIDINoteEvent extends MuseObject {

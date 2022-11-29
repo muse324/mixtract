@@ -82,6 +82,7 @@ public class MathUtil {
 
 	/**
 	 * 標準偏差（standard deviation）を返します．
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -91,6 +92,7 @@ public class MathUtil {
 
 	/**
 	 * 標準偏差（standard deviation）を返します．
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -127,6 +129,7 @@ public class MathUtil {
 
 	/**
 	 * 標本分散σ<upper>2</upper> を返します．
+	 * 
 	 * @param dval
 	 * @return
 	 */
@@ -140,6 +143,7 @@ public class MathUtil {
 
 	/**
 	 * 標本分散σ<upper>2</upper> を返します．
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -153,6 +157,7 @@ public class MathUtil {
 
 	/**
 	 * 不偏分散s<upper>2</upper>（母分散σ<upper>2</upper> の推定値）を返します．
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -166,6 +171,7 @@ public class MathUtil {
 
 	/**
 	 * 不偏分散s<upper>2</upper>（母分散σ<upper>2</upper> の推定値）を返します．
+	 * 
 	 * @param val
 	 * @return
 	 */
@@ -178,8 +184,9 @@ public class MathUtil {
 
 	/**
 	 * 各データの標準化スコア（Zスコア）を返します．
+	 * 
 	 * @param val
-	 *        標本データが格納された配列
+	 *            標本データが格納された配列
 	 * @return
 	 */
 	public static List<Double> zscore(double[] val) {

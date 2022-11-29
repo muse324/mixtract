@@ -4,7 +4,10 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.DefaultButtonModel;
+import javax.swing.Icon;
+import javax.swing.JButton;
 
 public class RoundedCornerButton extends JButton {
 	/**

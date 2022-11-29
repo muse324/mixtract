@@ -11,11 +11,12 @@ import net.muse.misc.Util;
  * <h1>Note</h1>
  *
  * @author Mitsuyo Hashida & Haruhiro Katayose
- *         <address>@ CrestMuse Project, JST</address>
+ *         <address>@ CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020)</address>
  *         <address> <a
  *         href="http://mixtract.m-use.net/" >http://mixtract.m-use
  *         .net</a></address>
- *         <address>hashida@kwansei.ac.jp</address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
  * @since 2009/09/20
  */
 public class MXNoteData extends NoteData {

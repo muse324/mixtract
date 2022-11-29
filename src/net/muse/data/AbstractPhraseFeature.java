@@ -14,8 +14,8 @@ import net.muse.misc.MuseObject;
  * 実装例として{@link net.net.muse.mixtract.data.PhraseFeature}を参照してください。
  *
  * @author Mitsuyo Hashida @ Soai University
- *         <address>http://www.m-use.net/</address>
- *         <address>hashida@m-use.net</address>
+ *         <address>https://m-use.net/</address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
  * @since 2018/1/5
  */
 public class AbstractPhraseFeature extends MuseObject {

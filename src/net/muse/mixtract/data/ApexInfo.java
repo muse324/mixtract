@@ -9,9 +9,10 @@ import net.muse.misc.MuseObject;
  * <h1>ApexInfo</h1>
  *
  * @author Mitsuyo Hashida & Haruhiro Katayose
- *         <address>CrestMuse Project, JST</address>
- *         <address>http://www.m-use.net/</address>
- *         <address>hashida@kwansei.ac.jp</address>
+ *         <address>CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020)</address>
+ *         <address>https://m-use.net/</address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
  * @since 2009/11/27
  */
 abstract class ApexInfo extends MuseObject {
@@ -20,9 +21,10 @@ abstract class ApexInfo extends MuseObject {
 	 * <h1>AppoggiaturaRule</h1>
 	 *
 	 * @author Mitsuyo Hashida & Haruhiro Katayose
-	 *         <address>CrestMuse Project, JST</address>
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
+	 *         <address>CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020)</address>
+	 *         <address>https://m-use.net/</address>
+	 *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
 	 * @since 2009/12/21
 	 */
 	public static abstract class AppoggiaturaRule extends ApexInfo {
@@ -230,9 +232,10 @@ abstract class ApexInfo extends MuseObject {
 	 * <h1>HigherNoteRule</h1>
 	 *
 	 * @author Mitsuyo Hashida & Haruhiro Katayose
-	 *         <address>CrestMuse Project, JST</address>
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
+	 *         <address>CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020)</address>
+	 *         <address>https://m-use.net/</address>
+	 *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
 	 * @since 2009/11/27
 	 */
 	static class HigherNoteRule extends IntervalProgressRule {
@@ -312,9 +315,10 @@ abstract class ApexInfo extends MuseObject {
 	 * <h1>LongerAppoggiaturaRule</h1>
 	 *
 	 * @author Mitsuyo Hashida & Haruhiro Katayose
-	 *         <address>CrestMuse Project, JST</address>
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
+	 *         <address>CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020)</address>
+	 *         <address>https://m-use.net/</address>
+	 *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
 	 * @since 2009/12/21
 	 */
 	public static class LongerAppoggiaturaRule extends AppoggiaturaRule {
@@ -345,9 +349,10 @@ abstract class ApexInfo extends MuseObject {
 	 * <h1>LongerNoteRule</h1>
 	 *
 	 * @author Mitsuyo Hashida & Haruhiro Katayose
-	 *         <address>CrestMuse Project, JST</address>
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
+	 *         <address>CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020)</address>
+	 *         <address>https://m-use.net/</address>
+	 *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
 	 * @since 2009/11/27
 	 */
 	public static class LongerNoteRule extends IntervalProgressRule {
@@ -523,9 +528,10 @@ abstract class ApexInfo extends MuseObject {
 	 * <h1>SameAppoggiaturaRule</h1>
 	 *
 	 * @author Mitsuyo Hashida & Haruhiro Katayose
-	 *         <address>CrestMuse Project, JST</address>
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
+	 *         <address>CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020)</address>
+	 *         <address>https://m-use.net/</address>
+	 *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
 	 * @since 2009/12/21
 	 */
 	public static class SameAppoggiaturaRule extends AppoggiaturaRule {
@@ -556,9 +562,10 @@ abstract class ApexInfo extends MuseObject {
 	 * <h1>SamePitchNoteRule</h1>
 	 *
 	 * @author Mitsuyo Hashida & Haruhiro Katayose
-	 *         <address>CrestMuse Project, JST</address>
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
+	 *         <address>CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020)</address>
+	 *         <address>https://m-use.net/</address>
+	 *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
 	 * @since 2009/11/27
 	 */
 	static class SamePitchNoteRule extends SameTimeValueNoteRule {
@@ -586,9 +593,10 @@ abstract class ApexInfo extends MuseObject {
 	 * <h1>SameTimeValueNoteRule</h1>
 	 *
 	 * @author Mitsuyo Hashida & Haruhiro Katayose
-	 *         <address>CrestMuse Project, JST</address>
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
+	 *         <address>CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020)</address>
+	 *         <address>https://m-use.net/</address>
+	 *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
 	 * @since 2009/11/27
 	 */
 	static class SameTimeValueNoteRule extends ApexInfo {
@@ -645,9 +653,10 @@ abstract class ApexInfo extends MuseObject {
 	 * <h1>ShorterAppoggiaturaRule</h1>
 	 *
 	 * @author Mitsuyo Hashida & Haruhiro Katayose
-	 *         <address>CrestMuse Project, JST</address>
-	 *         <address>http://www.m-use.net/</address>
-	 *         <address>hashida@kwansei.ac.jp</address>
+	 *         <address>CrestMuse Project, JST
+ *         The University of Fukuchiyama (since Apr. 2020)</address>
+	 *         <address>https://m-use.net/</address>
+	 *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
 	 * @since 2009/12/21
 	 */
 	public static class ShorterAppoggiaturaRule extends AppoggiaturaRule {

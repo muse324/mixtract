@@ -1,15 +1,6 @@
 package net.muse.gui;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +12,7 @@ import javax.swing.WindowConstants;
 
 import net.muse.app.MuseApp;
 import net.muse.command.MuseAppCommand;
-import net.muse.data.Concierge;
-import net.muse.data.Group;
-import net.muse.data.GroupType;
-import net.muse.data.NoteData;
-import net.muse.data.TuneData;
+import net.muse.data.*;
 import net.muse.mixtract.command.MixtractCommand;
 import net.muse.mixtract.command.MixtractCommandType;
 import net.muse.mixtract.data.MXTuneData;
@@ -35,8 +22,9 @@ import net.muse.mixtract.gui.ViewerMode;
 
 /**
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
- *         <address>http://www.m-use.net/</address>
- *         <address>hashida@kwansei.ac.jp</address>
+ *         The University of Fukuchiyama (since Apr. 2020)
+ *         <address>https://m-use.net/</address>
+ *         <address>hashida-mitsuyo@fukuchiyama.ac.jp</address>
  * @since 2008/04/24
  */
 public class GroupingPanel extends JPanel implements TuneDataListener {

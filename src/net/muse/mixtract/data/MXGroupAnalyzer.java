@@ -10,7 +10,8 @@ import net.muse.misc.MuseObject;
  * @Input MusicXML ファイル（単旋律・複数旋律どちらでも）
  * @Output none
  * @author Mitsuyo Hashida @ CrestMuse Project, JST
- *         <address>http://www.m-use.net/</address>
+ *         The University of Fukuchiyama (since Apr. 2020)
+ *         <address>https://m-use.net/</address>
  * @since 2008/04/05
  */
 public class MXGroupAnalyzer extends MuseObject implements Runnable {

@@ -211,7 +211,7 @@ public class Util {
 	 * 入力したMIDIノートナンバーから音名を取得します．
 	 *
 	 * @param noteNumber
-	 *          MIDIノートナンバー
+	 *                   MIDIノートナンバー
 	 * @return
 	 */
 	public static String getNoteName(int noteNumber) {
@@ -326,9 +326,9 @@ public class Util {
 	 * valがrefより小さい値かどうかを判別します。
 	 *
 	 * @param val
-	 *          対象値
+	 *            対象値
 	 * @param ref
-	 *          比較する値
+	 *            比較する値
 	 * @return
 	 */
 	public static boolean isSmallerThan(double val, double ref) {

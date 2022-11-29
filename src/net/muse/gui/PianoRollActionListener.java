@@ -15,11 +15,7 @@ import net.muse.app.MuseApp;
 import net.muse.data.Harmony;
 import net.muse.data.KeyMode;
 import net.muse.misc.Util;
-import net.muse.mixtract.command.ChangePartCommand;
-import net.muse.mixtract.command.MixtractCommandType;
-import net.muse.mixtract.command.SetChordCommand;
-import net.muse.mixtract.command.SetKeyCommand;
-import net.muse.mixtract.command.SetKeyModeCommand;
+import net.muse.mixtract.command.*;
 
 public class PianoRollActionListener extends MouseActionListener {
 	private final Point pp = new Point();

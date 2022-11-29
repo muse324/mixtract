@@ -471,3 +471,5 @@ bin/net/muse/pedb/gui/images/Stop16.gif
 bin/net/muse/pedb/gui/images/Stop24.gif
 bin/net/muse/pedb/gui/images/Volume16.gif
 bin/net/muse/pedb/gui/images/Volume24.gif
+.DS_Store
+log.txt

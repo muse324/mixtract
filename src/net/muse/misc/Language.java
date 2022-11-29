@@ -22,9 +22,10 @@ public class Language {
 		return ENGLISH; // TODO デフォルトが英語でいいか？
 	}
 
-	public static void setCurrentLanguage(Language l){
+	public static void setCurrentLanguage(Language l) {
 		currentLanguage = l;
 	}
+
 	public static final Language[] getLanguageList() {
 		return languageList;
 	}

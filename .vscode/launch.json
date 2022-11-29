@@ -1,0 +1,97 @@
+{
+    // IntelliSense を使用して利用可能な属性を学べます。
+    // 既存の属性の説明をホバーして表示します。
+    // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Mixtract",
+            "request": "launch",
+            "mainClass": "net.muse.app.Mixtract",
+            "projectName": "mixtract_a506e632"
+        },
+        {
+            "name": "Java",
+            "type": "java",
+            "request": "launch",
+            "stopOnEntry": true,
+            "jdkPath": "${env:JAVA_HOME}/bin",
+            "cwd": "${fileDirname}",
+            "startupClass": "${fileBasenameNoExtension}",
+            "classpath": [
+                ".",
+                "${fileDirname}"
+            ]
+        },
+        {
+            "name": "Java Console App",
+            "type": "java",
+            "request": "launch",
+            "stopOnEntry": true,
+            "jdkPath": "${env:JAVA_HOME}/bin",
+            "cwd": "${fileDirname}",
+            "startupClass": "${fileBasenameNoExtension}",
+            "classpath": [
+                ".",
+                "${fileDirname}"
+            ],
+            "externalConsole": true
+        },
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch Mixtract",
+            "request": "launch",
+            "mainClass": "net.muse.app.Mixtract",
+            "projectName": "mixtract_b2b27d7a"
+        },
+        {
+            "type": "java",
+            "name": "Launch PEDBStructureEditor",
+            "request": "launch",
+            "mainClass": "net.muse.app.PEDBStructureEditor",
+            "projectName": "mixtract_b2b27d7a"
+        },
+        {
+            "type": "java",
+            "name": "Launch TestApp",
+            "request": "launch",
+            "mainClass": "net.muse.app.TestApp",
+            "projectName": "mixtract_b2b27d7a"
+        },
+        {
+            "type": "java",
+            "name": "Launch KeyBoard",
+            "request": "launch",
+            "mainClass": "net.muse.gui.KeyBoard",
+            "projectName": "mixtract_b2b27d7a"
+        },
+        {
+            "type": "java",
+            "name": "Launch MathUtil",
+            "request": "launch",
+            "mainClass": "net.muse.misc.MathUtil",
+            "projectName": "mixtract_b2b27d7a"
+        },
+        {
+            "type": "java",
+            "name": "Launch Util",
+            "request": "launch",
+            "mainClass": "net.muse.misc.Util",
+            "projectName": "mixtract_b2b27d7a"
+        },
+        {
+            "type": "java",
+            "name": "Launch MainPanel",
+            "request": "launch",
+            "mainClass": "net.muse.pedb.gui.MainPanel",
+            "projectName": "mixtract_b2b27d7a"
+        }
+    ]
+}
