@@ -1,10 +1,10 @@
 package net.muse.gui;
 
 import java.awt.Image;
+import java.awt.desktop.*;
 import java.lang.reflect.Method;
 
-import com.apple.eawt.*;
-import com.apple.eawt.AppEvent.*;
+import com.apple.eawt.Application;
 
 public class MainFramePartialForMacOSX {
 	private MainFramePartialForMacOSX() {
@@ -18,21 +18,25 @@ public class MainFramePartialForMacOSX {
 
 		Application app = Application.getApplication();
 		app.setAboutHandler(new AboutHandler() {
-			@Override public void handleAbout(AboutEvent arg0) {
+			@Override
+			public void handleAbout(AboutEvent e) {
 				mainFrame.onAbout();
 			}
 		});
 		app.setQuitHandler(new QuitHandler() {
-			@Override public void handleQuitRequestWith(QuitEvent arg0,
-					QuitResponse arg1) {
+
+			@Override
+			public void handleQuitRequestWith(QuitEvent e, QuitResponse response) {
 				mainFrame.quit();
 			}
 		});
 		app.setPreferencesHandler(new PreferencesHandler() {
 
-			@Override public void handlePreferences(PreferencesEvent arg0) {
+			@Override
+			public void handlePreferences(PreferencesEvent e) {
 				mainFrame.onPreference();
 			}
+
 		});
 
 		// Dockアイコンの設定 Leopard以降のみ

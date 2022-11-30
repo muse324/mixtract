@@ -84,9 +84,11 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 
 	/*
 	 * (非 Javadoc)
+	 * 
 	 * @see net.muse.gui.MuseGUIObject#getFrame()
 	 */
-	@Override public MainFrame getFrame() {
+	@Override
+	public MainFrame getFrame() {
 		return (MainFrame) super.getFrame();
 	}
 
@@ -216,7 +218,7 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		Iterator<MuseAppCommandAction> i = getCommandList().iterator();
 		MuseAppCommandAction c = null;
 		while (i.hasNext()) {
-			c =  i.next();
+			c = i.next();
 			if (c.name().equals(actionCommand))
 				break;
 		}
@@ -274,7 +276,8 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	/**
 	 * @param isReadingStructureData セットする isReadingStructureData
 	 */
-	public final void setReadingStructureData(boolean isReadingStructureData) {}
+	public final void setReadingStructureData(boolean isReadingStructureData) {
+	}
 
 	/**
 	 * @param doSimilaritySearch the doSimilaritySearch to set
@@ -289,18 +292,24 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 
 	protected void createNewFrame() throws Exception {
 		this.setFrame(mainFrame());
-		if (!isMac())
-			return;
-
-		// Mac用にスクリーンメニューとアプリケーション終了(cmd-Q)のハンドリングを設定する.
-		// com.apple.eawt.Applicationクラスで処理するが、MacOSX以外の実行環境では存在しないので、
-		// このクラスを直接使用するとMacOSX以外で起動できなくなってしまう.
-		// そのため、サポートクラスの中で処理させ、そのサポートクラスをリフレクションにより間接的に
-		// 必要になったときに呼び出す.(クラスのロードに失敗したら、そのときにコケる.)
-		Class<?> clz = Class.forName("net.muse.gui.MainFramePartialForMacOSX");
-		Method mtd = clz.getMethod("setupScreenMenu", new Class[] {
-				MainFrame.class });
-		mtd.invoke(null, new Object[] { this.getFrame() });
+		/*
+		 * 削除されたmacOS固有の機能
+		 * この項では、JDK 9以降で削除されたmacOS固有の機能について説明します。
+		 * https://docs.oracle.com/javase/jp/17/migrate/migrating-jdk-8-later-jdk-releases.html#GUID-97C1D0BB-D5D3-4CAD-B17D-03A87A0AAF3B
+		 * 
+		 * プラットフォーム固有のデスクトップ機能
+		 * java.awt.Desktopクラスには、Apple固有のcom.apple.eawtおよびcom.apple.
+		 * eioパッケージにあるAPIの代替が含まれています。新しいAPIはmacOS APIを置き換えるもので、プラットフォームに依存しません。
+		 * 
+		 * com.apple.eawtおよびcom.apple.eioパッケージのAPIはカプセル化されているため、JDK
+		 * 9以降のリリースでこれらに対してコンパイルすることはできません。ただし、実行時にはアクセス可能であるため、
+		 * 古いバージョンにコンパイルされた既存のコードは引き続き動作します。最終的には、appleおよびcom.
+		 * appleパッケージおよびそのサブパッケージの内部クラスを使用するライブラリやアプリケーションは新しいAPIへの移行が必要となります。
+		 * 
+		 * com.apple.concurrentおよびapple.applescriptパッケージは削除されており、代替はありません。
+		 * 
+		 * 『JEP 272: Platform-Specific Desktop Features』を参照してください。
+		 */
 	}
 
 	protected ArrayList<MXGroupAnalyzer> getAnalyzer() {
@@ -319,12 +328,13 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 	/**
 	 * アプリケーション起動前の初期設定を行います。下記の３パラメータについて必ず値を代入してください。
 	 *
-	 * @param appImageFile - アプリケーションロゴ画像の名称。画像ファイルはメインクラス(.java)と同じ場所に置いてください。
-	 * @param PROPERTY_FILENAME -
-	 *            アプリケーション用の環境設定ファイル名（.properties）。ファイルはプロジェクトフォルダのトップに置いてください。<br/>
-	 *            cf) Mixtract.properties
+	 * @param appImageFile         -
+	 *                             アプリケーションロゴ画像の名称。画像ファイルはメインクラス(.java)と同じ場所に置いてください。
+	 * @param PROPERTY_FILENAME    -
+	 *                             アプリケーション用の環境設定ファイル名（.properties）。ファイルはプロジェクトフォルダのトップに置いてください。<br/>
+	 *                             cf) Mixtract.properties
 	 * @param projectFileExtension - 独自ファイルを用いる場合の拡張子。".xxx"の形で記述します。 <div>ex)
-	 *            <code> projectFileExtension = ".mxt";</code></div>
+	 *                             <code> projectFileExtension = ".mxt";</code></div>
 	 */
 	protected abstract void initialize();
 
@@ -337,9 +347,11 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see net.muse.misc.MuseObject#setOption(java.lang.String)
 	 */
-	@Override protected void setOption(String str)
+	@Override
+	protected void setOption(String str)
 			throws IllegalArgumentException {
 		try {
 			super.setOption(str);
@@ -423,7 +435,8 @@ public abstract class MuseApp extends MuseGUIObject<JFrame> {
 		return midiDeviceName;
 	}
 
-	private void setMaximumMIDIChannel(int ch) {}
+	private void setMaximumMIDIChannel(int ch) {
+	}
 
 	private void setMusicXMLDir(File musicXMLDir) {
 		this.musicXMLDir = musicXMLDir;
