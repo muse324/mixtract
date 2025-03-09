@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import javax.swing.JFrame;
-
 import net.muse.command.MuseAppCommand;
 import net.muse.command.MuseAppCommandAction;
 import net.muse.command.MuseAppCommandType;
@@ -21,455 +19,449 @@ import net.muse.mixtract.data.curve.PhraseCurveType;
 import net.muse.mixtract.sound.MixtractMIDIController;
 
 public abstract class MuseApp extends MuseGUIObject<JFrame> {
-	protected static String PROPERTY_FILENAME = "Mixtract.properties";
-	protected static String projectFileExtension = ".mxt";
 
-	private String appImageFile;
+  protected static String PROPERTY_FILENAME = "Mixtract.properties";
+  protected static String projectFileExtension = ".mxt";
 
-	private String midiDeviceName;
-	private boolean doSimilaritySearch = false;
+  private String appImageFile;
 
-	/** 入出力ファイル */
-	private String inputFileName;
-	private String outputFileName;
+  private String midiDeviceName;
+  private boolean doSimilaritySearch = false;
 
-	/** ファイル格納場所 */
-	private File musicXMLDir;
-	private File outputDir;
-	private File projectDir;
-	/** 楽曲情報 */
-	private TuneData data;
-	/** 階層的フレーズ構造の分析履歴 */
-	private final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
-	private final MixtractMIDIController synthe;
-	private final ArrayList<MuseAppCommandAction> commandList = new ArrayList<MuseAppCommandAction>();
+  /** 入出力ファイル */
+  private String inputFileName;
+  private String outputFileName;
 
-	protected MuseApp(String[] args) throws FileNotFoundException, IOException {
-		/* 初期化 */
-		super();
-		synthe = new MixtractMIDIController(getMidiDeviceName(),
-				getTicksPerBeat());
-		setupCommands();
-		initialize();
-		setPropertyFilename(PROPERTY_FILENAME);
-		loadConfig();
-		setOption(args);
-	}
+  /** ファイル格納場所 */
+  private File musicXMLDir;
+  private File outputDir;
+  private File projectDir;
+  /** 楽曲情報 */
+  private TuneData data;
+  /** 階層的フレーズ構造の分析履歴 */
+  private final ArrayList<MXGroupAnalyzer> analyzer = new ArrayList<MXGroupAnalyzer>();
+  private final MixtractMIDIController synthe;
+  private final ArrayList<MuseAppCommandAction> commandList = new ArrayList<MuseAppCommandAction>();
 
-	/**
-	 * @return projectfileextension
-	 */
-	public static String getProjectFileExtension() {
-		return projectFileExtension;
-	}
+  protected MuseApp(String[] args) throws FileNotFoundException, IOException {
+    /* 初期化 */
+    super();
+    synthe = new MixtractMIDIController(getMidiDeviceName(), getTicksPerBeat());
+    setupCommands();
+    initialize();
+    setPropertyFilename(PROPERTY_FILENAME);
+    loadConfig();
+    setOption(args);
+  }
 
-	/**
-	 * @param data2
-	 * @param object
-	 */
-	public abstract void analyzeStructure(TuneData data, Group group);
+  /**
+   * @return projectfileextension
+   */
+  public static String getProjectFileExtension() {
+    return projectFileExtension;
+  }
 
-	public void createTuneData(File in, File out) throws IOException {
-		setData(new TuneData(in, out));
-	}
+  /**
+   * @param data2
+   * @param object
+   */
+  public abstract void analyzeStructure(TuneData data, Group group);
 
-	/**
-	 * @return
-	 */
-	public TuneData data() {
-		if (data == null)
-			throw new NullPointerException("data is null");
-		return data;
-	}
+  public void createTuneData(File in, File out) throws IOException {
+    setData(new TuneData(in, out));
+  }
 
-	/*
-	 * (非 Javadoc)
-	 * 
-	 * @see net.muse.gui.MuseGUIObject#getFrame()
-	 */
-	@Override
-	public MainFrame getFrame() {
-		return (MainFrame) super.getFrame();
-	}
+  /**
+   * @return
+   */
+  public TuneData data() {
+    if (data == null) throw new NullPointerException("data is null");
+    return data;
+  }
 
-	/**
-	 * @return inputFileName
-	 */
-	public String getInputFileName() {
-		return inputFileName;
-	}
+  /*
+   * (非 Javadoc)
+   *
+   * @see net.muse.gui.MuseGUIObject#getFrame()
+   */
+  @Override
+  public MainFrame getFrame() {
+    return (MainFrame) super.getFrame();
+  }
 
-	public File getMusicXMLDir() {
-		return musicXMLDir;
-	}
+  /**
+   * @return inputFileName
+   */
+  public String getInputFileName() {
+    return inputFileName;
+  }
 
-	public File getOutputDirectory() {
-		return outputDir;
-	}
+  public File getMusicXMLDir() {
+    return musicXMLDir;
+  }
 
-	/**
-	 * @return outputFileName
-	 */
-	public String getOutputFileName() {
-		return outputFileName;
-	}
+  public File getOutputDirectory() {
+    return outputDir;
+  }
 
-	/**
-	 * @return projectDir
-	 */
-	public File getProjectDirectory() {
-		return projectDir;
-	}
+  /**
+   * @return outputFileName
+   */
+  public String getOutputFileName() {
+    return outputFileName;
+  }
 
-	/**
-	 * @return
-	 */
-	public boolean hasTarget() {
-		return data() != null;
-	}
+  /**
+   * @return projectDir
+   */
+  public File getProjectDirectory() {
+    return projectDir;
+  }
 
-	/**
-	 * MacOSXで動作しているかを判定します。
-	 */
-	public boolean isMac() {
-		String lcOSName = System.getProperty("os.name").toLowerCase();
-		return lcOSName.startsWith("mac os x");
-	}
+  /**
+   * @return
+   */
+  public boolean hasTarget() {
+    return data() != null;
+  }
 
-	public abstract MainFrame mainFrame() throws IOException;
+  /**
+   * MacOSXで動作しているかを判定します。
+   */
+  public boolean isMac() {
+    String lcOSName = System.getProperty("os.name").toLowerCase();
+    return lcOSName.startsWith("mac os x");
+  }
 
-	/**
-	 * @param g
-	 */
-	public void notifyAddGroup(Group g) {
-		for (TuneDataListener l : butler().getTdListenerList()) {
-			l.addGroup(g);
-		}
-	}
+  public abstract MainFrame mainFrame() throws IOException;
 
-	/**
-	 * @param type
-	 */
-	public void notifyChangeHierarchicalParameters(PhraseCurveType type) {
-		for (TuneDataListener l : butler().getTdListenerList()) {
-			l.changeExpression(type);
-		}
-	}
+  /**
+   * @param g
+   */
+  public void notifyAddGroup(Group g) {
+    for (TuneDataListener l : butler().getTdListenerList()) {
+      l.addGroup(g);
+    }
+  }
 
-	public void notifyDeleteGroup(GroupLabel label) {
-		deleteGroup(label.group());
-		for (final TuneDataListener l : butler().getTdListenerList()) {
-			l.deleteGroup(label);
-		}
-	}
+  /**
+   * @param type
+   */
+  public void notifyChangeHierarchicalParameters(PhraseCurveType type) {
+    for (TuneDataListener l : butler().getTdListenerList()) {
+      l.changeExpression(type);
+    }
+  }
 
-	public void notifyShowCurrentX(boolean showCurrentX, int x) {
-		for (CanvasMouseListener v : butler().getInfoViewList()) {
-			v.setShowCurrentX(showCurrentX, x);
-		}
-	}
+  public void notifyDeleteGroup(GroupLabel label) {
+    deleteGroup(label.group());
+    for (final TuneDataListener l : butler().getTdListenerList()) {
+      l.deleteGroup(label);
+    }
+  }
 
-	public void printAllSimilarList() {
-		if (doSimilaritySearch) {
-			// final List<SimilarCase> list =
-			// selectedGroup.getGroup().getSimilarList();
-			// int i = 0;
-			// for (final SimilarCase info : list) {
-			// final Group g = info.getSource();
-			// GUIUtil
-			// .printConsole("gr." + ++i + ": " + g + info +
-			// g.getScoreNotelist());
-			// }
-			//
-			// GUIUtil.printConsole("");
-		}
-	}
+  public void notifyShowCurrentX(boolean showCurrentX, int x) {
+    for (CanvasMouseListener v : butler().getInfoViewList()) {
+      v.setShowCurrentX(showCurrentX, x);
+    }
+  }
 
-	public void printSimilarList() {
-		if (doSimilaritySearch) {
-			// final List<SimilarCase> list =
-			// selectedGroup.getGroup().getSimilarList();
-			// int i = 0;
-			// for (final SimilarCase info : list) {
-			// if (info.getSimilarity() < sim.getThreshold())
-			// continue;
-			// final Group g = info.getSource();
-			// GUIUtil
-			// .printConsole("gr." + ++i + ": " + g + info +
-			// g.getScoreNotelist());
-			// }
-			//
-			// GUIUtil.printConsole("");
-		}
-	}
+  public void printAllSimilarList() {
+    if (doSimilaritySearch) {
+      // final List<SimilarCase> list =
+      // selectedGroup.getGroup().getSimilarList();
+      // int i = 0;
+      // for (final SimilarCase info : list) {
+      // final Group g = info.getSource();
+      // GUIUtil
+      // .printConsole("gr." + ++i + ": " + g + info +
+      // g.getScoreNotelist());
+      // }
+      //
+      // GUIUtil.printConsole("");
+    }
+  }
 
-	public MuseAppCommand searchCommand(MuseAppCommandAction type) {
-		MuseAppCommandAction t = null;
-		Iterator<MuseAppCommandAction> c = getCommandList().iterator();
-		while (c.hasNext()) {
-			t = c.next();
-			if (t == type)
-				break;
-		}
-		return t.command();
-	}
+  public void printSimilarList() {
+    if (doSimilaritySearch) {
+      // final List<SimilarCase> list =
+      // selectedGroup.getGroup().getSimilarList();
+      // int i = 0;
+      // for (final SimilarCase info : list) {
+      // if (info.getSimilarity() < sim.getThreshold())
+      // continue;
+      // final Group g = info.getSource();
+      // GUIUtil
+      // .printConsole("gr." + ++i + ": " + g + info +
+      // g.getScoreNotelist());
+      // }
+      //
+      // GUIUtil.printConsole("");
+    }
+  }
 
-	public MuseAppCommand searchCommand(String actionCommand) {
-		Iterator<MuseAppCommandAction> i = getCommandList().iterator();
-		MuseAppCommandAction c = null;
-		while (i.hasNext()) {
-			c = i.next();
-			if (c.name().equals(actionCommand))
-				break;
-		}
-		return c.command();
-	}
+  public MuseAppCommand searchCommand(MuseAppCommandAction type) {
+    MuseAppCommandAction t = null;
+    Iterator<MuseAppCommandAction> c = getCommandList().iterator();
+    while (c.hasNext()) {
+      t = c.next();
+      if (t == type) break;
+    }
+    return t.command();
+  }
 
-	public void setAppImageFile(String imgFileName) {
-		appImageFile = imgFileName;
-	}
+  public MuseAppCommand searchCommand(String actionCommand) {
+    Iterator<MuseAppCommandAction> i = getCommandList().iterator();
+    MuseAppCommandAction c = null;
+    while (i.hasNext()) {
+      c = i.next();
+      if (c.name().equals(actionCommand)) break;
+    }
+    return c.command();
+  }
 
-	/**
-	 * @param inputFileName the inputFileName to set
-	 */
-	public void setInputFileName(String inputFileName) {
-		this.inputFileName = inputFileName;
-	}
+  public void setAppImageFile(String imgFileName) {
+    appImageFile = imgFileName;
+  }
 
-	/**
-	 * MIDIデバイス名を指定します。
-	 *
-	 * @param midiDeviceName
-	 */
-	public void setMidiDeviceName(String midiDeviceName) {
-		this.midiDeviceName = midiDeviceName;
-	}
+  /**
+   * @param inputFileName the inputFileName to set
+   */
+  public void setInputFileName(String inputFileName) {
+    this.inputFileName = inputFileName;
+  }
 
-	/**
-	 * @param dir セットする musicXMLDir
-	 */
-	public void setMusicXMLDirectory(File dir) {
-		this.setMusicXMLDir(dir);
-	}
+  /**
+   * MIDIデバイス名を指定します。
+   *
+   * @param midiDeviceName
+   */
+  public void setMidiDeviceName(String midiDeviceName) {
+    this.midiDeviceName = midiDeviceName;
+  }
 
-	/**
-	 * @param outputDir 出力用ディレクトリ
-	 */
-	public void setOutputDirectory(File outputDir) {
-		this.outputDir = outputDir;
-	}
+  /**
+   * @param dir セットする musicXMLDir
+   */
+  public void setMusicXMLDirectory(File dir) {
+    this.setMusicXMLDir(dir);
+  }
 
-	/**
-	 * @param outputFileName セットする outputFileName
-	 */
-	public void setOutputFileName(String outputFileName) {
-		this.outputFileName = outputFileName;
-	}
+  /**
+   * @param outputDir 出力用ディレクトリ
+   */
+  public void setOutputDirectory(File outputDir) {
+    this.outputDir = outputDir;
+  }
 
-	/**
-	 * @param dir プロジェクトデータを格納するディレクトリ
-	 */
-	public void setProjectDirectory(File dir) {
-		this.setProjectDir(dir);
-	}
+  /**
+   * @param outputFileName セットする outputFileName
+   */
+  public void setOutputFileName(String outputFileName) {
+    this.outputFileName = outputFileName;
+  }
 
-	/**
-	 * @param isReadingStructureData セットする isReadingStructureData
-	 */
-	public final void setReadingStructureData(boolean isReadingStructureData) {
-	}
+  /**
+   * @param dir プロジェクトデータを格納するディレクトリ
+   */
+  public void setProjectDirectory(File dir) {
+    this.setProjectDir(dir);
+  }
 
-	/**
-	 * @param doSimilaritySearch the doSimilaritySearch to set
-	 */
-	public final void setSimilaritySearch(boolean doSimilaritySearch) {
-		this.doSimilaritySearch = doSimilaritySearch;
-	}
+  /**
+   * @param isReadingStructureData セットする isReadingStructureData
+   */
+  public final void setReadingStructureData(boolean isReadingStructureData) {}
 
-	public MixtractMIDIController synthe() {
-		return synthe;
-	}
+  /**
+   * @param doSimilaritySearch the doSimilaritySearch to set
+   */
+  public final void setSimilaritySearch(boolean doSimilaritySearch) {
+    this.doSimilaritySearch = doSimilaritySearch;
+  }
 
-	protected void createNewFrame() throws Exception {
-		this.setFrame(mainFrame());
-		/*
-		 * 削除されたmacOS固有の機能
-		 * この項では、JDK 9以降で削除されたmacOS固有の機能について説明します。
-		 * https://docs.oracle.com/javase/jp/17/migrate/migrating-jdk-8-later-jdk-releases.html#GUID-97C1D0BB-D5D3-4CAD-B17D-03A87A0AAF3B
-		 * 
-		 * プラットフォーム固有のデスクトップ機能
-		 * java.awt.Desktopクラスには、Apple固有のcom.apple.eawtおよびcom.apple.
-		 * eioパッケージにあるAPIの代替が含まれています。新しいAPIはmacOS APIを置き換えるもので、プラットフォームに依存しません。
-		 * 
-		 * com.apple.eawtおよびcom.apple.eioパッケージのAPIはカプセル化されているため、JDK
-		 * 9以降のリリースでこれらに対してコンパイルすることはできません。ただし、実行時にはアクセス可能であるため、
-		 * 古いバージョンにコンパイルされた既存のコードは引き続き動作します。最終的には、appleおよびcom.
-		 * appleパッケージおよびそのサブパッケージの内部クラスを使用するライブラリやアプリケーションは新しいAPIへの移行が必要となります。
-		 * 
-		 * com.apple.concurrentおよびapple.applescriptパッケージは削除されており、代替はありません。
-		 * 
-		 * 『JEP 272: Platform-Specific Desktop Features』を参照してください。
-		 */
-	}
+  public MixtractMIDIController synthe() {
+    return synthe;
+  }
 
-	protected ArrayList<MXGroupAnalyzer> getAnalyzer() {
-		return analyzer;
-	}
+  protected void createNewFrame() throws Exception {
+    this.setFrame(mainFrame());
+    /*
+     * 削除されたmacOS固有の機能
+     * この項では、JDK 9以降で削除されたmacOS固有の機能について説明します。
+     * https://docs.oracle.com/javase/jp/17/migrate/migrating-jdk-8-later-jdk-
+     * releases.html#GUID-97C1D0BB-D5D3-4CAD-B17D-03A87A0AAF3B
+     *
+     * プラットフォーム固有のデスクトップ機能
+     * java.awt.Desktopクラスには、Apple固有のcom.apple.eawtおよびcom.apple.
+     * eioパッケージにあるAPIの代替が含まれています。新しいAPIはmacOS APIを置き換えるもので、プラットフォームに依存しません。
+     *
+     * com.apple.eawtおよびcom.apple.eioパッケージのAPIはカプセル化されているため、JDK
+     * 9以降のリリースでこれらに対してコンパイルすることはできません。ただし、実行時にはアクセス可能であるため、
+     * 古いバージョンにコンパイルされた既存のコードは引き続き動作します。最終的には、appleおよびcom.
+     * appleパッケージおよびそのサブパッケージの内部クラスを使用するライブラリやアプリケーションは新しいAPIへの移行が必要となります。
+     *
+     * com.apple.concurrentおよびapple.applescriptパッケージは削除されており、代替はありません。
+     *
+     * 『JEP 272: Platform-Specific Desktop Features』を参照してください。
+     */
+  }
 
-	protected String getAppImageFile() {
-		assert appImageFile != null;
-		return appImageFile;
-	}
+  protected ArrayList<MXGroupAnalyzer> getAnalyzer() {
+    return analyzer;
+  }
 
-	protected ArrayList<MuseAppCommandAction> getCommandList() {
-		return commandList;
-	}
+  protected String getAppImageFile() {
+    assert appImageFile != null;
+    return appImageFile;
+  }
 
-	/**
-	 * アプリケーション起動前の初期設定を行います。下記の３パラメータについて必ず値を代入してください。
-	 *
-	 * @param appImageFile         -
-	 *                             アプリケーションロゴ画像の名称。画像ファイルはメインクラス(.java)と同じ場所に置いてください。
-	 * @param PROPERTY_FILENAME    -
-	 *                             アプリケーション用の環境設定ファイル名（.properties）。ファイルはプロジェクトフォルダのトップに置いてください。<br/>
-	 *                             cf) Mixtract.properties
-	 * @param projectFileExtension - 独自ファイルを用いる場合の拡張子。".xxx"の形で記述します。 <div>ex)
-	 *                             <code> projectFileExtension = ".mxt";</code></div>
-	 */
-	protected abstract void initialize();
+  protected ArrayList<MuseAppCommandAction> getCommandList() {
+    return commandList;
+  }
 
-	/**
-	 * @param data セットする data
-	 */
-	protected void setData(TuneData data) {
-		this.data = data;
-	}
+  /**
+   * アプリケーション起動前の初期設定を行います。下記の３パラメータについて必ず値を代入してください。
+   *
+   * @param appImageFile         -
+   *                             アプリケーションロゴ画像の名称。画像ファイルはメインクラス(.java)と同じ場所に置いてください。
+   * @param PROPERTY_FILENAME    -
+   *                             アプリケーション用の環境設定ファイル名（.properties）。ファイルはプロジェクトフォルダのトップに置いてください。<br/>
+   *                             cf) Mixtract.properties
+   * @param projectFileExtension - 独自ファイルを用いる場合の拡張子。".xxx"の形で記述します。 <div>ex)
+   *                             <code> projectFileExtension = ".mxt";</code></div>
+   */
+  protected abstract void initialize();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.muse.misc.MuseObject#setOption(java.lang.String)
-	 */
-	@Override
-	protected void setOption(String str)
-			throws IllegalArgumentException {
-		try {
-			super.setOption(str);
-		} catch (IllegalArgumentException e) {
-			try {
-				OptionType _cmd = OptionType.valueOf(str);
-				_cmd.exe(this, config.getProperty(str));
-				log().println("done.");
-			} catch (IllegalArgumentException e1) {
-				log().println("skipped.");
-			}
-		}
-	}
+  /**
+   * @param data セットする data
+   */
+  protected void setData(TuneData data) {
+    this.data = data;
+  }
 
-	/**
-	 * アプリケーションを起動するmain関数で実行するセットアップを記述します。
-	 *
-	 * @throws Exception
-	 */
-	protected abstract void setup() throws Exception;
+  /*
+   * (non-Javadoc)
+   *
+   * @see net.muse.misc.MuseObject#setOption(java.lang.String)
+   */
+  @Override
+  protected void setOption(String str) throws IllegalArgumentException {
+    try {
+      super.setOption(str);
+    } catch (IllegalArgumentException e) {
+      try {
+        OptionType _cmd = OptionType.valueOf(str);
+        _cmd.exe(this, config.getProperty(str));
+        log().println("done.");
+      } catch (IllegalArgumentException e1) {
+        log().println("skipped.");
+      }
+    }
+  }
 
-	protected void setupCommands() {
-		for (MuseAppCommandType e : MuseAppCommandType.values())
-			commandList.add((MuseAppCommandAction) e);
-	}
+  /**
+   * アプリケーションを起動するmain関数で実行するセットアップを記述します。
+   *
+   * @throws Exception
+   */
+  protected abstract void setup() throws Exception;
 
-	/**
-	 *
-	 */
-	protected void setupSystemPropertiesForMacOSX() {
-		if (isMac()) {
-			// JFrameにメニューをつけるのではなく、一般的なOSXアプリ同様に画面上端のスクリーンメニューにする.
-			System.setProperty("apple.laf.useScreenMenuBar", "true");
+  protected void setupCommands() {
+    for (MuseAppCommandType e : MuseAppCommandType.values()) commandList.add(
+      (MuseAppCommandAction) e
+    );
+  }
 
-			// スクリーンメニュー左端に表記されるアプリケーション名を設定する
-			// (何も設定しないとクラス名になる。)
-			System.setProperty(
-					"com.apple.mrj.application.apple.menu.about.name",
-					"Mixtract");
+  /**
+   *
+   */
+  protected void setupSystemPropertiesForMacOSX() {
+    if (isMac()) {
+      // JFrameにメニューをつけるのではなく、一般的なOSXアプリ同様に画面上端のスクリーンメニューにする.
+      System.setProperty("apple.laf.useScreenMenuBar", "true");
 
-			// これらのプロパティは「Jar Bundler」を使用してappとしてバンドル化すれば、
-			// info.plistファイルの中で直接指定できる.
-			// 上記の他、JavaVMへの起動パラメータ(例えば-Xmxとか。)も指定できるうえ、
-			// 依存jarファイルや各種ファイルも一緒にバンドルできるので、
-			// 手間を惜しまなければ、jar化したのちに、さらにapp化するとよいかもしれない.
-		}
-	}
+      // スクリーンメニュー左端に表記されるアプリケーション名を設定する
+      // (何も設定しないとクラス名になる。)
+      System.setProperty(
+        "com.apple.mrj.application.apple.menu.about.name",
+        "Mixtract"
+      );
+      // これらのプロパティは「Jar Bundler」を使用してappとしてバンドル化すれば、
+      // info.plistファイルの中で直接指定できる.
+      // 上記の他、JavaVMへの起動パラメータ(例えば-Xmxとか。)も指定できるうえ、
+      // 依存jarファイルや各種ファイルも一緒にバンドルできるので、
+      // 手間を惜しまなければ、jar化したのちに、さらにapp化するとよいかもしれない.
+    }
+  }
 
-	/**
-	 * @param g
-	 */
-	private void deleteGroup(final Group g) {
-		if (g == null)
-			return;
-		deleteGroup(g.child());
+  /**
+   * @param g
+   */
+  private void deleteGroup(final Group g) {
+    if (g == null) return;
+    deleteGroup(g.child());
 
-		InfoViewer d = null;
-		for (InfoViewer pv : butler().getInfoViewList()) {
-			if (pv.group() == g) {
-				d = pv;
-				break;
-			}
-		}
-		if (d != null) {
-			d.setVisible(false);
-			butler().getInfoViewList().remove(d);
-		}
-	}
+    InfoViewer d = null;
+    for (InfoViewer pv : butler().getInfoViewList()) {
+      if (pv.group() == g) {
+        d = pv;
+        break;
+      }
+    }
+    if (d != null) {
+      d.setVisible(false);
+      butler().getInfoViewList().remove(d);
+    }
+  }
 
-	/**
-	 * @return the doSimilaritySearch
-	 */
-	private final boolean doSimilaritySearch() {
-		return doSimilaritySearch;
-	}
+  /**
+   * @return the doSimilaritySearch
+   */
+  private final boolean doSimilaritySearch() {
+    return doSimilaritySearch;
+  }
 
-	/**
-	 * @return midiDeviceName
-	 */
-	private final String getMidiDeviceName() {
-		return midiDeviceName;
-	}
+  /**
+   * @return midiDeviceName
+   */
+  private final String getMidiDeviceName() {
+    return midiDeviceName;
+  }
 
-	private void setMaximumMIDIChannel(int ch) {
-	}
+  private void setMaximumMIDIChannel(int ch) {}
 
-	private void setMusicXMLDir(File musicXMLDir) {
-		this.musicXMLDir = musicXMLDir;
-	}
+  private void setMusicXMLDir(File musicXMLDir) {
+    this.musicXMLDir = musicXMLDir;
+  }
 
-	/**
-	 * @param args
-	 * @throws FileNotFoundException
-	 */
-	private void setOption(String[] args) throws FileNotFoundException {
-		boolean doSearch = true;
-		for (int i = 0; i < args.length; i++) {
-			String key = args[i];
-			if (!doSearch) {
-				doSearch = true;
-				continue;
-			}
-			if (key.equals("-debug") || key.equals("-d")) {
-				DEBUG = true;
-			} else if (key.equals("-c")) {
-				setShowGUI(false);
-			} else if (key.equals("-xml")) {
-				setInputFileName(args[i + 1]);
-				doSearch = false;
-			} else if (key.equals("-mxt")) {
-				setInputFileName(args[i + 1]);
-				doSearch = false;
-			}
-		}
-	}
+  /**
+   * @param args
+   * @throws FileNotFoundException
+   */
+  private void setOption(String[] args) throws FileNotFoundException {
+    boolean doSearch = true;
+    for (int i = 0; i < args.length; i++) {
+      String key = args[i];
+      if (!doSearch) {
+        doSearch = true;
+        continue;
+      }
+      if (key.equals("-debug") || key.equals("-d")) {
+        DEBUG = true;
+      } else if (key.equals("-c")) {
+        setShowGUI(false);
+      } else if (key.equals("-xml")) {
+        setInputFileName(args[i + 1]);
+        doSearch = false;
+      } else if (key.equals("-mxt")) {
+        setInputFileName(args[i + 1]);
+        doSearch = false;
+      }
+    }
+  }
 
-	private void setProjectDir(File projectDir) {
-		this.projectDir = projectDir;
-	}
-
+  private void setProjectDir(File projectDir) {
+    this.projectDir = projectDir;
+  }
 }

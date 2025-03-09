@@ -1,6 +1,5 @@
 package net.muse.app;
 
-import java.awt.EventQueue;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

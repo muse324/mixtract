@@ -5,20 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.sound.midi.*;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-
-import org.apache.commons.io.FileUtils;
-
-import jp.crestmuse.cmx.filewrappers.CMXFileWrapper;
-import jp.crestmuse.cmx.filewrappers.DeviationInstanceWrapper;
-import jp.crestmuse.cmx.filewrappers.MusicXMLWrapper;
-import jp.crestmuse.cmx.filewrappers.SCCXMLWrapper;
 import net.muse.app.MuseApp;
 import net.muse.misc.MuseObject;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+// import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class TuneData extends MuseObject implements TuneDataController {
 	private static int MAXIMUM_MIDICHANNEL = 16;
